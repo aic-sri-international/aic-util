@@ -1,4 +1,4 @@
-#summary Getting started using the AIC-Util project.
+#summary Getting started using the AIC-Util project (for developers).
 #labels Featured
 
 = Setting up your workspace =
