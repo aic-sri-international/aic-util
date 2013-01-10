@@ -2,3 +2,12 @@
 #labels Featured
 
 = Setting up your workspace =
+You can check out from the project's Subversion repository directly. For this you will require a Subversion client, see the following for useful instructions:
+  * [http://code.google.com/p/aic-util/source/checkout]
+  * [http://subversion.apache.org/packages.html]
+  
+and check out the trunk to a directory named __aic-util__ in your workspace.
+
+==Using the Command Line and <a href="http://maven.apache.org/">Maven</a> ==
+
+__aic-util__ 
