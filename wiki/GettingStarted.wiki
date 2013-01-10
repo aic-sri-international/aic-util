@@ -24,5 +24,4 @@ mvn clean test
   # In the 'Select Folder' dialog, select the trunk folder and hit the 'Next' button.
   # In the 'Check Out As' dialog, select the 'Check out project in the workspace' radio button and enter 'aic-util' as the project name and then hit the 'Finish' button.<br> http://aic-util.googlecode.com/svn/wiki/images/eclipse_check_out_as.png
   # Select the project in the Eclipse 'Package Explorer' and bring up the context sensitive menu (right click under Windows) and select 'Configure->Convert to Maven Project':<br> http://aic-util.googlecode.com/svn/wiki/images/eclipse_convert_to_maven.png
-  # Open the project's properties by selecting the menu item 'Project->Properties' and select the 'Java Build Path' and 'Libaries' tab and ensure that the JavaSE-1.6 is selected by selecting the 'Edit...' button (and not 1.5, which can happen as a default):<br> http://aic-util.googlecode.com/svn/wiki/images/eclipse_build_path.png
   # You should now be able to build and test the project from within Eclipse.
