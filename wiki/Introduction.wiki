@@ -1,4 +1,5 @@
 #summary Introduction and Overview
+#labels Featured
 
 =Introduction=
 A general purpose Java library, developed at [http://www.ai.sri.com/ SRI International's Artificial Intelligence Center] and built on top of Google's [http://code.google.com/p/guava-libraries/ guava-libraries], which adds capabilities in the following areas:
