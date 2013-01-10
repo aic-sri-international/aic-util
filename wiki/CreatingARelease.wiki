@@ -10,7 +10,7 @@
   # Commit changes to Subversion
 
 = Publish the Release =
-  # From the following command from your aic-util workspace directory:
+  # Run the following command from your aic-util workspace directory:
 {{{
 mvn -P sonatype-oss-release deploy
 }}}
