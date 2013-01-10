@@ -39,8 +39,7 @@ package com.sri.ai.test.util.collect;
 
 import java.util.Arrays;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.sri.ai.util.collect.DisjointSets;
