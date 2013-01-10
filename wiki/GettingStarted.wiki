@@ -1,5 +1,4 @@
 #summary Getting started using the AIC-Util project (for developers).
-#labels Featured
 
 = Setting up your workspace =
 You can check out from the project's Subversion repository directly. For this you will require a Subversion client, see the following for useful instructions:
