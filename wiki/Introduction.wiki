@@ -1,5 +1,11 @@
 #summary Introduction and Overview
 
-= Introduction =
+=Introduction=
+A general purpose Java library, developed at [http://www.ai.sri.com/ SRI International's Artificial Intelligence Center] and built on top of Google's [http://code.google.com/p/guava-libraries/ guava-libraries], which adds capabilities in the following areas:
 
-TODO
+  * General purpose utility routines for String manipulation, Collections, Error, and Math.
+  * Extended Iterator semantics (functional sequences and refiners).
+  * Concurrency service for simplifying the branching and merging of computation tasks.
+  * Simplified Configuration API.
+  * Support for logging of high-level execution traces.
+  * Extensions to Guava's functional idioms.
