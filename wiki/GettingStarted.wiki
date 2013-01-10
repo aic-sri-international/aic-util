@@ -10,4 +10,10 @@ and check out the trunk to a directory named __aic-util__ in your workspace.
 
 ==Using the Command Line and <a href="http://maven.apache.org/">Maven</a> ==
 
-__aic-util__ 
+__AIC-Util__ consists of a single Maven pom.xml file and can be built from the command line using Maven as follows (tested with 3.0.4):
+
+mvn clean test
+
+== Using the <a href="http://www.eclipse.org/">Eclipse IDE (tested with 4.2)</a>==
+
+ 
