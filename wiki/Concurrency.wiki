@@ -95,5 +95,5 @@ The level of concurrency to be used at runtime is [Configuration configurable] (
 ||aic.util.branch.and.merge.threading.enabled                           || false || || ||
 ||aic.util.branch.and.merge.use.number.processors.for.thread.pool.size  || true ||  ||
 ||aic.util.branch.and.merge.delta.number.processors.for.thread.pool.size|| 0 || ||
-|| aic.util.branch.and.merge.fixed.thread.pool.size                     || 10 || The use number of processors for thread pool size needs to be false for this property to take effect ||
+|| aic.util.branch.and.merge.fixed.thread.pool.size                     || 10 || The 'use number of processors for thread pool size' needs to be set to false for this property to take effect ||
  
