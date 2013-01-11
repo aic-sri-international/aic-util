@@ -6,3 +6,4 @@ Two general purpose Number types are available:
 This [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/math/MixedRadixNumber.java class] allows for the [http://demonstrations.wolfram.com/MixedRadixNumberRepresentations/ representation of Mixed Radix Numbers]. Combined with other [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/collect/CartesianProductEnumeration.java utilities] this can provide a nice mechanism for enumerating over collections of objects.
 
 =Rational=
+[http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/math/Rational.java Implements] dynamically sized arbitrary precision immutable rational numbers. This code is a minor modification to the freely available BigRational.java code developed by [http://www.lrdev.com/lr/java/">http://www.lrdev.com/lr/java/ Eric Laroche]. 
