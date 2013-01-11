@@ -4,7 +4,7 @@ A suite of static general purpose utility routines can be found in the [http://c
 {{{
 Util.|
 }}} 
-in your IDE and then select the appropriate utility routine. The routines available can be grouped as follows:
+in your IDE and then select the appropriate utility routine. The routines available can be grouped as follows (representative routines listed):
 
   * Error Handling:
 {{{
@@ -14,9 +14,49 @@ in your IDE and then select the appropriate utility routine. The routines availa
   * I/O:
 {{{
     String readAll(InputStream ...)
+    File createTempFileWithContent(...)
 }}}
-  * String Manipulation (Note: these overlap with Guava's String routines and will likely delegate or be removed in the future):
+  * String Manipulation:
 {{{
     String join(...)
+    List<String> split(...)
 }}}
+  * Collections:
+    * Construction:
+{{{
+    List<T> list(T... elements)
+    List<T> mapIntoList(...)
+    Set<T> set(T... elements)
+    Set<T> mapIntoSet(...)
+    Map<K, V> map(Object... keysAndValues)
+    <K, V> V getValuePossiblyCreatingIt(Map<K, V> map, K key, Function<K, V> makerFromKey)
+}}}
+    * Look up and Manipulation:
+{{{
+    void applyToAll(...)
+    Iterator<E> find(...)
+    boolean removeAnyTwoMatchingElements(...)
+    Collection<T> addElementsSatisfying(...)
+    T findAndRemoveOrNull()
+    int collect...(...) 
+    Collection<T> setDifference(...)
+    T min(...)
+    T max(...)  
+}}}
+  * Logic:
+{{{
+    Boolean and(...)
+    Boolean or(...)
+    boolean forAll(...)
+    boolean thereExists(...)
+}}}
+  * Math:
+{{{
+    Number sum...(...)
+    Number product...(...)
+    Number division...(...)
+}}}
+
+
+*Note:* some of these routines overlap with Guava's capabilities and will likely delegate to or be removed completely in the future.
   
