@@ -9,4 +9,4 @@ A general purpose Java library, developed at [http://www.ai.sri.com/ SRI Interna
   * Concurrency service for simplifying the branching and merging of computation tasks.
   * Simplified Configuration API.
   * Support for logging of high-level execution traces.
-  * Extensions to Guava's functional idioms.
+  * Extensions to [http://code.google.com/p/guava-libraries/wiki/FunctionalExplained Guava's functional idioms].
