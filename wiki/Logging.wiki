@@ -1,3 +1,21 @@
 #summary Logging Execution Traces
 
-TODO
+A [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/log/LogX.java logging utility], based on the [http://www.slf4j.org/ SLF4J Simple Logging Facade], for indenting logging output that is useful for viewing the execution trace of a program coupled with high level profiling information.
+
+
+
+To support output of this trace format a [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/log/LogXTraceConverter.java.java custom conversion specifier], which leverages the [http://logback.qos.ch/ logback] native implementation of the SLF4J API is provided. This can be included in a logback XML configuration file as follows:
+{{{
+...
+<configuration>
+    <conversionRule conversionWord="logxtracemsg" 
+                  converterClass="com.sri.ai.util.log.LogXTraceConverter" />
+    ...
+    <appender name="logx.console" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="com.sri.ai.grinder.helper.RewriterLoggingNamedRewriterFilter" />
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>|%logxtracemsg%n</Pattern>
+        </encoder>
+    </appender>
+    ...
+}}}
