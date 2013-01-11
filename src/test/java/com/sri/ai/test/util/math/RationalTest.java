@@ -35,6 +35,25 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+/* <b>Note:</b> Tests closely based on those in freely available version of 
+ * 'BigRational.java', developed by Eric Laroche, which can be found at: <a
+ * href="http://www.lrdev.com/lr/java/">http://www.lrdev.com/lr/java/</a>
+ * BigRational.java -- dynamically sized big rational numbers.
+**
+** Copyright (C) 2002-2010 Eric Laroche.  All rights reserved.
+**
+** @author Eric Laroche <laroche@lrdev.com>
+** @version @(#)$Id: BigRational.java,v 1.3 2010/03/24 20:11:34 laroche Exp $
+**
+** This program is free software;
+** you can redistribute it and/or modify it.
+**
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+**
+*/
 package com.sri.ai.test.util.math;
 
 import org.junit.Assert;
@@ -42,6 +61,11 @@ import org.junit.Test;
 
 import com.sri.ai.util.math.Rational;
 
+/**
+ * @author Eric Laroche <laroche@lrdev.com>
+ * @author oreilly
+ *
+ */
 public class RationalTest {
 
 	@Test
