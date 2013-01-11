@@ -47,7 +47,7 @@ public class AProgram {
 }}}
 
 == Short Circuiting ==
-Support for short-circuiting of computation tasks can be achieved by passing a predicate to the the Branch and Merge service when executed. If the predicate returns true, all remaining computation tasks will be cancelled and the results calculated so far returned.
+Support for short-circuiting of computation tasks can be achieved by passing a predicate to the the Branch and Merge service when a set of tasks are to be executed. If the predicate returns true (based on the successful completion of a task), all remaining computation tasks will be cancelled and the results calculated so far returned.
 
 {{{
     ...
