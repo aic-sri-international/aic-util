@@ -83,6 +83,7 @@ public class AProgram {
             }
             return shortCircuited;
         }
+...
 }}}
 
 == Configuration ==
