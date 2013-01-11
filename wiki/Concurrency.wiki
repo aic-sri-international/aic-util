@@ -69,7 +69,7 @@ public class AProgram {
         private Expression valueToShortCircuitOn = null;
 
 	public ShortCircuitOnValue(Object valueToShortCircuitOn) {
-		this.valueToShortCircuitOn = valueToShortCircuitOn;
+            this.valueToShortCircuitOn = valueToShortCircuitOn;
 	}
 
         public boolean isShortCircuited() {
