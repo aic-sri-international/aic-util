@@ -46,7 +46,44 @@ public class AProgram {
 }
 }}}
 
-== Extended Usage Examples ==
+== Short Circuiting ==
+{{{
+    ...
+    public static void doShortCircuitableComputations() {
+        ...
+        ShortCircuitOnValue shortCircuitOnTrue = new ShortCircuitOnValue(Boolean.TRUE);
+		
+        Result<List<Object>> results = BranchAndMerge.execute(tasks, shortCircuitOnTrue);
+
+        if (shortCircuitOnTrue.isShortCircuited()) {
+            // handle a short circuited result
+            ...
+        } else {
+            // handle a standard result
+            ...
+        }
+    }
+
+    public static class ShortCircuitOnValue implements Predicate<Object> {
+        private boolean    shortCircuited        = false;
+        private Expression valueToShortCircuitOn = null;
+
+	public ShortCircuitOnValue(Object valueToShortCircuitOn) {
+		this.valueToShortCircuitOn = valueToShortCircuitOn;
+	}
+	...
+        public boolean isShortCircuited() {
+            return shortCircuited;
+        }
+
+        @Override
+        public boolean apply(Object value) {
+            if (valueToShortCircuitOn.equals(value)) {
+                shortCircuited = true;
+            }
+            return shortCircuited;
+        }
+}}}
 
 == Configuration ==
 The level of concurrency to be used at runtime is configurable (i.e. not at all or based on the machine's capability that you are running on).
