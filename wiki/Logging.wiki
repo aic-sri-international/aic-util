@@ -1,9 +1,56 @@
 #summary Logging Execution Traces
 
-A [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/log/LogX.java logging utility], based on the [http://www.slf4j.org/ SLF4J Simple Logging Facade], for indenting logging output that is useful for viewing a coarse execution trace of a program coupled with high level profiling information.
+A [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/log/LogX.java logging utility], based on the [http://www.slf4j.org/ SLF4J Simple Logging Facade], for indenting logging output that is useful for viewing a coarse execution trace of a program coupled with high level profiling information. The intent is to create a static class that creates a LogX instance internally and that provides simple wrapper methods around this instance for outputting a particular type of trace.
+
+As an example, if you are developing a suite of interconnected algorithms based on pseudo-code, it may be useful to add a !PseudoCodeTrace trace class so that its easier to follow how the described algorithms are implemented. This could be implemented as follows:
+
+{{{
+...
+public class PseudoCodeTrace {
+    private static final LogX _defaultPseudoCodeTrace;
+    static {
+        _defaultPseudoCodeTrace= LogXFactory.getLogX(
+			getDefaultLoggerName(), PseudoCodeTrace.class.getName());
+		
+        _defaultPseudoCodeTrace.setIndentIndentationContent(true);
+    }
+    ...
+    public static LogX getDefaultLogX() {
+        return _defaultPseudoCodeTrace;
+    }
+    ... 
+    public static String getDefaultLoggerName() {
+        return PseudoCodeTrace.class.getName();
+    }
+    ... 
+    public static void in(String msg, Object... args) {
+        in(null, msg, args);
+    }
+    ...
+    public static void in(Marker marker, String msg, Object... args) {
+        getDefaultLogX().indent(marker, msg, args);
+    }
+    ...
+    public static void out(String msg, Object... args) {
+        out(null, msg, args);
+    }
+    ...
+    public static void out(Marker marker, String msg, Object... args) {
+        getDefaultLogX().outdent(marker, msg, args);
+    }
+    ...
+    public static void log(String msg, Object... args) {
+        log(null, msg, args);
+    }
+    ...
+    public static void log(Marker marker, String msg, Object... args) {
+        getDefaultLogX().trace(marker, msg, args);
+    }
+}
+}}}
 
 
-Example Output:
+Example Output for a Pseudo-Code Trace:
 {{{
 |+lbp.R_DifferenceOfExtensionalAndIntensionalSet(( \({ a }, { ( on X ) X | X = a }), 0 )) - under context variables = [], constrained by true
 |    { Alpha' | C' }_I' <- standardize { Alpha | C }_I apart from {a1,...,an}
