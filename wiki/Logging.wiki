@@ -61,7 +61,7 @@ public class AnAlgorithm {
 
         ...
         Object subRoutineResult = subRoutine(arg1);
-
+        ...
         Object result = ...;
         
         PseudoCodeTrace.out("-AnAlgorithm.execute={}", result);
