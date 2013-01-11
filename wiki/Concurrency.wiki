@@ -26,8 +26,8 @@ public class AProgram {
     }
 
     private static List<ComputationTask> createComputationTasks(int numberOfTasksToCreate) {
-       // Create the required number of computation tasks here
-       ...
+        // Create the required number of computation tasks here
+        ...
     }
 
     // A Computation Specific result.
@@ -71,7 +71,7 @@ public class AProgram {
 	public ShortCircuitOnValue(Object valueToShortCircuitOn) {
 		this.valueToShortCircuitOn = valueToShortCircuitOn;
 	}
-	...
+
         public boolean isShortCircuited() {
             return shortCircuited;
         }
