@@ -57,7 +57,7 @@ public class AnAlgorithm {
     public Object execute(Object arg1, Object arg2) {
         PseudoCodeTrace.in("+AnAlgorithm.execute({}, {})", arg1, arg2);
 
-        PseudoCodeTrace.out("Step 1 - initialize variables");
+        PseudoCodeTrace.log("Step 1 - initialize variables");
 
         ...
         Object subRoutineResult = subRoutine(arg1);
