@@ -80,7 +80,7 @@ public class AnAlgorithm {
 }
 }}}
 
-Example Output for LogX trace output:
+An Example of actual LogX trace output:
 {{{
 |+lbp.R_DifferenceOfExtensionalAndIntensionalSet(( \({ a }, { ( on X ) X | X = a }), 0 )) - under context variables = [], constrained by true
 |    { Alpha' | C' }_I' <- standardize { Alpha | C }_I apart from {a1,...,an}
