@@ -64,7 +64,7 @@ public class AProgram {
         }
     }
 
-    public static class ShortCircuitOnValue implements Predicate<Object> {
+    private static class ShortCircuitOnValue implements Predicate<Object> {
         private boolean    shortCircuited        = false;
         private Expression valueToShortCircuitOn = null;
 
