@@ -1,3 +1,22 @@
 #summary General Utility Routines
 
-TODO
+A suite of static general purpose utility routines can be found in the [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/Util.java Util class]. These have been included in a single file in order to simplify usage, so that it is only necessary to enter:
+{{{
+Util.|
+}}} 
+in your IDE and then select the appropriate utility routine. The routines available can be grouped as follows:
+
+  * Error Handling:
+{{{
+    void fatalError(...)
+    void fatalErrorWithoutStack(...)
+}}}
+  * I/O:
+{{{
+    String readAll(InputStream ...)
+}}}
+  * String Manipulation (Note: these overlap with Guava's String routines and will likely delegate or be removed in the future):
+{{{
+    String join(...)
+}}}
+  
