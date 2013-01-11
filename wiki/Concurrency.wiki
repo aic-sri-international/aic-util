@@ -1,7 +1,7 @@
 #summary Concurrency
 
 =Branch and Merge Computation Tasks=
-The static/global [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/concurrent/BranchAndMerge.java Branch and Merge] service is a general purpose utility for simplifying performing concurrent execution of work that can be split into sub-tasks or into smaller pieces recursively (i.e. very similar to [http://docs.oracle.com/javase/tutorial/essential/concurrency/forkjoin.html JDK 7's Fork/Join] executor service concept but works under JDK 6 and hides the implementation details to a larger degree. The intent is to make calls to the service in your code at appropriate points that can take advantage of concurrency. 
+The static/global [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/concurrent/BranchAndMerge.java Branch and Merge] service is a general purpose utility for simplifying performing concurrent execution of work that can be split into sub-tasks or into smaller pieces recursively (i.e. similar to [http://docs.oracle.com/javase/tutorial/essential/concurrency/forkjoin.html JDK 7's Fork/Join] executor service concept but works under JDK 6 and hides the implementation details to a larger degree. The intent is to make calls to the service in your code at appropriate points that can take advantage of concurrency. 
 
 == Basic Example ==
 {{{
