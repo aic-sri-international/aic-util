@@ -49,8 +49,38 @@ public class PseudoCodeTrace {
 }
 }}}
 
+and used in an actual implementation in the following way:
+{{{
+...
+public class AnAlgorithm {
+    ... 
+    public Object execute(Object arg1, Object arg2) {
+        PseudoCodeTrace.in("+AnAlgorithm.execute({}, {})", arg1, arg2);
 
-Example Output for a Pseudo-Code Trace:
+        PseudoCodeTrace.out("Step 1 - initialize variables");
+
+        ...
+        Object subRoutineResult = subRoutine(arg1);
+
+        Object result = ...;
+        
+        PseudoCodeTrace.out("-AnAlgorithm.execute={}", result);
+        return result;
+    }
+    ...
+    public Object subRoutine(Object arg1) {
+        PseudoCodeTrace.in("+AnAlgorithm.subRoutine({})", arg1);
+ 
+        ...
+        
+        PseudoCodeTrace.out("-AnAlgorithm.subRoutine={}", result);
+
+        return result;
+    }
+}
+}}}
+
+Example Output for LogX trace output (from an real system):
 {{{
 |+lbp.R_DifferenceOfExtensionalAndIntensionalSet(( \({ a }, { ( on X ) X | X = a }), 0 )) - under context variables = [], constrained by true
 |    { Alpha' | C' }_I' <- standardize { Alpha | C }_I apart from {a1,...,an}
