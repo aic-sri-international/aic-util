@@ -1,6 +1,6 @@
 #summary Logging Execution Traces
 
-A [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/log/LogX.java logging utility], based on the [http://www.slf4j.org/ SLF4J Simple Logging Facade], for indenting logging output that is useful for viewing a coarse execution trace of a program coupled with high level profiling information. The intended usage is to create a static class that creates a LogX instance internally and that provides simple wrapper methods around this instance for outputting a particular type of trace.
+A [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/log/LogX.java logging utility], based on the [http://www.slf4j.org/ SLF4J Simple Logging Facade], for indenting logging output (on a per-thread basis) that is useful for viewing a coarse execution trace of a program coupled with high level profiling information. The intended usage is to create a static class that creates a LogX instance internally and that provides simple wrapper methods around this instance for outputting a particular type of trace.
 
 As an example, if you are developing a suite of interconnected algorithms based on pseudo-code, it may be useful to add a !PseudoCodeTrace class so that its easier to follow how the described algorithms are implemented. This could be implemented as follows:
 
