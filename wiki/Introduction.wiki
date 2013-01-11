@@ -4,9 +4,9 @@
 =Introduction=
 A general purpose Java library, developed at [http://www.ai.sri.com/ SRI International's Artificial Intelligence Center] and built on top of Google's [http://code.google.com/p/guava-libraries/ guava-libraries], which adds capabilities in the following areas:
 
-  * General purpose [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/Util.java utility routines] for String manipulation, Collections, Error, and Math.
-  * Extended Iterator semantics ([http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/functionalsequence/FunctionalSequence.java functional sequences] and [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/functionalsequence/Refiner.java refiners]).
-  * Concurrency service for simplifying the [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/concurrent/BranchAndMerge.java branching and merging] of computation tasks.
-  * Simplified [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/Configuration.java Configuration API].
-  * Support for [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/log/LogX.java logging] of high-level execution traces.
-  * Extensions to [http://code.google.com/p/guava-libraries/wiki/FunctionalExplained Guava's functional idioms].
+  * General purpose [GeneralUtilityRoutines utility routines] for String manipulation, Collections, Error, and [Math Math].
+  * [ExtendedIteratorSemantics Extended Iterator semantics] ([http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/functionalsequence/FunctionalSequence.java functional sequences] and [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/functionalsequence/Refiner.java refiners]).
+  * [Concurrency Concurrency service] for simplifying the [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/concurrent/BranchAndMerge.java branching and merging] of computation tasks.
+  * Simplified [Configuration Configuration API].
+  * Support for [Logging logging] of high-level execution traces.
+  * Extensions to [FunctionalIdiomExtensions Guava's functional idioms].
