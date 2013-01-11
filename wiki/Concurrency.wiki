@@ -1,3 +1,52 @@
 #summary Concurrency
 
-TODO
+=Branch and Merge Computation Tasks=
+The static/global [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/concurrent/BranchAndMerge.java Branch and Merge] service is a general purpose utility for simplifying performing concurrent execution of work that can be split into sub-tasks or into smaller pieces recursively (i.e. very similar to [http://docs.oracle.com/javase/tutorial/essential/concurrency/forkjoin.html JDK 7's Fork/Join] executor service concept but works under JDK 6 and hides the implementation details to a larger degree. The intent is to make calls to the service in your code at appropriate points that can take advantage of concurrency. 
+
+== Basic Example ==
+{{{
+...
+public class AProgram {
+    ...
+    public static void main(String[] args) {
+        // Ensure the service is initialized 
+        BranchAndMerge.reset();	
+
+        // Create and execute the tasks
+        List<ComputationTask>           tasks  = createComputationTasks(100);
+        Result<List<ComputationResult>> result = BranchAndMerge.execute(tasks);
+
+        if (result.failureOccurred()) {
+            // Exception handling
+            ...
+        }
+        else {
+           List<ComputationResult> results = result.getResult();
+        }
+    }
+
+    private static List<ComputationTask> createComputationTasks(int numberOfTasksToCreate) {
+       // Create the required number of computation tasks here
+       ...
+    }
+
+    // A Computation Specific result.
+    private static class ComputationResult {
+        ...
+    }
+
+    private static class ComputationTask implements Callable<ComputationResult> {
+        ...
+        @Override
+        public ComputationResult call() {
+            // The actual computation occurs here
+            ...
+        }
+    }
+}
+}}}
+
+== Extended Usage Examples ==
+
+== Configuration ==
+The level of concurrency to be used at runtime is configurable (i.e. not at all or based on the machine's capability that you are running on).
