@@ -1,4 +1,0 @@
-#summary Concurrency
-
-=Branching and Merging=
-TODO
