@@ -3,6 +3,6 @@
 Two general purpose Number types are available:
 
 =Mixed Radix Number=
-This [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/math/MixedRadixNumber.java class] allows for the [http://demonstrations.wolfram.com/MixedRadixNumberRepresentations/ representation of Mixed Radix Numbers]. Combined with other [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/collect/CartesianProductEnumeration.java utilities] this can provide a nice mechanism for permuting over collections of objects.
+This [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/math/MixedRadixNumber.java class] allows for the [http://demonstrations.wolfram.com/MixedRadixNumberRepresentations/ representation of Mixed Radix Numbers]. Combined with other [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/collect/CartesianProductEnumeration.java utilities] this can provide a nice mechanism for enumerating over collections of objects.
 
 =Rational=
