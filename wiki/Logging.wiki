@@ -1,7 +1,36 @@
 #summary Logging Execution Traces
 
-A [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/log/LogX.java logging utility], based on the [http://www.slf4j.org/ SLF4J Simple Logging Facade], for indenting logging output that is useful for viewing the execution trace of a program coupled with high level profiling information.
+A [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/log/LogX.java logging utility], based on the [http://www.slf4j.org/ SLF4J Simple Logging Facade], for indenting logging output that is useful for viewing a coarse execution trace of a program coupled with high level profiling information.
 
+
+Example Output:
+{{{
+|+lbp.R_DifferenceOfExtensionalAndIntensionalSet(( \({ a }, { ( on X ) X | X = a }), 0 )) - under context variables = [], constrained by true
+|    { Alpha' | C' }_I' <- standardize { Alpha | C }_I apart from {a1,...,an}
+|    condition <- R_formula_simplification(there exists I' : C' and a_i = Alpha')
+|        +lbp.R_formula_simplification(there exists X : X = a and a = X) - under context variables = [], constrained by true
+|                +lbp.R_simplify(there exists X : X = a and a = X) - under context variables = [], constrained by true
+|                                    Rewriting whole expression:
+|                                       ----> (Greater than,  0 ms, #1, 15 rewriter selections (246 since start))
+|                                    true
+|                    Rewriting whole expression:
+|                       ----> (Quantifier elimination wrapper,  47 ms, #1, 32 rewriter selections (32 since start))
+|                    true
+|                -lbp.R_simplify=true[56ms.]
+|        -lbp.R_formula_simplification=true[58ms.]
+|    // condition=true, a_i=a
+|    R_simplify(
+|        if condition
+|            then R_DifferenceOfExtensionalAndIntensionalSet({a_1,...,a_i-1,a_i+1,...,a_n}, { Alpha' | C' }_I', i)
+|            else R_DifferenceOfExtensionalAndIntensionalSet({a_1,...,a_n}, { Alpha' | C' }_I', i+1))
+|        +lbp.R_DifferenceOfExtensionalAndIntensionalSet(( \({ }, { ( on X ) X | X = a }), 0 )) - under context variables = [], constrained by true
+|            if i > n
+|                return {a1,...,an}
+|        -lbp.R_DifferenceOfExtensionalAndIntensionalSet={ }[1ms.]
+|        +lbp.R_simplify({ }) - under context variables = [], constrained by true
+|        -lbp.R_simplify={ }[3ms.]
+|-lbp.R_DifferenceOfExtensionalAndIntensionalSet={ }[90ms.]
+}}}
 
 
 To support output of this trace format a [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/log/LogXTraceConverter.java.java custom conversion specifier], which leverages the [http://logback.qos.ch/ logback] native implementation of the SLF4J API is provided. This can be included in a logback XML configuration file as follows:
