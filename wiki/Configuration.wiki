@@ -23,8 +23,8 @@ Configurations are initialized from configuration files based on their name in t
   * The configuration utility tries to find a file called aic-smf-config-local.xml in the classpath.
   * If no such file is found, it tries to find a file called aic-smf-config-test.xml in the classpath.
   * If no such file is found, it tries to find a file called aic-smf-config.xml in the classpath.
-  * If a configuration script file is found, only the properties defined in the script file will override the programmatically and system property defined values.
-  * If no configuration script file is found, only the programmatic defaults and system property overrides are used to initialize properties.
+  * If a configuration file is found, only the properties defined in the file will override the programmatically and system property defined values.
+  * If no configuration file is found, only the programmatic defaults and system property overrides are used to initialize properties.
  
 == Configurations Per-Thread Support ==
 
