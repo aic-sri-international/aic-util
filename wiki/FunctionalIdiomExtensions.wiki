@@ -12,6 +12,3 @@ Of Functions and Predicates that take 0 or more than 1 argument:
 
 == Procedures ==
 [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/base/BinaryProcedure.java Binary] and [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/base/TernaryProcedure.java Ternary] procedure definitions have also been declared. Similar to Functions in intended usage except that they do not return a value and can have side effects.
-
-== Default Implementations ==
-Several default implementations of these idioms can be found in the *base* package.
