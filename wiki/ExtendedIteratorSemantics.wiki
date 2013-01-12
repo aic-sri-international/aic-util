@@ -1,11 +1,11 @@
 #summary Extended Iterator Semantics
 
 =Functional Sequence=
-A [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/functionalsequence/FunctionalSequence.java functional sequence] is the sequence formed by an (optional) initial arbitrary value, followed by the results of applying a function to a set of arguments, when these arguments are updated, one at a time. Each argument is intended to be updated from a specific sequence itself, and when that sequence reaches its end, that argument is no longer updated. The main sequence stops being generated when all arguments have no longer values to be updated with. This can be accessed via the standard Iterator interface. 
+A [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/functionalsequence/FunctionalSequence.java functional sequence] is the sequence formed by an (optional) initial arbitrary value, followed by the results of applying a function to a set of arguments, when these arguments are updated, one at a time. Each argument is intended to be updated from a specific sequence itself, and when that sequence reaches its end, that argument is no longer updated. The main sequence stops being generated when all arguments have no longer values to be updated with. These values are enumerated using the standard Iterator interface. 
 
 A *limitation* of functional sequences, as they are currently defined, is that they do not allow for sharing of functional sequences within a hierarchy (i.e. a hierarchy of functional sequences must form a tree).
 
 =Refiner=
-A [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/functionalsequence/Refiner.java Refiner] 
+A [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/functionalsequence/Refiner.java Refiner] is meant to lazily compute successively better versions of something concurrently used by potentially many subscribers. It only refines its value if explicitly asked to do so. 
 
-They may also be treated as standard iterators by using the [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/functionalsequence/RefinerIterator.java RefinerIterator] interface.
+This allows nested Refiners, unlike functional sequences which are limited to tree structures, to be used in a cyclic graph structure. They may also be treated as standard iterators by using the [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/functionalsequence/RefinerIterator.java RefinerIterator] wrapper class.
