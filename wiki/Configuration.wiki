@@ -1,6 +1,6 @@
 #summary Configuration
 
-The [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/Configuration.java Configuration] utility is a simple API/Convention for retrieving typed configuration information. Defaults are set programmatically, which can be overridden by setting system properties corresponding to the property at run time, e.g.:
+The [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/Configuration.java Configuration] utility is a simple API/Convention for retrieving typed configuration information from within your application. Defaults are set programmatically, which can be overridden by setting system properties corresponding to the property at run time, e.g.:
 {{{
 java <main class> -Dconfig.property.name=<a value>
 }}}
@@ -27,5 +27,10 @@ Configurations are initialized from configuration files based on their name in t
   * If no configuration file is found, only the programmatic defaults and system property overrides are used to initialize properties.
  
 == Configurations Per-Thread Support ==
+To better enable concurrent execution, configuration information is maintained on a Thread by Thread basis. On initialization a root set of configuration information is set up as described previously and when calls are made to the configuration API from a thread for the first time its configuration settings are setup based on this root set. In addition, it is possible to pass configuration information between threads in a parent child relationship by calling:
+{{{
+Configuration.inheritConfiguration(parentThread, childThread)
+}}}
+This permits configurations specific to a parent Thread to be inherited by a child Thread and then adapted as needed in the child thread without changing the parent threads configuration settings. This can be useful when running a service on a per-thread basis, where each is configured differently based on user defined preferences.
 
 == Usage Convention ==
