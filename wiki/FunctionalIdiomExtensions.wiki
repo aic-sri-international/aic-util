@@ -1,3 +1,17 @@
 #summary Functional Idiom Extensions
 
-TODO
+=Background=
+Original AIC-Util had its own Function and Predicate definitions. However, as these overlapped with [http://code.google.com/p/guava-libraries/wiki/FunctionalExplained Guava's functional idioms], it was decided to use these instead in order to improve interoperability between the libraries.
+=Extensions=
+In addition to Guava's [http://code.google.com/p/guava-libraries/source/browse/guava/src/com/google/common/base/Function.java Function] and [http://code.google.com/p/guava-libraries/source/browse/guava/src/com/google/common/base/Predicate.java Predicate] definitions, AIC-Util adds the following:
+== N-ary Versions ==
+Of Functions and Predicates that take more than 0 ore more than 1 argument:
+
+  * [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/base/NullaryFunction.java Nullary] [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/base/BinaryFunction.java Binary] and [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/base/TernaryFunction.java Ternary] Function definitions.
+  * A [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/base/BinaryPredicate.java Binary Predicate] definition.
+
+== Procedures ==
+[http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/base/BinaryProcedure.java Binary] and [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/base/TernaryProcedure.java Ternary] procedure definitions have also been declared. Similar to Function in intended usage except that they do not return a value and can have side effects.
+
+== Default Implementations ==
+Several 
