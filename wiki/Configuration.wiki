@@ -44,6 +44,7 @@ public class MyProjectConfiguration extends Configuration {
         int result = getInt(KEY_PROPERTY_ONE, DEFAULT_PROPERTY_ONE);
         return result;
     }
+    ...
 }
 }}}
 
