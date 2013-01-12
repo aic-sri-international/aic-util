@@ -29,6 +29,4 @@ and you enumerate fully, the cross product elements will come out in the followi
 with a specified increment for picking out the elements from the interval to be enumerated.
 
 =Disjoint Sets=
-DisjointSets
-
-http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/collect/
+[http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/collect/DisjointSets.java DisjointSets] provides a data structure for maintaining a collection of disjoint dynamic sets. 
