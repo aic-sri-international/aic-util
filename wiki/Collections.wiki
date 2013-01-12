@@ -2,7 +2,7 @@
 Several collection based classes are included with AIC-Util. Capabilities they cover can be grouped as follows:
 
 =Simplify Iterator Implementations=
-[http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/collect/EZIterator.java EZIterator] and its variant [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/collect/EZIteratorWithNull.java EZIteratorWithNull] are abstract class that are intended to make the implementation of iterators easier.  
+[http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/collect/EZIterator.java EZIterator] and its variant [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/collect/EZIteratorWithNull.java EZIteratorWithNull] are abstract classes that are intended to make the implementation of iterators easier.  
 [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/collect/CharactersAsStringsIterator.java CharactersAsStringsIterator], [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/collect/DepthFirstIterator.java DepthFirstIterator], and [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/collect/ZipIterator.java ZipIterator] are concrete implementation examples of these abstract classes.
 
 =Enumerating Collections of Objects ==
