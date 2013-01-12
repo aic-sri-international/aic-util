@@ -1,7 +1,7 @@
 #summary Functional Idiom Extensions
 
 =Background=
-Original AIC-Util had its own Function and Predicate definitions. However, as these overlapped with [http://code.google.com/p/guava-libraries/wiki/FunctionalExplained Guava's functional idioms], it was decided to use these instead in order to improve interoperability between the libraries.
+Originally, AIC-Util had its own Function and Predicate definitions. However, as these overlapped with [http://code.google.com/p/guava-libraries/wiki/FunctionalExplained Guava's functional idioms], it was decided to use these instead in order to improve interoperability between the libraries.
 =Extensions=
 In addition to Guava's [http://code.google.com/p/guava-libraries/source/browse/guava/src/com/google/common/base/Function.java Function] and [http://code.google.com/p/guava-libraries/source/browse/guava/src/com/google/common/base/Predicate.java Predicate] definitions, AIC-Util adds the following:
 == N-ary Versions ==
