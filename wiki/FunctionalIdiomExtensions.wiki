@@ -11,7 +11,7 @@ Of Functions and Predicates that take 0 or more than 1 argument:
   * A [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/base/BinaryPredicate.java Binary Predicate] definition.
 
 == Procedures ==
-[http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/base/BinaryProcedure.java Binary] and [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/base/TernaryProcedure.java Ternary] procedure definitions have also been declared. Similar to Function in intended usage except that they do not return a value and can have side effects.
+[http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/base/BinaryProcedure.java Binary] and [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/base/TernaryProcedure.java Ternary] procedure definitions have also been declared. Similar to Functions in intended usage except that they do not return a value and can have side effects.
 
 == Default Implementations ==
 Several 
