@@ -7,8 +7,26 @@ Several collection based classes are included with AIC-Util. Capabilities they c
 
 =Enumerating Collections of Objects ==
 
-[http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/collect/CartesianProductEnumeration.java CartesianProductEnumeration]
-IntegerIterator
+[http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/collect/CartesianProductEnumeration.java CartesianProductEnumeration] lets you enumerate over the cartesian product of lists of lists of elements, without needing to instantiate the product to do so. For example, if you have 2 lists each of which has two elements:
+{{{
+[list_1_Element_1, list_1_Element_2]
+[list_2_Element_1, list_2_Element_2]
+}}}
+
+and you enumerate fully, the cross product elements will come out in the following order:
+{{{
+[list_1_Element_1, list_2_Element_1]
+[list_1_Element_1, list_2_Element_2]
+[list_1_Element_2, list_2_Element_1]
+[list_1_Element_2, list_2_Element_2]
+}}}
+
+
+[http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/collect/IntegerIterator.java IntegerIterator] lets you iterate over a given integer interval:
+{{{
+[start, [end, (end+increment-1)]]
+}}}
+with a specified increment for picking out the elements from the interval to be enumerated.
 
 =Disjoint Sets=
 DisjointSets
