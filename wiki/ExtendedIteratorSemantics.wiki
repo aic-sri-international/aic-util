@@ -1,4 +1,5 @@
 #summary Extended Iterator Semantics
+Two Iterator based interfaces with extended semantics are included with AIC-Util, these are:
 
 =Functional Sequence=
 A [http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/functionalsequence/FunctionalSequence.java functional sequence], is the sequence formed by an (optional) initial arbitrary value, followed by the results of applying a function to a set of arguments, when these arguments are updated, one at a time. Each argument is intended to be updated from a specific sequence itself, and when that sequence reaches its end, that argument is no longer updated. The main sequence stops being generated when all arguments have no longer values to be updated with. These values are enumerated using the standard Iterator interface. 
