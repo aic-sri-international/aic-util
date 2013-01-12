@@ -34,3 +34,17 @@ Configuration.inheritConfiguration(parentThread, childThread)
 This permits configurations specific to a parent Thread to be inherited by a child Thread and then adapted as needed in the child thread without changing the parent threads configuration settings. This can be useful when running a service on a per-thread basis, where each is configured differently based on user defined preferences.
 
 == Usage Convention ==
+This class should be sub-classed in each project, where the extended class programmatically lists the configuration properties specific to it, e.g.:
+{{{
+public class MyProjectConfiguration extends Configuration {
+    public static final String  KEY_PROPERTY_ONE      = "my.project.property.1";
+    public static final Integer DEFAULT_PROPERTY_ONE  = new Integer(0);
+    ...
+    public static int getProperyOne() {
+        int result = getInt(KEY_PROPERTY_ONE, DEFAULT_PROPERTY_ONE);
+        return result;
+    }
+}
+}}}
+
+[http://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/AICUtilConfiguration.java AICUtilConfiguration] is an example of this convention being used for this project.
