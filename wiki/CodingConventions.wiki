@@ -1,0 +1,26 @@
+#summary Coding Conventions
+
+Most multi-programmer projects have coding standards to keep them uniform. So we ask you to please follow the project coding conventions below, as well as fix violations when you see them: 
+  * Code blocks (in `while` and `if` statements, for instance) should be surrounded by curly braces (`{}`), even if they are a single statement. This makes it easier to add and remove statements, since one does not need to be concerned with the braces. The initial curly brace should be at the end of the line preceding the block (`while (...) {`).
+  * `else` should be placed in a new line from the braces of the previous then block:
+{{{
+if (happy) {
+    doHappyThings();
+}
+else if (kindOfHappy) {
+    doSomewhatHappyThings();
+}
+else {
+    cryALittle();
+}
+
+instead of:
+
+if (happy) {
+    doHappyThings();
+} else if (kindOfHappy) {   // else in the same line as closing } !
+    doSomewhatHappyThings();
+} else {                    // and here too !
+    cryALittle();
+}
+}}} 
