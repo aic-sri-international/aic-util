@@ -325,6 +325,14 @@ public class Configuration {
 			};
 			for (String configScriptName : configuratScriptNames) {
 				InputStream is = ClassLoader.getSystemResourceAsStream(configScriptName);
+				if (is == null) {
+					// Note: ClassLoader.getSystemResourceAsStream does not work in the context
+					// of Java Web Start, see: 
+					// http://docs.oracle.com/javase/1.5.0/docs/guide/javaws/developersguide/faq.html#211
+					// This should work around the issue:
+					is = Configuration.class.getClassLoader().getResourceAsStream(configScriptName);
+				}
+				
 				if (is != null) {
 					try {
 						Preferences.importPreferences(is);
