@@ -1852,6 +1852,17 @@ public class Util {
 		return newList;
 	}
 
+	/** Returns a new linked list containing the elements of list that do not satisfy a predicate. */
+	public static <T> LinkedList<T> removeNonDestructively(List<T> list, Predicate<T> predicate) {
+		LinkedList<T> result = new LinkedList<T>();
+		for (T element : list) {
+			if ( ! predicate.apply(element)) {
+				result.add(element);
+			}
+		}
+		return result;
+	}
+
 	public static <T> List<T> makeAListByReplacingFirstOccurrenceOfElementInAListWithAnotherList(
 			List<T> list, T element, List<T> anotherList) {
 		ArrayList<T> result = new ArrayList<T>();
