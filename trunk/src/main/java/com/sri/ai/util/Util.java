@@ -2275,4 +2275,8 @@ public class Util {
 		}
 		return result;
 	}
+
+	public static <T> Pair<T, T> pair(T first, T second) {
+		return new Pair<T,T>(first, second);
+	}
 }
