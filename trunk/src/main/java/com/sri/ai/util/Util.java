@@ -1748,8 +1748,15 @@ public class Util {
 	 * Adds elements contained in c1 but not c2 to a new linked list and returns
 	 * it.
 	 */
-	public static <T> List<T> setDifference(Collection<T> c1,
-			Collection<T> c2) {
+	public static <T> List<T> setDifference(Collection<T> c1, Collection<T> c2) {
+		return (List<T>) setDifference(c1, c2, new LinkedList<T>());
+	}
+
+	/**
+	 * Adds elements contained in c1 but not c2 to a new linked list and returns
+	 * it.
+	 */
+	public static <T> List<T> subtract(Collection<T> c1, Collection<T> c2) {
 		return (List<T>) setDifference(c1, c2, new LinkedList<T>());
 	}
 
