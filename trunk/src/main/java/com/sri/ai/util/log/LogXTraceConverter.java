@@ -69,16 +69,16 @@ public class LogXTraceConverter extends ClassicConverter {
 	public String convert(ILoggingEvent event) {
 		StringBuilder sb = new StringBuilder();
 
-		sb.append(padWithTraceLevel(event.getFormattedMessage(),
-				LogX.getTraceLevel(event.getLoggerName())));
-
 		Long profileInfo = LogX.getProfileInfo(event.getLoggerName());
 		if (null != profileInfo) {
 			sb.append("[");
 			// Convert nanoseconds to milliseconds
 			sb.append(profileInfo / 1000000);
-			sb.append("ms.]");
+			sb.append("ms] ");
 		}
+
+		sb.append(padWithTraceLevel(event.getFormattedMessage(),
+				LogX.getTraceLevel(event.getLoggerName())));
 
 		return sb.toString();
 	}
