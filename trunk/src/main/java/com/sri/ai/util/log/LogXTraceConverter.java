@@ -74,7 +74,14 @@ public class LogXTraceConverter extends ClassicConverter {
 			sb.append("[");
 			// Convert nanoseconds to milliseconds
 			sb.append(profileInfo / 1000000);
-			sb.append("ms] ");
+			sb.append("ms");
+			Long rootProfileInfo = LogX.getRootProfileInfo(event.getLoggerName());
+			if (null != rootProfileInfo) {
+				sb.append(", ");
+				sb.append(rootProfileInfo / 1000000);
+				sb.append("ms total");
+			}
+			sb.append("] ");
 		}
 
 		sb.append(padWithTraceLevel(event.getFormattedMessage(),

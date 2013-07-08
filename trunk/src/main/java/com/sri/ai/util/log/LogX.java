@@ -59,12 +59,14 @@ import com.google.common.cache.CacheBuilder;
  */
 @Beta
 public class LogX extends LoggerWrapper {
-	private static final String MDC_KEY_SUFFIX_LOGX_TRACE_LEVEL  = "::LogX:Trace:Level";
-	private static final String MDC_KEY_SUFFIX_LOGX_PROFILE_INFO = "::LogX:Profile:Info";
+	private static final String MDC_KEY_SUFFIX_LOGX_TRACE_LEVEL       = "::LogX:Trace:Level";
+	private static final String MDC_KEY_SUFFIX_LOGX_PROFILE_INFO      = "::LogX:Profile:Info";
+	private static final String MDC_KEY_SUFFIX_LOGX_ROOT_PROFILE_INFO = "::LogX:RootProfile:Info";
 	private static final LogX _defaultLogX = LogXFactory.getLogX(LogX.class);
 	//
 	private boolean                       indentIndentationContent = false;
 	private Cache<Thread, List<Profiler>> activeProfilers          = CacheBuilder.newBuilder().weakKeys().build();
+	private Cache<Thread, Long>           activeRootProfilerStart  = CacheBuilder.newBuilder().weakKeys().build();
 
 	/**
 	 * 
@@ -93,6 +95,16 @@ public class LogX extends LoggerWrapper {
 	 */
 	public static String getMDCProfileInfoKey(String logxName) {
 		return logxName + MDC_KEY_SUFFIX_LOGX_PROFILE_INFO;
+	}
+	
+	/**
+	 * 
+	 * @param logxName
+	 *            the name of the LogX logger.
+	 * @return the MDC key for the loggers passed in root profile information.
+	 */
+	public static String getMDCRootProfileInfoKey(String logxName) {
+		return logxName + MDC_KEY_SUFFIX_LOGX_ROOT_PROFILE_INFO;
 	}
 
 	/**
@@ -129,6 +141,24 @@ public class LogX extends LoggerWrapper {
 		}
 
 		return profilerInfo;
+	}
+	
+	/**
+	 * @param logxName
+	 *            the name of the LogX logger.
+	 * @return optional root profiler information, time in nanoseconds since the
+	 *         process started, associated with the logger. null returned if no
+	 *         profiler information registered.
+	 */
+	public static final Long getRootProfileInfo(String logxName) {
+		Long rootProfilerInfo = null;
+
+		String sRootProfileInfo = MDC.get(getMDCRootProfileInfoKey(logxName));
+		if (sRootProfileInfo != null) {
+			rootProfilerInfo = Long.parseLong(sRootProfileInfo);
+		}
+
+		return rootProfilerInfo;
 	}
 
 	/**
@@ -232,6 +262,7 @@ public class LogX extends LoggerWrapper {
 
 		setTraceLevel(0);
 		MDC.remove(getMDCProfileInfoKey());
+		MDC.remove(getMDCRootProfileInfoKey());
 	}
 
 	public boolean isIndentIndentationContent() {
@@ -271,6 +302,7 @@ public class LogX extends LoggerWrapper {
 			// Output the message
 			trace(marker, msg, args);
 			MDC.remove(getMDCProfileInfoKey());
+			MDC.remove(getMDCRootProfileInfoKey());
 			setTraceLevel(getTraceLevel() - 1);
 		}
 	}
@@ -302,6 +334,10 @@ public class LogX extends LoggerWrapper {
 		return getMDCProfileInfoKey(getName());
 	}
 	
+	String getMDCRootProfileInfoKey() {
+		return getMDCRootProfileInfoKey(getName());
+	}
+	
 	//
 	//  PRIVATE
 	//
@@ -315,6 +351,7 @@ public class LogX extends LoggerWrapper {
 		
 		if (thisThreadsProfilers.size() == 0) {
 			cp = new Profiler(""+getTraceLevel());
+			activeRootProfilerStart.put(Thread.currentThread(), System.nanoTime());
 		} 
 		else {
 			cp = thisThreadsProfilers.get(thisThreadsProfilers.size() - 1)
@@ -329,9 +366,14 @@ public class LogX extends LoggerWrapper {
 			Profiler cp = thisThreadsProfilers.remove(thisThreadsProfilers.size() - 1);
 			cp.stop();
 			MDC.put(getMDCProfileInfoKey(), "" + cp.elapsedTime());
+			// If not at the root profiler, then track the root information too.
+			if (thisThreadsProfilers.size() > 0) {
+				MDC.put(getMDCRootProfileInfoKey(), "" + (System.nanoTime() - activeRootProfilerStart.getIfPresent(Thread.currentThread())));
+			}
 			// Ensure clean up fully.
 			if (thisThreadsProfilers.size() == 0) {
 				activeProfilers.invalidate(Thread.currentThread());
+				activeRootProfilerStart.invalidate(Thread.currentThread());
 			}
 		}
 	}
