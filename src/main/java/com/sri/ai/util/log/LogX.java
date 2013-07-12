@@ -64,7 +64,6 @@ public class LogX extends LoggerWrapper {
 	private static final String MDC_KEY_SUFFIX_LOGX_ROOT_PROFILE_INFO = "::LogX:RootProfile:Info";
 	private static final LogX _defaultLogX = LogXFactory.getLogX(LogX.class);
 	//
-	private boolean                       indentIndentationContent = false;
 	private Cache<Thread, List<Profiler>> activeProfilers          = CacheBuilder.newBuilder().weakKeys().build();
 	private Cache<Thread, Long>           activeRootProfilerStart  = CacheBuilder.newBuilder().weakKeys().build();
 
@@ -264,14 +263,6 @@ public class LogX extends LoggerWrapper {
 		MDC.remove(getMDCProfileInfoKey());
 		MDC.remove(getMDCRootProfileInfoKey());
 	}
-
-	public boolean isIndentIndentationContent() {
-		return indentIndentationContent;
-	}
-
-	public void setIndentIndentationContent(boolean indentIndentationContent) {
-		this.indentIndentationContent = indentIndentationContent;
-	}
 	
 	public void indent(String msg, Object... args) {
 		indent(null, msg, args);
@@ -279,12 +270,9 @@ public class LogX extends LoggerWrapper {
 
 	public void indent(Marker marker, String msg, Object... args) {
 		if (logger.isTraceEnabled()) {
-			setTraceLevel(getTraceLevel() + 1);
 			pushActiveProfiler();
 			trace(marker, msg, args);
-			if (indentIndentationContent) {
-				setTraceLevel(getTraceLevel() + 1);
-			}
+			setTraceLevel(getTraceLevel() + 1);
 		}
 	}
 	
@@ -294,16 +282,13 @@ public class LogX extends LoggerWrapper {
 
 	public void outdent(Marker marker, String msg, Object... args) {
 		if (logger.isTraceEnabled()) {
-			if (indentIndentationContent) {
-				setTraceLevel(getTraceLevel() - 1);
-			}
 			// Stop the nested profiler at this trace level
 			popActiveProfiler();
+			setTraceLevel(getTraceLevel() - 1);
 			// Output the message
 			trace(marker, msg, args);
 			MDC.remove(getMDCProfileInfoKey());
 			MDC.remove(getMDCRootProfileInfoKey());
-			setTraceLevel(getTraceLevel() - 1);
 		}
 	}
 
