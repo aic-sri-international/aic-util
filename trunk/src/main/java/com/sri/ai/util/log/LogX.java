@@ -271,8 +271,8 @@ public class LogX extends LoggerWrapper {
 	public void indent(Marker marker, String msg, Object... args) {
 		if (logger.isTraceEnabled()) {
 			pushActiveProfiler();
-			trace(marker, msg, args);
 			setTraceLevel(getTraceLevel() + 1);
+			trace(marker, msg, args);
 		}
 	}
 	
