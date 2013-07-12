@@ -68,6 +68,8 @@ public class LogXTraceConverter extends ClassicConverter {
 	@Override
 	public String convert(ILoggingEvent event) {
 		StringBuilder sb = new StringBuilder();
+		
+		sb.append(padForTraceLevel(LogX.getTraceLevel(event.getLoggerName())));
 
 		Long profileInfo = LogX.getProfileInfo(event.getLoggerName());
 		if (null != profileInfo) {
@@ -84,8 +86,7 @@ public class LogXTraceConverter extends ClassicConverter {
 			sb.append("] ");
 		}
 
-		sb.append(padWithTraceLevel(event.getFormattedMessage(),
-				LogX.getTraceLevel(event.getLoggerName())));
+		sb.append(event.getFormattedMessage());
 
 		return sb.toString();
 	}
@@ -93,12 +94,11 @@ public class LogXTraceConverter extends ClassicConverter {
 	//
 	// PRIVATE METHODS
 	//
-	private String padWithTraceLevel(String message, int traceLevel) {
+	private String padForTraceLevel(int traceLevel) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 1; i < traceLevel; i++) {
 			sb.append("    ");
 		}
-		sb.append(message);
 
 		return sb.toString();
 	}
