@@ -2286,4 +2286,14 @@ public class Util {
 	public static <T> Pair<T, T> pair(T first, T second) {
 		return new Pair<T,T>(first, second);
 	}
+
+	/**
+	 * Returns an object's toString() result, or string "null" if object is null.
+	 */
+	public static String toStringOrNull(Object object) {
+		if (object == null) {
+			return "null";
+		}
+		return object.toString();
+	}
 }
