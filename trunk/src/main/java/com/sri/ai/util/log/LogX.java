@@ -273,6 +273,11 @@ public class LogX extends LoggerWrapper {
 			pushActiveProfiler();
 			setTraceLevel(getTraceLevel() + 1);
 			trace(marker, msg, args);
+			for(Object arg : args) {
+				if (arg != null && arg.toString().contains("if sick(X) then 0.25 else 0.75")) {
+					System.out.println("Found it");
+				}
+			}
 		}
 	}
 	
