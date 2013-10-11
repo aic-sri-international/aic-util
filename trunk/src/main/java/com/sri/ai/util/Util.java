@@ -962,10 +962,16 @@ public class Util {
 	 * Collects elements in a collection satisfying a given predicate into a new
 	 * linked list and returns it.
 	 */
-	public static <T> List<T> collectToList(Collection<T> collection,
-			Predicate<T> predicate) {
-		return (List<T>) collect(collection, new LinkedList<T>(),
-				predicate);
+	public static <T> List<T> collectToList(Collection<T> collection, Predicate<T> predicate) {
+		return (List<T>) collect(collection, new LinkedList<T>(), predicate);
+	}
+
+	/**
+	 * Collects elements in a collection satisfying a given predicate into a new
+	 * linked list and returns it.
+	 */
+	public static <T> List<T> filter(Collection<T> collection, Predicate<T> predicate) {
+		return (List<T>) collect(collection, new LinkedList<T>(), predicate);
 	}
 
 	public static Number numberInJustNeededType(double number) {

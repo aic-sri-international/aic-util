@@ -47,6 +47,8 @@ import com.google.common.annotations.Beta;
  * A Map "on top" of another Map that is used whenever a key is not found.
  * IMPORTANT: this currently does not fulfill the Map contract perfectly because keySet() and entrySet()
  * are NOT backed by the map.
+ *
+ * @author braz
  */
 @Beta
 public abstract class AbstractStackedMap<K, V> implements Map<K,V> {
