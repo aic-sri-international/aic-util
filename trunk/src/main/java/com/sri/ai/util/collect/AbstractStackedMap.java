@@ -44,14 +44,15 @@ import java.util.Set;
 import com.google.common.annotations.Beta;
 
 /**
- * A Map "on top" of another Map that is used whenever a key is not found.
+ * A partial implementation of {@link StackedMap<K, V>}.
+ * 
  * IMPORTANT: this currently does not fulfill the Map contract perfectly because keySet() and entrySet()
  * are NOT backed by the map.
  *
  * @author braz
  */
 @Beta
-public abstract class AbstractStackedMap<K, V> implements Map<K,V> {
+public abstract class AbstractStackedMap<K, V> implements StackedMap<K, V> {
 	/** Top map. */
 	protected Map<K, V> top = null;
 
@@ -78,18 +79,34 @@ public abstract class AbstractStackedMap<K, V> implements Map<K,V> {
 		this.base = base;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.sri.ai.util.collect.StackedMap#getTop()
+	 */
+	@Override
 	public Map<K, V> getTop() {
 		return top;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.sri.ai.util.collect.StackedMap#setTop(java.util.Map)
+	 */
+	@Override
 	public void setTop(Map<K, V> top) {
 		this.top = top;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.sri.ai.util.collect.StackedMap#getBase()
+	 */
+	@Override
 	public Map<K, V> getBase() {
 		return base;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.sri.ai.util.collect.StackedMap#setBase(java.util.Map)
+	 */
+	@Override
 	public void setBase(Map<K, V> base) {
 		this.base = base;
 	}
