@@ -38,6 +38,7 @@
 package com.sri.ai.util.collect;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -229,6 +230,7 @@ public abstract class AbstractStackedMap<K, V> implements StackedMap<K, V> {
 	 }
 
 	 public String toString() {
-		 return "Stacked map with top " + top + " on base " + base;
+		 Map<K, V> auxiliary = new HashMap<K, V>(this);
+		 return auxiliary.toString();
 	 }
 }
