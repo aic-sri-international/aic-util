@@ -810,6 +810,14 @@ public class Util {
 	}
 
 	/**
+	 * Stores results of applying a function to an set's elements in a new,
+	 * empty hash set and returns it.
+	 */
+	public static <F, T> Set<T> mapIntoSet(Set<? extends F> set, Function<F, T> function) {
+		return mapIntoSet(set.iterator(), function);
+	}
+
+	/**
 	 * Collects elements in an iterator's range satisfying two different
 	 * conditions, returning false if some element does not satisfy either.
 	 */
@@ -2275,6 +2283,19 @@ public class Util {
 				iterator.remove();
 			}
 		}
+	}
+
+	/** Removes the elements that satisfy a predicate from a set -- works for sets not containing null elements only. */
+	public static <T> void removeElementsSatisfying(Set<? extends T> set, Predicate<T> predicate) {
+		boolean removed;
+		do {
+			removed = false;
+			T element = getFirstSatisfyingPredicateOrNull(set, predicate);
+			if (element != null) {
+				set.remove(element);
+				removed = true;
+			}
+		} while (removed);
 	}
 
 	/**
