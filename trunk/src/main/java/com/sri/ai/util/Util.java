@@ -1282,6 +1282,17 @@ public class Util {
 	}
 
 	/**
+	 * Indicates that two objects are not <null> and not equal.
+	 */
+	public static boolean notNullAndDistinct(Object o1, Object o2) {
+		if (o1 == null || o2 == null) {
+			return false;
+		}
+
+		return ! o1.equals(o2);
+	}
+
+	/**
 	 * Indicates whether all elements in an iterator's range equal a given
 	 * object.
 	 */
