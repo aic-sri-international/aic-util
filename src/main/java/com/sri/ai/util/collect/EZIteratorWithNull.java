@@ -37,7 +37,8 @@
  */
 package com.sri.ai.util.collect;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import com.google.common.annotations.Beta;
 

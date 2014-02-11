@@ -37,6 +37,8 @@
  */
 package com.sri.ai.test.util.collect;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,8 +46,6 @@ import com.sri.ai.util.Util;
 import com.sri.ai.util.collect.HashMapTree;
 import com.sri.ai.util.collect.StringIterator;
 import com.sri.ai.util.collect.Tree;
-
-import static org.junit.Assert.*;
 
 public class HashMapTreeTest {
 

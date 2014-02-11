@@ -38,10 +38,10 @@
 package com.sri.ai.util.collect;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -136,29 +136,29 @@ public class ManyToManyRelation<A,B> {
 	}
 	
 	public Collection<A> getAs() {
-		return new HashSet<A>(fromAToItsBs.keySet());
+		return new LinkedHashSet<A>(fromAToItsBs.keySet());
 	}
 
 	public Collection<B> getBs() {
-		return new HashSet<B>(fromBToItsAs.keySet());
+		return new LinkedHashSet<B>(fromBToItsAs.keySet());
 	}
 
 	/** Returns collection of second-dimension elements relating to <code>a</code>. */
 	public Collection<B> getBsOfA(A a) {
 		Collection<B> bsOfThisA = fromAToItsBs.get(a);
 		if (bsOfThisA == null) {
-			return new HashSet<B>();
+			return new LinkedHashSet<B>();
 		}
-		return new HashSet<B>(bsOfThisA);
+		return new LinkedHashSet<B>(bsOfThisA);
 	}
 	
 	/** Returns collection of first-dimension elements relating to <code>b</code>. */
 	public Collection<A> getAsOfB(B b) {
 		Collection<A> asOfThisB = fromBToItsAs.get(b);
 		if (asOfThisB == null) {
-			return new HashSet<A>();
+			return new LinkedHashSet<A>();
 		}
-		return new HashSet<A>(fromBToItsAs.get(b));
+		return new LinkedHashSet<A>(fromBToItsAs.get(b));
 	}
 	
 	private void removeThisAFromAsOfThisB(A a, B b) {

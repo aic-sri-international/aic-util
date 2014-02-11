@@ -39,8 +39,8 @@ package com.sri.ai.test.util.cache;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.junit.Before;
@@ -132,7 +132,7 @@ public class FlexibleCacheMapTest {
 	
 	@Test
 	public void test() {
-		final Set<Person> payRoll = new HashSet<Person>();
+		final Set<Person> payRoll = new LinkedHashSet<Person>();
 		NullaryFunction<Iterator<Person>> iteratorMaker = new NullaryFunction<Iterator<Person>>() {
 			@Override
 			public Iterator<Person> apply() {

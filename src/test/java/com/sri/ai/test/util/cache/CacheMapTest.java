@@ -37,7 +37,7 @@
  */
 package com.sri.ai.test.util.cache;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
 

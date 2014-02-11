@@ -37,9 +37,8 @@
  */
 package com.sri.ai.util.collect;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -71,6 +70,6 @@ public class StackedHashMap<K, V> extends AbstractStackedMap<K, V> {
 
 	@Override
 	Set<K> makeKSet() {
-		return new HashSet<K>();
+		return new LinkedHashSet<K>();
 	}
 }

@@ -38,10 +38,10 @@
 package com.sri.ai.util.collect;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -77,7 +77,7 @@ import com.google.common.annotations.Beta;
 public class DisjointSets<E> {
 
 	private Map<E, Set<E>> elementToSet = new LinkedHashMap<E, Set<E>>();
-	private Set<Set<E>>    disjointSets = new HashSet<Set<E>>();
+	private Set<Set<E>>    disjointSets = new LinkedHashSet<Set<E>>();
 
 	/**
 	 * Default Constructor.
@@ -190,7 +190,7 @@ public class DisjointSets<E> {
 		// is not exposed outside of this class.
 		// This also ensures the internal logic cannot
 		// be corrupted externally due to changing sets.
-		return new HashSet<E>(elementToSet.get(element));
+		return new LinkedHashSet<E>(elementToSet.get(element));
 	}
 
 	/**
@@ -205,7 +205,7 @@ public class DisjointSets<E> {
 		// be corrupted externally due to changing sets.
 		Map<E, Set<E>> result = new LinkedHashMap<E, Set<E>>();
 		for (Map.Entry<E, Set<E>> entry : elementToSet.entrySet()) {
-			result.put(entry.getKey(), new HashSet<E>(entry.getValue()));
+			result.put(entry.getKey(), new LinkedHashSet<E>(entry.getValue()));
 		}
 		return result;
 	}
@@ -219,10 +219,10 @@ public class DisjointSets<E> {
 		// is not exposed outside of this class.
 		// This also ensures the internal logic cannot
 		// be corrupted externally due to changing sets.
-		Set<Set<E>> result = new HashSet<Set<E>>();
+		Set<Set<E>> result = new LinkedHashSet<Set<E>>();
 		Iterator<Set<E>> it = disjointSets.iterator();
 		while (it.hasNext()) {
-			result.add(new HashSet<E>(it.next()));
+			result.add(new LinkedHashSet<E>(it.next()));
 		}
 		return result;
 	}
