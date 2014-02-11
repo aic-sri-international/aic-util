@@ -38,8 +38,8 @@
 package com.sri.ai.test.util.collect;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -102,9 +102,9 @@ public class StackedMapTest {
 		Assert.assertEquals(map.size(), regular.size());
 		Assert.assertEquals(map.entrySet(), regular.entrySet());
 		Assert.assertEquals(map.keySet(), regular.keySet());
-		Set<Integer> mapValues = new HashSet<Integer>();
+		Set<Integer> mapValues = new LinkedHashSet<Integer>();
 		mapValues.addAll(map.values());
-		Set<Integer> regularValues = new HashSet<Integer>();
+		Set<Integer> regularValues = new LinkedHashSet<Integer>();
 		regularValues.addAll(regular.values());
 		Assert.assertEquals(mapValues, regularValues);
 		Assert.assertTrue(map.hashCode() != other.hashCode());
@@ -120,9 +120,9 @@ public class StackedMapTest {
 		Assert.assertEquals(clone.size(), regular.size());
 		Assert.assertEquals(clone.entrySet(), regular.entrySet());
 		Assert.assertEquals(clone.keySet(), regular.keySet());
-		Set<Integer> cloneValues = new HashSet<Integer>();
+		Set<Integer> cloneValues = new LinkedHashSet<Integer>();
 		cloneValues.addAll(clone.values());
-		Set<Integer> regularValues = new HashSet<Integer>();
+		Set<Integer> regularValues = new LinkedHashSet<Integer>();
 		regularValues.addAll(regular.values());
 		Assert.assertEquals(cloneValues, regularValues);
 		Assert.assertEquals(clone.hashCode(), regular.hashCode());

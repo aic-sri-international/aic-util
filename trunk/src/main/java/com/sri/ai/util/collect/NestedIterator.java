@@ -37,7 +37,10 @@
  */
 package com.sri.ai.util.collect;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 
 import com.google.common.annotations.Beta;
 

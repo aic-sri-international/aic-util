@@ -51,7 +51,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -377,7 +376,7 @@ public class Util {
 	}
 
 	public static <T> Set<T> set(T... elements) {
-		return new HashSet<T>(Arrays.asList(elements));
+		return new LinkedHashSet<T>(Arrays.asList(elements));
 	}
 
 	public static boolean isEven(int number) {
@@ -779,7 +778,7 @@ public class Util {
 	 * Stores iterator's range in a new, empty hash set and returns it.
 	 */
 	public static <T> Set<T> setFrom(Iterator<? extends T> iterator) {
-		HashSet<T> result = new HashSet<T>();
+		HashSet<T> result = new LinkedHashSet<T>();
 		while (iterator.hasNext()) {
 			result.add(iterator.next());
 		}
@@ -803,7 +802,7 @@ public class Util {
 	 */
 	public static <F, T> Set<T> mapIntoSet(Iterator<? extends F> iterator,
 			Function<F, T> function) {
-		Set<T> result = new HashSet<T>();
+		Set<T> result = new LinkedHashSet<T>();
 		while (iterator.hasNext()) {
 			result.add(function.apply(iterator.next()));
 		}

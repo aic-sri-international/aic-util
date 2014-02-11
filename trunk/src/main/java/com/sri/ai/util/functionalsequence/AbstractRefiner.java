@@ -37,7 +37,7 @@
  */
 package com.sri.ai.util.functionalsequence;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import com.google.common.annotations.Beta;
@@ -64,7 +64,7 @@ public abstract class AbstractRefiner<T> implements Refiner<T> {
 
 	protected boolean     knownToBeOver       = false;
 	protected T           currentValue        = null;
-	private   Set<Object> upToDateSubscribers = new HashSet<Object>(0);
+	private   Set<Object> upToDateSubscribers = new LinkedHashSet<Object>(0);
 
 	public AbstractRefiner(T initialValue) {
 		super();
