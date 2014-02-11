@@ -54,6 +54,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -396,7 +397,7 @@ public class Util {
 					+ join(";", keysAndValues)
 					+ ".");
 		}
-		Map<K, V> result = new HashMap<K, V>();
+		Map<K, V> result = new LinkedHashMap<K, V>();
 		int i = 0;
 		while (i != keysAndValues.length) {
 			result.put((K) keysAndValues[i], (V) keysAndValues[i + 1]);

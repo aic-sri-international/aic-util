@@ -39,6 +39,7 @@ package com.sri.ai.test.util.collect;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -61,8 +62,8 @@ public class StackedMapTest {
 
 	private AbstractStackedMap<String, Integer> base    = new StackedHashMap<String, Integer>();
 	private AbstractStackedMap<String, Integer> map     = new StackedHashMap<String, Integer>(base);
-	private HashMap<String, Integer>            regular = new HashMap<String, Integer>();
-	private HashMap<String, Integer>            other   = new HashMap<String, Integer>();
+	private HashMap<String, Integer>            regular = new LinkedHashMap<String, Integer>();
+	private HashMap<String, Integer>            other   = new LinkedHashMap<String, Integer>();
 
 	@Before
 	public void setUp() {

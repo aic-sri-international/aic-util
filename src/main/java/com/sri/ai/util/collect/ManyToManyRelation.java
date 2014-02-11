@@ -41,6 +41,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -57,8 +58,8 @@ import com.sri.ai.util.base.Pair;
  */
 @Beta
 public class ManyToManyRelation<A,B> {
-	private Map<A, Collection<B>> fromAToItsBs = new HashMap<A, Collection<B>>();
-	private Map<B, Collection<A>> fromBToItsAs = new HashMap<B, Collection<A>>();
+	private Map<A, Collection<B>> fromAToItsBs = new LinkedHashMap<A, Collection<B>>();
+	private Map<B, Collection<A>> fromBToItsAs = new LinkedHashMap<B, Collection<A>>();
 	
 	public ManyToManyRelation() {
 	}
