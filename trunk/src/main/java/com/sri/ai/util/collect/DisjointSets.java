@@ -41,6 +41,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -75,7 +76,7 @@ import com.google.common.annotations.Beta;
 @Beta
 public class DisjointSets<E> {
 
-	private Map<E, Set<E>> elementToSet = new HashMap<E, Set<E>>();
+	private Map<E, Set<E>> elementToSet = new LinkedHashMap<E, Set<E>>();
 	private Set<Set<E>>    disjointSets = new HashSet<Set<E>>();
 
 	/**
@@ -202,7 +203,7 @@ public class DisjointSets<E> {
 		// is not exposed outside of this class.
 		// This also ensures the internal logic cannot
 		// be corrupted externally due to changing sets.
-		Map<E, Set<E>> result = new HashMap<E, Set<E>>();
+		Map<E, Set<E>> result = new LinkedHashMap<E, Set<E>>();
 		for (Map.Entry<E, Set<E>> entry : elementToSet.entrySet()) {
 			result.put(entry.getKey(), new HashSet<E>(entry.getValue()));
 		}
