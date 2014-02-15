@@ -442,11 +442,11 @@ public class Util {
 	}
 
 	/** Adds all elements of iterator's range to collection. */
-	@SuppressWarnings("unchecked")
-	public static void addAll(Collection c, Iterator i) {
+	public static <T> Collection<T> addAll(Collection<T> c, Iterator<T> i) {
 		while (i.hasNext()) {
 			c.add(i.next());
 		}
+		return c;
 	}
 
 	@SuppressWarnings("unchecked")
