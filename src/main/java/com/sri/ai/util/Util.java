@@ -745,13 +745,85 @@ public class Util {
 	 * Stores results of applying a function to an iterator's range in a new,
 	 * empty list and returns it.
 	 */
-	public static <F, T> List<T> mapIntoList(Collection<? extends F> collection,
+	public static <F, T> List<T> mapIntoList(
+			Collection<? extends F> collection,
 			Function<F, T> function) {
 		return mapIntoList(collection.iterator(), function);
 	}
 
+	/**
+	 * Stores results of applying a function to an iterator's range in a new,
+	 * empty array list and returns it.
+	 */
+	public static <F, T> ArrayList<T> mapIntoArrayList(
+			Iterator<? extends F> iterator,
+			Function<F, T> function) {
+		ArrayList<T> result = new ArrayList<T>();
+		while (iterator.hasNext()) {
+			F nextElement = iterator.next();
+			result.add(function.apply(nextElement));
+		}
+		return result;
+	}
+
+	/**
+	 * Stores results of applying a function to an iterator's range in a new,
+	 * empty array list and returns it.
+	 */
+	public static <F, T> ArrayList<T> mapIntoArrayList(
+			Collection<? extends F> collection,
+			Function<F, T> function) {
+		ArrayList<T> result = new ArrayList<T>(collection.size());
+		for (F nextElement : collection) {
+			result.add(function.apply(nextElement));
+		}
+		return result;
+	}
+
 	public static <F, T> List<T> mapIntoList(F[] array, Function<F, T> function) {
 		return mapIntoList(Arrays.asList(array), function);
+	}
+
+	/**
+	 * Stores the results of applying a function to the elements of a collection to a given, adequately sized, array.
+	 */
+	public static <F, T> T[] mapIntoArray(Collection<F> collection, Function<F, T> function, T[] result) {
+		int i = 0;
+		for (F element : collection) {
+			T fOfElement = function.apply(element);
+			result[i++] = fOfElement;
+		}
+		return result;
+	}
+	
+	/**
+	 * Stores results of applying a given function to a list in an array and returns the array,
+	 * returning null if there has been no (identity) changes.
+	 */
+	public static <T> T[] mapOrNullIfNoChanges(List<T> list, Function<T, T> function) {
+		T[] result = null;
+		Iterator<T> iterator = list.iterator();
+		for (int i = 0; i != list.size(); i++) {
+			T element = iterator.next();
+			T newElement = function.apply(element);
+			if (newElement != element) {
+				result = makeSureItsAllocatedAndIsACopyIfNull(result, list);
+				result[i] = newElement;
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * If given array is null, allocates it, copies all elements from list, and returns it.
+	 * Otherwise, returns given array.
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T[] makeSureItsAllocatedAndIsACopyIfNull(T[] array, List<T> list) {
+		if (array == null) {
+			array = (T[]) list.toArray();
+		}
+		return array;
 	}
 
 	/**
@@ -1292,6 +1364,11 @@ public class Util {
 		return ! o1.equals(o2);
 	}
 
+	public static <T> boolean equals(T[] array, List<T> list) {
+		boolean result = Arrays.asList(array).equals(list);
+		return result;
+	}
+	
 	/**
 	 * Indicates whether all elements in an iterator's range equal a given
 	 * object.
