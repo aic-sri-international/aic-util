@@ -1633,8 +1633,14 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 			return true;
 		}
 
-		return (bigIntegerEquals(that.numerator, numerator) && bigIntegerEquals(
-				that.denominator, denominator));
+		this.reduce(); // make sure they have the same fraction if representing the same value.
+		that.reduce();
+		
+		boolean result =
+				bigIntegerEquals(that.numerator,   numerator) &&
+				bigIntegerEquals(that.denominator, denominator);
+
+		return result;
 	}
 
 	/**
@@ -1646,6 +1652,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	public int hashCode() {
 		// lazy init for optimization
 		if (hashCode == 0) {
+			reduce(); // make sure all rationals with the same value have the hash code computed from the same fraction.
 			hashCode = ((numerator.hashCode() + 1) * (denominator.hashCode() + 2));
 		}
 		return hashCode;
@@ -1672,8 +1679,9 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 			return 0;
 		}
 
-		// note: both denominator are positive.
-		return bigIntegerMultiply(numerator, that.denominator).compareTo(
+		// note: both denominators are positive.
+		return bigIntegerMultiply(numerator, that.denominator)
+				.compareTo(
 				bigIntegerMultiply(that.numerator, denominator));
 	}
 
@@ -3626,5 +3634,16 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 
 		// [rounding step, possible loss of precision step]
 		return dv;
+	}
+
+	private boolean reduced = false;
+	
+	private void reduce () {
+		if ( ! reduced &&  ! bigIntegerIsZero(numerator)) {
+			BigInteger common = numerator.gcd(denominator);
+			numerator   =   numerator.divide(common);
+			denominator = denominator.divide(common);
+			reduced = true;
+		}
 	}
 }
