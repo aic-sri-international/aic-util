@@ -1406,8 +1406,7 @@ public class Util {
 	 * Indicates whether there is an element in iterator's range that satisfies
 	 * the given predicate.
 	 */
-	public static <T> boolean thereExists(Iterator<T> iterator,
-			Predicate<T> predicate) {
+	public static <T> boolean thereExists(Iterator<T> iterator, Predicate<T> predicate) {
 		while (iterator.hasNext()) {
 			if (predicate.apply(iterator.next())) {
 				return true;
@@ -1420,8 +1419,7 @@ public class Util {
 	 * Indicates whether there is an element in collection that satisfies the
 	 * given predicate.
 	 */
-	public static <T> boolean thereExists(Collection<T> collection,
-			Predicate<T> predicate) {
+	public static <T> boolean thereExists(Collection<T> collection, Predicate<T> predicate) {
 		return thereExists(collection.iterator(), predicate);
 	}
 
