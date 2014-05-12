@@ -79,7 +79,7 @@ import com.google.common.base.Predicate;
  * have access to a node's parent node. The way prune works, one can easily do
  * that by using a node's property to avoid visiting its children. If we want to
  * avoid visiting the node itself, we can use {@link PredicateIterator} to
- * filter out them as well.
+ * filter them out as well.
  * <p>
  * By default, {@link #prune} returns the result of evaluating
  * {@link #pruneChildrenPredicate} on {@link #root} if that field is not
@@ -99,14 +99,13 @@ public abstract class DepthFirstIterator<E> extends EZIterator<E> {
 	private Iterator<E> currentChildIterator;
 	protected Predicate<E> pruneChildrenPredicate = null;
 	
-	public DepthFirstIterator(E root) {
-		setUp(root);
-		hasToReturnRootStill = true;
-	}
-
 	public DepthFirstIterator(E root, boolean mustReturnRootAsWell) {
 		setUp(root);
 		hasToReturnRootStill = mustReturnRootAsWell;
+	}
+
+	public DepthFirstIterator(E root) {
+		this(root, true);
 	}
 
 	public abstract Iterator<E> getChildrenIterator(E object);
@@ -138,13 +137,13 @@ public abstract class DepthFirstIterator<E> extends EZIterator<E> {
 
 		// pruneChildren() decides whether children must be visited or not
 		if (childrenIterator == null && !pruneChildren()) { 
-				childrenIterator = getChildrenIterator(root);
+			childrenIterator = getChildrenIterator(root);
 		}
 		
 		if (childrenIterator == null) {
 			return null;
 		}
-
+	
 		ensureCurrentChildIteratorHasNextOrIsNull();
 
 		if (currentChildIterator != null) {
