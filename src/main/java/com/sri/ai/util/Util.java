@@ -2409,4 +2409,15 @@ public class Util {
 		}
 		return object.toString();
 	}
+
+	/** Returns +1 if given int is greater than 0, 0 if it is 0, and -1 if it is less than 0. */
+	public static int signal(int integer) {
+		if (integer == 0) {
+			return 0;
+		}
+		else if (integer > 0) {
+			return +1;
+		}
+		return -1;
+	}
 }
