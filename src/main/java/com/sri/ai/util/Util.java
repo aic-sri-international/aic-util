@@ -779,6 +779,36 @@ public class Util {
 		}
 		return result;
 	}
+	
+	/**
+	 * Map the results of a function on the elements of a list to another list,
+	 * but only allocating the latter if some result is a distinct instance than its corresponding original element.
+	 * If not are, returns the original list (same instance).
+	 * This is meant to help prevent unnecessary creation of objects.
+	 */
+	public static <T> List<T> conservativeMap(List<T> list, Function<T, T> function) {
+		List<T> result = null;
+		int size = list.size();
+		Iterator<T> iterator = list.iterator();
+		int i = 0;
+		while (iterator.hasNext()) {
+			T element = iterator.next();
+			T mapped = function.apply(element);
+			result = store(list, result, element, mapped, i, size);
+			i++;
+		}
+		return result;
+	}
+	
+	private static <F, T> List<T> store(List<T> original, List<T> result, F element, T mappedElement, int i, int size) {
+		if (mappedElement != element) {
+			if (result == null) {
+				result = new ArrayList<T>(original);
+			}
+			result.set(i, mappedElement);
+		}
+		return result;
+	}
 
 	public static <F, T> List<T> mapIntoList(F[] array, Function<F, T> function) {
 		return mapIntoList(Arrays.asList(array), function);
@@ -824,6 +854,21 @@ public class Util {
 			array = (T[]) list.toArray();
 		}
 		return array;
+	}
+	
+	/**
+	 * Indicates whether two collections contain the exact same instances in the same (iterable) order.
+	 */
+	public static <T> boolean sameInstancesInSameIterableOrder(Collection<T> c1, Collection<T> c2) {
+		Iterator<T> i1 = c1.iterator();
+		Iterator<T> i2 = c2.iterator();
+		while (i1.hasNext() && i2.hasNext()) {
+			if (i1.next() != i2.next()) {
+				return false;
+			}
+		}
+		boolean result = ! i1.hasNext() && ! i2.hasNext(); // only true if they are both done at the same time
+		return result;
 	}
 
 	/**
