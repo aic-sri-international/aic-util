@@ -1376,12 +1376,10 @@ public class Util {
 	 */
 	public static boolean equals(Object o1, Object o2) {
 		if (o1 == null) {
-			if (o2 == null) {
-				return true;
-			} 
-			else {
-				return false;
-			}
+			return o2 == null;
+		}
+		else if (o2 == null) {
+			return false;
 		}
 		return o1.equals(o2);
 	}
