@@ -41,30 +41,27 @@ import com.google.common.annotations.Beta;
 import com.google.common.base.Predicate;
 
 /**
- * A {@link Predicate} given an element on construction that tests if it is equal to a
- * given object when it is applied.
+ * A {@link Predicate} that is a conjunction of two others.
  * 
  * @author braz
- * 
- * @param <T>
- *            the type of the element to be tested for equality.
  */
 @Beta
-public class Equals<T> implements Predicate<T> {
+public class And<T> implements Predicate<T> {
+	private Predicate<T> base1;
+	private Predicate<T> base2;
+	
+	public And(Predicate<T> base1, Predicate<T> base2) {
+		super();
+		this.base1 = base1;
+		this.base2 = base2;
+	}
 
-	private T element;
-
-	public Equals(T element) {
-		this.element = element;
+	public static <T1> And<T1> make(Predicate<T1> base1, Predicate<T1> base2) {
+		return new And<T1>(base1, base2);
 	}
 	
-	/** A "constructor" that captures the type automatically. */
-	public static <T1> Equals<T1> make(T1 element) {
-		return new Equals<T1>(element);
-	}
-	
-	@Override
-	public boolean apply(T obj) {
-		return (element == null && obj == null) || element.equals(obj);
+	public boolean apply(T input) {
+		boolean result = base1.apply(input) && base2.apply(input);
+		return result;
 	}
 }
