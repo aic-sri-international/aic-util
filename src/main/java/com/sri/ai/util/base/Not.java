@@ -41,30 +41,25 @@ import com.google.common.annotations.Beta;
 import com.google.common.base.Predicate;
 
 /**
- * A {@link Predicate} given an element on construction that tests if it is equal to a
- * given object when it is applied.
+ * A {@link Predicate} negating another.
  * 
  * @author braz
- * 
- * @param <T>
- *            the type of the element to be tested for equality.
  */
 @Beta
-public class Equals<T> implements Predicate<T> {
+public class Not<T> implements Predicate<T> {
+	private Predicate<T> base;
+	
+	public Not(Predicate<T> base) {
+		super();
+		this.base = base;
+	}
 
-	private T element;
-
-	public Equals(T element) {
-		this.element = element;
+	public static <T1> Not<T1> make(Predicate<T1> base) {
+		return new Not<T1>(base);
 	}
 	
-	/** A "constructor" that captures the type automatically. */
-	public static <T1> Equals<T1> make(T1 element) {
-		return new Equals<T1>(element);
-	}
-	
-	@Override
-	public boolean apply(T obj) {
-		return (element == null && obj == null) || element.equals(obj);
+	public boolean apply(T input) {
+		boolean result = ! base.apply(input);
+		return result;
 	}
 }

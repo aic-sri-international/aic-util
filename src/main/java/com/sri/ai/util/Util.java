@@ -1580,6 +1580,20 @@ public class Util {
 		return getFirstSatisfyingPredicateOrNull(c.iterator(), p);
 	}
 
+	/**
+	 * Returns the first result of applying a given function to the elements of a collection,
+	 * or <code>null</code> if all such results are <code>null</code>.
+	 */
+	public static <T1, T2> T2 getFirstNonNullResultOrNull(Collection<T1> c, Function<T1, T2> f) {
+		for (T1 t1 : c) {
+			T2 result = f.apply(t1);
+			if (result != null) {
+				return result;
+			}
+		}
+		return null;
+	}
+
 	public static <E> E findFirst(Collection<? extends E> c, Predicate<E> p) {
 		return getFirstSatisfyingPredicateOrNull(c.iterator(), p);
 	}
