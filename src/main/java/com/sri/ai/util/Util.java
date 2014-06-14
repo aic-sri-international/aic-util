@@ -2477,4 +2477,37 @@ public class Util {
 		}
 		return -1;
 	}
+
+	/**
+	 * Creates a map from a list of keys and a list of values.
+	 */
+	public static <K, V> Map<K, V> mapFromListOfKeysAndListOfValues(List<K> keys, List<V> values) {
+		if (keys.size() != values.size()) {
+			throw new Error("mapFromListOfKeysAndListOfValues requires two lists of same size but got " + keys + " with " + keys.size() + " elements and " + values + " with " + values.size() + " elements.");
+		}
+		
+		LinkedHashMap<K, V> result = new LinkedHashMap<K, V>();
+		Iterator<K>   keysIterator =   keys.iterator();
+		Iterator<V> valuesIterator = values.iterator();
+		while (keysIterator.hasNext()) {
+			K key     = keysIterator.next();
+			V value = valuesIterator.next();
+			result.put(key, value);
+		}
+		return result;
+	}
+
+	/**
+	 * Given map1 and map2, returns a new map such that map(K) = map2(map1(K))
+	 */
+	public static <K, V1, V2> Map<K, V2> composeMaps(Map<K, V1> map1, Map<V1, V2> map2) {
+		Map<K, V2> result = new LinkedHashMap<K, V2>();
+		for (Map.Entry<K, V1> entry : map1.entrySet()) {
+			K key = entry.getKey();
+			V1 value1 = entry.getValue();
+			V2 value2 = map2.get(value1);
+			result.put(key, value2);
+		}
+		return result;
+	}
 }
