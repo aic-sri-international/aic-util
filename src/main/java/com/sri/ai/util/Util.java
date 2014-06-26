@@ -2510,4 +2510,18 @@ public class Util {
 		}
 		return result;
 	}
+
+	/**
+	 * Replaces a given instance in a list by a new object.
+	 */
+	public static <T> void replaceInstanceInList(T instanceToBeReplaced, T newElement, List<T> list) {
+		ListIterator<T> iterator = list.listIterator();
+		while (iterator.hasNext()) {
+			T someInstanceInList = iterator.next();
+			if (someInstanceInList == instanceToBeReplaced) {
+				iterator.set(newElement);
+				break;
+			}
+		}
+	}
 }
