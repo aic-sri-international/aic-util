@@ -2524,4 +2524,13 @@ public class Util {
 			}
 		}
 	}
+
+    /** Wait for some time, throwing an error in case of an exception. */
+	public static void waitOrThrowError(long time) {
+		try {
+			Thread.sleep(time);
+		} catch (Exception e) {
+			throw new Error("Unexpected exception:", e);
+		}
+	}
 }
