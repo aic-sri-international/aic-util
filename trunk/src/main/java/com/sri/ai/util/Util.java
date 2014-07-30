@@ -2533,4 +2533,15 @@ public class Util {
 			throw new Error("Unexpected exception:", e);
 		}
 	}
+
+    /**
+     * Returns the first object in an array that is an instance of a given class.
+     */
+    public static Object getObjectOfClass(Class clazz, Object[] args) {
+	for (Object object : args) {
+	    if (clazz.isInstance(object))
+		return object;
+	}
+	return null;
+    }
 }
