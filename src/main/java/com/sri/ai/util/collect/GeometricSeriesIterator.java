@@ -35,43 +35,37 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.sri.ai.util.rangeoperation.library.operators;
+package com.sri.ai.util.collect;
 
 import com.google.common.annotations.Beta;
-import com.google.common.base.Predicate;
-import com.sri.ai.util.Util;
-import com.sri.ai.util.rangeoperation.core.AbstractOperator;
+
 
 /**
- * Similar to {@link Average} but taking a predicate selecting items to be considered in average.
+ * Implements an iterator going over a geometric series.
+ * 
+ * @author braz
  */
 @Beta
-public class PredicatedAverage extends AbstractOperator {
-	public PredicatedAverage(Predicate<Object> predicate) {
-		this.predicate = predicate;
+public class GeometricSeriesIterator extends EZIterator<Number> {
+
+	public float currentElement;
+	public float limit;
+	public float rate;
+
+	public GeometricSeriesIterator(float initialElement, float limit, float rate) {
+		currentElement = initialElement;
+		this.limit = limit;
+		this.rate = rate;
+		next = currentElement;
+		onNext = true;
 	}
 
 	@Override
-	public void initialize() {
-		result = 0;
-		weight = 0;
+	protected Number calculateNext() {
+		currentElement *= rate;
+		if (currentElement > limit) {
+			return null;
+		}
+		return currentElement;
 	}
-	@Override
-	public void increment(Object another) {
-		if ( ! predicate.apply(another)) {
-			return;
-		}
-
-		if (weight == 0) {
-			result = another;
-			weight = 1;
-		}
-		else {
-			result = Util.incrementalComponentWiseAverageArbitraryDepth(result, weight, another);
-			weight++;
-		}
-	}
-
-	protected int weight = 0;
-	protected Predicate<Object> predicate;
 }
