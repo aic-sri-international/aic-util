@@ -35,43 +35,52 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.sri.ai.util.rangeoperation.library.operators;
+package com.sri.ai.util.rangeoperation.core;
 
 import com.google.common.annotations.Beta;
-import com.google.common.base.Predicate;
-import com.sri.ai.util.Util;
-import com.sri.ai.util.rangeoperation.core.AbstractOperator;
+import com.sri.ai.util.rangeoperation.api.DependencyAwareEnvironment;
+import com.sri.ai.util.rangeoperation.api.Operator;
+import com.sri.ai.util.rangeoperation.api.Range;
+import com.sri.ai.util.rangeoperation.api.RangeOperation;
 
-/**
- * Similar to {@link Average} but taking a predicate selecting items to be considered in average.
- */
 @Beta
-public class PredicatedAverage extends AbstractOperator {
-	public PredicatedAverage(Predicate<Object> predicate) {
-		this.predicate = predicate;
+public class DefaultRangeOperation implements RangeOperation {
+
+	protected Operator operator;
+	protected Range range;
+
+	public DefaultRangeOperation(Operator operator, Range range) {
+		this.operator = operator;
+		this.range = range;
 	}
 
 	@Override
-	public void initialize() {
-		result = 0;
-		weight = 0;
+	public Range getRange() {
+		return range;
 	}
+
 	@Override
-	public void increment(Object another) {
-		if ( ! predicate.apply(another)) {
-			return;
-		}
-
-		if (weight == 0) {
-			result = another;
-			weight = 1;
-		}
-		else {
-			result = Util.incrementalComponentWiseAverageArbitraryDepth(result, weight, another);
-			weight++;
-		}
+	public Operator getOperator() {
+		return operator;
 	}
 
-	protected int weight = 0;
-	protected Predicate<Object> predicate;
+	@Override
+	public void setEnvironment(DependencyAwareEnvironment environment) { 
+		getRange().setEnvironment(environment); 
+	}
+	
+	@Override
+	public void initialize() { 
+		getRange().initialize(); 
+	}
+	
+	@Override
+	public boolean hasNext() { 
+		return getRange().hasNext(); 
+	}
+	
+	@Override
+	public void next()       { 
+		getRange().next(); 
+	}
 }

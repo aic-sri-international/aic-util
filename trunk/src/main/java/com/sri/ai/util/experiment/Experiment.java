@@ -1,19 +1,61 @@
+/*
+ * Copyright (c) 2013, SRI International
+ * All rights reserved.
+ * Licensed under the The BSD 3-Clause License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at:
+ * 
+ * http://opensource.org/licenses/BSD-3-Clause
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 
+ * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ * 
+ * Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ * 
+ * Neither the name of the aic-util nor the names of its
+ * contributors may be used to endorse or promote products derived from
+ * this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) 
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package com.sri.ai.util.experiment;
 
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
+import com.google.common.annotations.Beta;
 import com.sri.ai.util.Util;
 import com.sri.ai.util.gnuplot.Gnuplot;
 import com.sri.ai.util.gnuplot.YSeries;
 import com.sri.ai.util.rangeoperation.api.DAEFunction;
 import com.sri.ai.util.rangeoperation.api.DependencyAwareEnvironment;
 import com.sri.ai.util.rangeoperation.api.Range;
-import com.sri.ai.util.rangeoperation.core.RangeOperations;
+import com.sri.ai.util.rangeoperation.core.AbstractDAEFunction;
+import com.sri.ai.util.rangeoperation.core.RangeOperationsApplication;
+import com.sri.ai.util.rangeoperation.library.rangeoperations.Averaging;
 import com.sri.ai.util.rangeoperation.library.rangeoperations.Axis;
 
+@Beta
 public class Experiment {
 
 	public static String[] guaranteedPreCommands = {
@@ -30,15 +72,15 @@ public class Experiment {
 	 *      followed by another argument representing the variable's value.
 	 *      These variables can either be gnuplot parameters (see reference below),
 	 *      or fixed parameters stored in a {@link DependencyAwareEnvironment} to be used
-	 *      by the experiment (via {@link DAEFunction}s -- see below).
-	 * <li> {@link RangeOperations}, which work like for-loops or aggregate operations
+	 *      by the experiment (via {@link AbstractDAEFunction}s -- see below).
+	 * <li> {@link RangeOperation}s, which work like for-loops or aggregate operations
 	 *      for a given variable.
-	 * <li> a single occurrence of a {@link DAEFunction}; this is the main argument since
+	 * <li> a single occurrence of a {@link AbstractDAEFunction}; this is the main argument since
 	 *      this function is responsible for computing the experiment's reported results.
 	 *      It can run whatever code one wishes, including calls to
 	 *      {@link DependencyAwareEnvironment#get(String)},
-	 *      {@link DependencyAwareEnvironment#getWithDefault(String, Object)} and
-	 *      {@link DependencyAwareEnvironment#getResultOrRecompute(DAEFunction)}
+	 *      {@link DependencyAwareEnvironment#getOrUseDefault(String, Object)} and
+	 *      {@link DependencyAwareEnvironment#getResultOrRecompute(AbstractDAEFunction)}
 	 *      to gain access to the variables defined by other arguments
 	 *      (both fixed and iterated by range operations).
 	 * <li> a single {@link YSeriesSpec}, which declares gnuplot directives for each of
@@ -64,9 +106,9 @@ public class Experiment {
 	 */ 
 	public static void experiment(Object ... args) {
 
-		List data = (List) RangeOperations.run(args);
+		List data = (List) RangeOperationsApplication.run(args);
 
-		HashMapWithGetWithDefault properties = getMapWithStringKeys(args);
+		Map<String, Object> properties = Util.getMapWithStringKeys(args);
 
 		LinkedList<String> preCommands = getPreCommands(properties);
 
@@ -81,7 +123,7 @@ public class Experiment {
 		Gnuplot.plot(preCommands, xSeries, ySeriesList);
 	}
 
-	private static LinkedList<String> getPreCommands(HashMapWithGetWithDefault properties) {
+	private static LinkedList<String> getPreCommands(Map<String, Object> properties) {
 		LinkedList<String> preCommands = new LinkedList<String>();
 
 		for (String preCommand : guaranteedPreCommands) {
@@ -98,9 +140,12 @@ public class Experiment {
 			preCommands.add("set ylabel '" + properties.get("ylabel") + "'");
 		}
 		if (properties.containsKey("filename")
-				|| properties.getWithDefault("print", "false").equals("true")
-				|| properties.getWithDefault("file", "false").equals("true")) {
-			String filename = (String) properties.getWithDefault(properties.get("filename"), properties.get("title"));
+				|| Util.getOrUseDefault(properties, "print", "false").equals("true")
+				|| Util.getOrUseDefault(properties, "file", "false").equals("true")) {
+			String filename = (String) Util.getOrUseDefault(properties, (String) properties.get("filename"), properties.get("title"));
+			if (filename == null) {
+				filename = "unnamed";
+			}
 			preCommands.add("set term postscript color");
 			preCommands.add("set output '" + filename + ".ps'");
 		} else {
@@ -226,25 +271,6 @@ public class Experiment {
 
 
 	/**
-	 * Given an array a, returns a {@link HashMapWithGetWithDefault} object mapping
-	 * each String s in position i of a to the object in position i+1 of array,
-	 * ignoring its remaining elements.
-	 */
-	@SuppressWarnings("unchecked")
-	public static HashMapWithGetWithDefault getMapWithStringKeys(Object[] args) {
-		HashMapWithGetWithDefault map = new HashMapWithGetWithDefault();
-		for (int i = 0; i < args.length; i++) {
-			Object arg = args[i];
-			if (arg instanceof String) {
-				String variable = (String) arg;
-				Object value = args[++i];
-				map.put(variable, value);
-			}
-		}
-		return map;
-	}
-
-	/**
 	 * Takes a list of lists, a dimension (0 for rows, 1 for columns) and an index (either row or column index),
 	 * and returns the corresponding slice (data[index,*] if dimension is 0, or data[*,index] if dimension is 1).
 	 */
@@ -260,7 +286,7 @@ public class Experiment {
 		return result;
 	}
 
-	private static DAEFunction getDistanceGivenTrueAndEstimatedDistributions = new DAEFunction() { @Override
+	private static DAEFunction getDistanceGivenTrueAndEstimatedDistributions = new AbstractDAEFunction() { @Override
 	public Object apply(DependencyAwareEnvironment environment) {
 		return environment.get("numSamples");
 	}};
@@ -273,9 +299,9 @@ public class Experiment {
 				"xlabel", "Number of samples",
 				"ylabel", "Average distributions divergence",
 				"numSamplesForTrueDistribution", 10,
-				RangeOperations.Axis("inferenceEngineClassName", Util.list("blog.SamplingEngine", "blog.ParticleFilter")),
-				RangeOperations.Axis("numSamples", 10, 200, 50),
-				RangeOperations.Averaging("run", 1, 2),
+				new Axis("inferenceEngineClassName", Util.list("blog.SamplingEngine", "blog.ParticleFilter")),
+				new Axis("numSamples", 10, 200, 50),
+				new Averaging("run", 1, 2),
 				getDistanceGivenTrueAndEstimatedDistributions,
 				YSeriesSpec("inferenceEngineClassName", Util.list(
 						Util.list("title 'LW'", "w linespoints"),

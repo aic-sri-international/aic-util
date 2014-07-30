@@ -51,6 +51,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -406,13 +407,12 @@ public class Util {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static void addToCollectionValuePossiblyCreatingIt(
-			Map mapToCollections, Object key, Object element,
-			Class newCollectionClass) {
-		Collection c = (Collection) mapToCollections.get(key);
+	public static <K, V> void addToCollectionValuePossiblyCreatingIt(
+			Map<K,Collection<V>> mapToCollections, K key, V element, Class newCollectionClass) {
+		Collection<V> c = (Collection<V>) mapToCollections.get(key);
 		if (c == null) {
 			try {
-				c = (Collection) newCollectionClass.newInstance();
+				c = (Collection<V>) newCollectionClass.newInstance();
 				mapToCollections.put(key, c);
 			} catch (InstantiationException e) {
 				e.printStackTrace();
@@ -449,6 +449,17 @@ public class Util {
 		return c;
 	}
 
+	/**
+	 * Returns value indexed by given key in map, or a default value if that is null.
+	 */
+	public static <K,V> V getOrUseDefault(Map<K,V> map, K key, V defaultValue) {
+		V result = map.get(key);
+		if (result == null) {
+			result = defaultValue;
+		}
+		return result;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static <K, V> V getValuePossiblyCreatingIt(Map<K, V> map, K key,
 			Class<?> newValueClass) {
@@ -2544,4 +2555,74 @@ public class Util {
 	}
 	return null;
     }
+
+	/**
+	 * Incrementally calculates component-wise averages, given previously calculated averages
+	 * (out of n numbers) and a list of new numbers.
+	 * The average list is filled with the appropriate number of zeros if it is empty.
+	 * The result is stored in-place, destroying the previous average list. 
+	 */
+	static public List incrementalComputationOfComponentWiseAverage(List<Number> average, int n, List newItems) {
+		if (average == null) {
+			fatalError("Util.incrementalComputationOfComponentWiseAverage must receive a non-null List");
+		}
+	
+		if (average.size() == 0) {
+			for (int i = 0; i != newItems.size(); i++) {
+				average.add(new Double(0));
+			}
+		}
+	
+		for (int i = 0; i != newItems.size(); i++) {
+			double currentAverage = ((Double) average.get(i)).doubleValue();
+			double newItem        = ((Double) newItems.get(i)).doubleValue();
+			double newAverage     = (currentAverage * n + newItem) / (n + 1); 
+			average.set(i, new Double(newAverage));
+		}
+	
+		return average;
+	}
+
+	/**
+	 * A more general version of {@link #incrementalComputationOfComponentWiseAverage(List<Number>, int, List<Number>)}
+	 * that operates on lists of lists of arbitrary depth, including depth 0, that is, on {@link Number}s.
+	 * It is in-place and returns <code>average</code> if given objects are lists, or returns a new Number otherwise.
+	 */
+	public static Object incrementalComponentWiseAverageArbitraryDepth(Object average, int n, Object newItems) {
+		if (average instanceof Number) {
+			return (((Number)average).doubleValue()*n + ((Number)newItems).doubleValue())/(n + 1);
+		}
+		@SuppressWarnings("unchecked")
+		ListIterator<Number> averageIterator = ((List<Number>)average).listIterator();
+		ListIterator newItemsIt = ((List)newItems).listIterator();
+		while (averageIterator.hasNext()) {
+			Object averageElement = averageIterator.next();
+			Object newItemsElement = newItemsIt.next();
+			Number newAverageElement = (Number) incrementalComponentWiseAverageArbitraryDepth(averageElement, n, newItemsElement);
+			if (newAverageElement != averageElement) {
+				averageIterator.set(newAverageElement);
+			}
+		}
+		return average;
+	}
+
+	/**
+	 * Given an array <code>a</code>, returns a map from each string in it to the immediately following object.
+	 * More precisely, returns a map mapping
+	 * each String <code>s</code> in position <code>i</code> of <code>a</code>
+	 * to the object in position <code>i+1</code> of <code>a</code>,
+	 * ignoring the remaining elements.
+	 */
+	public static Map<String, Object> getMapWithStringKeys(Object[] arguments) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		for (int i = 0; i < arguments.length; i++) {
+			Object argument = arguments[i];
+			if (argument instanceof String) {
+				String variable = (String) argument;
+				Object value = arguments[++i];
+				map.put(variable, value);
+			}
+		}
+		return map;
+	}
 }
