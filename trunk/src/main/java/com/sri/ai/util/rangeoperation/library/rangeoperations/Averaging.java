@@ -1,4 +1,9 @@
-package com.sri.ai.util.rangeoperation;
+package com.sri.ai.util.rangeoperation.library.rangeoperations;
+
+import com.sri.ai.util.rangeoperation.api.Range;
+import com.sri.ai.util.rangeoperation.api.RangeOperation;
+import com.sri.ai.util.rangeoperation.library.operators.Average;
+import com.sri.ai.util.rangeoperation.library.ranges.IntegerRange;
 
 
 /** An averaging operation over a range, valid over numbers or arbitrarily nested lists of numbers. */

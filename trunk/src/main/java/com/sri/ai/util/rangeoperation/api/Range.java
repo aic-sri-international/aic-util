@@ -1,4 +1,4 @@
-package com.sri.ai.util.rangeoperation;
+package com.sri.ai.util.rangeoperation.api;
 
 import com.sri.ai.util.base.BinaryProcedure;
 import com.sri.ai.util.base.NullaryFunction;

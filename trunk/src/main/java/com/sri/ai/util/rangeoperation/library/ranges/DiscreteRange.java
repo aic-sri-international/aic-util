@@ -1,6 +1,8 @@
-package com.sri.ai.util.rangeoperation;
+package com.sri.ai.util.rangeoperation.library.ranges;
 
 import java.util.Collection;
+
+import com.sri.ai.util.rangeoperation.core.AbstractRange;
 
 /** A range over a discrete set of values. */
 public class DiscreteRange extends AbstractRange {

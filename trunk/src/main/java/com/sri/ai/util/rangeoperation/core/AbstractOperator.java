@@ -1,4 +1,6 @@
-package com.sri.ai.util.rangeoperation;
+package com.sri.ai.util.rangeoperation.core;
+
+import com.sri.ai.util.rangeoperation.api.Operator;
 
 /** A basic implementation of {@link Operator} keeping a field for the current result. */
 public abstract class AbstractOperator implements Operator {

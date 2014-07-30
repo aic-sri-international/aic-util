@@ -1,4 +1,4 @@
-package com.sri.ai.util.rangeoperation;
+package com.sri.ai.util.rangeoperation.api;
 
 import java.util.Collection;
 import java.util.HashSet;

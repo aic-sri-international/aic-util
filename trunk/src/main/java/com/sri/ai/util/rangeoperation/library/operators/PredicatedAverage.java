@@ -1,6 +1,8 @@
-package com.sri.ai.util.rangeoperation;
+package com.sri.ai.util.rangeoperation.library.operators;
 
 import com.google.common.base.Predicate;
+import com.sri.ai.util.rangeoperation.core.AbstractOperator;
+import com.sri.ai.util.rangeoperation.core.RangeOperations;
 
 /**
  * Similar to {@link Average} but taking a predicate selecting items to be considered in average.

@@ -1,4 +1,7 @@
-package com.sri.ai.util.rangeoperation;
+package com.sri.ai.util.rangeoperation.library.operators;
+
+import com.sri.ai.util.rangeoperation.core.AbstractOperator;
+import com.sri.ai.util.rangeoperation.core.RangeOperations;
 
 public class Average extends AbstractOperator {
 	@Override

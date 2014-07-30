@@ -1,4 +1,8 @@
-package com.sri.ai.util.rangeoperation;
+package com.sri.ai.util.rangeoperation.library.rangeoperations;
+
+import com.sri.ai.util.rangeoperation.api.Operator;
+import com.sri.ai.util.rangeoperation.api.RangeOperation;
+import com.sri.ai.util.rangeoperation.library.ranges.IntegerRange;
 
 public class IntegerRangeOperation extends RangeOperation {
 	public IntegerRangeOperation(Operator operator, String name, final int first, final int last, final int step) {

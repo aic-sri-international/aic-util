@@ -8,11 +8,11 @@ import java.util.List;
 import com.sri.ai.util.Util;
 import com.sri.ai.util.gnuplot.Gnuplot;
 import com.sri.ai.util.gnuplot.YSeries;
-import com.sri.ai.util.rangeoperation.Axis;
-import com.sri.ai.util.rangeoperation.DAEFunction;
-import com.sri.ai.util.rangeoperation.DependencyAwareEnvironment;
-import com.sri.ai.util.rangeoperation.Range;
-import com.sri.ai.util.rangeoperation.RangeOperations;
+import com.sri.ai.util.rangeoperation.api.DAEFunction;
+import com.sri.ai.util.rangeoperation.api.DependencyAwareEnvironment;
+import com.sri.ai.util.rangeoperation.api.Range;
+import com.sri.ai.util.rangeoperation.core.RangeOperations;
+import com.sri.ai.util.rangeoperation.library.rangeoperations.Axis;
 
 public class Experiment {
 

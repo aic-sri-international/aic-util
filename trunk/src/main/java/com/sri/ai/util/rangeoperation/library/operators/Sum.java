@@ -1,4 +1,6 @@
-package com.sri.ai.util.rangeoperation;
+package com.sri.ai.util.rangeoperation.library.operators;
+
+import com.sri.ai.util.rangeoperation.core.AbstractOperator;
 
 public class Sum extends AbstractOperator {
 	@Override
