@@ -4,6 +4,7 @@ import java.util.*;
 import java.io.*;
 
 import com.sri.ai.util.Util;
+import com.sri.ai.util.base.NullaryFunction;
 
 /**
  * A class for using gnuplot programmatically.
@@ -25,7 +26,7 @@ public class Gnuplot {
 	 * (see gnuplot documentation for such precommands).
 	 * If one of the precommands is "persist", gnuplot persists after execution.
 	 */
-	static public void plot(Collection<String> precommands, List<? extends Number> xSeries, List<YSeries> ySeriesList) {
+	static public void plot(Collection<String> precommands, NullaryFunction xSeries, List<YSeries> ySeriesList) {
 		GnuplotPipe pipe = new GnuplotPipe(precommands.contains("persist"));
 		GnuplotData data = new GnuplotData(xSeries, ySeriesList);
 		try {
@@ -57,7 +58,7 @@ public class Gnuplot {
 						"set xlabel 'Time'",
 						"set ylabel 'Intensity'"
 				),
-				Util.list(10,20,30,40), // xSeries
+				getIteratorNullaryFunction(Util.list(10,20,30,40)), // xSeries
 				Util.list( // list of ySeries
 						new YSeries(
 								Util.list("title 'random sequence 1'", "w linespoints"),
@@ -70,4 +71,12 @@ public class Gnuplot {
 						)
 				);
 	}
+
+    /** 
+     * Returns a {@link NullaryFunction} that returns a new iterator to the given collection
+     * each time is it invoked. 
+     */
+    static public NullaryFunction getIteratorNullaryFunction(final Collection c) {
+	return new NullaryFunction() { public Object apply() { return c.iterator(); }};
+    }
 }

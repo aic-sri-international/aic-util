@@ -3,6 +3,7 @@ package com.sri.ai.util.gnuplot;
 import java.util.List;
 
 import com.sri.ai.util.Util;
+import com.sri.ai.util.base.NullaryFunction;
 
 /**
  * Class representing a y series in gnuplot. 
@@ -15,15 +16,15 @@ import com.sri.ai.util.Util;
  */
 public class YSeries {
 	public List<String> directives;
-	public List<? extends Number> data;
+	public NullaryFunction data;
 
 	public YSeries(List<? extends Number> data) {
 		this.directives = Util.list();
-		this.data = data;
+		this.data = Gnuplot.getIteratorNullaryFunction(data);
 	}
 	
 	public YSeries(List<String> directives, List<? extends Number> data) {
 		this.directives = directives;
-		this.data = data;
+		this.data = Gnuplot.getIteratorNullaryFunction(data);
 	}
 }

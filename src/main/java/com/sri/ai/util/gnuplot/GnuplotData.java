@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.sri.ai.util.Util;
+import com.sri.ai.util.base.NullaryFunction;
 
 /**
  * A class aggregating all data for a gnuplot plot.
@@ -26,7 +27,7 @@ public class GnuplotData {
 	/** Index used to name data files. */
 	private int dataFileIndex = 0;
 
-	public GnuplotData(List<? extends Number> xSeries, List<YSeries> ySeriesList) {
+	public GnuplotData(NullaryFunction xSeries, List<YSeries> ySeriesList) {
 		try {
 			descriptions = new LinkedList<String>();
 			for (YSeries ySeries : ySeriesList) {
@@ -42,11 +43,12 @@ public class GnuplotData {
 	}
 
 	/** Get data series description for a particular list of data. */
-	private String getDescription(List<? extends Number> xSeries, YSeries ySeries) throws IOException {
+	private String getDescription(NullaryFunction xSeries, YSeries ySeries) throws IOException {
 		String titleClause = getClauseValueOrEmptyString(ySeries.directives, "title ", "t ");
 		if (titleClause.equals("")) titleClause = getClauseValueOrEmptyString(ySeries.directives, "notitle", "notitle");
 		String withClause = getClauseValueOrEmptyString(ySeries.directives, "with ", "w ");
-		String path = storeDataAndReturnPath(xSeries == null? null : xSeries.iterator(), ySeries.data.iterator());
+		@SuppressWarnings("unchecked")
+		String path = storeDataAndReturnPath(xSeries == null? null : (Iterator<? extends Number>) xSeries.apply(), (Iterator<? extends Number>) ySeries.data.apply());
 		StringBuffer command = new StringBuffer();
 		command.append("'" + path + "'");
 		command.append(xSeries != null? " using 1:2" : " using 1");
