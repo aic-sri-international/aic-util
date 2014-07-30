@@ -1,9 +1,17 @@
-package com.sri.ai.util.rangeoperation;
+package com.sri.ai.util.rangeoperation.core;
 
 import java.util.*;
 
 import com.google.common.base.Predicate;
 import com.sri.ai.util.Util;
+import com.sri.ai.util.rangeoperation.api.DAEFunction;
+import com.sri.ai.util.rangeoperation.api.DependencyAwareEnvironment;
+import com.sri.ai.util.rangeoperation.api.Range;
+import com.sri.ai.util.rangeoperation.api.RangeOperation;
+import com.sri.ai.util.rangeoperation.library.rangeoperations.Averaging;
+import com.sri.ai.util.rangeoperation.library.rangeoperations.Axis;
+import com.sri.ai.util.rangeoperation.library.rangeoperations.PredicatedAveraging;
+import com.sri.ai.util.rangeoperation.library.rangeoperations.Summation;
 
 /**
  * <code>RangeOperations</code> is a facility for

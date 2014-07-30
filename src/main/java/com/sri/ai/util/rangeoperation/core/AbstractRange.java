@@ -1,10 +1,12 @@
-package com.sri.ai.util.rangeoperation;
+package com.sri.ai.util.rangeoperation.core;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 
 import com.sri.ai.util.base.BinaryProcedure;
+import com.sri.ai.util.rangeoperation.api.DependencyAwareEnvironment;
+import com.sri.ai.util.rangeoperation.api.Range;
 
 /**
  * Provides basic Range functionality, only leaving to the user the task of defining

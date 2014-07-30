@@ -1,4 +1,4 @@
-package com.sri.ai.util.rangeoperation;
+package com.sri.ai.util.rangeoperation.api;
 
 /** Represents a cumulative operator by defining initializing and incrementing functions. */
 public interface Operator {

@@ -1,6 +1,7 @@
-package com.sri.ai.util.rangeoperation;
+package com.sri.ai.util.rangeoperation.library.ranges;
 
 import com.sri.ai.util.experiment.IntegerArithmeticSeriesIterator;
+import com.sri.ai.util.rangeoperation.core.AbstractRange;
 
 /** A range over integer values. */
 public class IntegerRange extends AbstractRange {

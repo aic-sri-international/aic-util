@@ -1,6 +1,13 @@
-package com.sri.ai.util.rangeoperation;
+package com.sri.ai.util.rangeoperation.library.rangeoperations;
 
 import java.util.Collection;
+
+import com.sri.ai.util.rangeoperation.api.Range;
+import com.sri.ai.util.rangeoperation.api.RangeOperation;
+import com.sri.ai.util.rangeoperation.library.operators.Concatenate;
+import com.sri.ai.util.rangeoperation.library.ranges.DiscreteRange;
+import com.sri.ai.util.rangeoperation.library.ranges.GeometricIntegerRange;
+import com.sri.ai.util.rangeoperation.library.ranges.IntegerRange;
 
 /** An operation concatenating values into a list, with {@link Concatenate}. */
 public class Axis extends RangeOperation {
