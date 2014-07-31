@@ -37,25 +37,31 @@
  */
 package com.sri.ai.util.rangeoperation.library.ranges;
 
+import java.util.Iterator;
+
 import com.google.common.annotations.Beta;
 import com.sri.ai.util.collect.IntegerArithmeticSeriesIterator;
 import com.sri.ai.util.rangeoperation.core.AbstractRange;
 
 /** A range over integer values. */
 @Beta
-public class IntegerRange extends AbstractRange {
+public class IntegerRange extends AbstractRange<Integer> {
+	
+	private int first, last, step;
+
 	public IntegerRange(String name, int first, int last, int step) {
 		super(name);
 		this.first = first;
 		this.last = last;
 		this.step = step;
 	}
+	
 	public IntegerRange(String name, int first, int last) {
 		this(name, first, last, 1);
 	}
+	
 	@Override
-	public Object apply() { 
+	public Iterator<Integer> apply() { 
 		return new IntegerArithmeticSeriesIterator(first, last, step);
 	}	
-	private int first, last, step;
 }

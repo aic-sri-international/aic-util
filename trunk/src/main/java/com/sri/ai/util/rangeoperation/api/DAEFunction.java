@@ -39,10 +39,11 @@ package com.sri.ai.util.rangeoperation.api;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.Function;
-import com.sri.ai.util.rangeoperation.api.DependencyAwareEnvironment;
 
 /**
  * An object that computes a value from a {@link DependencyAwareEnvironment}.
+ * If indicated as random by {@link #isRandom()}, user code must
+ * must take it into account and invoke it for re-computation even if its inputs have not been changed.
  * 
  * @author braz
  *

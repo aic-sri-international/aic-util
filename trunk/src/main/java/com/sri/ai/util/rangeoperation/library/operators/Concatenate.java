@@ -41,18 +41,20 @@ import java.util.List;
 
 import com.google.common.annotations.Beta;
 import com.sri.ai.util.Util;
-import com.sri.ai.util.rangeoperation.core.AbstractOperator;
+import com.sri.ai.util.rangeoperation.core.AbstractAggregateOperator;
 
-/** Cumulative operator concatenating values in a list. */
+/** Aggregate operator concatenating values in a list. */
 @Beta
-public class Concatenate extends AbstractOperator {
+public class Concatenate<T> extends AbstractAggregateOperator<T, List<T>> {
+	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initialize() {
 		result = Util.list();
 	}
-	@SuppressWarnings("unchecked")
+	
 	@Override
-	public void increment(Object value) {
-		((List<Object>)result).add(value);
+	public void increment(T value) {
+		((List<T>) result).add(value);
 	}
 }

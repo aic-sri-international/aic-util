@@ -47,6 +47,7 @@ import java.util.TreeMap;
 
 import com.google.common.annotations.Beta;
 import com.sri.ai.util.Util;
+import com.sri.ai.util.rangeoperation.api.DAEFunction;
 import com.sri.ai.util.rangeoperation.api.DependencyAwareEnvironment;
 
 @SuppressWarnings("serial")
@@ -61,7 +62,7 @@ public class DefaultDependencyAwareEnvironment extends TreeMap<String, Object> i
 	private Stack<String> variablesBeingComputed = new Stack<String>();
 
 	@Override
-	public Object getResultOrRecompute(AbstractDAEFunction function) {
+	public Object getResultOrRecompute(DAEFunction function) {
 		String variable = function.toString();
 
 		if (function.isRandom()) {

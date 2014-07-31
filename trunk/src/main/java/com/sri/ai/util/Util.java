@@ -2639,4 +2639,20 @@ public class Util {
 			}
 		};
 	}
+
+	/**
+	 * Takes a list of lists, a dimension index (0 for rows, 1 for columns) and an index (either row or column index),
+	 * and returns the corresponding slice (data[index,*] if dimension is 0, or data[*,index] if dimension is 1).
+	 */
+	public static <T> List<T> matrixSlice(List<List<T>> data, int dimension, int index) {
+		if (dimension == 0) {
+			return (List<T>) data.get(index);
+		}
+		List<T> result = new LinkedList<T>();
+		for (Iterator<List<T>> rowIt = data.iterator(); rowIt.hasNext();) {
+			List<T> row = rowIt.next();
+			result.add(row.get(index));
+		}
+		return result;
+	}
 }

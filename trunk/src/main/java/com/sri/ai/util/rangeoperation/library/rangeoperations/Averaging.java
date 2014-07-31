@@ -46,14 +46,29 @@ import com.sri.ai.util.rangeoperation.library.ranges.IntegerRange;
 
 /** An averaging operation over a range, valid over numbers or arbitrarily nested lists of numbers. */
 @Beta
-public class Averaging extends DefaultRangeOperation {
-	public Averaging(Range range) {
+public class Averaging extends DefaultRangeOperation<Object, Object> {
+	public Averaging(Range<Object> range) {
 		super(new Average(), range);
 	}
+	
+	@SuppressWarnings("unchecked")
 	public Averaging(String name, final int first, final int last, final int step) {
-		super(new Average(), new IntegerRange(name, first, last));
+		super(new Average(), (Range<Object>) ((Range) new IntegerRange(name, first, last)));
 	}
+	
 	public Averaging(String name, final int first, final int last) {
 		this(name, first, last, 1);
+	}
+
+	public Averaging(final int first, final int last, final int step) {
+		this("averaging count", first, last);
+	}
+	
+	public Averaging(final int first, final int last) {
+		this("averaging count", first, last);
+	}
+	
+	public Averaging(final int last) {
+		this(1, last);
 	}
 }

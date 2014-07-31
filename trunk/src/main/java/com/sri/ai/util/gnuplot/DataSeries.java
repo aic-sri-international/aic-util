@@ -35,36 +35,35 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.sri.ai.util.rangeoperation.library.rangeoperations;
+package com.sri.ai.util.gnuplot;
 
-import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 import com.google.common.annotations.Beta;
-import com.sri.ai.util.rangeoperation.api.Range;
-import com.sri.ai.util.rangeoperation.core.DefaultRangeOperation;
-import com.sri.ai.util.rangeoperation.library.operators.Concatenate;
-import com.sri.ai.util.rangeoperation.library.ranges.DiscreteRange;
-import com.sri.ai.util.rangeoperation.library.ranges.GeometricIntegerRange;
-import com.sri.ai.util.rangeoperation.library.ranges.IntegerRange;
+import com.sri.ai.util.Util;
+import com.sri.ai.util.base.NullaryFunction;
 
-/** An operation concatenating values into a list, with {@link Concatenate}. */
+/**
+ * Class representing a data series in gnuplot. 
+ * If a list <code>directives</code> of Strings is given, each of them
+ * is interpreted in the following way: if it starts with either "title " or "t ",
+ * it is considered a 'title' directive for the series;
+ * if it starts with either "with " or "w ", it is considered a 'with' directive for the series
+ * (consult the gnuplot documentation for further details).
+ * Their order does not matter; they are correctly placed in the gnuplot command.
+ */
 @Beta
-public class Axis extends DefaultRangeOperation {
-	public Axis(Range range) {
-		super(new Concatenate(), range);
+public class DataSeries<T> {
+	public List<String> directives;
+	public NullaryFunction<Iterator<T>> dataIteratorMaker;
+
+	public DataSeries(List<T> data) {
+		this(Util.<String>list(), data);
 	}
-	public Axis(String name, final int first, final int last, final int step) {
-		super(new Concatenate(), new IntegerRange(name, first, last, step));
-	}
-	public Axis(String name, final int first, final int last) {
-		this(name, first, last, 1);
-	}
-	/** Creates an axis on a geometric integer series. */
-	public Axis(String name, final int first, final int last, final float rate) {
-		super(new Concatenate(), new GeometricIntegerRange(name, first, last, rate));
-	}
-	/** Creates an axis on a discrete range. */
-	public <T> Axis(String name, Collection<T> collection) {
-		super(new Concatenate(), new DiscreteRange(name, collection));
+	
+	public DataSeries(List<String> directives, List<T> data) {
+		this.directives = directives;
+		this.dataIteratorMaker = Util.getIteratorNullaryFunction(data);
 	}
 }

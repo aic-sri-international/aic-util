@@ -38,16 +38,20 @@
 package com.sri.ai.util.rangeoperation.library.rangeoperations;
 
 import com.google.common.annotations.Beta;
-import com.sri.ai.util.rangeoperation.api.Operator;
+import com.sri.ai.util.rangeoperation.api.AggregateOperator;
+import com.sri.ai.util.rangeoperation.api.Range;
 import com.sri.ai.util.rangeoperation.core.DefaultRangeOperation;
 import com.sri.ai.util.rangeoperation.library.ranges.IntegerRange;
 
 @Beta
-public class IntegerRangeOperation extends DefaultRangeOperation {
-	public IntegerRangeOperation(Operator operator, String name, final int first, final int last, final int step) {
-		super(operator, new IntegerRange(name, first, last));
+public class IntegerRangeOperation<T> extends DefaultRangeOperation<T, T> {
+	
+	@SuppressWarnings("unchecked")
+	public IntegerRangeOperation(AggregateOperator<T,T> operator, String name, final int first, final int last, final int step) {
+		super(operator, (Range<T>) ((Range) new IntegerRange(name, first, last)));
 	}
-	public IntegerRangeOperation(Operator operator, String name, final int first, final int last) {
+	
+	public IntegerRangeOperation(AggregateOperator<T, T> operator, String name, final int first, final int last) {
 		this(operator, name, first, last, 1);
 	}
 }

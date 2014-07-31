@@ -38,15 +38,24 @@
 package com.sri.ai.util.rangeoperation.library.rangeoperations;
 
 import com.google.common.annotations.Beta;
+import com.sri.ai.util.rangeoperation.api.Range;
 import com.sri.ai.util.rangeoperation.core.DefaultRangeOperation;
 import com.sri.ai.util.rangeoperation.library.operators.Sum;
 import com.sri.ai.util.rangeoperation.library.ranges.IntegerRange;
 
+/**
+ * A summation range operation over numbers.
+ * TODO: extend it to arbitrarily nested lists of numbers.
+ * 
+ * @author braz
+ */
 @Beta
-public class Summation extends DefaultRangeOperation {
+public class Summation extends DefaultRangeOperation<Number, Number> {
+	@SuppressWarnings("unchecked")
 	public Summation(String name, final int first, final int last, final int step) {
-		super(new Sum(), new IntegerRange(name, first, last));
+		super(new Sum(), (Range) new IntegerRange(name, first, last));
 	}
+	
 	public Summation(String name, final int first, final int last) {
 		this(name, first, last, 1);
 	}

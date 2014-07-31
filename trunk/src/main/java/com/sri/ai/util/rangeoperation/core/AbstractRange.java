@@ -48,44 +48,54 @@ import com.sri.ai.util.rangeoperation.api.Range;
 
 /**
  * Provides basic Range functionality, only leaving to the user the task of defining
- * {@link #evaluate()}, which should provide a new iterator over a range of values.
+ * {@link #apply()}, which should provide a new iterator over a range of values.
+ * 
+ * @author braz
  */
 @Beta
 public abstract class AbstractRange<T> implements Range<T> {
+	
+	protected String name;
+	protected Iterator<T> iterator;
+	protected DependencyAwareEnvironment environment;
+	protected Collection<BinaryProcedure<String, T>> listeners = new LinkedList<BinaryProcedure<String, T>>();
+
 	/** Builds a range with a given variable name. */
 	public AbstractRange(String name) {
 		this.name = name;
 	}
+	
 	@Override
 	public String getName() {
 		return name;
 	}
+	
 	@Override
 	public void setEnvironment(DependencyAwareEnvironment environment) {
 		this.environment = environment;
 	}
+	
 	@Override
 	public void initialize() {
-		iterator = (Iterator<?>) apply();
+		iterator = apply();
 	}
+	
 	@Override
 	public boolean hasNext() {
 		return iterator.hasNext();
 	}
+	
 	@Override
 	public void next() {
-		Object value = iterator.next();
+		T value = iterator.next();
 		environment.put(name, value);
-		for (BinaryProcedure<String, Object> listener : listeners) {
+		for (BinaryProcedure<String, T> listener : listeners) {
 			listener.apply(name, value);
 		}
 	}
+	
 	@Override
-	public void addIterationListener(BinaryProcedure<String, Object> listener) {
+	public void addIterationListener(BinaryProcedure<String, T> listener) {
 		listeners.add(listener);
 	}
-	protected String name;
-	protected Iterator<?> iterator;
-	protected DependencyAwareEnvironment environment;
-	protected Collection<BinaryProcedure<String, Object>> listeners = new LinkedList<BinaryProcedure<String, Object>>();
 }

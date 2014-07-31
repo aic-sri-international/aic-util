@@ -40,13 +40,17 @@ package com.sri.ai.util.rangeoperation.library.operators;
 import com.google.common.annotations.Beta;
 import com.google.common.base.Predicate;
 import com.sri.ai.util.Util;
-import com.sri.ai.util.rangeoperation.core.AbstractOperator;
+import com.sri.ai.util.rangeoperation.core.AbstractAggregateOperator;
 
 /**
  * Similar to {@link Average} but taking a predicate selecting items to be considered in average.
  */
 @Beta
-public class PredicatedAverage extends AbstractOperator {
+public class PredicatedAverage extends AbstractAggregateOperator<Object, Object> {
+
+	protected int weight = 0;
+	protected Predicate<Object> predicate;
+
 	public PredicatedAverage(Predicate<Object> predicate) {
 		this.predicate = predicate;
 	}
@@ -56,6 +60,7 @@ public class PredicatedAverage extends AbstractOperator {
 		result = 0;
 		weight = 0;
 	}
+	
 	@Override
 	public void increment(Object another) {
 		if ( ! predicate.apply(another)) {
@@ -71,7 +76,4 @@ public class PredicatedAverage extends AbstractOperator {
 			weight++;
 		}
 	}
-
-	protected int weight = 0;
-	protected Predicate<Object> predicate;
 }

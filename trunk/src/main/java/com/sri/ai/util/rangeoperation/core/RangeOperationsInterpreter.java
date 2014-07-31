@@ -47,74 +47,73 @@ import com.sri.ai.util.rangeoperation.api.DependencyAwareEnvironment;
 import com.sri.ai.util.rangeoperation.api.RangeOperation;
 
 /**
- * <code>RangeOperationApplication</code>s is a facility for
- * easily writing and efficiently computing expressions with nested cumulative operators
+ * {@link RangeOperationInterpreter} is a facility for
+ * easily writing and efficiently computing expressions with nested aggregate operators
  * (for example, <code>\sum_i \prod_j f(i,j)</code>).
  * <p>
- * It allows easy writing of these expressions through its method {@link #run(Object...)},
- * best explained by example:
+ * It works by having its {@link #apply(Object...)} method invoked with
+ * a sequence of {@link RangeOperation}s and a {@link DAEFunction} <code>function</code>,
+ * iterating over the {@link RangeOperation}s variables, updating an internal
+ * {@link DependencyAwareEnvironment} with their current values, and executing, at each iteration,
+ * <code>function</code>.
+ * The result is a matrix or single value which is the result of the specified operations.
+ * <p>
+ * More precisely, let <code>r1, ..., rn, function</code>
+ * be the ranging operations and function received, with a current <code>env</code> environment.
+ * If <code>n = 0</code>, the returned value <code>I(r1, ..., rn, function, env)</code>
+ *    is <code>function(env)</code>.
+ * If <code>n > 0</code>, the returned value <code>I(r1, ..., rn, function, env)</code>
+ *    is <code>I(r2, ..., rn, function, env + var = val1) op ... op I(r2, ..., rn, function, env + var = valm)</code>,
+ *    where <code>op</code>, <code>var</code> and <code>val1,...,valm</code> are
+ *    the aggregate operator, variable, and range of <code>r1</code>, respectively.
+ * <p>
+ * Examples:
  * <p>
  * <code>
- * Object result = RangeOperations.run(Averaging("x", 0, 10), X());
- * </code>
- * <p>
- * computes the average of integers from 0 to 10.
- * <p>
- * {@link #run(Object...)} receives a variable number of arguments,
- * which can be, among other types (see below), {@link DefaultRangeOperation} and {@link AbstractDAEFunction}. 
- * {@link #Averaging()} is a method returning an instance of {@link #Averaging},
- * an extension of {@link DefaultRangeOperation}.
- * {@link #X()} is a method returning an instance of {@link #X}, an extension of {@link AbstractDAEFunction}
- * returning the value of variable <code>"x"</code> in an implicit environment (of type {@link DependencyAwareEnvironment})
- * which is passed to the {@link AbstractDAEFunction}. 
- * <p>
- * Therefore, <code>run(Averaging("x", 0, 10), X())</code> denotes an operation
- * setting variable <code>"x"</code> to values from 0 to 10 and averaging over them,
- * and returns that value.
- * <p>
- * Another example is:
+ * Object result = RangeOperationInterpreter.apply(new Dimension("x", 1, 10), new Dimension("y", 1, 20), xPlusY());
+ * </code><br>
+ * generates a list of 10 lists, each with 20 elements, containing the sums of the row and column indices.
  * <p>
  * <code>
- * Object result = RangeOperations.run(Axis("x", 0, 20), Averaging("y", 0, 10), new F());
- * </code>
- * <p>
- * computes a list with 21 elements,
- * where the x-th element contains the average, over values of <code>"y"</code> from 0 to 10,
- * of <code>F()</code> evaluated on an environment with current values for <code>"x"</code> and <code>"y"</code>. 
+ * Object result = RangeOperationInterpreter.apply(new Dimension("x", 1, 10), new Averaging(1, 20), gaussianWithMeanX());
+ * </code><br>
+ * generates a list of 10 elements, the x-th element being the average of 20 samples of a Gaussian of mean x.
+ * Note that gaussianWithMeanX needs to have its method {@link DAEFunction#isRandom()} return <code>true</code>,
+ * or it will incorrectly be computed only once per value of x.
  * <p>
  * An arbitrary number of range operations can be used, and will be performed in the order they are given.
- * User-defined extensions of {@link DefaultRangeOperation} and {@link AbstractDAEFunction} can be used as well.
- * See the documentation on {@link DefaultRangeOperation} for details on how to use it.
+ * User-defined extensions of {@link DefaultRangeOperation} and {@link DAEFunction} can be used as well.
+ * See the documentation on {@link RangeOperation} for details on how to use it.
  * <p>
  * An important feature of this framework is automatic caching.
- * Suppose <code>F</code> above only depends on x.
- * It would then be wasteful to recalculate it for every new value of y, which is being used as a counter only.
+ * Suppose <code>function</code> above only depends on a variable "x".
+ * It would then be wasteful to recalculate it for every new value of another variable "y",
+ * which may be, for example, only a counter.
  * This does not happen, however, because {@link DependencyAwareEnvironment} keeps track of such dependencies
- * automatically.
- * IMPORTANT: for this automatic dependency management to occur even for sub-functions inside F,
- * they must be calculated with the {@link DependencyAwareEnvironment#getResultOrRecompute(AbstractDAEFunction)} method.
- * The function will always be recomputed if {@link AbstractDAEFunction#isRandom()} returns <code>true</code>,
+ * automatically.<br>
+ * IMPORTANT: for this automatic dependency management to occur even for sub-functions inside the {@link DAEFunction},
+ * they must be calculated with the {@link DependencyAwareEnvironment#getResultOrRecompute(DAEFunction)} method.
+ * The function will always be recomputed if {@link DAEFunction#isRandom()} returns <code>true</code>,
  * or an ancestor function is random.
  * <p>
- * If {@link #run(Object...)} receives Strings as arguments, they are assumed to be variables to be
+ * If {@link #apply(Object...)} receives Strings as arguments, they are assumed to be variables to be
  * put in the environment with the object right after them as value.
  * If an {@link DependencyAwareEnvironment} is found, it replaces the default (initially empty) environment,
  * removing previous variable values. Subsequent variables are added to this environment.
- * <p>
- * As a convenience, this class already provides a few {@link DefaultRangeOperation} extensions:
- * {@link #Averaging(String, int, int, int)}, {@link #Axis(String, int, int, int)} and 
- * {@link #Summation(String, int, int)}.
  *
  * @author braz
  */
 @Beta
-public class RangeOperationsApplication {
+public class RangeOperationsInterpreter {
 
 	protected ArrayList<? extends RangeOperation> rangeOperations;
-	protected AbstractDAEFunction function;
+	protected DAEFunction function;
 	protected DependencyAwareEnvironment environment;
 
-	private <T extends RangeOperation> RangeOperationsApplication(DependencyAwareEnvironment environment, List<T> rangeOperations, AbstractDAEFunction function) {
+	private <T extends RangeOperation>
+	RangeOperationsInterpreter(
+			DependencyAwareEnvironment environment, List<T> rangeOperations, DAEFunction function) {
+		
 		this.environment = environment;
 		this.rangeOperations = new ArrayList<T>(rangeOperations);
 		this.function = function;
@@ -126,10 +125,10 @@ public class RangeOperationsApplication {
 	/**
 	 * Evaluates the range operations and {@DAEFunction} present in a list of arguments. 
 	 */
-	public static Object run(Object ... arguments) {
+	public static Object apply(Object ... arguments) {
 		List<DefaultRangeOperation> rangeOperations = new LinkedList<DefaultRangeOperation>();
 		DependencyAwareEnvironment environment = new DefaultDependencyAwareEnvironment();
-		AbstractDAEFunction function = null;
+		DAEFunction function = null;
 		for (int i = 0; i < arguments.length; i++) {
 			Object argument = arguments[i];
 			if (argument instanceof RangeOperation) {
@@ -144,32 +143,34 @@ public class RangeOperationsApplication {
 				environment.put(variable, value);
 			}
 			else if (argument instanceof DAEFunction) {
-				function = (AbstractDAEFunction) argument;
+				function = (DAEFunction) argument;
 			}
 		}
 
-		RangeOperationsApplication rangeOperationsObject = new RangeOperationsApplication(environment, rangeOperations, function);
-		Object result = rangeOperationsObject.run();
+		RangeOperationsInterpreter rangeOperationsObject = new RangeOperationsInterpreter(environment, rangeOperations, function);
+		Object result = rangeOperationsObject.apply();
 		return result;
 	}
 
-	private Object run() {
-		return run(0);
+	private Object apply() {
+		return apply(0);
 	}
 
-	private Object run(int i) {
+	@SuppressWarnings("unchecked")
+	private Object apply(int i) {
 		if (i == rangeOperations.size()) {
 			return environment.getResultOrRecompute(function);
 		}
 
-		RangeOperation rangeOp = rangeOperations.get(i);
-		rangeOp.getOperator().initialize();
-		for (rangeOp.initialize(); rangeOp.hasNext(); ) {
-			rangeOp.next();
-			Object subresult = run(i+1); 
-			rangeOp.getOperator().increment(subresult);
+		RangeOperation rangeOperation = rangeOperations.get(i);
+		rangeOperation.getOperator().initialize();
+		for (rangeOperation.initialize(); rangeOperation.hasNext(); ) {
+			rangeOperation.next();
+			Object subresult = apply(i+1); 
+			rangeOperation.getOperator().increment(subresult);
 		}
 		
-		return rangeOp.getOperator().getResult();
+		Object result = rangeOperation.getOperator().getResult();
+		return result;
 	}
 }

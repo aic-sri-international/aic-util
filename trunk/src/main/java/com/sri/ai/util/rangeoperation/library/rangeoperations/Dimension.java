@@ -35,35 +35,44 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.sri.ai.util.gnuplot;
+package com.sri.ai.util.rangeoperation.library.rangeoperations;
 
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.List;
 
 import com.google.common.annotations.Beta;
-import com.sri.ai.util.Util;
-import com.sri.ai.util.base.NullaryFunction;
+import com.sri.ai.util.rangeoperation.api.Range;
+import com.sri.ai.util.rangeoperation.core.DefaultRangeOperation;
+import com.sri.ai.util.rangeoperation.library.operators.Concatenate;
+import com.sri.ai.util.rangeoperation.library.ranges.DiscreteRange;
+import com.sri.ai.util.rangeoperation.library.ranges.GeometricIntegerRange;
+import com.sri.ai.util.rangeoperation.library.ranges.IntegerRange;
 
-/**
- * Class representing a y series in gnuplot. 
- * If a list <code>directives</code> of Strings is given, each of them
- * is interpreted in the following way: if it starts with either "title " or "t ",
- * it is considered a 'title' directive for the series;
- * if it starts with either "with " or "w ", it is considered a 'with' directive for the series
- * (consult the gnuplot documentation for further details).
- * Their order does not matter; they are correctly placed in the gnuplot command.
- */
+/** An operation concatenating values into a list, with {@link Concatenate}. */
 @Beta
-public class YSeries<T> {
-	public List<String> directives;
-	public NullaryFunction<Iterator<T>> dataIteratorMaker;
-
-	public YSeries(List<T> data) {
-		this(Util.<String>list(), data);
+public class Dimension<T> extends DefaultRangeOperation<T, List<T>> {
+	
+	public Dimension(Range<T> range) {
+		super(new Concatenate<T>(), range);
 	}
 	
-	public YSeries(List<String> directives, List<T> data) {
-		this.directives = directives;
-		this.dataIteratorMaker = Util.getIteratorNullaryFunction(data);
+	/** Creates an axis on a discrete range. */
+	public Dimension(String name, Collection<T> collection) {
+		this(new DiscreteRange<T>(name, collection));
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Dimension(String name, final int first, final int last, final int step) {
+		this((Range<T>) new IntegerRange(name, first, last, step));
+	}
+	
+	public Dimension(String name, final int first, final int last) {
+		this(name, first, last, 1);
+	}
+	
+	/** Creates an axis on a geometric integer series. */
+	@SuppressWarnings("unchecked")
+	public Dimension(String name, final int first, final int last, final float rate) {
+		this((Range<T>) new GeometricIntegerRange(name, first, last, rate));
 	}
 }
