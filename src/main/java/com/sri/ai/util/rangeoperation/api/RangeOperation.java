@@ -40,14 +40,16 @@ package com.sri.ai.util.rangeoperation.api;
 import com.google.common.annotations.Beta;
 
 /**
- * A combination of {@link Operator} and {@link Range}.
+ * A combination of {@link AggregateOperator} and {@link Range}.
+ * 
+ * @author braz
  */
 @Beta
-public interface RangeOperation {
+public interface RangeOperation<T1, T2> {
 
-	public abstract Range getRange();
+	public abstract Range<T1> getRange();
 
-	public abstract Operator getOperator();
+	public abstract AggregateOperator<T1, T2> getOperator();
 
 	public abstract void setEnvironment(DependencyAwareEnvironment environment);
 

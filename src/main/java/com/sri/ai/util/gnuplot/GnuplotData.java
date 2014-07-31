@@ -66,11 +66,11 @@ public class GnuplotData {
 	/** Index used to name data files. */
 	private int dataFileIndex = 0;
 
-	public <T extends Number> GnuplotData(NullaryFunction<Iterator<T>> xSeries, List<YSeries<T>> ySeriesList) {
+	public <T> GnuplotData(NullaryFunction<Iterator<T>> xSeries, List<DataSeries<T>> dataSeriesList) {
 		try {
 			commandLineDescriptions = new LinkedList<String>();
-			for (YSeries<T> ySeries : ySeriesList) {
-				commandLineDescriptions.add(getGnuplotCommandLineDescription(ySeries, xSeries));
+			for (DataSeries<T> dataSeries : dataSeriesList) {
+				commandLineDescriptions.add(getGnuplotCommandLineDescription(dataSeries, xSeries));
 			}
 		}
 		catch (IOException e) {
@@ -87,19 +87,19 @@ public class GnuplotData {
 	 * Get gnuplot command line description for a y-series to be plotted, including x-series data if available
 	 * (that is, <code>xSeries</code> is not <code>null</code>).
 	 */
-	private <T extends Number> String getGnuplotCommandLineDescription(YSeries<T> ySeries, NullaryFunction<Iterator<T>> xSeriesIteratorMaker) throws IOException {
-		String titleClause = getClauseValueOrEmptyString(ySeries.directives, "title ", "t ");
+	private <T> String getGnuplotCommandLineDescription(DataSeries<T> dataSeries, NullaryFunction<Iterator<T>> xSeriesIteratorMaker) throws IOException {
+		String titleClause = getClauseValueOrEmptyString(dataSeries.directives, "title ", "t ");
 		if (titleClause.equals("")) {
-			titleClause = getClauseValueOrEmptyString(ySeries.directives, "notitle", "notitle");
+			titleClause = getClauseValueOrEmptyString(dataSeries.directives, "notitle", "notitle");
 		}
 		
-		String withClause = getClauseValueOrEmptyString(ySeries.directives, "with ", "w ");
+		String withClause = getClauseValueOrEmptyString(dataSeries.directives, "with ", "w ");
 		
 		boolean xSeriesIsAvailable = xSeriesIteratorMaker != null;
 		
 		Iterator<T> xSeriesIterator = xSeriesIsAvailable? xSeriesIteratorMaker.apply() : null;
 		
-		String path = storeDataAndReturnPath(xSeriesIterator, ySeries.dataIteratorMaker.apply());
+		String path = storeDataAndReturnPath(xSeriesIterator, dataSeries.dataIteratorMaker.apply());
 		
 		StringBuffer command = new StringBuffer();
 		command.append("'" + path + "'");
@@ -119,33 +119,33 @@ public class GnuplotData {
 		return clause;
 	}
 
-	private String storeDataAndReturnPath(Iterator<? extends Number> xSeriesDataIterator, Iterator<? extends Number> ySeriesDataIterator) throws IOException {
+	private <T> String storeDataAndReturnPath(Iterator<T> xSeriesDataIterator, Iterator<T> dataSeriesDataIterator) throws IOException {
 		File tempFile = new File("gnuplot" + dataFileIndex++ + ".dat");
 		BufferedWriter w = new BufferedWriter(new FileWriter(tempFile));
 		
 		if (xSeriesDataIterator != null) {
-			writeDataWithXSeries(xSeriesDataIterator, ySeriesDataIterator, w);
+			writeDataWithXSeries(xSeriesDataIterator, dataSeriesDataIterator, w);
 		}
 		else {
-			writeDataWithoutXSeries(ySeriesDataIterator, w);
+			writeDataWithoutXSeries(dataSeriesDataIterator, w);
 		}
 		w.close();
 		filesToDelete.add(tempFile);
 		return tempFile.getPath();
 	}
 
-	private void writeDataWithoutXSeries(Iterator<? extends Number> ySeriesDataIterator, BufferedWriter w) throws IOException {
-		while (ySeriesDataIterator.hasNext()) {
-			Object y = ySeriesDataIterator.next();
+	private <T> void writeDataWithoutXSeries(Iterator<T> dataSeriesDataIterator, BufferedWriter w) throws IOException {
+		while (dataSeriesDataIterator.hasNext()) {
+			Object y = dataSeriesDataIterator.next();
 			w.write(y.toString());
 			w.newLine();
 		}
 	}
 
-	private void writeDataWithXSeries(
-			Iterator<? extends Number> xSeriesDataIterator, Iterator<? extends Number> ySeriesDataIterator, BufferedWriter w) throws IOException {
+	private <T> void writeDataWithXSeries(
+			Iterator<T> xSeriesDataIterator, Iterator<T> dataSeriesDataIterator, BufferedWriter w) throws IOException {
 		while (xSeriesDataIterator.hasNext()) {
-			w.write(xSeriesDataIterator.next() + " " + ySeriesDataIterator.next());
+			w.write(xSeriesDataIterator.next() + " " + dataSeriesDataIterator.next());
 			w.newLine();
 		}
 	}

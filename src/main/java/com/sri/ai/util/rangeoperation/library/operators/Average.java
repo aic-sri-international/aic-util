@@ -39,10 +39,16 @@ package com.sri.ai.util.rangeoperation.library.operators;
 
 import com.google.common.annotations.Beta;
 import com.sri.ai.util.Util;
-import com.sri.ai.util.rangeoperation.core.AbstractOperator;
+import com.sri.ai.util.rangeoperation.core.AbstractAggregateOperator;
 
+/**
+ * An averaging aggregate operation that applies to number objects or arbitrarily nested lists of numbers.
+ * 
+ * @author braz
+ *
+ */
 @Beta
-public class Average extends AbstractOperator {
+public class Average extends AbstractAggregateOperator<Object, Object> {
 	@Override
 	public void initialize() {
 		result = 0;

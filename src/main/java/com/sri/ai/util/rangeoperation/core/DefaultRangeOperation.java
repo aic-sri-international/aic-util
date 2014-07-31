@@ -38,29 +38,29 @@
 package com.sri.ai.util.rangeoperation.core;
 
 import com.google.common.annotations.Beta;
+import com.sri.ai.util.rangeoperation.api.AggregateOperator;
 import com.sri.ai.util.rangeoperation.api.DependencyAwareEnvironment;
-import com.sri.ai.util.rangeoperation.api.Operator;
 import com.sri.ai.util.rangeoperation.api.Range;
 import com.sri.ai.util.rangeoperation.api.RangeOperation;
 
 @Beta
-public class DefaultRangeOperation<T> implements RangeOperation {
+public class DefaultRangeOperation<T1, T2> implements RangeOperation<T1, T2> {
 
-	protected Operator operator;
-	protected Range<T> range;
+	protected AggregateOperator<T1, T2> operator;
+	protected Range<T1> range;
 
-	public DefaultRangeOperation(Operator operator, Range<T> range) {
+	public DefaultRangeOperation(AggregateOperator<T1, T2> operator, Range<T1> range) {
 		this.operator = operator;
 		this.range = range;
 	}
 
 	@Override
-	public Range getRange() {
+	public Range<T1> getRange() {
 		return range;
 	}
 
 	@Override
-	public Operator getOperator() {
+	public AggregateOperator<T1, T2> getOperator() {
 		return operator;
 	}
 

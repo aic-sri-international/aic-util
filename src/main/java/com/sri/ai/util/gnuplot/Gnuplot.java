@@ -61,23 +61,23 @@ public class Gnuplot {
 	/**
 	 * Generates a plot with gnuplot using the following data:
 	 * <ul>
-	 * <li> <code>xSeries</code> is a {@link NullaryFunction<Iterator<Number>>} providing
-	 *      iterators over the numbers to appear on the x axis, or <code>null</code>
-	 *      (in which case a simple integer enumeration matching the ySeries is used instead)
-	 * <li> <code>ySeries</code> is a list of {@link YSeries}, each describing a data series to be plotted
+	 * <li> <code>xSeries</code> is a {@link NullaryFunction<Iterator<T>>} providing
+	 *      iterators over the values to appear on the x-axis, or <code>null</code>
+	 *      (in which case a simple integer enumeration matching the data series is used instead)
+	 * <li> <code>dataSeriesList</code> is a list of {@link DataSeries}, each describing a data series to be plotted
 	 *      and gnuplot command line directives for the series.
 	 * </ul>
 	 * The method also issues a list of precommands to gnuplot provided as Strings
 	 * (see gnuplot documentation for such precommands).
 	 * If one of the precommands is the non-gnuplot "persist", gnuplot persists after execution.
 	 */
-	static public <T extends Number> void plot(
+	static public <T> void plot(
 			List<String> precommands,
 			NullaryFunction<Iterator<T>> xSeries,
-			List<YSeries<T>> ySeriesList) {
+			List<DataSeries<T>> dataSeriesList) {
 		
 		GnuplotPipe pipe = new GnuplotPipe(precommands.contains("persist"));
-		GnuplotData data = new GnuplotData(xSeries, ySeriesList);
+		GnuplotData data = new GnuplotData(xSeries, dataSeriesList);
 		try {
 			sendPrecommands(precommands, pipe);
 			pipe.send("plot " + data.getGnuplotCommandLinePlotArguments());
@@ -110,11 +110,11 @@ public class Gnuplot {
 				),
 				Util.getIteratorNullaryFunction(Util.list(10,20,30,40)), // xSeries
 				Util.list( // list of ySeries
-						new YSeries<Integer>(
+						new DataSeries<Integer>(
 								Util.list("title 'random sequence 1'", "w linespoints"),
 								Util.list(1,2,4,3)
 								),
-						new YSeries<Integer>(
+						new DataSeries<Integer>(
 								Util.list("title 'random sequence 2'", "w linespoints"),
 								Util.list(5,4,3,2)
 								)

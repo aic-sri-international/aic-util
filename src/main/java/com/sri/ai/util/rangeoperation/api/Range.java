@@ -45,13 +45,16 @@ import com.sri.ai.util.base.NullaryFunction;
 import com.sri.ai.util.rangeoperation.api.DependencyAwareEnvironment;
 
 /**
- * A range can be thought of as a "virtual list" of values for a variable, based on a generator of values or an actual collection.
+ * A range can be thought of as a "virtual list" of values for a named variable,
+ * based on a generator of values or an actual collection.
  * Technically, it is a {@link NullaryFunction} producing a new iterator upon request.
  * It must keep a {@link DependencyAwareEnvironment}
  * set by {@link #setEnvironment(DependencyAwareEnvironment)}
- * that is updated by the iterator's method {@link #next()}.
+ * that is updated by the iterator's method {@link #next()} every time the variable is updated.
  * It may also receive {@link BinaryProcedure} listeners to be called
  * with variable and value pairs whenever {@link #next()} is invoked.
+ * 
+ * @author braz
  */
 @Beta
 public interface Range<T> extends NullaryFunction<Iterator<T>> {
@@ -71,5 +74,5 @@ public interface Range<T> extends NullaryFunction<Iterator<T>> {
 	public void next();
 	
 	/** Add a binary procedure to be invoke upon iteration, with variable and value as parameters. */
-	public void addIterationListener(BinaryProcedure<String, Object> listener);
+	public void addIterationListener(BinaryProcedure<String, T> listener);
 }

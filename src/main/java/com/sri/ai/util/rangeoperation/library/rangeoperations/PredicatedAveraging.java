@@ -49,13 +49,17 @@ import com.sri.ai.util.rangeoperation.library.ranges.IntegerRange;
  * not satisfying a given predicate.
  */
 @Beta
-public class PredicatedAveraging extends DefaultRangeOperation {
-	public PredicatedAveraging(Range range, Predicate<Object> predicate) {
+public class PredicatedAveraging extends DefaultRangeOperation<Object, Object> {
+
+	public PredicatedAveraging(Range<Object> range, Predicate<Object> predicate) {
 		super(new PredicatedAverage(predicate), range);
 	}
+	
+	@SuppressWarnings("unchecked")
 	public PredicatedAveraging(String name, Predicate<Object> predicate, final int first, final int last, final int step) {
-		super(new PredicatedAverage(predicate), new IntegerRange(name, first, last));
+		super(new PredicatedAverage(predicate), (Range) new IntegerRange(name, first, last));
 	}
+	
 	public PredicatedAveraging(String name, Predicate<Object> predicate, final int first, final int last) {
 		this(name, predicate, first, last, 1);
 	}

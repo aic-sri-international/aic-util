@@ -35,20 +35,23 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.sri.ai.util.rangeoperation.api;
+package com.sri.ai.util.rangeoperation.core;
 
 import com.google.common.annotations.Beta;
+import com.sri.ai.util.rangeoperation.api.AggregateOperator;
 
-/** Represents a cumulative operator by defining initializing and incrementing functions. */
+/**
+ * An abstract implementation of {@link AggregateOperator} keeping a field for the current result.
+ * 
+ * @author braz
+ */
 @Beta
-public interface Operator {
+public abstract class AbstractAggregateOperator<T1, T2> implements AggregateOperator<T1, T2> {
 	
-	/** Prepares operator for another round of cumulative operations. */
-	public void initialize();
-	
-	/** Returns current result. */
-	public Object getResult();
-	
-	/** Increments result by another value. */
-	public void increment(Object value);
+	protected T2 result;
+
+	@Override
+	public T2 getResult() {
+		return result;
+	}
 }

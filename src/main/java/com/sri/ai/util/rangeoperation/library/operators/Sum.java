@@ -38,16 +38,29 @@
 package com.sri.ai.util.rangeoperation.library.operators;
 
 import com.google.common.annotations.Beta;
-import com.sri.ai.util.rangeoperation.core.AbstractOperator;
+import com.sri.ai.util.rangeoperation.core.AbstractAggregateOperator;
 
+/**
+ * A summation aggregate operator over numbers.
+ * TODO: extend it to arbitrarily nested lists of numbers.
+ * 
+ * @author braz
+ */
 @Beta
-public class Sum extends AbstractOperator {
+public class Sum extends AbstractAggregateOperator<Number, Number> {
+	
 	@Override
 	public void initialize() {
 		result = 0;
 	}
+	
 	@Override
-	public void increment(Object another) {
-		result = ((Number)result).doubleValue() + ((Number)another).doubleValue();
+	public void increment(Number another) {
+		try {
+			result = ((Number) result).doubleValue() + ((Number) another).doubleValue();
+		}
+		catch (ClassCastException e) {
+			throw new Error("com.sri.ai.util.rangeoperation.library.operators.Sum applied to non-Number object " + another);
+		}
 	}
 }

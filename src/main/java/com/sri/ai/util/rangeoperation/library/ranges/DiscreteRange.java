@@ -38,20 +38,24 @@
 package com.sri.ai.util.rangeoperation.library.ranges;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 import com.google.common.annotations.Beta;
 import com.sri.ai.util.rangeoperation.core.AbstractRange;
 
-/** A range over a discrete set of values. */
+/** A range over a discrete set of values represented by a collection. */
 @Beta
-public class DiscreteRange extends AbstractRange {
-	public DiscreteRange(String name, Collection collection) {
+public class DiscreteRange<T> extends AbstractRange<T> {
+	
+	private Collection<T> collection;
+
+	public DiscreteRange(String name, Collection<T> collection) {
 		super(name);
 		this.collection = collection;
 	}
+	
 	@Override
-	public Object apply() { 
+	public Iterator<T> apply() { 
 		return collection.iterator();
 	}	
-	private Collection collection;
 }

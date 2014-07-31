@@ -37,23 +37,28 @@
  */
 package com.sri.ai.util.rangeoperation.library.ranges;
 
+import java.util.Iterator;
+
 import com.google.common.annotations.Beta;
 import com.sri.ai.util.collect.IntegerGeometricSeriesIterator;
 import com.sri.ai.util.rangeoperation.core.AbstractRange;
 
 /** A geometric range over integer values. */
 @Beta
-public class GeometricIntegerRange extends AbstractRange {
+public class GeometricIntegerRange extends AbstractRange<Integer> {
+	
+	private int first, last;
+	private float rate;
+
 	public GeometricIntegerRange(String name, int first, int last, float rate) {
 		super(name);
 		this.first = first;
 		this.last = last;
 		this.rate = rate;
 	}
+	
 	@Override
-	public Object apply() { 
+	public Iterator<Integer> apply() { 
 		return new IntegerGeometricSeriesIterator(first, last, rate);
-	}	
-	private int first, last;
-	private float rate;
+	}
 }
