@@ -2589,17 +2589,17 @@ public class Util {
 	 * that operates on lists of lists of arbitrary depth, including depth 0, that is, on {@link Number}s.
 	 * It is in-place and returns <code>average</code> if given objects are lists, or returns a new Number otherwise.
 	 */
+	@SuppressWarnings("unchecked")
 	public static Object incrementalComponentWiseAverageArbitraryDepth(Object average, int n, Object newItems) {
 		if (average instanceof Number) {
 			return (((Number)average).doubleValue()*n + ((Number)newItems).doubleValue())/(n + 1);
 		}
-		@SuppressWarnings("unchecked")
-		ListIterator<Number> averageIterator = ((List<Number>)average).listIterator();
+		ListIterator averageIterator = ((List<Number>)average).listIterator();
 		ListIterator newItemsIt = ((List)newItems).listIterator();
 		while (averageIterator.hasNext()) {
 			Object averageElement = averageIterator.next();
 			Object newItemsElement = newItemsIt.next();
-			Number newAverageElement = (Number) incrementalComponentWiseAverageArbitraryDepth(averageElement, n, newItemsElement);
+			Object newAverageElement = incrementalComponentWiseAverageArbitraryDepth(averageElement, n, newItemsElement);
 			if (newAverageElement != averageElement) {
 				averageIterator.set(newAverageElement);
 			}
