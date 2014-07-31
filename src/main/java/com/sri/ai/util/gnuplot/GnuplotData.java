@@ -58,7 +58,7 @@ import com.sri.ai.util.base.NullaryFunction;
 public class GnuplotData {
 	
 	/** A list of string descriptions for each data series. */
-	private List<String> descriptions;
+	private List<String> commandLineDescriptions;
 
 	/** A list of File objects to be deleted at clean up. */
 	private List<File> filesToDelete = new LinkedList<File>();
@@ -66,31 +66,44 @@ public class GnuplotData {
 	/** Index used to name data files. */
 	private int dataFileIndex = 0;
 
-	public GnuplotData(NullaryFunction xSeries, List<YSeries> ySeriesList) {
+	public <T extends Number> GnuplotData(NullaryFunction<Iterator<T>> xSeries, List<YSeries<T>> ySeriesList) {
 		try {
-			descriptions = new LinkedList<String>();
-			for (YSeries ySeries : ySeriesList) {
-				descriptions.add(getDescription(xSeries, ySeries));
+			commandLineDescriptions = new LinkedList<String>();
+			for (YSeries<T> ySeries : ySeriesList) {
+				commandLineDescriptions.add(getGnuplotCommandLineDescription(ySeries, xSeries));
 			}
 		}
-		catch (IOException e) { Util.fatalError("Could not generate data files for gnuplot.", e); }
+		catch (IOException e) {
+			Util.fatalError("Could not generate data files for gnuplot.", e);
+		}
 	}
 
 	/** Returns a comma-separated string of descriptions. */
-	public String getDescription() {
-		return Util.join(",", descriptions);
+	public String getGnuplotCommandLinePlotArguments() {
+		return Util.join(",", commandLineDescriptions);
 	}
 
-	/** Get data series description for a particular list of data. */
-	private String getDescription(NullaryFunction xSeries, YSeries ySeries) throws IOException {
+	/** 
+	 * Get gnuplot command line description for a y-series to be plotted, including x-series data if available
+	 * (that is, <code>xSeries</code> is not <code>null</code>).
+	 */
+	private <T extends Number> String getGnuplotCommandLineDescription(YSeries<T> ySeries, NullaryFunction<Iterator<T>> xSeriesIteratorMaker) throws IOException {
 		String titleClause = getClauseValueOrEmptyString(ySeries.directives, "title ", "t ");
-		if (titleClause.equals("")) titleClause = getClauseValueOrEmptyString(ySeries.directives, "notitle", "notitle");
+		if (titleClause.equals("")) {
+			titleClause = getClauseValueOrEmptyString(ySeries.directives, "notitle", "notitle");
+		}
+		
 		String withClause = getClauseValueOrEmptyString(ySeries.directives, "with ", "w ");
-		@SuppressWarnings("unchecked")
-		String path = storeDataAndReturnPath(xSeries == null? null : (Iterator<? extends Number>) xSeries.apply(), (Iterator<? extends Number>) ySeries.data.apply());
+		
+		boolean xSeriesIsAvailable = xSeriesIteratorMaker != null;
+		
+		Iterator<T> xSeriesIterator = xSeriesIsAvailable? xSeriesIteratorMaker.apply() : null;
+		
+		String path = storeDataAndReturnPath(xSeriesIterator, ySeries.dataIteratorMaker.apply());
+		
 		StringBuffer command = new StringBuffer();
 		command.append("'" + path + "'");
-		command.append(xSeries != null? " using 1:2" : " using 1");
+		command.append(xSeriesIsAvailable? " using 1:2" : " using 1");
 		command.append(" " + titleClause);
 		command.append(" " + withClause);
 		return command.toString();
@@ -106,32 +119,33 @@ public class GnuplotData {
 		return clause;
 	}
 
-	private String storeDataAndReturnPath(Iterator<? extends Number> xSeries, Iterator<? extends Number> ySeries) throws IOException {
+	private String storeDataAndReturnPath(Iterator<? extends Number> xSeriesDataIterator, Iterator<? extends Number> ySeriesDataIterator) throws IOException {
 		File tempFile = new File("gnuplot" + dataFileIndex++ + ".dat");
 		BufferedWriter w = new BufferedWriter(new FileWriter(tempFile));
-		if (xSeries != null) {
-			writeDataWithXSeries(xSeries, ySeries, w);
+		
+		if (xSeriesDataIterator != null) {
+			writeDataWithXSeries(xSeriesDataIterator, ySeriesDataIterator, w);
 		}
 		else {
-			writeDataWithoutXSeries(ySeries, w);
+			writeDataWithoutXSeries(ySeriesDataIterator, w);
 		}
 		w.close();
 		filesToDelete.add(tempFile);
 		return tempFile.getPath();
 	}
 
-	private void writeDataWithoutXSeries(Iterator<? extends Number> ySeries, BufferedWriter w) throws IOException {
-		while (ySeries.hasNext()) {
-			Object y = ySeries.next();
+	private void writeDataWithoutXSeries(Iterator<? extends Number> ySeriesDataIterator, BufferedWriter w) throws IOException {
+		while (ySeriesDataIterator.hasNext()) {
+			Object y = ySeriesDataIterator.next();
 			w.write(y.toString());
 			w.newLine();
 		}
 	}
 
 	private void writeDataWithXSeries(
-			Iterator<? extends Number> xSeries, Iterator<? extends Number> ySeries, BufferedWriter w) throws IOException {
-		while (xSeries.hasNext()) {
-			w.write(xSeries.next() + " " + ySeries.next());
+			Iterator<? extends Number> xSeriesDataIterator, Iterator<? extends Number> ySeriesDataIterator, BufferedWriter w) throws IOException {
+		while (xSeriesDataIterator.hasNext()) {
+			w.write(xSeriesDataIterator.next() + " " + ySeriesDataIterator.next());
 			w.newLine();
 		}
 	}

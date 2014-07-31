@@ -64,7 +64,7 @@ public class Axis extends DefaultRangeOperation {
 		super(new Concatenate(), new GeometricIntegerRange(name, first, last, rate));
 	}
 	/** Creates an axis on a discrete range. */
-	public Axis(String name, Collection collection) {
+	public <T> Axis(String name, Collection<T> collection) {
 		super(new Concatenate(), new DiscreteRange(name, collection));
 	}
 }

@@ -37,6 +37,8 @@
  */
 package com.sri.ai.util.rangeoperation.api;
 
+import java.util.Iterator;
+
 import com.google.common.annotations.Beta;
 import com.sri.ai.util.base.BinaryProcedure;
 import com.sri.ai.util.base.NullaryFunction;
@@ -52,7 +54,7 @@ import com.sri.ai.util.rangeoperation.api.DependencyAwareEnvironment;
  * with variable and value pairs whenever {@link #next()} is invoked.
  */
 @Beta
-public interface Range extends NullaryFunction {
+public interface Range<T> extends NullaryFunction<Iterator<T>> {
 	/** The variable set by this range. */
 	public String getName();
 	

@@ -44,6 +44,12 @@ import java.io.OutputStream;
 import com.google.common.annotations.Beta;
 import com.sri.ai.util.Util;
 
+/**
+ * A class for opening a pipe to gnuplot.
+ * It requires gnuplot to be installed, with its directory in the PATH.
+ * 
+ * @author braz
+ */
 @Beta
 public class GnuplotPipe extends BufferedOutputStream {
 	public GnuplotPipe(boolean persist) {
@@ -56,10 +62,13 @@ public class GnuplotPipe extends BufferedOutputStream {
 		try {
 			String executableName = System.getProperty("os.name").contains("Windows")? "pgnuplot.exe" : "gnuplot";
 			process = Runtime.getRuntime().exec(executableName + persistFlag);
-		} catch (IOException e) { Util.fatalError("Could not launch gnuplot", e); }
+		} catch (IOException e) {
+			Util.fatalError("Could not launch gnuplot", e);
+		}
 		return process.getOutputStream();
 	}
 
+	/** Sends a command to gnuplot through the pipe. */
 	public void send(String command) throws IOException {
 		write((command + "\n").getBytes());
 		flush();

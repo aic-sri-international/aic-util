@@ -59,9 +59,10 @@ import com.sri.ai.util.rangeoperation.library.rangeoperations.Axis;
 public class Experiment {
 
 	public static String[] guaranteedPreCommands = {
-		"set xlabel font 'Arial, 20",
-		"set ylabel font 'Arial, 20'",
-	"set title font 'Arial, 10'"};
+		"set xlabel font 'Arial, 10",
+		"set ylabel font 'Arial, 10'",
+		"set title font 'Arial, 20'"
+	};
 
 	/** 
 	 * Runs an experiment and generates a gnuplot with its results.
@@ -116,9 +117,9 @@ public class Experiment {
 		
 		YSeriesSpec ySeriesSpec = getYSeriesSpec(args);
 
-		Range xSeries = getXSeries(axes, ySeriesSpec);
+		Range<Number> xSeries = getXSeries(axes, ySeriesSpec);
 		
-		List<YSeries> ySeriesList = getYSeriesList(data, axes, ySeriesSpec);
+		List<YSeries<Number>> ySeriesList = getYSeriesList(data, axes, ySeriesSpec);
 
 		Gnuplot.plot(preCommands, xSeries, ySeriesList);
 	}
@@ -186,7 +187,7 @@ public class Experiment {
 		return (YSeriesSpec) Util.getObjectOfClass(YSeriesSpec.class, args);
 	}
 
-	private static Range getXSeries(List<Axis> axes, YSeriesSpec ySeriesSpec) {
+	private static <T> Range<T> getXSeries(List<Axis> axes, YSeriesSpec ySeriesSpec) {
 		for (Axis axis : axes) {
 			if ( ! axis.getRange().getName().equals(ySeriesSpec.variable)) {
 				return axis.getRange();
@@ -204,8 +205,8 @@ public class Experiment {
 		return null;
 	}
 
-	private static List<YSeries> getYSeriesList(List data, List<Axis> axes, YSeriesSpec ySeriesSpec) {
-		List<YSeries> ySeriesList = new LinkedList<YSeries>();
+	private static <T> List<YSeries<T>> getYSeriesList(List data, List<Axis> axes, YSeriesSpec ySeriesSpec) {
+		List<YSeries<T>> ySeriesList = new LinkedList<YSeries<T>>();
 		Axis ySeriesAxis = getSeriesAxis(axes, ySeriesSpec);
 		if (ySeriesAxis != null) {
 			int dimension = axes.indexOf(ySeriesAxis);
@@ -215,8 +216,9 @@ public class Experiment {
 			while(rangeIterator.hasNext()) {
 				rangeIterator.next();
 				List<String> directives = (List<String>) directiveIterator.next();
-				List<? extends Number> ySeriesData = matrixSlice(data, dimension, sliceIndex);
-				ySeriesList.add(new YSeries(directives, ySeriesData));
+				@SuppressWarnings("unchecked")
+				List<T> ySeriesData = matrixSlice((List<List<T>>) data, dimension, sliceIndex);
+				ySeriesList.add(new YSeries<T>(directives, ySeriesData));
 				sliceIndex++;
 			}
 		}
@@ -225,7 +227,9 @@ public class Experiment {
 				Util.fatalError("YSeriesSpec " + ySeriesSpec + " does not refer to any present axis and data is multidimensional.");
 			}
 			List<String> directives = Util.getFirst(ySeriesSpec.directivesList);
-			ySeriesList.add(new YSeries(directives, data));
+			@SuppressWarnings("unchecked")
+			List<T> dataList = (List<T>) data;
+			ySeriesList.add(new YSeries<T>(directives, dataList));
 		}
 		return ySeriesList;
 	}
@@ -233,7 +237,8 @@ public class Experiment {
 	/**
 	 * An extension of {@link List} for keeping pre-commands for a {@link Gnuplot} graph.
 	 */
-	private static class PreCommands extends LinkedList {
+	@SuppressWarnings("serial")
+	private static class PreCommands extends LinkedList<String> {
 		public PreCommands(String ... preCommands) {
 			addAll(Arrays.asList(preCommands));
 		}
@@ -274,38 +279,50 @@ public class Experiment {
 	 * Takes a list of lists, a dimension (0 for rows, 1 for columns) and an index (either row or column index),
 	 * and returns the corresponding slice (data[index,*] if dimension is 0, or data[*,index] if dimension is 1).
 	 */
-	public static List<Number> matrixSlice(List<List<Number>> data, int dimension, int index) {
+	public static <T> List<T> matrixSlice(List<List<T>> data, int dimension, int index) {
 		if (dimension == 0) {
-			return (List<Number>) data.get(index);
+			return (List<T>) data.get(index);
 		}
-		List<Number> result = new LinkedList<Number>();
-		for (Iterator<List<Number>> rowIt = data.iterator(); rowIt.hasNext();) {
-			List<Number> row = rowIt.next();
+		List<T> result = new LinkedList<T>();
+		for (Iterator<List<T>> rowIt = data.iterator(); rowIt.hasNext();) {
+			List<T> row = rowIt.next();
 			result.add(row.get(index));
 		}
 		return result;
 	}
 
-	private static DAEFunction getDistanceGivenTrueAndEstimatedDistributions = new AbstractDAEFunction() { @Override
-	public Object apply(DependencyAwareEnvironment environment) {
-		return environment.get("numSamples");
-	}};
+	private static DAEFunction random = new AbstractDAEFunction() {
+		@Override
+		public Object apply(DependencyAwareEnvironment environment) {
+			int numberOfSamples = environment.getInt("numSamples");
+			int mean = environment.getInt("mean");
+			double sum = 0;
+			for (int i = 0; i != numberOfSamples; i++) {
+				sum += (mean - 0.5) + Math.random();
+			}
+			double result = sum/numberOfSamples;
+			System.out.println("sum: " + sum);
+			System.out.println("numberOfSamples: " + numberOfSamples);
+			System.out.println("result: " + result);
+			return result;
+		}
+	};
 
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) {
 		experiment(
 				"file", "false",
-				"title", "Test for experiments",
+				"title", "Average of Uniform[0,1] + mean - 0.5",
 				"xlabel", "Number of samples",
-				"ylabel", "Average distributions divergence",
-				"numSamplesForTrueDistribution", 10,
-				new Axis("inferenceEngineClassName", Util.list("blog.SamplingEngine", "blog.ParticleFilter")),
-				new Axis("numSamples", 10, 200, 50),
-				new Averaging("run", 1, 2),
-				getDistanceGivenTrueAndEstimatedDistributions,
-				YSeriesSpec("inferenceEngineClassName", Util.list(
-						Util.list("title 'LW'", "w linespoints"),
-						Util.list("title 'DBLOG PF'","w linespoints"))));
+				"ylabel", "Average",
+				"someVariable", 10,
+				new Axis("mean", Util.list(2, 3)),
+				new Axis("numSamples", 1, 100, 1),
+				//new Averaging("run", 1, 2),
+				random,
+				YSeriesSpec("mean", Util.list(
+						Util.list("title 'mean 2'", "w linespoints"),
+						Util.list("title 'mean 3'","w linespoints"))));
 
 	}
 }

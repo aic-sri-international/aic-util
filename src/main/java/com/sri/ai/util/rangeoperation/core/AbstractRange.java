@@ -51,7 +51,7 @@ import com.sri.ai.util.rangeoperation.api.Range;
  * {@link #evaluate()}, which should provide a new iterator over a range of values.
  */
 @Beta
-public abstract class AbstractRange implements Range {
+public abstract class AbstractRange<T> implements Range<T> {
 	/** Builds a range with a given variable name. */
 	public AbstractRange(String name) {
 		this.name = name;

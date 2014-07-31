@@ -69,6 +69,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.sri.ai.util.base.BinaryFunction;
 import com.sri.ai.util.base.BinaryPredicate;
+import com.sri.ai.util.base.NullaryFunction;
 import com.sri.ai.util.base.Pair;
 import com.sri.ai.util.base.TernaryFunction;
 import com.sri.ai.util.collect.SubRangeIterator;
@@ -2624,5 +2625,18 @@ public class Util {
 			}
 		}
 		return map;
+	}
+
+	/** 
+	 * Returns a {@link NullaryFunction<Iterator<T>>}
+	 * that returns a new iterator to the given <code>Collection<T></code>
+	 * each time is it invoked. 
+	 */
+	static public <T> NullaryFunction<Iterator<T>> getIteratorNullaryFunction(final Collection<T> c) {
+		return new NullaryFunction<Iterator<T>>() {
+			public Iterator<T> apply() {
+				return c.iterator();
+			}
+		};
 	}
 }
