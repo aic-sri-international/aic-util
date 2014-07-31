@@ -100,7 +100,9 @@ import com.sri.ai.util.rangeoperation.api.RangeOperation;
  * put in the environment with the object right after them as value.
  * If an {@link DependencyAwareEnvironment} is found, it replaces the default (initially empty) environment,
  * removing previous variable values. Subsequent variables are added to this environment.
- *
+ * <p>
+ * There are a few more tests and examples at {@link com.sri.ai.test.util.rangeoperation.RangeOperationsInterpreterTest}.
+ * 
  * @author braz
  */
 @Beta
