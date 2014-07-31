@@ -37,8 +37,10 @@
  */
 package com.sri.ai.util.gnuplot;
 
-import java.util.*;
-import java.io.*;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 import com.google.common.annotations.Beta;
 import com.sri.ai.util.Util;
@@ -46,31 +48,39 @@ import com.sri.ai.util.base.NullaryFunction;
 
 /**
  * A class for using gnuplot programmatically.
+ * It requires gnuplot to be installed, with its directory in the PATH.
  * 
  * @author braz
  */
 @Beta
 public class Gnuplot {
 
-	/** Time in milliseconds that is enough for gnuplot to launch and read temp files safely, with default of 2s. */
-	public static final long gnuplotLaunchTime = 2000;
+	/** Time in milliseconds that is enough for gnuplot to launch and read temporary files safely, with default of 2 seconds. */
+	public static long gnuplotLaunchTime = 2000;
 
 	/**
 	 * Generates a plot with gnuplot using the following data:
 	 * <ul>
-	 * <li> <code>xSeries</code> is a {@link List<? extends Number>} or <code>null</code>
-	 * <li> <code>ySeries</code> is a list of {@link #YSeries}
+	 * <li> <code>xSeries</code> is a {@link NullaryFunction<Iterator<Number>>} providing
+	 *      iterators over the numbers to appear on the x axis, or <code>null</code>
+	 *      (in which case a simple integer enumeration matching the ySeries is used instead)
+	 * <li> <code>ySeries</code> is a list of {@link YSeries}, each describing a data series to be plotted
+	 *      and gnuplot command line directives for the series.
 	 * </ul>
-	 * It also issues a list of precommands to gnuplot provided as Strings
+	 * The method also issues a list of precommands to gnuplot provided as Strings
 	 * (see gnuplot documentation for such precommands).
-	 * If one of the precommands is "persist", gnuplot persists after execution.
+	 * If one of the precommands is the non-gnuplot "persist", gnuplot persists after execution.
 	 */
-	static public void plot(Collection<String> precommands, NullaryFunction xSeries, List<YSeries> ySeriesList) {
+	static public <T extends Number> void plot(
+			List<String> precommands,
+			NullaryFunction<Iterator<T>> xSeries,
+			List<YSeries<T>> ySeriesList) {
+		
 		GnuplotPipe pipe = new GnuplotPipe(precommands.contains("persist"));
 		GnuplotData data = new GnuplotData(xSeries, ySeriesList);
 		try {
 			sendPrecommands(precommands, pipe);
-			pipe.send("plot " + data.getDescription());
+			pipe.send("plot " + data.getGnuplotCommandLinePlotArguments());
 			Util.waitOrThrowError(gnuplotLaunchTime);
 		}
 		catch (IOException e) {
@@ -81,13 +91,14 @@ public class Gnuplot {
 
 	private static void sendPrecommands(Collection<String> precommands, GnuplotPipe pipe) throws IOException {
 		for (String precommand : precommands) {
-			if (precommand.equals("persist")) {
-				continue;
+			if ( ! precommand.equals("persist")) {
+				pipe.send(precommand);
 			}
-			pipe.send(precommand);
 		}
 	}
 
+	/** A test. */
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) {
 		plot(
 				Util.list( // precommands
@@ -97,25 +108,17 @@ public class Gnuplot {
 						"set xlabel 'Time'",
 						"set ylabel 'Intensity'"
 				),
-				getIteratorNullaryFunction(Util.list(10,20,30,40)), // xSeries
+				Util.getIteratorNullaryFunction(Util.list(10,20,30,40)), // xSeries
 				Util.list( // list of ySeries
-						new YSeries(
+						new YSeries<Integer>(
 								Util.list("title 'random sequence 1'", "w linespoints"),
 								Util.list(1,2,4,3)
 								),
-						new YSeries(
+						new YSeries<Integer>(
 								Util.list("title 'random sequence 2'", "w linespoints"),
 								Util.list(5,4,3,2)
 								)
 						)
 				);
 	}
-
-    /** 
-     * Returns a {@link NullaryFunction} that returns a new iterator to the given collection
-     * each time is it invoked. 
-     */
-    static public NullaryFunction getIteratorNullaryFunction(final Collection c) {
-	return new NullaryFunction() { public Object apply() { return c.iterator(); }};
-    }
 }

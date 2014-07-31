@@ -44,12 +44,12 @@ import com.sri.ai.util.rangeoperation.api.Range;
 import com.sri.ai.util.rangeoperation.api.RangeOperation;
 
 @Beta
-public class DefaultRangeOperation implements RangeOperation {
+public class DefaultRangeOperation<T> implements RangeOperation {
 
 	protected Operator operator;
-	protected Range range;
+	protected Range<T> range;
 
-	public DefaultRangeOperation(Operator operator, Range range) {
+	public DefaultRangeOperation(Operator operator, Range<T> range) {
 		this.operator = operator;
 		this.range = range;
 	}

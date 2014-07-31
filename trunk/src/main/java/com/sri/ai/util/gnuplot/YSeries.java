@@ -37,6 +37,7 @@
  */
 package com.sri.ai.util.gnuplot;
 
+import java.util.Iterator;
 import java.util.List;
 
 import com.google.common.annotations.Beta;
@@ -53,17 +54,16 @@ import com.sri.ai.util.base.NullaryFunction;
  * Their order does not matter; they are correctly placed in the gnuplot command.
  */
 @Beta
-public class YSeries {
+public class YSeries<T> {
 	public List<String> directives;
-	public NullaryFunction data;
+	public NullaryFunction<Iterator<T>> dataIteratorMaker;
 
-	public YSeries(List<? extends Number> data) {
-		this.directives = Util.list();
-		this.data = Gnuplot.getIteratorNullaryFunction(data);
+	public YSeries(List<T> data) {
+		this(Util.<String>list(), data);
 	}
 	
-	public YSeries(List<String> directives, List<? extends Number> data) {
+	public YSeries(List<String> directives, List<T> data) {
 		this.directives = directives;
-		this.data = Gnuplot.getIteratorNullaryFunction(data);
+		this.dataIteratorMaker = Util.getIteratorNullaryFunction(data);
 	}
 }
