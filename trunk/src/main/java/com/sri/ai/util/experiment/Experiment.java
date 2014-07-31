@@ -342,15 +342,19 @@ public class Experiment {
 
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) {
+		
 		experiment(
 				"file", "false",
 				"title", "The more samples, the less variance",
 				"xlabel", "Number of samples",
 				"ylabel", "Average of Uniform[0,1] + mean - 0.5",
 				"some unused variable that could be used if we wanted to", 10,
+				
 				new Dimension("mean", Util.list(2, 3)),
-				new Dimension("numSamples", 1, 1000, 1),
+				new Dimension("numSamples", 1, 200, 1),
+				
 				averageOfNumSamplesOfUniformPlusCurrentMeanMinusZeroPointFive,
+				
 				new DataSeriesSpec("mean", Util.list(
 						Util.list("title 'mean 2'", "w linespoints"),
 						Util.list("title 'mean 3'", "w linespoints"))));
