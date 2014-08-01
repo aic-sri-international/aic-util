@@ -729,6 +729,17 @@ public class Util {
 	}
 
 	/**
+	 * Makes a list out of an array.
+	 */
+	public static <T> List<T> listFrom(T[] array) {
+		LinkedList<T> result = new LinkedList<T>();
+		for (int i = 0; i != array.length; i++) {
+			result.add(array[i]);
+		}
+		return result;
+	}
+
+	/**
 	 * Stores iterator's range in a new, empty array list and returns it.
 	 */
 	public static <T> ArrayList<T> arrayListFrom(Iterator<T> iterator) {
