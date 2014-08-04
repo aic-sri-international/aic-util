@@ -1,7 +1,5 @@
 #summary Range Operations.
 
-= Introduction =
-
 In some situations (see [Experiment Experiment]), it is useful to have a declarative mini-language to specify computations involving iterative parameters. The [https://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/rangeoperation range operation package and sub-packages] provide classes with this functionality.
 <p>
 Please see javadoc for more details and examples.
