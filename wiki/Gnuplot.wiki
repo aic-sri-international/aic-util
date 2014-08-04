@@ -1,6 +1,6 @@
 #summary One-sentence summary of this page.
 
-[http://gnuplot.org Gnuplot] is free, open-source software for plotting mathematical graphs.
+[http://www.gnuplot.info Gnuplot] is free, open-source software for plotting mathematical graphs.
 This library provides a Java API for using Gnuplot.
 <p>
 Please see javadoc for more details and examples.
