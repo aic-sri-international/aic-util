@@ -1,0 +1,8 @@
+#summary The Experiment library.
+
+= Introduction =
+
+A common need in computer science research is to run experiments, collect results and plot them for publication.
+This library addresses this need by using the [RangeOperations range operations] declarative mini-language and the [Gnuplot Gnuplot] library.
+<p>
+Please see javadoc documentation for more details and examples.
