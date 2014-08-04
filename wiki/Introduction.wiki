@@ -12,3 +12,6 @@ Main capabilities of the library can be grouped as follows:
   * Simplified [Configuration Configuration API].
   * Support for [Logging logging] of high-level execution traces.
   * Extensions to [FunctionalIdiomExtensions Guava's functional idioms].
+  * [Experiment Experiment], a library for running experiments and plotting their results.
+  * A [Gnuplot Gnuplot] Java API.
+  * A declarative [RangeOperations mini-language] for generating data matrices according to iterations of parameters.
