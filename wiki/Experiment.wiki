@@ -3,4 +3,23 @@
 A common need in computer science research is to run experiments, collect results and plot them for publication.
 This [https://code.google.com/p/aic-util/source/browse/trunk/src/main/java/com/sri/ai/util/experiment library] addresses this need by using the [RangeOperations range operations] declarative mini-language and the [Gnuplot Gnuplot] library.
 <p>
-Please see javadoc documentation for more details and examples.
+Here is a typical use of the library:
+{{{
+experiment(
+	"file", "false",
+	"title", "The more samples, the less variance",
+	"xlabel", "Number of samples",
+	"ylabel", "Average of Uniform[0,1] + mean - 0.5",
+	"some unused variable that could be used if we wanted to", 10,
+	
+	new Dimension("mean", Util.list(2, 3)),
+	new Dimension("numSamples", 1, 200, 1),
+	
+	averageOfNumSamplesOfUniformPlusCurrentMeanMinusZeroPointFive,
+				
+	new DataSeriesSpec("mean", Util.list(
+			Util.list("title 'mean 2'", "w linespoints"),
+			Util.list("title 'mean 3'", "w linespoints"))));
+}}}
+<p>
+Please see javadoc documentation for more details.
