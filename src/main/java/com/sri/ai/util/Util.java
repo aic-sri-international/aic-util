@@ -2666,4 +2666,28 @@ public class Util {
 		}
 		return result;
 	}
+
+	public static String[] makeArrayFilledOutWith(String element, int length) {
+		String[] result = new String[length];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = element;
+		}
+		return result;
+	}
+
+	public static List<String> getFirstColumnAsList(String[][] stringMatrix) {
+		List<String> list = new LinkedList<String>();
+		for (int i = 0; i < stringMatrix.length; i++) {
+			list.add(stringMatrix[i][0]);
+		}
+		return list;
+	}
+
+	public static String[] getSecondColumnAsArray(String[][] stringMatrix) {
+		String[] array = new String[stringMatrix.length];
+		for (int i = 0; i < stringMatrix.length; i++) {
+			array[i] = stringMatrix[i][1];
+		}
+		return array;
+	}
 }
