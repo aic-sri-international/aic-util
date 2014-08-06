@@ -60,6 +60,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
@@ -2689,5 +2690,51 @@ public class Util {
 			array[i] = stringMatrix[i][1];
 		}
 		return array;
+	}
+
+	/**
+	 * Randomly picks an element of given array using a given {@link Random} number generator.
+	 */
+	public static Object randomPick(Random random, Object[] items) {
+		int index = random.nextInt(items.length);
+		Object result = items[index];
+		return result;
+	}
+
+	/**
+	 * Randomly picks <code>n</code> elements (possibly repeated) of given array using
+	 * a given {@link Random} number generator.
+	 */
+	public static ArrayList<Object> randomPick(int n, Random random, Object[] items) {
+		ArrayList<Object> result = new ArrayList<Object>(n);
+		for (int i = 0; i != n; i++) {
+			result.add(randomPick(random, items));
+		}
+		return result;
+	}
+
+	/**
+	 * Randomly picks an element of given list ({@link ArrayList}s will be most efficient)
+     * using a given {@link Random} number generator.
+	 * @param <T>
+	 */
+	public static <T> T randomPick(Random random, List<T> items) {
+		int index = random.nextInt(items.size());
+		T result = items.get(index);
+		return result;
+	}
+
+	/**
+	 * Randomly picks <code>n</code> elements (possibly repeated) of given list
+	 * ({@link ArrayList}s will be most efficient) using a
+	 * given {@link Random} number generator.
+	 * @param <T>
+	 */
+	public static <T> ArrayList<T> randomPick(int n, Random random, List<T> items) {
+		ArrayList<T> result = new ArrayList<T>(n);
+		for (int i = 0; i != n; i++) {
+			result.add(randomPick(random, items));
+		}
+		return result;
 	}
 }
