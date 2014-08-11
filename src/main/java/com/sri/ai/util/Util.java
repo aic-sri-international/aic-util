@@ -2737,4 +2737,24 @@ public class Util {
 		}
 		return result;
 	}
+
+	/** 
+	 * Determines whether all elements in collection are {@link Object#equals(Object)},
+	 * including <code>null</code>.
+	 */
+	public static <T> boolean allEqual(Collection<T> collection) {
+		boolean result = true;
+		Iterator<T> iterator = collection.iterator();
+		if (iterator.hasNext()) {
+			T previous = iterator.next();
+			while (result && iterator.hasNext()) {
+				T nextOne = iterator.next();
+				if ( ! equals(nextOne, previous)) {
+					result = false;
+				}
+			}
+		}
+
+		return result;
+	}
 }
