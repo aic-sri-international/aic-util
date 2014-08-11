@@ -111,8 +111,8 @@ public class Experiment {
 	 * The recognized gnuplot parameters are the following:
 	 * <ul>
 	 * <li> title: the graph's title
-	 * <li> xlabel: the label of the x axis.
-	 * <li> ylabel: the label of the y axis.
+	 * <li> xlabel: the label of the x axis (default is variable name in x-{@link Dimension}).
+	 * <li> ylabel: the label of the y axis (default is empty string).
 	 * <li> filename: the name of a file (without an extension) to which to record the graph;
 	 *                the extension ".ps" is automatically added.
 	 * <li> file: boolean value indicating whether to record the graph, using title as filename.
@@ -150,10 +150,6 @@ public class Experiment {
 	 */ 
 	public static void experiment(Object ... arguments) {
 
-		Map<String, Object> properties = Util.getMapWithStringKeys(arguments);
-
-		LinkedList<String> preCommands = getPreCommands(properties);
-
 		List<Dimension<Object>> dimensions = getDimensions(arguments);
 		
 		DataSeriesSpec dataSeriesDimensionSpec = getDataSeriesDimensionSpec(arguments);
@@ -163,6 +159,16 @@ public class Experiment {
 		List data = (List) RangeOperationsInterpreter.apply(arguments);
 
 		List<DataSeries<Object>> dataSeriesList = getDataSeriesList(data, dimensions, dataSeriesDimensionSpec);
+
+		Map<String, Object> properties = Util.getMapWithStringKeys(arguments);
+		
+		if ( ! properties.containsKey("xlabel")) {
+			final Dimension<Object> xDimension = getXDimension(dimensions, dataSeriesDimensionSpec);
+			String name = xDimension == null? "x" : xDimension.getRange().getName();
+			properties.put("xlabel", name);
+		}
+
+		LinkedList<String> preCommands = getPreCommands(properties);
 
 		Gnuplot.plot(preCommands, xSeries, dataSeriesList);
 	}
@@ -232,6 +238,10 @@ public class Experiment {
 			this.variable = variable;
 			this.directivesList = directivesList;
 		}
+		
+		public String getName() {
+			return variable;
+		}
 	}
 
 	private static DataSeriesSpec getDataSeriesDimensionSpec(Object... arguments) {
@@ -239,9 +249,15 @@ public class Experiment {
 	}
 
 	private static <T> Range<T> getXDimensionRange(List<Dimension<T>> dimensions, DataSeriesSpec dataSeriesDimensionSpec) {
+		Dimension<T> xDimension = getXDimension(dimensions, dataSeriesDimensionSpec);
+		final Range<T> result = xDimension != null ? xDimension.getRange() : null;
+		return result;
+	}
+
+	private static <T> Dimension<T> getXDimension(List<Dimension<T>> dimensions, DataSeriesSpec dataSeriesDimensionSpec) {
 		for (Dimension<T> dimension : dimensions) {
 			if ( ! dimension.getRange().getName().equals(dataSeriesDimensionSpec.variable)) {
-				return dimension.getRange();
+				return dimension;
 			}
 		}
 		return null;
@@ -266,6 +282,9 @@ public class Experiment {
 			int sliceIndex = 0;
 			while(rangeIterator.hasNext()) {
 				rangeIterator.next();
+				if ( ! directiveIterator.hasNext()) {
+					throw new Error("DataSeriesSpec on '" + dataSeriesSpec.getName() + "' does not have enough directives (it needs one per value of '" + dataSeriesSpec.getName() + "')");
+				}
 				List<String> directives = (List<String>) directiveIterator.next();
 				@SuppressWarnings("unchecked")
 				List<T> dataSeriesData = Util.matrixSlice((List<List<T>>) data, dimension, sliceIndex);
