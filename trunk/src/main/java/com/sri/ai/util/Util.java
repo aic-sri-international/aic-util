@@ -408,6 +408,10 @@ public class Util {
 		return result;
 	}
 
+	/**
+	 * Add given element of a given collection to a collection value in a map,
+	 * creating it in advance (as an instance of given class) if needed.
+	 */
 	@SuppressWarnings("unchecked")
 	public static <K, V> void addToCollectionValuePossiblyCreatingIt(
 			Map<K,Collection<V>> mapToCollections, K key, V element, Class newCollectionClass) {
@@ -425,6 +429,10 @@ public class Util {
 		c.add(element);
 	}
 
+	/**
+	 * Add all elements of a given collection to a collection value in a map,
+	 * creating it in advance (as an instance of given class) if needed.
+	 */
 	@SuppressWarnings("unchecked")
 	public static void addAllToCollectionValuePossiblyCreatingIt(
 			Map mapToCollections, Object key, Collection elements,
@@ -1942,6 +1950,18 @@ public class Util {
 	}
 
 	/**
+	 * Returns the first element found that is in c1 but not c2, or null if there is no such element.
+	 */
+	public static <T> T getFirstInSetDifferenceOrNull(Collection<T> c1, Collection<T> c2) {
+		for (T element : c1) {
+			if ( ! c2.contains(element)) {
+				return element;
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Destructively removes as many instances of each element in l1 as there
 	 * are in l2.
 	 */
@@ -2756,5 +2776,15 @@ public class Util {
 		}
 
 		return result;
+	}
+
+	public static <T> T pickElementInFirstCollectionButNotSecondAndNotEqualTo(
+			Collection<T> collection1, Collection<T> collection2, T valueItMustBeDifferentFrom) {
+		for (T value1 : collection1) {
+			if ( ! value1.equals(valueItMustBeDifferentFrom) && ! collection2.contains(value1) ) {
+				return value1;
+			}
+		}
+		return null;
 	}
 }
