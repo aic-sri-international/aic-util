@@ -2017,9 +2017,16 @@ public class Util {
 			char c = camel.charAt(i);
 			if (Character.isUpperCase(c) && i != 0) {
 				result.append(' ');
+				int initialUpperCaseLetterIndex = i;
 				while (i < camel.length()
 						&& Character.isUpperCase(camel.charAt(i))) {
-					result.append(Character.toLowerCase(c));
+					
+					// if this is upper case but next one is lower case, then this is the first letter of a word,
+					// so append space first.
+					if (i > initialUpperCaseLetterIndex && i + 1 < camel.length() && Character.isLowerCase(camel.charAt(i + 1))) {
+						result.append(' ');
+					}
+					result.append(Character.toLowerCase(camel.charAt(i)));
 					i++;
 				}
 			} 
