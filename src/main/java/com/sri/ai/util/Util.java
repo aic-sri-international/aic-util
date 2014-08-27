@@ -2794,4 +2794,11 @@ public class Util {
 		}
 		return null;
 	}
+
+	public static <T> Set<T> makeSetWithoutExcludedElement(Collection<T> collection, T excludedElement) {
+		Set<T> result;
+		result = new LinkedHashSet<T>(collection);
+		result.remove(excludedElement);
+		return result;
+	}
 }
