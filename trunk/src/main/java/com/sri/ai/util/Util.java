@@ -2801,4 +2801,24 @@ public class Util {
 		result.remove(excludedElement);
 		return result;
 	}
+
+	/**
+	 * Pushes all elements of a collection into a stack and returns the size of this collection.
+	 */
+	public static <T> int pushAll(Stack<T> stack, Collection<T> toBePushed) {
+		for (T element : toBePushed) {
+			stack.push(element);
+		}
+		return toBePushed.size();
+	}
+	
+	/**
+	 * Pops n elements from stack.
+	 */
+	public static <T> void popAll(Stack<T> stack, int n) {
+		for (int i = 0; i != n; i++) {
+			stack.pop();
+		}
+	}
+	
 }
