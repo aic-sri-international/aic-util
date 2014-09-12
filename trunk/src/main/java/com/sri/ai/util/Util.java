@@ -2820,5 +2820,16 @@ public class Util {
 			stack.pop();
 		}
 	}
+
+	/**
+	 * Receives a collection of keys and returns a map from them to their respective results from a given function.
+	 */
+	public static <T1, T2> Map<T1, T2> getFunctionMapForGivenKeys(Collection<T1> keys, Function<T1, T2> function) {
+		Map<T1, T2> result = new LinkedHashMap<T1, T2>();
+		for (T1 key : keys) {
+			result.put(key, function.apply(key));
+		}
+		return result;
+	}
 	
 }
