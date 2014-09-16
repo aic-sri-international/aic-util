@@ -42,14 +42,23 @@ import com.google.common.annotations.Beta;
 /**
  * An interface for predicates receiving two arguments.
  * 
+ * @param <A1>
+ *            the type of the first argument.
+ * @param <A2>
+ *            the type of the second argument.
  * @see com.google.common.base.Predicate
  * @author braz
  */
 @Beta
-public interface BinaryPredicate<T1, T2> {
+public interface BinaryPredicate<A1, A2> {
 	/**
 	 * 
-	 * @return the result of applying this predicate to {@code input1} and {@code input2}.
+	 * @param input1
+	 *            the first argument.
+	 * @param input2
+	 *            the second argument.
+	 * @return the result of applying this predicate to {@code input1} and
+	 *         {@code input2}.
 	 */
-	boolean apply(T1 input1, T2 input2);
+	boolean apply(A1 input1, A2 input2);
 }

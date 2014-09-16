@@ -45,12 +45,17 @@ import java.util.Set;
 import com.google.common.annotations.Beta;
 
 /**
- * A partial implementation of {@link StackedMap<K, V>}.
+ * A partial implementation of {@link StackedMap}.
  * 
  * IMPORTANT: this currently does not fulfill the Map contract perfectly because keySet() and entrySet()
  * are NOT backed by the map.
  *
  * @author braz
+ * 
+ * @param <K>
+ * 			the type of the keys.
+ * @param <V>
+ *          the type of the values.
  */
 @Beta
 public abstract class AbstractStackedMap<K, V> implements StackedMap<K, V> {

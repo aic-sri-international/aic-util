@@ -64,7 +64,7 @@ import com.sri.ai.util.collect.HasNext;
  * indicates the end of the sequence (default always returns false).
  * <li> {@link #nextArgumentToUpdate()}, which in this class has a default
  * implementation of picking the first argument with a next value;
- * <li> {@link #computeFunctionIncrementally()}, which in this class has a
+ * <li> {@link #computeFunctionIncrementally(Object, Iterator, Object, Object)}, which in this class has a
  * default implementation of running {@link #computeFunction()}.
  * </ul>
  * 
@@ -76,6 +76,11 @@ import com.sri.ai.util.collect.HasNext;
  * as a parameter.
  * 
  * @author braz
+ * 
+ * @param <T>
+ *        the type of the elements to iterate.
+ * @param <V>
+ *        the type of the argument values.
  */
 @Beta
 public abstract class AbstractFunctionalSequence<T, V> extends EZIterator<T>

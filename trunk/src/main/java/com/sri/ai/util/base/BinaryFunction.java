@@ -42,13 +42,24 @@ import com.google.common.annotations.Beta;
 /**
  * An interface for functions receiving two arguments.
  * 
+ * @param <A1>
+ *            the type of the first argument.
+ * @param <A2>
+ *            the type of the second argument.
+ * @param <R>
+ *            the type of the result.
  * @see com.google.common.base.Function
  * @author braz
  */
 @Beta
-public interface BinaryFunction<F1, F2, T> {
+public interface BinaryFunction<A1, A2, R> {
 	/**
-	 * @return the result of applying this function to {@code input1} and {@code input2}.
+	 * @param input1
+	 *            the first argument.
+	 * @param input2
+	 *            the second argument.
+	 * @return the result of applying this function to {@code input1} and
+	 *         {@code input2}.
 	 */
-	T apply(F1 input1, F2 input2);
+	R apply(A1 input1, A2 input2);
 }

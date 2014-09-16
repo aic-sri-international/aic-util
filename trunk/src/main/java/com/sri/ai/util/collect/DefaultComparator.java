@@ -42,15 +42,18 @@ import java.util.Comparator;
 import com.google.common.annotations.Beta;
 
 /**
- * A default comparator using the {@link Comparable.compareTo(Comparable
- * another)} method of Comparable objects.
+ * A default comparator using the {@link Comparable#compareTo(Object)} method of
+ * Comparable objects.
  * 
  * @author braz
+ * @param <E>
+ *            the type of the elements to compare.
  */
 @Beta
-public class DefaultComparator<T extends Comparable<T>> implements Comparator<T> {
+public class DefaultComparator<E extends Comparable<E>> implements
+		Comparator<E> {
 
-	public int compare(T o1, T o2) {
+	public int compare(E o1, E o2) {
 		return o1.compareTo(o2);
 	}
 }

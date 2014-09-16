@@ -41,30 +41,38 @@ import com.google.common.annotations.Beta;
 import com.google.common.base.Predicate;
 
 /**
- * A {@link Predicate} given an element on construction that tests if it is equal to a
- * given object when it is applied.
+ * A {@link Predicate} given an element on construction that tests if it is
+ * equal to a given object when it is applied.
  * 
  * @author braz
  * 
- * @param <T>
+ * @param <E>
  *            the type of the element to be tested for equality.
  */
 @Beta
-public class Equals<T> implements Predicate<T> {
+public class Equals<E> implements Predicate<E> {
 
-	private T element;
+	private E element;
 
-	public Equals(T element) {
+	public Equals(E element) {
 		this.element = element;
 	}
-	
-	/** A "constructor" that captures the type automatically. */
-	public static <T1> Equals<T1> make(T1 element) {
-		return new Equals<T1>(element);
+
+	/**
+	 * A static "constructor" that captures the type automatically.
+	 * 
+	 * @param element
+	 *            the element to construct the Equals predicate with.
+	 * @return a new Equals predicate using the given element.
+	 * @param <E1>
+	 *            the type of the element to be tested for equality.
+	 */
+	public static <E1> Equals<E1> make(E1 element) {
+		return new Equals<E1>(element);
 	}
-	
+
 	@Override
-	public boolean apply(T obj) {
+	public boolean apply(E obj) {
 		return (element == null && obj == null) || element.equals(obj);
 	}
 }
