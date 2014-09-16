@@ -117,6 +117,7 @@ public class Configuration {
 	 * Use this to create an example of a configuration file.
 	 * 
 	 * @param args
+	 *        not used.
 	 */
 	public static void main(String[] args) {
 		Preferences preferences = Preferences.userRoot();
@@ -148,7 +149,9 @@ public class Configuration {
 	 * setting.
 	 * 
 	 * @param className
+	 * 			the name of the Class to instantiate.
 	 * @return a instance of the named class.
+	 * @param <I> the type of the class to be instantiated.
 	 */
 	@SuppressWarnings("unchecked")
 	public static <I> I newConfiguredInstance(String className) {

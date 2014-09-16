@@ -102,7 +102,7 @@ public class DisjointSets<E> {
 	/**
 	 * Constructor.
 	 * 
-	 * @param initialElements
+	 * @param elements
 	 *            a collection of elements, each of which will be assigned to
 	 *            their own disjoint set via makeSet().
 	 */

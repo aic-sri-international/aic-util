@@ -61,7 +61,7 @@ public class Gnuplot {
 	/**
 	 * Generates a plot with gnuplot using the following data:
 	 * <ul>
-	 * <li> <code>xSeries</code> is a {@link NullaryFunction<Iterator<T>>} providing
+	 * <li> <code>xSeries</code> is a {@link NullaryFunction} providing
 	 *      iterators over the values to appear on the x-axis, or <code>null</code>
 	 *      (in which case a simple integer enumeration matching the data series is used instead)
 	 * <li> <code>dataSeriesList</code> is a list of {@link DataSeries}, each describing a data series to be plotted

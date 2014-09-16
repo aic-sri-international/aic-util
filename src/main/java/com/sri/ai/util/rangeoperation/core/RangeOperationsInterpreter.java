@@ -47,7 +47,7 @@ import com.sri.ai.util.rangeoperation.api.DependencyAwareEnvironment;
 import com.sri.ai.util.rangeoperation.api.RangeOperation;
 
 /**
- * {@link RangeOperationInterpreter} is a facility for
+ * RangeOperationsInterpreter is a facility for
  * easily writing and efficiently computing expressions with nested aggregate operators
  * (for example, <code>\sum_i \prod_j f(i,j)</code>).
  * <p>
@@ -101,7 +101,7 @@ import com.sri.ai.util.rangeoperation.api.RangeOperation;
  * If an {@link DependencyAwareEnvironment} is found, it replaces the default (initially empty) environment,
  * removing previous variable values. Subsequent variables are added to this environment.
  * <p>
- * There are a few more tests and examples at {@link com.sri.ai.test.util.rangeoperation.RangeOperationsInterpreterTest}.
+ * There are a few more tests and examples at com.sri.ai.test.util.rangeoperation.RangeOperationsInterpreterTest
  * 
  * @author braz
  */
@@ -125,7 +125,7 @@ public class RangeOperationsInterpreter {
 	}
 
 	/**
-	 * Evaluates the range operations and {@DAEFunction} present in a list of arguments. 
+	 * Evaluates the range operations and {@link DAEFunction} present in a list of arguments. 
 	 */
 	public static Object apply(Object ... arguments) {
 		List<DefaultRangeOperation> rangeOperations = new LinkedList<DefaultRangeOperation>();

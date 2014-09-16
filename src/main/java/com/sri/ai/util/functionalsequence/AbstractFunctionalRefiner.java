@@ -96,7 +96,7 @@ import com.sri.ai.util.Util;
  * for f and identifying the argument sequences s. The identification of
  * argument sequences is achieved by {@link #computeFunction()}'s obligation to
  * access the value of its arguments through the method {@link
- * #getCurrentArgumentValue(Refiner<V> argument)}. It is up to extension to
+ * #getCurrentArgumentValue(Refiner)}. It is up to extension to
  * create these argument sequence refiners.
  * </ul>
  * <p>
@@ -120,7 +120,7 @@ public abstract class AbstractFunctionalRefiner<T, V> extends AbstractRefiner<T>
 	}
 
 	/**
-	 * Computes the function from current argument values in {@link #fromArgumentsToArgumentValues},
+	 * Computes the function from current argument values in {@link #arguments},
 	 * being responsible for computing and storing the first value of an argument if it is not already there.
 	 */
 	abstract protected T computeFunction();

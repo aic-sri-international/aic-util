@@ -42,13 +42,24 @@ import com.google.common.annotations.Beta;
 /**
  * An interface for procedures receiving two arguments.
  * 
+ * 
+ * @param <A1>
+ *            the type of the first argument.
+ * @param <A2>
+ *            the type of the second argument.
  * @author braz
  */
 @Beta
-public interface BinaryProcedure<T1, T2> {
-	
+public interface BinaryProcedure<A1, A2> {
+
 	/**
-	 * Perform the procedure using the arguments {@code input1} and {@code input2}.
+	 * Perform the procedure using the arguments {@code input1} and
+	 * {@code input2}.
+	 * 
+	 * @param input1
+	 *            the first input argument.
+	 * @param input2
+	 *            the second input argument.
 	 */
-	void apply(T1 input1, T2 input2);
+	void apply(A1 input1, A2 input2);
 }

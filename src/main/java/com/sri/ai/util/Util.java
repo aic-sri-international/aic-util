@@ -45,14 +45,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -60,10 +57,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
-import java.util.TreeSet;
+import java.util.StringJoiner;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.Function;
@@ -73,7 +73,6 @@ import com.sri.ai.util.base.BinaryPredicate;
 import com.sri.ai.util.base.NullaryFunction;
 import com.sri.ai.util.base.Pair;
 import com.sri.ai.util.base.TernaryFunction;
-import com.sri.ai.util.collect.SubRangeIterator;
 import com.sri.ai.util.math.Rational;
 
 /**
@@ -90,6 +89,9 @@ public class Util {
 	/**
 	 * Logs the error message and stack trace for the given exception, and exits
 	 * the program, returning code 1.
+	 * 
+	 * @param e
+	 *            the throwable causing the fatal error.
 	 */
 	public static void fatalError(Throwable e) {
 		fatalError(e, true);
@@ -98,6 +100,11 @@ public class Util {
 	/**
 	 * Logs a top level message, the error message and stack trace for the given
 	 * exception, and exits the program, returning code 1.
+	 * 
+	 * @param topLevelMessage
+	 *            the top level message describing the fatal error.
+	 * @param e
+	 *            the throwable causing the fatal error.
 	 */
 	public static void fatalError(String topLevelMessage, Throwable e) {
 		fatalError(topLevelMessage, e, true);
@@ -106,6 +113,11 @@ public class Util {
 	/**
 	 * Logs the error message for the given exception, and optionally logs a
 	 * stack trace. Then exits the program with return code 1.
+	 * 
+	 * @param e
+	 *            the throwable causing the fatal error.
+	 * @param trace
+	 *            indicates whether or not to log the stack trace.
 	 */
 	public static void fatalError(Throwable e, boolean trace) {
 		fatalError("Fatal error: ", e, trace);
@@ -135,6 +147,13 @@ public class Util {
 	/**
 	 * Logs a top level message, the error message for the given exception, and
 	 * optionally logs a stack trace. Then exits the program with return code 1.
+	 * 
+	 * @param topLevelMessage
+	 *            the top level message describing the fatal error.
+	 * @param e
+	 *            the throwable causing the fatal error.
+	 * @param trace
+	 *            indicates whether or not to log the stack trace.
 	 */
 	public static void fatalError(String topLevelMessage, Throwable e,
 			boolean trace) {
@@ -144,12 +163,10 @@ public class Util {
 						+ "\n" + join("\n", e.getStackTrace()) + "\n"
 						+ e.getCause().getMessage() + "\n"
 						+ join("\n", e.getCause().getStackTrace()));
-			} 
-			else {
+			} else {
 				System.err.println(topLevelMessage + "\n" + e.getMessage());
 			}
-		} 
-		else {
+		} else {
 			System.err.println(topLevelMessage + "\n" + e.getMessage());
 		}
 		if (e != null) {
@@ -171,8 +188,7 @@ public class Util {
 		if (trace) {
 			System.err.println(msg + "\n"
 					+ join("\n", Thread.currentThread().getStackTrace()));
-		} 
-		else {
+		} else {
 			System.err.println(msg);
 		}
 		System.exit(1);
@@ -180,6 +196,11 @@ public class Util {
 
 	/**
 	 * Returns a string with the entire context of an input stream.
+	 * 
+	 * @param inputStream
+	 *            the input stream from which to read all from.
+	 * @return a String representation of the entire contents of the given input
+	 *         stream.
 	 */
 	public static String readAll(InputStream inputStream) {
 		StringBuilder result = new StringBuilder();
@@ -205,6 +226,12 @@ public class Util {
 	/**
 	 * Returns the string formed by concatenating the two given strings, with a
 	 * space in between if both strings are non-empty.
+	 * 
+	 * @param str1
+	 *            the first string to join.
+	 * @param str2
+	 *            the second string to join.
+	 * @return a concatenated version of str1 and str2 with a space in between.
 	 */
 	public static String join(String str1, String str2) {
 		if (str1.length() == 0) {
@@ -214,15 +241,24 @@ public class Util {
 			return str1;
 		}
 
-		StringBuilder buf = new StringBuilder(str1);
-		buf.append(' ');
-		buf.append(str2);
-		return buf.toString();
+		StringJoiner sj = new StringJoiner(" ");
+		sj.add(str1).add(str2);
+
+		return sj.toString();
 	}
 
 	/**
 	 * Returns a string formed by the concatenation of string versions of the
 	 * elements in a collection, separated by a given separator.
+	 * 
+	 * @param separator
+	 *            the separator to use between elements when creating the joined
+	 *            string.
+	 * @param c
+	 *            the collection whose elements toString() values are to be
+	 *            joined together.
+	 * @return a String constructed from the toString of each element of the
+	 *         given collection with the given separator between each argument.
 	 */
 	public static String join(String separator, Collection c) {
 		Iterator it = c.iterator();
@@ -232,22 +268,33 @@ public class Util {
 	/**
 	 * Returns a string formed by the concatenation of string versions of the
 	 * elements in an iterator's range, separated by a given separator.
+	 * 
+	 * @param separator
+	 *            the separator to use between elements when creating the joined
+	 *            string.
+	 * @param it
+	 *            the iterator whose elements toString() values are to be joined
+	 *            together.
+	 * @return a String constructed from the toString of each element of the
+	 *         given iterator with the given separator between each argument.
 	 */
+	@SuppressWarnings("unchecked")
 	public static String join(String separator, Iterator it) {
-		StringBuilder buffer = new StringBuilder();
-		if (it.hasNext()) {
-			buffer.append(it.next());
-		}
-		while (it.hasNext()) {
-			buffer.append(separator);
-			buffer.append(it.next());
-		}
-		return buffer.toString();
+		StringJoiner sj = new StringJoiner(separator);
+		it.forEachRemaining(e -> sj.add(e.toString()));
+		return sj.toString();
 	}
 
 	/**
 	 * Same as {@link #join(String, Iterator)}, with <code>", "</code> for a
 	 * separator.
+	 * 
+	 * @param it
+	 *            the iterator whose elements toString() values are to be joined
+	 *            together.
+	 * @return a String constructed from the toString of each element of the
+	 *         given iterator with a comma (<code>", "</code>) separator between
+	 *         each argument.
 	 */
 	public static String join(Iterator it) {
 		return join(", ", it);
@@ -255,6 +302,15 @@ public class Util {
 
 	/**
 	 * Same as {@link #join(String, Collection)}.
+	 *
+	 * @param c
+	 *            the collection whose elements toString() values are to be
+	 *            joined together.
+	 * @param separator
+	 *            the separator to use between elements when creating the joined
+	 *            string.
+	 * @return a String constructed from the toString of each element of the
+	 *         given collection with the given separator between each argument.
 	 */
 	public static String join(Collection c, String separator) {
 		return join(separator, c);
@@ -262,6 +318,13 @@ public class Util {
 
 	/**
 	 * Calls {@link #join(String, Collection)} with ", " as separator.
+	 * 
+	 * @param c
+	 *            the collection whose elements toString() values are to be
+	 *            joined together.
+	 * @return a String constructed from the toString of each element of the
+	 *         given collection with a comma (<code>", "</code>) separator
+	 *         between each argument.
 	 */
 	public static String join(Collection c) {
 		return join(", ", c);
@@ -269,6 +332,13 @@ public class Util {
 
 	/**
 	 * Calls {@link #join(Collection)} on the given array as a collection.
+	 * 
+	 * @param a
+	 *            the array whose elements toString() values are to be joined
+	 *            together.
+	 * @return a String constructed from the toString of each element of the
+	 *         given array with a comma (<code>", "</code>) separator between
+	 *         each argument.
 	 */
 	public static String join(Object[] a) {
 		return join(Arrays.asList(a));
@@ -277,6 +347,15 @@ public class Util {
 	/**
 	 * Calls {@link #join(String, Collection)} on the given array as a
 	 * collection.
+	 * 
+	 * @param separator
+	 *            the separator to use between elements when creating the joined
+	 *            string.
+	 * @param a
+	 *            the array whose elements toString() values are to be joined
+	 *            together.
+	 * @return a String constructed from the toString of each element of the
+	 *         given array with the given separator between each argument.
 	 */
 	public static String join(String separator, Object[] a) {
 		return join(separator, Arrays.asList(a));
@@ -286,11 +365,24 @@ public class Util {
 	 * Produces a string with map entry representations separated by a given
 	 * entry separator, where entry representations are the key and value
 	 * representations separated by a key-value separator.
+	 * 
+	 * @param entrySeparator
+	 *            the separator to use between each map entry in the join
+	 *            output.
+	 * @param keyValueSeparator
+	 *            the separator to use between each entry's key value pair in
+	 *            the join output.
+	 * @param map
+	 *            the map whose key value pairs are to be joined into a String.
+	 * @return a joined string with an entrySeparator between each entry in the
+	 *         given map, each of which has a keyValueSeparator between the
+	 *         entry's key and value.
 	 */
 	public static String join(String entrySeparator, String keyValueSeparator,
 			Map<? extends Object, ? extends Object> map) {
 		List<Object> c = new LinkedList<Object>();
-		for (Map.Entry<? extends Object, ? extends Object> entry : map.entrySet()) {
+		for (Map.Entry<? extends Object, ? extends Object> entry : map
+				.entrySet()) {
 			c.add(entry.getKey() + keyValueSeparator + entry.getValue());
 		}
 		return join(entrySeparator, c);
@@ -298,15 +390,31 @@ public class Util {
 
 	/**
 	 * Same as {@link #join(String, String, Map)} with key-value separator equal
-	 * to <code>" -> "</code>.
+	 * to -&gt; .
+	 * 
+	 * @param entrySeparator
+	 *            the separator to use between each map entry in the join
+	 *            output.
+	 * @param map
+	 *            the map whose key value pairs are to be joined into a String.
+	 * @return a joined string with an entrySeparator between each entry in the
+	 *         given map, each of which has an arrow -&gt; separator between the
+	 *         entry's key and value.
 	 */
-	public static String join(String entrySeparator, Map<? extends Object, ? extends Object> map) {
+	public static String join(String entrySeparator,
+			Map<? extends Object, ? extends Object> map) {
 		return join(entrySeparator, " -> ", map);
 	}
 
 	/**
 	 * Same as {@link #join(String, String, Map)} with entry separator equal to
-	 * <code>", "</code> and key-value separator equal to <code>" -> "</code>.
+	 * <code>", "</code> and key-value separator equal to -&gt;.
+	 * 
+	 * @param map
+	 *            the map whose key value pairs are to be joined into a String.
+	 * @return a joined string with a <code>", "</code> comma separator between
+	 *         each entry in the given map, each of which has an arrow -&gt;
+	 *         separator between the entry's key and value.
 	 */
 	public static String join(Map<? extends Object, ? extends Object> map) {
 		return join(", ", " -> ", map);
@@ -316,7 +424,7 @@ public class Util {
 		if (separator.length() == 0) {
 			throw new Error("Util.split cannot run on empty separator.");
 		}
-		
+
 		List<String> result = new LinkedList<String>();
 		int begin = 0;
 		int end;
@@ -333,48 +441,54 @@ public class Util {
 		return result;
 	}
 
-	/** Returns the received arguments in an array. */
+	/**
+	 * Construct an Object array of the given elements.
+	 * 
+	 * @param elements
+	 *            the elements to construct an array from.
+	 * @return the received arguments in an array.
+	 * 
+	 */
 	public static Object[] array(Object... elements) {
 		return elements;
 	}
 
-	/** Returns the received arguments in a linked list. */
+	/**
+	 * Construct a list of the given type populated with the provided elements.
+	 * 
+	 * @param elements
+	 *            the elements to construct the List from.
+	 * @return the received arguments in a linked list.
+	 * @param <T>
+	 *            the type of the List to be constructed and the elements it is
+	 *            to contain.
+	 */
 	public static <T> List<T> list(T... elements) {
 		return new LinkedList<T>(Arrays.asList(elements));
 	}
 
-	/** Returns the received arguments in an iterator. */
+	/**
+	 * Construct an iterator of the given type populated that iterates over the
+	 * provided elements.
+	 * 
+	 * @param elements
+	 *            the elements the iterator is to walk over.
+	 * @return an iterator over the received arguments.
+	 * @param <T>
+	 *            the type of the Iterator to be constructed and the elements it
+	 *            is to iterate over.
+	 */
 	public static <T> Iterator<T> iterator(T... elements) {
 		return Arrays.asList(elements).iterator();
 	}
 
-	/** Returns an empty stack. */
+	/**
+	 * @return an empty stack of the given type.
+	 * @param <T>
+	 *            the type of the Stack to instantiate.
+	 */
 	public static <T> Stack<T> stack() {
 		Stack<T> result = new Stack<T>();
-		return result;
-	}
-
-	/** Returns the received argument in a stack. */
-	public static <T> Stack<T> stack(T object) {
-		Stack<T> result = new Stack<T>();
-		result.push(object);
-		return result;
-	}
-
-	/** Returns the received arguments in an array list. */
-	public static <T> ArrayList arrayList(T... elements) {
-		return new ArrayList<T>(Arrays.asList(elements));
-	}
-
-	/**
-	 * Generates a LinkedList with integers <code>{start, ..., end - 1}</code>,
-	 * skipping <code>step</code> values at a time.
-	 */
-	public static List<Integer> listFromTo(int start, int end, int step) {
-		List<Integer> result = new LinkedList<Integer>();
-		for (int i = start; i < end; i += step) {
-			result.add(i);
-		}
 		return result;
 	}
 
@@ -387,8 +501,16 @@ public class Util {
 	}
 
 	/**
-	 * Returns the received arguments (interpreted as a sequence of key and
-	 * value pairs) in a hash map.
+	 * 
+	 * @param keysAndValues
+	 *            a sequence of key and value pairs to be placed into a new Map.
+	 * 
+	 * @return the received arguments (interpreted as a sequence of key and
+	 *         value pairs) in a hash map.
+	 * @param <K>
+	 *            the type of the Map's key.
+	 * @param <V>
+	 *            the type of the Map's value.
 	 */
 	@SuppressWarnings("unchecked")
 	public static <K, V> Map<K, V> map(Object... keysAndValues) {
@@ -411,10 +533,26 @@ public class Util {
 	/**
 	 * Add given element of a given collection to a collection value in a map,
 	 * creating it in advance (as an instance of given class) if needed.
+	 * 
+	 * @param mapToCollections
+	 *            the map containing the collections to be added to.
+	 * @param key
+	 *            the key identifying the collection in the given map to be
+	 *            added to.
+	 * @param element
+	 *            the element to be added to the identified collection.
+	 * @param newCollectionClass
+	 *            the class of the collection to create if it is not currently
+	 *            mapped to in the given map.
+	 * @param <K>
+	 *            the type of the Map's key.
+	 * @param <V>
+	 *            the type of the Map's value.
 	 */
 	@SuppressWarnings("unchecked")
 	public static <K, V> void addToCollectionValuePossiblyCreatingIt(
-			Map<K,Collection<V>> mapToCollections, K key, V element, Class newCollectionClass) {
+			Map<K, Collection<V>> mapToCollections, K key, V element,
+			Class newCollectionClass) {
 		Collection<V> c = (Collection<V>) mapToCollections.get(key);
 		if (c == null) {
 			try {
@@ -432,6 +570,17 @@ public class Util {
 	/**
 	 * Add all elements of a given collection to a collection value in a map,
 	 * creating it in advance (as an instance of given class) if needed.
+	 * 
+	 * @param mapToCollections
+	 *            the map containing the collections to be added to.
+	 * @param key
+	 *            the key identifying the collection in the given map to be
+	 *            added to.
+	 * @param elements
+	 *            the elements to be added to the identified collection.
+	 * @param newCollectionClass
+	 *            the class of the collection to create if it is not currently
+	 *            mapped to in the given map.
 	 */
 	@SuppressWarnings("unchecked")
 	public static void addAllToCollectionValuePossiblyCreatingIt(
@@ -451,7 +600,18 @@ public class Util {
 		c.addAll(elements);
 	}
 
-	/** Adds all elements of iterator's range to collection. */
+	/**
+	 * Adds all elements of iterator's range to collection.
+	 * 
+	 * @param c
+	 *            the collection to add the iterator's range to.
+	 * @param i
+	 *            the iterator whose range is to be added to the given
+	 *            collection.
+	 * @return the given collection.
+	 * @param <T>
+	 *            the type of the elements given.
+	 */
 	public static <T> Collection<T> addAll(Collection<T> c, Iterator<T> i) {
 		while (i.hasNext()) {
 			c.add(i.next());
@@ -460,16 +620,27 @@ public class Util {
 	}
 
 	/**
-	 * Returns value indexed by given key in map, or a default value if that is null.
+	 * @param map
+	 *            the map to look up a value using the given key.
+	 * @param key
+	 *            the key to look up the given map with.
+	 * @param defaultValue
+	 *            the defaultValue to return if the given key is not in the map.
+	 * @return value indexed by given key in map, or a default value if that is
+	 *         null.
+	 * @param <K>
+	 *            the type of the Map's key.
+	 * @param <V>
+	 *            the type of the Map's value.
 	 */
-	public static <K,V> V getOrUseDefault(Map<K,V> map, K key, V defaultValue) {
+	public static <K, V> V getOrUseDefault(Map<K, V> map, K key, V defaultValue) {
 		V result = map.get(key);
 		if (result == null) {
 			result = defaultValue;
 		}
 		return result;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static <K, V> V getValuePossiblyCreatingIt(Map<K, V> map, K key,
 			Class<?> newValueClass) {
@@ -524,17 +695,26 @@ public class Util {
 	}
 
 	/**
-	 * Returns an Iterator that has just iterated past an element <code>x</code>
-	 * of <code>iterable</code> such that
-	 * <code>predicate.evaluate(element, x)</code> is true, or <code>null</code>
-	 * if there is no such element.
+	 * 
+	 * @param element
+	 *            the element to test.
+	 * @param iterable
+	 *            An iterable object.
+	 * @param predicate
+	 *            the predicate to test if the given element has found a match
+	 *            in the iterable object.
+	 * @return an Iterator that has just iterated past an element <code>x</code>
+	 *         of <code>iterable</code> such that
+	 *         <code>predicate.evaluate(element, x)</code> is true, or
+	 *         <code>null</code> if there is no such element.
+	 * @param <E>
+	 *            the type of the element to find.
 	 */
 	public static <E> Iterator<E> find(E element, Iterable<E> iterable,
 			BinaryPredicate<E, E> predicate) {
 		Iterator<E> i = iterable.iterator();
 		boolean foundIt = false;
-		while (i.hasNext()
-				&& !(foundIt = predicate.apply(element, i.next()))) {
+		while (i.hasNext() && !(foundIt = predicate.apply(element, i.next()))) {
 			;
 		}
 		if (foundIt) {
@@ -543,29 +723,8 @@ public class Util {
 		return null;
 	}
 
-	/**
-	 * Returns the first element in an iterator's range equal to a given
-	 * element.
-	 */
-	public static <T> T find(T t, Iterator<T> it) {
-		while (it.hasNext()) {
-			T another = it.next();
-			if (t.equals(another)) {
-				return another;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Returns the first element in a collection equal to a given element.
-	 */
-	public static <T> T find(T t, Collection<T> c) {
-		return find(t, c.iterator());
-	}
-
-	public static <E> boolean removeAnyTwoMatchingElements(Iterable<E> a, Iterable<E> b,
-			BinaryPredicate<E, E> predicate) {
+	public static <E> boolean removeAnyTwoMatchingElements(Iterable<E> a,
+			Iterable<E> b, BinaryPredicate<E, E> predicate) {
 		Iterator<E> aI = a.iterator();
 		Iterator<E> bI = null;
 		while (aI.hasNext() && (bI = find(aI.next(), b, predicate)) != null) {
@@ -580,84 +739,20 @@ public class Util {
 	}
 
 	/**
-	 * Adds all elements satisfying a predicate to a given
-	 * collection.
-	 */
-	public static <T> Collection<T> addElementsSatisfying(Iterator<T> i,
-			Predicate<T> predicate, Collection<T> result) {
-		while (i.hasNext()) {
-			T element = i.next();
-			if (predicate.apply(element)) {
-				result.add(element);
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Adds all elements satisfying a predicate to a given result
-	 * collection. Returns original collection if all elements satisfied the
-	 * predicate, or given result collection otherwise.
-	 */
-	public static <T> Collection<T> addElementsSatisfying(Collection<T> c,
-			Predicate<T> predicate, Collection<T> result) {
-		Iterator<T> i = c.iterator();
-		boolean someElementDidNotSatisfyPredicate = false;
-		while (i.hasNext()) {
-			T element = i.next();
-			if (predicate.apply(element)) {
-				result.add(element);
-			} 
-			else {
-				someElementDidNotSatisfyPredicate = true;
-			}
-		}
-		if (someElementDidNotSatisfyPredicate) {
-			return result;
-		}
-		return c;
-	}
-
-	/**
-	 * Adds all elements satisfying a predicate to a new linked list.
-	 * Returns new linked list if some element did not satisfy the predicate, or
-	 * original one otherwise.
-	 */
-	public static <T> Collection<T> addElementsSatisfying(Collection<T> c,
-			Predicate<T> predicate) {
-		return addElementsSatisfying(c, predicate, new LinkedList<T>());
-	}
-
-	/**
-	 * Adds all elements satisfying a predicate to a new linked list.
-	 * Returns new linked list if some element did not satisfy the predicate, or
-	 * original one otherwise.
-	 */
-	public static <T> Collection<T> addElementsSatisfying(Iterator<T> i,
-			Predicate<T> predicate) {
-		return addElementsSatisfying(i, predicate, new LinkedList<T>());
-	}
-
-	/**
-	 * Returns first element satisfying predicate, also removing it from given
-	 * list, or returns <null>.
-	 */
-	public static <T> T findAndRemoveOrNull(List<T> list, Predicate<T> p) {
-		ListIterator<T> iterator = list.listIterator();
-		while (iterator.hasNext()) {
-			T element = iterator.next();
-			if (p.apply(element)) {
-				iterator.remove();
-				return element;
-			}
-		}
-		return null;
-	}
-
-	/**
 	 * If there is no element in collection satisfying given predicate, returns
-	 * <null>. Otherwise, returns list with elements in iteration order,
-	 * excluding the satisfying element.
+	 * null. Otherwise, returns list with elements in iteration order, excluding
+	 * the first satisfying element.
+	 * 
+	 * @param c
+	 *            the collection to copy elements from.
+	 * @param p
+	 *            the predicate to test elements on the given collection for
+	 *            whether or not they should be copied or not.
+	 * @return null if no element in given collection satisfying given
+	 *         predicate, otherwise a list with elements in iteration order,
+	 *         excluding the first element satisfying the predicate.
+	 * @param <T>
+	 *            the type of the elements in the collection.
 	 */
 	public static <T> List<T> listCopyWithoutSatisfyingElementOrNull(
 			Collection<T> c, Predicate<T> p) {
@@ -668,66 +763,74 @@ public class Util {
 
 	/**
 	 * If there is no element in collection satisfying given predicate, returns
-	 * <null>. Otherwise, returns pair with found element and a list with
-	 * elements in iteration order, excluding the satisfying element.
+	 * null. Otherwise, returns pair with found element and a list with elements
+	 * in iteration order, excluding the first satisfying element.
+	 * 
+	 * @param c
+	 *            the collection to copy elements from.
+	 * @param p
+	 *            the predicate to test elements on the given collection for
+	 *            whether or not they should be copied or not.
+	 * @return null if no element in given collection satisfying given
+	 *         predicate, otherwise a pair with found element and a list with
+	 *         elements in iteration order, excluding the first satisfying
+	 *         element.
+	 * @param <T>
+	 *            the type of the elements in the collection.
 	 */
 	public static <T> Pair<T, List<T>> findSatisfyingElementAndListCopyWithoutItOrNull(
 			Collection<T> c, Predicate<T> p) {
-		int elementIndex = -1;
-		Iterator<T> iterator = c.iterator();
-		while (iterator.hasNext()) {
-			T element = iterator.next();
-			elementIndex++;
-			if (p.apply(element)) {
-				// there is such an element,
-				// so we create another list and add all elements, but found
-				// one, to it.
-				List<T> copy = makeCopyButForElementAtGivenIndex(c,
-						elementIndex);
-				Pair<T, List<T>> result = Pair.make(element, copy);
-				return result;
-			}
+		Pair<T, List<T>> result = null;
+		final AtomicInteger elementIndex = new AtomicInteger(-1);
+		Optional<T> first = c.stream().filter(e -> {
+			elementIndex.incrementAndGet();
+			return p.apply(e);
+		}).findFirst();
+		if (first.isPresent()) {
+			// we create another list and add all elements, but found one, to
+			// it.
+			List<T> copy = makeCopyButForElementAtGivenIndex(c,
+					elementIndex.intValue());
+			result = Pair.make(first.get(), copy);
 		}
-		return null;
+
+		return result;
 	}
 
 	/**
 	 * Given a collection and an index, returns a list with the collection's
 	 * elements in iteration order, excluding the elementIndex-th element.
+	 * 
+	 * @param c
+	 *            the collection whose elements are to be copied.
+	 * @param elementIndex
+	 *            the index of the element to be excluded from the copied
+	 *            collection.
+	 * @return a list wit the collection's elements in iteration order,
+	 *         excluding the elementIndex-th element.
+	 * @param <T>
+	 *            the type of the elements in the collection.
 	 */
 	public static <T> List<T> makeCopyButForElementAtGivenIndex(
 			Collection<T> c, int elementIndex) {
-		List<T> copy = new LinkedList<T>();
-		Iterator<T> copyIterator = c.iterator();
-		for (int i = 0; copyIterator.hasNext() && i != elementIndex; i++) {
-			copy.add(copyIterator.next());
-		}
-		if (copyIterator.hasNext()) {
-			copyIterator.next(); // this skips the i-th element
-			while (copyIterator.hasNext()) {
-				copy.add(copyIterator.next());
-			}
-		}
-		return copy;
-	}
 
-	/**
-	 * Destructively determines whether there is a one-to-one matching between
-	 * two collections (the iterator of which support <code>remove</code>)
-	 * according to a match predicate.
-	 */
-	public static <E> boolean destructivelyTellsIfThereIsAOneToOneMatching(
-			Iterable<E> expected, Iterable<E> actual, BinaryPredicate<E, E> predicate) {
-		boolean noLonerFoundSoFar = true;
-		while (noLonerFoundSoFar && !isEmpty(expected) && !isEmpty(actual)) {
-			noLonerFoundSoFar = removeAnyTwoMatchingElements(expected, actual,
-					predicate);
-		}
-		return isEmpty(expected) && isEmpty(actual);
+		final AtomicInteger currentIndex = new AtomicInteger(-1);
+		List<T> result = c.stream()
+				.filter(e -> currentIndex.incrementAndGet() != elementIndex)
+				.collect(Collectors.toCollection(() -> new LinkedList<T>()));
+
+		return result;
 	}
 
 	/**
 	 * Stores iterator's range in a new, empty list and returns it.
+	 * 
+	 * @param iterator
+	 *            the iterator whose range is to be stored in a new List.
+	 * @return a new List populated with the elements from the given iterator's
+	 *         range.
+	 * @param <T>
+	 *            the type of the elements iterated over.
 	 */
 	public static <T> List<T> listFrom(Iterator<T> iterator) {
 		LinkedList<T> result = new LinkedList<T>();
@@ -739,6 +842,12 @@ public class Util {
 
 	/**
 	 * Makes a list out of an array.
+	 * 
+	 * @param array
+	 *            the array from which to construct a list.
+	 * @return a List containing the elements of the given array.
+	 * @param <T>
+	 *            the type of the array's elements.
 	 */
 	public static <T> List<T> listFrom(T[] array) {
 		LinkedList<T> result = new LinkedList<T>();
@@ -749,19 +858,20 @@ public class Util {
 	}
 
 	/**
-	 * Stores iterator's range in a new, empty array list and returns it.
-	 */
-	public static <T> ArrayList<T> arrayListFrom(Iterator<T> iterator) {
-		ArrayList<T> result = new ArrayList<T>();
-		while (iterator.hasNext()) {
-			result.add(iterator.next());
-		}
-		return result;
-	}
-
-	/**
 	 * Stores results of applying a function to an iterator's range in a new,
 	 * empty list and returns it.
+	 * 
+	 * @param iterator
+	 *            the iterator's whose range a function is to be applied to.
+	 * @param function
+	 *            the function to be applied to the given iterator's range.
+	 * @return a List of the results from the function applications on the given
+	 *         iterator's range.
+	 * @param <F>
+	 *            the type of the iterators arguments.
+	 * @param <T>
+	 *            the result type of the function applied to the iterator's
+	 *            range.
 	 */
 	public static <F, T> List<T> mapIntoList(Iterator<? extends F> iterator,
 			Function<F, T> function) {
@@ -770,75 +880,57 @@ public class Util {
 			F nextElement = iterator.next();
 			result.add(function.apply(nextElement));
 		}
+
 		return result;
 	}
 
 	/**
-	 * Stores results of applying a function to an iterator's range in a new,
-	 * empty list and returns it.
+	 * Stores results of applying a function to a collection's elements in a
+	 * new, empty list and returns it.
+	 * 
+	 * @param collection
+	 *            the collection whose elements a function is to be applied to.
+	 * @param function
+	 *            the function to be applied to the given collection's elements.
+	 * @return a List of the results from the function applications on the given
+	 *         collection's elements.
+	 * @param <F>
+	 *            the type of the collection's elements.
+	 * @param <T>
+	 *            the result type of the function applied to the collection's
+	 *            elements.
 	 */
 	public static <F, T> List<T> mapIntoList(
-			Collection<? extends F> collection,
-			Function<F, T> function) {
+			Collection<? extends F> collection, Function<F, T> function) {
 		return mapIntoList(collection.iterator(), function);
 	}
 
 	/**
-	 * Stores results of applying a function to an iterator's range in a new,
-	 * empty array list and returns it.
+	 * Stores results of applying a function to a collection's elements in a
+	 * new, empty array list and returns it.
+	 * 
+	 * @param collection
+	 *            the collection whose elements a function is to be applied to.
+	 * @param function
+	 *            the function to be applied to the given collection's elements.
+	 * @return an ArrayList of the results from the function applications on the
+	 *         given collection's elements.
+	 * @param <F>
+	 *            the type of the collection's elements.
+	 * @param <T>
+	 *            the result type of the function applied to the collection's
+	 *            elements.
 	 */
 	public static <F, T> ArrayList<T> mapIntoArrayList(
-			Iterator<? extends F> iterator,
-			Function<F, T> function) {
-		ArrayList<T> result = new ArrayList<T>();
-		while (iterator.hasNext()) {
-			F nextElement = iterator.next();
-			result.add(function.apply(nextElement));
-		}
-		return result;
-	}
+			Collection<? extends F> collection, Function<F, T> function) {
 
-	/**
-	 * Stores results of applying a function to an iterator's range in a new,
-	 * empty array list and returns it.
-	 */
-	public static <F, T> ArrayList<T> mapIntoArrayList(
-			Collection<? extends F> collection,
-			Function<F, T> function) {
-		ArrayList<T> result = new ArrayList<T>(collection.size());
-		for (F nextElement : collection) {
-			result.add(function.apply(nextElement));
-		}
-		return result;
-	}
-	
-	/**
-	 * Map the results of a function on the elements of a list to another list,
-	 * but only allocating the latter if some result is a distinct instance than its corresponding original element.
-	 * If not are, returns the original list (same instance).
-	 * This is meant to help prevent unnecessary creation of objects.
-	 */
-	public static <T> List<T> conservativeMap(List<T> list, Function<T, T> function) {
-		List<T> result = null;
-		int size = list.size();
-		Iterator<T> iterator = list.iterator();
-		int i = 0;
-		while (iterator.hasNext()) {
-			T element = iterator.next();
-			T mapped = function.apply(element);
-			result = store(list, result, element, mapped, i, size);
-			i++;
-		}
-		return result;
-	}
-	
-	private static <F, T> List<T> store(List<T> original, List<T> result, F element, T mappedElement, int i, int size) {
-		if (mappedElement != element) {
-			if (result == null) {
-				result = new ArrayList<T>(original);
-			}
-			result.set(i, mappedElement);
-		}
+		ArrayList<T> result = collection
+				.stream()
+				.map(e -> function.apply(e))
+				.collect(
+						Collectors.toCollection(() -> new ArrayList<T>(
+								collection.size())));
+
 		return result;
 	}
 
@@ -847,51 +939,20 @@ public class Util {
 	}
 
 	/**
-	 * Stores the results of applying a function to the elements of a collection to a given, adequately sized, array.
+	 * Indicates whether two collections contain the exact same instances in the
+	 * same (iterable) order.
+	 * 
+	 * @param c1
+	 *            the first collection to test.
+	 * @param c2
+	 *            the second collection to test.
+	 * @return true if the two collections contain the eact same instances in
+	 *         the same (iterable) order, false otherwise.
+	 * @param <T>
+	 *            the type of the elements in the given collections.
 	 */
-	public static <F, T> T[] mapIntoArray(Collection<F> collection, Function<F, T> function, T[] result) {
-		int i = 0;
-		for (F element : collection) {
-			T fOfElement = function.apply(element);
-			result[i++] = fOfElement;
-		}
-		return result;
-	}
-	
-	/**
-	 * Stores results of applying a given function to a list in an array and returns the array,
-	 * returning null if there has been no (identity) changes.
-	 */
-	public static <T> T[] mapOrNullIfNoChanges(List<T> list, Function<T, T> function) {
-		T[] result = null;
-		Iterator<T> iterator = list.iterator();
-		for (int i = 0; i != list.size(); i++) {
-			T element = iterator.next();
-			T newElement = function.apply(element);
-			if (newElement != element) {
-				result = makeSureItsAllocatedAndIsACopyIfNull(result, list);
-				result[i] = newElement;
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * If given array is null, allocates it, copies all elements from list, and returns it.
-	 * Otherwise, returns given array.
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T[] makeSureItsAllocatedAndIsACopyIfNull(T[] array, List<T> list) {
-		if (array == null) {
-			array = (T[]) list.toArray();
-		}
-		return array;
-	}
-	
-	/**
-	 * Indicates whether two collections contain the exact same instances in the same (iterable) order.
-	 */
-	public static <T> boolean sameInstancesInSameIterableOrder(Collection<T> c1, Collection<T> c2) {
+	public static <T> boolean sameInstancesInSameIterableOrder(
+			Collection<T> c1, Collection<T> c2) {
 		Iterator<T> i1 = c1.iterator();
 		Iterator<T> i2 = c2.iterator();
 		while (i1.hasNext() && i2.hasNext()) {
@@ -899,76 +960,62 @@ public class Util {
 				return false;
 			}
 		}
-		boolean result = ! i1.hasNext() && ! i2.hasNext(); // only true if they are both done at the same time
-		return result;
-	}
-
-	/**
-	 * Applies a unary function to all elements in an iterator's range, without
-	 * collecting results.
-	 */
-	public static <F> void applyToAll(Function<F, ?> function,
-			Iterator<? extends F> iterator) {
-		while (iterator.hasNext()) {
-			function.apply(iterator.next());
-		}
-	}
-
-	/**
-	 * Applies a unary function to all elements in a collection, without
-	 * collecting results.
-	 */
-	public static <F> void applyToAll(Function<F, ?> function,
-			Collection<? extends F> collection) {
-		applyToAll(function, collection.iterator());
-	}
-
-	/**
-	 * Stores iterator's range in a new, empty hash set and returns it.
-	 */
-	public static <T> Set<T> setFrom(Iterator<? extends T> iterator) {
-		HashSet<T> result = new LinkedHashSet<T>();
-		while (iterator.hasNext()) {
-			result.add(iterator.next());
-		}
-		return result;
-	}
-
-	/**
-	 * Stores iterator's range in a new, empty linked hash set and returns it.
-	 */
-	public static <T> LinkedHashSet<T> linkedHashSetFrom(Iterator<? extends T> iterator) {
-		LinkedHashSet<T> result = new LinkedHashSet<T>();
-		while (iterator.hasNext()) {
-			result.add(iterator.next());
-		}
-		return result;
-	}
-
-	/**
-	 * Stores results of applying a function to an iterator's range in a new,
-	 * empty hash set and returns it.
-	 */
-	public static <F, T> Set<T> mapIntoSet(Iterator<? extends F> iterator,
-			Function<F, T> function) {
-		Set<T> result = new LinkedHashSet<T>();
-		while (iterator.hasNext()) {
-			result.add(function.apply(iterator.next()));
-		}
+		boolean result = !i1.hasNext() && !i2.hasNext(); // only true if they
+															// are both done at
+															// the same time
 		return result;
 	}
 
 	/**
 	 * Stores results of applying a function to an set's elements in a new,
 	 * empty hash set and returns it.
+	 * 
+	 * @param set
+	 *            the set to map from.
+	 * @param function
+	 *            the function to apply to each element in the set.
+	 * @return the results of applying the given function to the elements of the
+	 *         given set.
+	 * @param <F>
+	 *            the type of the elements in the Set.
+	 * @param <T>
+	 *            the type of the result from applying the given function.
 	 */
-	public static <F, T> Set<T> mapIntoSet(Set<? extends F> set, Function<F, T> function) {
-		return mapIntoSet(set.iterator(), function);
+	public static <F, T> Set<T> mapIntoSet(Set<? extends F> set,
+			Function<F, T> function) {
+
+		Set<T> result = set
+				.stream()
+				.map(e -> function.apply(e))
+				.collect(
+						Collectors.toCollection(() -> new LinkedHashSet<T>(set
+								.size())));
+
+		return result;
 	}
 
 	/**
 	 * Collects elements in an iterator's range satisfying two different
 	 * conditions, returning false if some element does not satisfy either.
+	 * 
+	 * @param iterator
+	 *            an iterator over a collection of elements to be tested.
+	 * @param satisfyingCondition1
+	 *            populated with elements that satisfy condition1.
+	 * @param condition1
+	 *            the test to be applied to the iterator's range to be passed in
+	 *            order to add elements to the given satisfyingCondition1
+	 *            collection.
+	 * @param satisfyingCondition2
+	 *            populated with elements that satisfy condition2.
+	 * @param condition2
+	 *            the test to be applied to the iterator's range to be passed in
+	 *            order to add elements to the given satisfyingCondition2
+	 *            collection.
+	 * @return false is some element in the given iterator's range does not
+	 *         satisfy both given conditions, true otherwise.
+	 * @param <E>
+	 *            the type of the elements in the given collections.
 	 */
 	public static <E> boolean collectOrReturnFalseIfElementDoesNotFitEither(
 			Iterator<E> iterator, Collection<E> satisfyingCondition1,
@@ -995,6 +1042,25 @@ public class Util {
 	/**
 	 * Collects elements in a collection satisfying two different conditions,
 	 * returning false if some element does not satisfy either.
+	 * 
+	 * @param collection
+	 *            a collection of elements to be tested.
+	 * @param satisfyingCondition1
+	 *            populated with elements that satisfy condition1.
+	 * @param condition1
+	 *            the test to be applied to the elements of the given collection
+	 *            to be passed in order to add elements to the given
+	 *            satisfyingCondition1 collection.
+	 * @param satisfyingCondition2
+	 *            populated with elements that satisfy condition2.
+	 * @param condition2
+	 *            the test to be applied to the elements of the given collection
+	 *            to be passed in order to add elements to the given
+	 *            satisfyingCondition2 collection.
+	 * @return false is some element in the given collection does not satisfy
+	 *         both given conditions, true otherwise.
+	 * @param <E>
+	 *            the type of the elements in the given collections.
 	 */
 	public static <E> boolean collectOrReturnFalseIfElementDoesNotFitEither(
 			Collection<E> collection, Collection<E> satisfyingCondition1,
@@ -1007,14 +1073,33 @@ public class Util {
 
 	/**
 	 * Collects elements in an iterator's range into two different given
-	 * collections, one with the N first elements satisfying a condition and the other
-	 * with the elements not doing so. Returns the index of the first of the n elements
-	 * satisfying condition or -1 if there aren't n element satisfying the predicate.
+	 * collections, one with the N first elements satisfying a condition and the
+	 * other with the elements not doing so. Returns the index of the first of
+	 * the n elements satisfying condition or -1 if there aren't n element
+	 * satisfying the predicate.
+	 * 
+	 * @param iterator
+	 *            the iterator over whose range the first n are to be collected
+	 *            from
+	 * @param n
+	 *            the maximum number to be collected.
+	 * @param condition
+	 *            the satisfying condition predicate
+	 * @param satisfyingCondition
+	 *            those elements from the iterator's range that satisfy the
+	 *            condition.
+	 * @param remaining
+	 *            those elements from the iterator's range that don't satisfy
+	 *            the condition.
+	 * @return the index of the first of the n elements satisfying the
+	 *         condition, -1 if there aren't n elements satisfying the
+	 *         condition.
+	 * @param <E>
+	 *            the type of the elements from the iterator's range.
 	 */
-	public static <E> int collectFirstN(
-			Iterator<E> iterator, int n,
-			Predicate<E> condition,
-			Collection<E> satisfyingCondition, Collection<E> remaining) {
+	public static <E> int collectFirstN(Iterator<E> iterator, int n,
+			Predicate<E> condition, Collection<E> satisfyingCondition,
+			Collection<E> remaining) {
 		int i = 0;
 		int result = -1;
 		while (iterator.hasNext()) {
@@ -1025,8 +1110,7 @@ public class Util {
 				if (result == -1) {
 					result = i;
 				}
-			} 
-			else {
+			} else {
 				remaining.add(object);
 			}
 			i++;
@@ -1038,96 +1122,145 @@ public class Util {
 	}
 
 	/**
-	 * Collects elements in a collection into two different given
-	 * collections, one with the N first elements satisfying a condition and the other
-	 * with the elements not doing so. Returns the index of the first of the n elements
-	 * satisfying condition or -1 if there aren't n element satisfying the predicate.
+	 * Collects elements in a collection into two different given collections,
+	 * one with the N first elements satisfying a condition and the other with
+	 * the elements not doing so. Returns the index of the first of the n
+	 * elements satisfying condition or -1 if there aren't n element satisfying
+	 * the predicate.
+	 * 
+	 * @param c
+	 *            the collection the first n elements are to be collected from.
+	 * @param n
+	 *            the maximum number to be collected.
+	 * @param condition
+	 *            the satisfying condition predicate
+	 * @param satisfyingCondition
+	 *            those elements from the collection that satisfy the condition.
+	 * @param remaining
+	 *            those elements from the collection that don't satisfy the
+	 *            condition.
+	 * @return the index of the first of the n elements satisfying the
+	 *         condition, -1 if there aren't n elements satisfying the
+	 *         condition.
+	 * @param <E>
+	 *            the type of the elements from the input collection.
 	 */
-	public static <E> int collectFirstN(
-			Collection<E> c, int n,
-			Predicate<E> condition,
-			Collection<E> satisfyingCondition, Collection<E> remaining) {
-		int result = collectFirstN(c.iterator(), n, condition, satisfyingCondition, remaining);
+	public static <E> int collectFirstN(Collection<E> c, int n,
+			Predicate<E> condition, Collection<E> satisfyingCondition,
+			Collection<E> remaining) {
+		int result = collectFirstN(c.iterator(), n, condition,
+				satisfyingCondition, remaining);
 		return result;
 	}
 
 	/**
-	 * Collects elements in an iterator's range into two different given
+	 * Collects elements in a given iterable into two different given
 	 * collections, one with the elements satisfying a condition and the other
 	 * with the elements not doing so. Returns the index of the first element
-	 * satisfying condition or -1 if there is none.
+	 * satisfying condition.
+	 * 
+	 * @param iterable
+	 *            an iterable over the elements to be tested.
+	 * @param satisfyingCondition
+	 *            elements from the iterable that satisfy the given condition
+	 *            will be added to this collection.
+	 * @param condition
+	 *            the predicate used to test the elements in the given iterable.
+	 * @param remaining
+	 *            elements from the iterable that do not satisfy the given
+	 *            condition will be added to this collection.
+	 * @return the index of the first element satisfying the condition, -1 if
+	 *         none satisfy.
+	 * @param <E>
+	 *            the type of the elements being collected.
 	 */
-	public static <E> int collect(Iterator<E> iterator,
+	public static <E> int collect(Iterable<E> iterable,
 			Collection<E> satisfyingCondition, Predicate<E> condition,
 			Collection<E> remaining) {
-		int i = 0;
-		int result = -1;
-		while (iterator.hasNext()) {
-			E object = iterator.next();
-			if (condition.apply(object)) {
-				satisfyingCondition.add(object);
-				if (result == -1) {
-					result = i;
+		final AtomicInteger i = new AtomicInteger(0);
+		final AtomicInteger result = new AtomicInteger(-1);
+		iterable.forEach(e -> {
+			if (condition.apply(e)) {
+				satisfyingCondition.add(e);
+				if (result.intValue() == -1) {
+					result.set(i.intValue());
 				}
-			} 
-			else {
-				remaining.add(object);
+			} else {
+				remaining.add(e);
 			}
-			i++;
-		}
-		return result;
-	}
-
-	/**
-	 * Collects elements in a collection into two different given collections,
-	 * one with the elements satisfying a condition and the other with the
-	 * elements not doing so. Returns the index of the first element satisfying
-	 * condition.
-	 */
-	public static <E> int collect(Collection<E> collection,
-			Collection<E> satisfyingCondition, Predicate<E> condition,
-			Collection<E> remaining) {
-		return collect(collection.iterator(), satisfyingCondition, condition,
-				remaining);
+			i.incrementAndGet();
+		});
+		return result.intValue();
 	}
 
 	/**
 	 * Collects elements in a collection satisfying a given predicate into a
 	 * given collection, returning the latter.
+	 * 
+	 * @param collection
+	 *            the collection from which elements are to be collected from.
+	 * @param collected
+	 *            elements from the given collection that pass the given
+	 *            predicate test will be added to this collection.
+	 * @param predicate
+	 *            the test to be used to select collect elements from the given
+	 *            collection.
+	 * @return collected.
+	 * @param <E>
+	 *            the type of the elements being collected.
 	 */
-	public static <T> Collection<T> collect(Collection<T> collection,
-			Collection<T> collected, Predicate<T> predicate) {
-		return collect(collection.iterator(), collected, predicate);
+	public static <E> Collection<E> collect(Collection<E> collection,
+			Collection<E> collected, Predicate<E> predicate) {
+		collection.stream().filter(e -> predicate.apply(e))
+				.forEach(e -> collected.add(e));
+		return collected;
 	}
 
 	/**
 	 * Collects elements in an iterator's range satisfying a given predicate
 	 * into a given collection, returning the latter.
+	 * 
+	 * @param iterator
+	 *            an iterator over whose range elements are to be collected
+	 *            from.
+	 * @param collected
+	 *            elements from the given iterator's range that pass the given
+	 *            predicate test will be added to this collection.
+	 * @param predicate
+	 *            the test to be used to select iterated elements from the given
+	 *            iterator.
+	 * @return collected.
+	 * @param <E>
+	 *            the type of the elements being collected.
 	 */
-	public static <T> Collection<T> collect(Iterator<T> iterator,
-			Collection<T> collected, Predicate<T> predicate) {
-		while (iterator.hasNext()) {
-			T element = iterator.next();
-			if (predicate.apply(element)) {
-				collected.add(element);
+	public static <E> Collection<E> collect(Iterator<E> iterator,
+			Collection<E> collected, Predicate<E> predicate) {
+
+		iterator.forEachRemaining(e -> {
+			if (predicate.apply(e)) {
+				collected.add(e);
 			}
-		}
+		});
+
 		return collected;
 	}
 
 	/**
 	 * Collects elements in a collection satisfying a given predicate into a new
 	 * linked list and returns it.
+	 * 
+	 * @param collection
+	 *            the collection from which elements are to be copied.
+	 * @param predicate
+	 *            the test to be applied to determine which elements should be
+	 *            copied into the returned list.
+	 * @return a List of the elements in the collection that matched the given
+	 *         predicate.
+	 * @param <T>
+	 *            the type of the elements to collect.
 	 */
-	public static <T> List<T> collectToList(Collection<T> collection, Predicate<T> predicate) {
-		return (List<T>) collect(collection, new LinkedList<T>(), predicate);
-	}
-
-	/**
-	 * Collects elements in a collection satisfying a given predicate into a new
-	 * linked list and returns it.
-	 */
-	public static <T> List<T> filter(Collection<T> collection, Predicate<T> predicate) {
+	public static <T> List<T> collectToList(Collection<T> collection,
+			Predicate<T> predicate) {
 		return (List<T>) collect(collection, new LinkedList<T>(), predicate);
 	}
 
@@ -1197,6 +1330,13 @@ public class Util {
 	/**
 	 * Returns a Number representing the quotient of a division, or null if
 	 * denominator is zero.
+	 * 
+	 * @param numerator
+	 *            the numerator.
+	 * @param denominator
+	 *            the denominator.
+	 * @return a Number representing the quotient of a division, or null if
+	 *         denominator is zero.
 	 */
 	public static Number division(Number numerator, Number denominator) {
 		double denominatorValue = denominator.doubleValue();
@@ -1211,100 +1351,109 @@ public class Util {
 	/**
 	 * Returns a Number representing the quotient of a division, or null if
 	 * denominator is zero, with arbitrary precision when possible.
+	 * 
+	 * @param numerator
+	 *            the numerator.
+	 * @param denominator
+	 *            the denominator.
+	 * @return a Number representing the quotient of a division, or null if
+	 *         denominator is zero, with arbitrary precision when possible.
 	 */
-	public static Rational divisionWithArbitraryPrecisionIfPossible(Rational numerator, Rational denominator) {
+	public static Rational divisionWithArbitraryPrecisionIfPossible(
+			Rational numerator, Rational denominator) {
 		if (denominator.isZero()) {
 			return null;
 		}
-		
-		// Note: In the case of Rational as opposed to the previously used BigDecimal,
+
+		// Note: In the case of Rational as opposed to the previously used
+		// BigDecimal,
 		// this should always be possible.
 		Rational quotient = numerator.divide(denominator);
 		return quotient;
 	}
 
 	/**
-	 * Returns the maximum in range of given iterator over numbers, or <null> if
-	 * range is empty.
-	 */
-	public static Number max(Iterator<? extends Number> numbersIt) {
-		if (!numbersIt.hasNext()) {
-			return null;
-		}
-		double max = numbersIt.next().doubleValue();
-		while (numbersIt.hasNext()) {
-			final double value = numbersIt.next().doubleValue();
-			if (value > max) {
-				max = value;
-			}
-		}
-		return numberInJustNeededType(max);
-	}
-
-	/**
-	 * Returns the maximum in collection of numbers, or <null> if collection is
+	 * Returns the maximum in collection of numbers, or null if collection is
 	 * empty.
+	 * 
+	 * @param numbers
+	 *            a collection of numbers a maximum is to be found for.
+	 * @return the maximum element in the given collection, or null if
+	 *         collection is empty.
 	 */
 	public static Number max(Collection<? extends Number> numbers) {
-		return max(numbers.iterator());
+		Number result = max(
+				numbers,
+				(Number n1, Number n2) -> Double.compare(n1.doubleValue(),
+						n2.doubleValue()));
+		if (result != null) {
+			result = numberInJustNeededType(result.doubleValue());
+		}
+		return result;
 	}
 
 	/**
-	 * Returns the minimum in range of given iterator over numbers, or <null> if
-	 * range is empty.
-	 */
-	public static Number min(Iterator<Number> numbersIt) {
-		if (!numbersIt.hasNext()) {
-			return null;
-		}
-		double min = numbersIt.next().doubleValue();
-		while (numbersIt.hasNext()) {
-			final double value = numbersIt.next().doubleValue();
-			if (value < min) {
-				min = value;
-			}
-		}
-		return numberInJustNeededType(min);
-	}
-
-	/**
-	 * Returns the minimum in collection of numbers, or <null> if collection is
+	 * Returns the minimum in collection of numbers, or null if collection is
 	 * empty.
+	 * 
+	 * @param numbers
+	 *            a collection of numbers a minimum is to be found for.
+	 * @return the minimum element in the given collection, or null if
+	 *         collection is empty.
 	 */
-	public static Number min(Collection<Number> numbers) {
-		return min(numbers.iterator());
+	public static Number min(Collection<? extends Number> numbers) {
+		Number result = min(
+				numbers,
+				(Number n1, Number n2) -> Double.compare(n1.doubleValue(),
+						n2.doubleValue()));
+		if (result != null) {
+			result = numberInJustNeededType(result.doubleValue());
+		}
+		return result;
 	}
 
-	/** Returns the minimum element in a collection according to a comparator. */
-	public static <T> T min(Collection<T> c, Comparator<T> comparator) {
-		if (c.isEmpty()) {
-			return null;
+	/**
+	 * Returns the maximum element in a collection according to a comparator.
+	 * 
+	 * @param c
+	 *            the collection to find a maximum from.
+	 * @param comparator
+	 *            the comparator to use to determine the maximum between
+	 *            elements.
+	 * @return the maximum of the given collection, or null if the collection is
+	 *         empty.
+	 * @param <T>
+	 *            the type of the elements in the collection.
+	 */
+	public static <T> T max(Collection<? extends T> c, Comparator<T> comparator) {
+		T result = null;
+		Optional<? extends T> max = c.stream().max(comparator);
+		if (max.isPresent()) {
+			result = max.get();
 		}
-		T min = null;
-		Iterator<T> it = c.iterator();
-		while (it.hasNext()) {
-			T element = it.next();
-			if (min == null || comparator.compare(element, min) == -1) {
-				min = element;
-			}
-		}
-		return min;
+		return result;
 	}
 
-	/** Returns the maximum element in a collection according to a comparator. */
-	public static <T> T max(Collection<T> c, Comparator<T> comparator) {
-		if (c.isEmpty()) {
-			return null;
+	/**
+	 * Returns the minimum element in a collection according to a comparator.
+	 * 
+	 * @param c
+	 *            the collection to find a minimum from.
+	 * @param comparator
+	 *            the comparator to use to determine the minimum between
+	 *            elements.
+	 * @return the minimum of the given collection, or null if the collection is
+	 *         empty.
+	 * @param <T>
+	 *            the type of the elements in the collection.
+	 */
+	public static <T> T min(Collection<? extends T> c, Comparator<T> comparator) {
+		T result = null;
+		Optional<? extends T> min = c.stream().min(comparator);
+		if (min.isPresent()) {
+			result = min.get();
 		}
-		T max = null;
-		Iterator<T> it = c.iterator();
-		while (it.hasNext()) {
-			T element = it.next();
-			if (max == null || comparator.compare(element, max) == +1) {
-				max = element;
-			}
-		}
-		return max;
+		return result;
 	}
 
 	public static Boolean and(Iterator<Boolean> booleansIt) {
@@ -1317,40 +1466,26 @@ public class Util {
 	}
 
 	public static Boolean and(Collection<Boolean> booleans) {
-		return and(booleans.iterator());
-	}
-
-	public static Boolean or(Iterator<Boolean> booleansIt) {
-		while (booleansIt.hasNext()) {
-			if (booleansIt.next()) {
-				return true;
-			}
-		}
-		return false;
+		return !booleans.stream().filter(b -> !b).findFirst().isPresent();
 	}
 
 	public static Boolean or(Collection<Boolean> booleans) {
-		return or(booleans.iterator());
-	}
-
-	/**
-	 * A sadly inefficient version of Lisp's cons -- returning a list composed
-	 * of first and rest.
-	 */
-	public static <E> List<E> cons(E first, List<E> rest) {
-		@SuppressWarnings("unchecked")
-		List<E> result = Util.list(first);
-		result.addAll(rest);
-		return result;
+		return booleans.stream().filter(b -> b).findFirst().isPresent();
 	}
 
 	/**
 	 * Returns a list composed of all elements of given list but the first one.
 	 * Throws an exception if list is empty.
+	 * 
+	 * @param list
+	 *            the list all elements except the first are to be returned
+	 *            from.
+	 * @return the input list excluding the first element.
+	 * @param <T>
+	 *            the type of the elements in the list.
 	 */
 	public static <T> List<T> rest(List<T> list) {
-		List<T> result = new LinkedList<T>(list);
-		result.remove(0);
+		List<T> result = list.subList(1, list.size());
 		return result;
 	}
 
@@ -1384,7 +1519,15 @@ public class Util {
 		return buffer.toString();
 	}
 
-	/** Indicates whether the elements of two iterators's ranges are equal. */
+	/**
+	 * Indicates whether the elements of two iterators's ranges are equal.
+	 * 
+	 * @param it1
+	 *            the first iterator to test.
+	 * @param it2
+	 *            the second iterator to test.
+	 * @return true if the elements of the two iterator's ranges are equal.
+	 */
 	public static boolean equals(Iterator it1, Iterator it2) {
 		while (it1.hasNext()) {
 			if (!it2.hasNext()) {
@@ -1405,20 +1548,33 @@ public class Util {
 	/**
 	 * A replacement for {@link Object#equals(Object)} that can deal with
 	 * objects being <code>null</code>.
+	 * 
+	 * @param o1
+	 *            the first object to test.
+	 * @param o2
+	 *            the second object to test.
+	 * 
+	 * @return true if true if the two object are null or both equal each other,
+	 *         false otherwise.
 	 */
 	public static boolean equals(Object o1, Object o2) {
 		if (o1 == null) {
 			return o2 == null;
-		}
-		else if (o2 == null) {
+		} else if (o2 == null) {
 			return false;
 		}
 		return o1.equals(o2);
 	}
 
 	/**
-	 * Indicates that neither of two objects are <null> and the first equals the
+	 * Indicates that neither of two objects are null and the first equals the
 	 * second.
+	 * 
+	 * @param o1
+	 *            the first object to test.
+	 * @param o2
+	 *            the second object to test.
+	 * @return true if both object are not null and are equal, false otherwise.
 	 */
 	public static boolean notNullAndEquals(Object o1, Object o2) {
 		if (o1 == null || o2 == null) {
@@ -1429,59 +1585,56 @@ public class Util {
 	}
 
 	/**
-	 * Indicates that two objects are not <null> and not equal.
+	 * Indicates that two objects are not null and not equal.
+	 * 
+	 * @param o1
+	 *            the first object to test.
+	 * @param o2
+	 *            the second object to test.
+	 * @return true if both object are not null and not equal, false otherwise.
 	 */
 	public static boolean notNullAndDistinct(Object o1, Object o2) {
 		if (o1 == null || o2 == null) {
 			return false;
 		}
 
-		return ! o1.equals(o2);
-	}
-
-	public static <T> boolean equals(T[] array, List<T> list) {
-		boolean result = Arrays.asList(array).equals(list);
-		return result;
-	}
-	
-	/**
-	 * Indicates whether all elements in an iterator's range equal a given
-	 * object.
-	 */
-	public static <T> boolean allEqual(Iterator<? extends T> iterator, T object) {
-		while (iterator.hasNext()) {
-			if (!equals(iterator.next(), object)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * Indicates whether all elements in iterator's range satisfy the given
-	 * predicate.
-	 */
-	public static <E> boolean forAll(Iterator<E> iterator, Predicate<E> predicate) {
-		while (iterator.hasNext()) {
-			if (!predicate.apply(iterator.next())) {
-				return false;
-			}
-		}
-		return true;
+		return !o1.equals(o2);
 	}
 
 	/**
 	 * Indicates whether all elements in collection satisfy the given predicate.
+	 * 
+	 * @param collection
+	 *            the collection of elements to test.
+	 * @param predicate
+	 *            the predicate to test the elements within the collection.
+	 * @return true if all elements in the collection match the given predicate,
+	 *         false otherwise.
+	 * @param <E>
+	 *            the type of the collections elements.
 	 */
-	public static <E> boolean forAll(Collection<E> collection, Predicate<E> predicate) {
-		return forAll(collection.iterator(), predicate);
+	public static <E> boolean forAll(Collection<E> collection,
+			Predicate<E> predicate) {
+		boolean result = collection.stream().allMatch(e -> predicate.apply(e));
+		return result;
 	}
 
 	/**
 	 * Indicates whether there is an element in iterator's range that satisfies
 	 * the given predicate.
+	 * 
+	 * @param iterator
+	 *            the iterator whose range of elements are to be tested.
+	 * @param predicate
+	 *            the predicate to test the elements within the iterator's
+	 *            range.
+	 * @return true if any element in the iterator's range match the given
+	 *         predicate, false otherwise.
+	 * @param <E>
+	 *            the type of the iterators range elements.
 	 */
-	public static <T> boolean thereExists(Iterator<T> iterator, Predicate<T> predicate) {
+	public static <E> boolean thereExists(Iterator<E> iterator,
+			Predicate<E> predicate) {
 		while (iterator.hasNext()) {
 			if (predicate.apply(iterator.next())) {
 				return true;
@@ -1493,33 +1646,55 @@ public class Util {
 	/**
 	 * Indicates whether there is an element in collection that satisfies the
 	 * given predicate.
+	 * 
+	 * @param collection
+	 *            the collection of elements to test.
+	 * @param predicate
+	 *            the predicate to test the elements within the collection.
+	 * @return true if any element in the collection match the given predicate,
+	 *         false otherwise.
+	 * @param <E>
+	 *            the type of the collections elements.
 	 */
-	public static <T> boolean thereExists(Collection<T> collection, Predicate<T> predicate) {
-		return thereExists(collection.iterator(), predicate);
-	}
-
-	/** Adds all elements of two collections to another. */
-	public static <T> Collection<T> union(Collection<T> c1, Collection<T> c2,
-			Collection<T> result) {
-		for (T element : c1) {
-			result.add(element);
-		}
-		for (T element : c2) {
-			result.add(element);
-		}
+	public static <E> boolean thereExists(Collection<E> collection,
+			Predicate<E> predicate) {
+		boolean result = collection.stream().anyMatch(e -> predicate.apply(e));
 		return result;
 	}
 
-	/** Adds all elements of two collections to a new LinkedList. */
-	public static <T> List<T> union(Collection<T> c1, Collection<T> c2) {
-		return (List<T>) union(c1, c2, new LinkedList<T>());
+	/**
+	 * Adds all elements of two collections to a new LinkedList.
+	 * 
+	 * @param c1
+	 *            the first collection to add elements from.
+	 * @param c2
+	 *            the second collection to add elements from.
+	 * @return a LinkedList containing the elements from both input collections.
+	 * @param <E>
+	 *            the type of the collections elements.
+	 */
+
+	public static <E> List<E> union(Collection<E> c1, Collection<E> c2) {
+		List<E> result = new LinkedList<E>();
+		result.addAll(c1);
+		result.addAll(c2);
+		return result;
 	}
 
-	/** Adds all elements of given collections to a new LinkedList. */
-	public static <T> List<T> addAllToANewList(
-			Collection<T>... collections) {
-		LinkedList<T> result = new LinkedList<T>();
-		for (Collection<T> c : collections) {
+	/**
+	 * Adds all elements of given collections to a new LinkedList.
+	 * 
+	 * @param collections
+	 *            the collections whose elements should be added to the returned
+	 *            list.
+	 * @return a new Linked List containing all the elements from the given
+	 *         collections.
+	 * @param <E>
+	 *            the type of the collections elements.
+	 */
+	public static <E> List<E> addAllToANewList(Collection<E>... collections) {
+		LinkedList<E> result = new LinkedList<E>();
+		for (Collection<E> c : collections) {
 			result.addAll(c);
 		}
 		return result;
@@ -1536,6 +1711,10 @@ public class Util {
 	/**
 	 * Creates PrintStream from file name checking for errors and throwing
 	 * appropriate {@link Error}s.
+	 * 
+	 * @param fileName
+	 *            the name of the file a print stream is to be created for.
+	 * @return the PrintStream against the given file.
 	 */
 	public static PrintStream getPrintStream(String fileName) {
 		// use buffering
@@ -1559,8 +1738,16 @@ public class Util {
 		return getFirstOrNull(c.iterator());
 	}
 
-	/** Returns the last element of a list or null, if empty. */
-	public static <T> T getLast(List<T> list) {
+	/**
+	 * Returns the last element of a list or null, if empty.
+	 *
+	 * @param list
+	 *            the list whose last element is to be returned.
+	 * @return the last element in the list or null if the list is empty.
+	 * @param <E>
+	 *            the type of the elements in the list.
+	 */
+	public static <E> E getLast(List<E> list) {
 		if (list.isEmpty()) {
 			return null;
 		}
@@ -1578,26 +1765,40 @@ public class Util {
 	/**
 	 * Return all but the first element in an iterator's range, in a newly made
 	 * list.
+	 * 
+	 * @param i
+	 *            the iterator to get rest from.
+	 * @return all but the first element in the iterator's range, in a newly
+	 *         made list.
+	 * @param <E>
+	 *            the type of the elements in the iterator's range.
 	 */
-	public static <T> List<T> getRest(Iterator<T> i) {
+	public static <E> List<E> getRest(Iterator<E> i) {
 		if (!i.hasNext()) {
 			throw new Error("Util.getRest called on empty iterator");
 		}
 		i.next();
-		List<T> result = listFrom(i);
+		List<E> result = listFrom(i);
 		return result;
 	}
 
 	/**
 	 * Return all but the first element in a collection, in iteration order, in
 	 * a newly made list.
+	 * 
+	 * @param c
+	 *            the collection to get rest from.
+	 * @return all but the first element in the collection, in a newly made
+	 *         list.
+	 * @param <E>
+	 *            the type of the collections elements.
 	 */
-	public static <T> List<T> getRest(Collection<T> c) {
+	public static <E> List<E> getRest(Collection<E> c) {
 		return getRest(c.iterator());
 	}
 
-	public static <E> E getFirstSatisfyingPredicateOrNull(Iterator<? extends E> i,
-			Predicate<E> p) {
+	public static <E> E getFirstSatisfyingPredicateOrNull(
+			Iterator<? extends E> i, Predicate<E> p) {
 		while (i.hasNext()) {
 			E o = i.next();
 			if (p.apply(o)) {
@@ -1607,23 +1808,39 @@ public class Util {
 		return null;
 	}
 
-	public static <E> E getFirstSatisfyingPredicateOrNull(Collection<? extends E> c,
-			Predicate<E> p) {
+	public static <E> E getFirstSatisfyingPredicateOrNull(
+			Collection<? extends E> c, Predicate<E> p) {
 		return getFirstSatisfyingPredicateOrNull(c.iterator(), p);
 	}
 
 	/**
-	 * Returns the first result of applying a given function to the elements of a collection,
-	 * or <code>null</code> if all such results are <code>null</code>.
+	 * Returns the first result of applying a given function to the elements of
+	 * a collection, or <code>null</code> if all such results are
+	 * <code>null</code>.
+	 * 
+	 * @param c
+	 *            the collection whose elements are to be mapped by the given
+	 *            function.
+	 * @param f
+	 *            the function to map the given elements with.
+	 * @return the first result of applying the given function to the elements
+	 *         that is not null, otherwise null.
+	 * @param <A>
+	 *            the type of the give collections arguments and the type of the
+	 *            argument to the given function.
+	 * @param <R>
+	 *            the result type of applying the given function to an element
+	 *            in the given collection.
 	 */
-	public static <T1, T2> T2 getFirstNonNullResultOrNull(Collection<T1> c, Function<T1, T2> f) {
-		for (T1 t1 : c) {
-			T2 result = f.apply(t1);
-			if (result != null) {
-				return result;
-			}
+	public static <A, R> R getFirstNonNullResultOrNull(Collection<A> c,
+			Function<A, R> f) {
+		R result = null;
+		Optional<R> first = c.stream().map(a -> f.apply(a))
+				.filter(r -> r != null).findFirst();
+		if (first.isPresent()) {
+			result = first.get();
 		}
-		return null;
+		return result;
 	}
 
 	public static <E> E findFirst(Collection<? extends E> c, Predicate<E> p) {
@@ -1654,75 +1871,41 @@ public class Util {
 		return result;
 	}
 
-	/** Return's a collection's content in an array. */
-	public static Object[] asArray(Collection c) {
-		Object[] result = new Object[c.size()];
-		int i = 0;
-		for (Object o : c) {
-			result[i++] = o;
-		}
-		return result;
-	}
-
-	/** Indicates whether given string is capitalized. */
-	public static boolean isCapitalized(String string) {
-		return Character.isUpperCase(string.charAt(0));
-	}
-
 	/**
-	 * Indicates whether all elements of collection are instances of a given
-	 * class.
+	 * Indicates whether two collections intersect.
+	 *
+	 * @param c1
+	 *            the first collection to test.
+	 * @param c2
+	 *            the second collection to test.
+	 * @return true if the two collections intersect.
+	 * @param <E1>
+	 *            the type of the elements in the first collection.
+	 * @param <E2>
+	 *            the type of the elements in the second collection.
 	 */
-	public static boolean allAreInstancesOf(Collection c, Class clazz) {
-		for (Object o : c) {
-			if (!clazz.isInstance(o)) {
-				return false;
-			}
-		}
-		return true;
-	}
+	public static <E1, E2> boolean intersect(Collection<E1> c1,
+			Collection<E2> c2) {
+		boolean result;
 
-	/** Indicates whether two collections intersect. */
-	public static <T1, T2> boolean intersect(Collection<T1> c1,
-			Collection<T2> c2) {
-		Collection smaller;
-		Collection larger;
-
+		// Optimization: Traverse the smaller list.
 		if (c1.size() < c2.size()) {
-			smaller = c1;
-			larger = c2;
-		} 
-		else {
-			smaller = c2;
-			larger = c1;
+			result = c1.stream().filter(e -> c2.contains(e)).findAny()
+					.isPresent();
+		} else {
+			result = c2.stream().filter(e -> c1.contains(e)).findAny()
+					.isPresent();
 		}
 
-		for (Object o : smaller) {
-			if (larger.contains(o)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	/** Indicates whether a collection and an iterator's range intersect. */
-	public static <T1, T2> boolean intersect(Collection<T1> c, Iterator<T2> i) {
-		while (i.hasNext()) {
-			T2 t2 = i.next();
-			if (c.contains(t2)) {
-				return true;
-			}
-		}
-		return false;
+		return result;
 	}
 
 	/**
 	 * A structure for
-	 * {@link Util#selectPair(List, Predicate, Predicate, BinaryPredicate)}
-	 * and
-	 * {@link Util#selectPairInEitherOrder(List, Predicate, Predicate, BinaryPredicate)
-	 * results.
+	 * {@link Util#selectPair(List, Predicate, Predicate, BinaryPredicate)} and
+	 * {@link Util#selectPairInEitherOrder(List, Predicate, Predicate, BinaryPredicate)} results.
+	 * 
+	 * @param <T> the type of the pairs.
 	 */
 	public static class SelectPairResult<T> {
 		public SelectPairResult(T first, T second, int indexOfFirst,
@@ -1760,6 +1943,21 @@ public class Util {
 	 * Returns the indices of first pair of elements of a list such that each of
 	 * them satisfies a respectively given unary predicate, and them both
 	 * satisfy a binary predicate, or null if there is no such pair.
+	 * 
+	 * @param list
+	 *            the elements to test.
+	 * @param unaryPredicate1
+	 *            the first predicate to test with.
+	 * @param unaryPredicate2
+	 *            the second predicate to test with.
+	 * @param binaryPredicate
+	 *            the binary predicate to test with.
+	 * @return the indices of first pair of elements of a list such that each of
+	 *         them satisfies a respectively given unary predicate, and them
+	 *         both satisfy a binary predicate, or null if there is no such
+	 *         pair.
+	 * @param <T>
+	 *            the type of the elements in the list.
 	 */
 	public static <T> SelectPairResult<T> selectPair(List<? extends T> list,
 			Predicate<T> unaryPredicate1, Predicate<T> unaryPredicate2,
@@ -1770,8 +1968,8 @@ public class Util {
 				for (int j = i + 1; j != list.size(); j++) {
 					final T o2 = list.get(j);
 					if (unaryPredicate2.apply(o2)
-						&& binaryPredicate.apply(o1, o2)) {
-							
+							&& binaryPredicate.apply(o1, o2)) {
+
 						return new SelectPairResult<T>(o1, o2, i, j, o1, o2);
 					}
 				}
@@ -1781,18 +1979,37 @@ public class Util {
 	}
 
 	/**
-	 * Like
-	 * {@link #selectPair(List, Predicate, Predicate, BinaryPredicate)}
-	 * , but the pair may be present in either order. The binary predicate, for
+	 * Like {@link #selectPair(List, Predicate, Predicate, BinaryPredicate)} ,
+	 * but the pair may be present in either order. The binary predicate, for
 	 * consistency, is always applied to <code>(x1, x2)</code> where
 	 * <code>x1</code> is the element satisfying the first unary predicate (as
 	 * opposed to being the element that appears first), and where
 	 * <code>x2</code> is the element satisfying the second unary predicate (as
 	 * opposed to being the element that appears second).
+	 * 
+	 * @param list
+	 *            the elements to test.
+	 * @param unaryPredicate1
+	 *            the first predicate to test with.
+	 * @param unaryPredicate2
+	 *            the second predicate to test with.
+	 * @param binaryPredicate
+	 *            the binary predicate to test with.
+	 * @return Like
+	 *         {@link #selectPair(List, Predicate, Predicate, BinaryPredicate)}
+	 *         , but the pair may be present in either order. The binary
+	 *         predicate, for consistency, is always applied to
+	 *         <code>(x1, x2)</code> where <code>x1</code> is the element
+	 *         satisfying the first unary predicate (as opposed to being the
+	 *         element that appears first), and where <code>x2</code> is the
+	 *         element satisfying the second unary predicate (as opposed to
+	 *         being the element that appears second).
+	 * @param <T>
+	 *            the type of the elements in the list.
 	 */
-	public static <T> SelectPairResult<T> selectPairInEitherOrder(List<? extends T> list,
-			Predicate<T> unaryPredicate1, Predicate<T> unaryPredicate2,
-			BinaryPredicate<T, T> binaryPredicate) {
+	public static <T> SelectPairResult<T> selectPairInEitherOrder(
+			List<? extends T> list, Predicate<T> unaryPredicate1,
+			Predicate<T> unaryPredicate2, BinaryPredicate<T, T> binaryPredicate) {
 
 		// straight implementation
 		// for (int i = 0; i != list.size(); i++) {
@@ -1837,16 +2054,14 @@ public class Util {
 				int j;
 				for (j = i + 1; j != list.size(); j++) {
 					final T o2 = list.get(j);
-					boolean o2SatisfiesPredicate2 = unaryPredicate2
-							.apply(o2);
+					boolean o2SatisfiesPredicate2 = unaryPredicate2.apply(o2);
 					if (o2SatisfiesPredicate2) {
 						boolean o1AndO2SatisfyBinaryPredicate = binaryPredicate
 								.apply(o1, o2);
 						if (o1AndO2SatisfyBinaryPredicate) {
 							return new SelectPairResult<T>(o1, o2, i, j, o1, o2);
 						}
-					} 
-					else {
+					} else {
 						boolean o2SatisfiesPredicate1 = unaryPredicate1
 								.apply(o2);
 						if (o2SatisfiesPredicate1) {
@@ -1866,8 +2081,7 @@ public class Util {
 						}
 					}
 				}
-			} 
-			else {
+			} else {
 				boolean o1SatisfiesPredicate2 = unaryPredicate2.apply(o1);
 				if (o1SatisfiesPredicate2) {
 					for (int j = i + 1; j != list.size(); j++) {
@@ -1893,11 +2107,24 @@ public class Util {
 	 * Returns two lists: one containing the elements of a list with indices
 	 * from 0 to i - 1, and another containing elements of indices i + 1 to the
 	 * last, excluding j.
+	 * 
+	 * @param list
+	 *            the list whose elements are to be sliced into two lists.
+	 * @param i
+	 *            the index of the element to slice the list into two.
+	 * @param j
+	 *            the index of an element &gt; i to be excluded from the second
+	 *            slice.
+	 * @return two lists: one containing the elements of a list with indices
+	 *         from 0 to i - 1, and another containing elements of indices i + 1
+	 *         to the last, excluding j.
+	 * @param <E>
+	 *            the type of the elements in the list.
 	 */
-	public static <T> Pair<List<T>, List<T>> slicesBeforeIAndRestWithoutJ(
-			List<T> list, int i, int j) {
-		Pair<List<T>, List<T>> result = new Pair<List<T>, List<T>>(
-				new LinkedList<T>(), new LinkedList<T>());
+	public static <E> Pair<List<E>, List<E>> slicesBeforeIAndRestWithoutJ(
+			List<E> list, int i, int j) {
+		Pair<List<E>, List<E>> result = new Pair<>(new LinkedList<>(),
+				new LinkedList<>());
 		for (int k = 0; k != i; k++) {
 			result.first.add(list.get(k));
 		}
@@ -1910,104 +2137,61 @@ public class Util {
 	}
 
 	/**
-	 * Returns a {@link TreeSet} using given comparator, with elements of given
-	 * collection.
-	 */
-	public static <T> TreeSet<T> treeSet(Collection<T> c,
-			Comparator<T> comparator) {
-		TreeSet<T> set = new TreeSet<T>(comparator);
-		set.addAll(c);
-		return set;
-	}
-
-	/**
 	 * Adds elements contained in c1 but not c2 to a given collection result.
+	 * 
+	 * @param c1
+	 *            the elements to be placed in the result if they are not in the
+	 *            second collection.
+	 * @param c2
+	 *            the elements not be added to the result.
+	 * @param result
+	 *            the collection to be returned as the result.
+	 * @return result with elements contained in c1 that are not in c2 added to
+	 *         it.
+	 * @param <E>
+	 *            the type of the elements.
 	 */
-	public static <T> Collection<T> setDifference(Collection<T> c1,
-			Collection<T> c2, Collection<T> result) {
-		for (T element : c1) {
-			if (!c2.contains(element)) {
-				result.add(element);
-			}
-		}
+	public static <E> Collection<E> setDifference(Collection<E> c1,
+			Collection<E> c2, Collection<E> result) {
+		c1.stream().filter(e -> !c2.contains(e)).forEach(e -> result.add(e));
+
 		return result;
 	}
 
 	/**
 	 * Adds elements contained in c1 but not c2 to a new linked list and returns
 	 * it.
+	 * 
+	 * @param c1
+	 *            the elements to be placed in the result if they are not in the
+	 *            second collection.
+	 * @param c2
+	 *            the elements not be added to the result.
+	 * @return a new LinkedList with elements contained in c1 that are not in c2
+	 *         added to it.
+	 * @param <E>
+	 *            the type of the elements.
 	 */
-	public static <T> List<T> setDifference(Collection<T> c1, Collection<T> c2) {
-		return (List<T>) setDifference(c1, c2, new LinkedList<T>());
+	public static <E> List<E> setDifference(Collection<E> c1, Collection<E> c2) {
+		return (List<E>) setDifference(c1, c2, new LinkedList<E>());
 	}
 
 	/**
 	 * Adds elements contained in c1 but not c2 to a new linked list and returns
 	 * it.
+	 * 
+	 * @param c1
+	 *            the elements to be placed in the result if they are not in the
+	 *            second collection.
+	 * @param c2
+	 *            the elements not be added to the result.
+	 * @return a new LinkedList with elements contained in c1 that are not in c2
+	 *         added to it.
+	 * @param <E>
+	 *            the type of the elements.
 	 */
-	public static <T> List<T> subtract(Collection<T> c1, Collection<T> c2) {
-		return (List<T>) setDifference(c1, c2, new LinkedList<T>());
-	}
-
-	/**
-	 * Returns the first element found that is in c1 but not c2, or null if there is no such element.
-	 */
-	public static <T> T getFirstInSetDifferenceOrNull(Collection<T> c1, Collection<T> c2) {
-		for (T element : c1) {
-			if ( ! c2.contains(element)) {
-				return element;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Destructively removes as many instances of each element in l1 as there
-	 * are in l2.
-	 */
-	public static <T> void multiSetDifference(List<T> l1, List<T> l2) {
-		for (T e2 : l2) {
-			l1.remove(e2);
-		}
-	}
-
-	/**
-	 * Destructively removes common elements of l1 and l2.
-	 */
-	public static <T> void multiSetSymmetricalDifference(List<T> l1, List<T> l2) {
-		// removes elements in l2 from l1, keeping track of which and how many
-		// ones.
-		List<T> removed = new LinkedList<T>();
-		for (T e2 : l2) {
-			if (l1.remove(e2)) {
-				removed.add(e2);
-			}
-		}
-		// for each element in the original l1 (that is, current l1 + removed),
-		// remove it from l2.
-		for (T e1 : l1) {
-			l2.remove(e1);
-		}
-		for (T e1 : removed) {
-			l2.remove(e1);
-		}
-	}
-
-	/**
-	 * Returns the index of the first element in a list satisfying a predicate,
-	 * or -1 if none does.
-	 */
-	public static <T> int findIndexOfFirstElementSatisfyingPredicateOrMinus1(
-			List<? extends T> list, Predicate<T> predicate) {
-		Iterator<? extends T> iterator = list.iterator();
-		for (int i = 0; i != list.size(); i++) {
-			T element = iterator.next(); // we avoid using get(i) since it is
-											// more expensive for LinkedList.
-			if (predicate.apply(element)) {
-				return i;
-			}
-		}
-		return -1;
+	public static <E> List<E> subtract(Collection<E> c1, Collection<E> c2) {
+		return (List<E>) setDifference(c1, c2, new LinkedList<E>());
 	}
 
 	public static String camelCaseToSpacedString(String camel) {
@@ -2020,17 +2204,19 @@ public class Util {
 				int initialUpperCaseLetterIndex = i;
 				while (i < camel.length()
 						&& Character.isUpperCase(camel.charAt(i))) {
-					
-					// if this is upper case but next one is lower case, then this is the first letter of a word,
+
+					// if this is upper case but next one is lower case, then
+					// this is the first letter of a word,
 					// so append space first.
-					if (i > initialUpperCaseLetterIndex && i + 1 < camel.length() && Character.isLowerCase(camel.charAt(i + 1))) {
+					if (i > initialUpperCaseLetterIndex
+							&& i + 1 < camel.length()
+							&& Character.isLowerCase(camel.charAt(i + 1))) {
 						result.append(' ');
 					}
 					result.append(Character.toLowerCase(camel.charAt(i)));
 					i++;
 				}
-			} 
-			else {
+			} else {
 				result.append(c);
 				i++;
 			}
@@ -2041,14 +2227,21 @@ public class Util {
 	/**
 	 * Gets a collection and returns it back if there are no repeated elements,
 	 * or an ArrayList with unique elements.
+	 * 
+	 * @param c
+	 *            the collection to be tested.
+	 * @return the given collection if there are no repreated elements, or an
+	 *         ArrayList with unique elements.
+	 * @param <E>
+	 *            the type of the elements.
 	 */
-	public static <T> Collection<T> removeRepeatedNonDestructively(
-			Collection<T> c) {
-		LinkedHashSet<T> s = new LinkedHashSet<T>(c);
+	public static <E> Collection<E> removeRepeatedNonDestructively(
+			Collection<E> c) {
+		LinkedHashSet<E> s = new LinkedHashSet<E>(c);
 		if (s.size() == c.size()) {
 			return c;
 		}
-		return new ArrayList<T>(s);
+		return new ArrayList<E>(s);
 	}
 
 	public static <T> List<T> removeNonDestructively(List<T> list,
@@ -2067,14 +2260,24 @@ public class Util {
 		return newList;
 	}
 
-	/** Returns a new linked list containing the elements of list that do not satisfy a predicate. */
-	public static <T> LinkedList<T> removeNonDestructively(List<T> list, Predicate<T> predicate) {
-		LinkedList<T> result = new LinkedList<T>();
-		for (T element : list) {
-			if ( ! predicate.apply(element)) {
-				result.add(element);
-			}
-		}
+	/**
+	 * Returns a new linked list containing the elements of list that do not
+	 * satisfy a predicate.
+	 * 
+	 * @param list
+	 *            the list of elements to be tested.
+	 * @param predicate
+	 *            the predicate to be used to test the elements.
+	 * @return a new linked list containing the elements of list that do not
+	 *         satisfy a predicate.
+	 * @param <E>
+	 *            the type of the elements.
+	 */
+	public static <E> LinkedList<E> removeNonDestructively(List<E> list,
+			Predicate<E> predicate) {
+		LinkedList<E> result = list.stream().filter(e -> !predicate.apply(e))
+				.collect(Collectors.toCollection(() -> new LinkedList<E>()));
+
 		return result;
 	}
 
@@ -2086,8 +2289,7 @@ public class Util {
 			if (!replacementAlreadyHappened && someElement.equals(element)) {
 				result.addAll(anotherList);
 				replacementAlreadyHappened = true;
-			} 
-			else {
+			} else {
 				result.add(someElement);
 			}
 		}
@@ -2098,16 +2300,33 @@ public class Util {
 	 * Returns list of results of application of a function to pairs of elements
 	 * with same indices on two given lists. This is based on a Haskell function
 	 * of same name.
+	 * 
+	 * @param function
+	 *            the function to be applied to the paired elements from each
+	 *            list.
+	 * @param list1
+	 *            a list of the first arguments to be zipped.
+	 * @param list2
+	 *            a list of the second arguments to be zipped.
+	 * @return a list of results of application of given function to pairs of
+	 *         elements with same indices in two given lists.
+	 * @param <A1>
+	 *            the type of the elements of list 1.
+	 * @param <A2>
+	 *            the type of the elements of list 2.
+	 * @param <R>
+	 *            the type of the result of applying the given function to the
+	 *            given pair of arguments.
 	 */
-	public static <F1, F2, T> List<T> zipWith(
-			BinaryFunction<F1, F2, T> function, List<F1> list1, List<F2> list2) {
-		List<T> result = new LinkedList<T>();
-		Iterator<F1> i1 = list1.iterator();
-		Iterator<F2> i2 = list2.iterator();
+	public static <A1, A2, R> List<R> zipWith(
+			BinaryFunction<A1, A2, R> function, List<A1> list1, List<A2> list2) {
+		List<R> result = new LinkedList<R>();
+		Iterator<A1> i1 = list1.iterator();
+		Iterator<A2> i2 = list2.iterator();
 		while (i1.hasNext()) {
-			F1 t1 = i1.next();
-			F2 t2 = i2.next();
-			T application = function.apply(t1, t2);
+			A1 t1 = i1.next();
+			A2 t2 = i2.next();
+			R application = function.apply(t1, t2);
 			result.add(application);
 		}
 		return result;
@@ -2117,41 +2336,43 @@ public class Util {
 	 * Returns list of results of application of a function to triples of
 	 * elements with same indices on three given lists. This is based on a
 	 * Haskell function of same name.
+	 * 
+	 * @param function
+	 *            the function to be applied to the paired elements from each
+	 *            list.
+	 * @param list1
+	 *            a list of the first arguments to be zipped.
+	 * @param list2
+	 *            a list of the second arguments to be zipped.
+	 * @param list3
+	 *            a list of the third arguments to be zipped.
+	 * @return a list of results of application of given function to triples of
+	 *         elements with same indices in three given lists.
+	 * @param <A1>
+	 *            the type of the elements of list 1.
+	 * @param <A2>
+	 *            the type of the elements of list 2.
+	 * @param <A3>
+	 *            the type of the elements of list 3.
+	 * @param <R>
+	 *            the type of the result of applying the given function to the
+	 *            given triple of arguments.
 	 */
-	public static <F1, F2, F3, T> List<T> zip3With(
-			TernaryFunction<F1, F2, F3, T> function, 
-			List<F1> list1, List<F2> list2, List<F3> list3) {
-		List<T> result = new LinkedList<T>();
-		Iterator<F1> i1 = list1.iterator();
-		Iterator<F2> i2 = list2.iterator();
-		Iterator<F3> i3 = list3.iterator();
+	public static <A1, A2, A3, R> List<R> zip3With(
+			TernaryFunction<A1, A2, A3, R> function, List<A1> list1,
+			List<A2> list2, List<A3> list3) {
+		List<R> result = new LinkedList<R>();
+		Iterator<A1> i1 = list1.iterator();
+		Iterator<A2> i2 = list2.iterator();
+		Iterator<A3> i3 = list3.iterator();
 		while (i1.hasNext() && i2.hasNext() && i3.hasNext()) {
-			F1 f1 = i1.next();
-			F2 f2 = i2.next();
-			F3 f3 = i3.next();
-			T application = function.apply(f1, f2, f3);
+			A1 f1 = i1.next();
+			A2 f2 = i2.next();
+			A3 f3 = i3.next();
+			R application = function.apply(f1, f2, f3);
 			result.add(application);
 		}
 		return result;
-	}
-
-	/**
-	 * Returns an iterator from second element on in a collection (assumes it
-	 * contains at least one element).
-	 */
-	public static <T> Iterator<T> iteratorFromSecondElementOn(Collection<T> c) {
-		Iterator<T> i = c.iterator();
-		i.next();
-		return i;
-	}
-
-	/**
-	 * Receives an iterator and receives same after iterating once (assumes it
-	 * contains a next element).
-	 */
-	public static <T> Iterator<T> fromSecondElementOn(Iterator<T> i) {
-		i.next();
-		return i;
 	}
 
 	/**
@@ -2159,17 +2380,28 @@ public class Util {
 	 * object by a replacement function, or a new list equal to the original one
 	 * but for having elements replaced by their replacements as provided by
 	 * same replacement function.
+	 * 
+	 * @param list
+	 *            the elements to be mapped.
+	 * @param replacementFunction
+	 *            the element replacement function.
+	 * @return the same list if none of its elements gets evaluated to a
+	 *         distinct object by a replacement function, or a new list equal to
+	 *         the original one but for having elements replaced by their
+	 *         replacements as provided by same replacement function.
+	 * @param <E>
+	 *            the type of the elements in the list.
 	 */
-	public static <T> List<T> replaceElementsNonDestructively(List<T> list,
-			Function<T, T> replacementFunction) {
-		List<T> replacementList = null;
+	public static <E> List<E> replaceElementsNonDestructively(List<E> list,
+			Function<E, E> replacementFunction) {
+		List<E> replacementList = null;
 
-		ListIterator<T> it = list.listIterator();
+		ListIterator<E> it = list.listIterator();
 		while (it.hasNext()) {
-			T element = it.next();
-			T replacement = replacementFunction.apply(element);
+			E element = it.next();
+			E replacement = replacementFunction.apply(element);
 			if (replacement != element) {
-				replacementList = new ArrayList<T>(list);
+				replacementList = new ArrayList<E>(list);
 				replacementList.set(it.previousIndex(), replacement);
 				break;
 			}
@@ -2181,8 +2413,8 @@ public class Util {
 
 		it = replacementList.listIterator(it.nextIndex());
 		while (it.hasNext()) {
-			T element = it.next();
-			T replacement = replacementFunction.apply(element);
+			E element = it.next();
+			E replacement = replacementFunction.apply(element);
 			if (replacement != element) {
 				it.set(replacement);
 			}
@@ -2238,89 +2470,6 @@ public class Util {
 		return true;
 	}
 
-	/**
-	 * Returns a string representing the timestamp's date for the current
-	 * locale.
-	 */
-	public static String dateString(long timestamp) {
-		return DateFormat.getTimeInstance().format(new Date(timestamp));
-	}
-
-	/**
-	 * Returns a string representing the current time's date for the current
-	 * locale.
-	 */
-	public static String dateString() {
-		return dateString(System.currentTimeMillis());
-	}
-
-	/**
-	 * Returns the number of elements in an iterator's range.
-	 */
-	public static <T> int size(Iterator<T> it) {
-		int count = 0;
-		while (it.hasNext()) {
-			it.next();
-			count++;
-		}
-		return count;
-	}
-
-	/**
-	 * Returns the number of elements in an iterator's range.
-	 */
-	public static <T> int count(Iterator<T> it) {
-		int count = 0;
-		while (it.hasNext()) {
-			it.next();
-			count++;
-		}
-		return count;
-	}
-
-	/**
-	 * Indicates whether two collections have the exact same elements (comparing
-	 * by identity, not equality).
-	 */
-	public static <T> boolean elementsAreTheSame(Collection<? extends T> c1,
-			Collection<? extends T> c2) {
-		if (c1.size() != c2.size()) {
-			return false;
-		}
-
-		Iterator<? extends T> it1 = c1.iterator();
-		Iterator<? extends T> it2 = c2.iterator();
-		while (it1.hasNext()) {
-			T e1 = it1.next();
-			T e2 = it2.next();
-			if (e1 != e2) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * Returns a string which is <code>n</code> repetitions of given string.
-	 */
-	public static String repeat(int n, String string) {
-		StringBuilder buffer = new StringBuilder();
-		for (int i = 0; i != n; i++) {
-			buffer.append(string);
-		}
-		return buffer.toString();
-	}
-
-	/**
-	 * Returns an iterator over a sub-range of a base iterator, from the
-	 * first-th to the (last-1)-th element.
-	 */
-	public static <T> Iterator<T> subRangeIterator(Iterator<T> iterator,
-			int first, int last) {
-		Iterator<T> result = new SubRangeIterator<T>(iterator, first, last);
-		return result;
-	}
-
 	public static <T> List<T> setNonDestructively(List<T> list, int index,
 			T newElement) {
 		List<T> result = new LinkedList<T>(list);
@@ -2330,8 +2479,15 @@ public class Util {
 
 	/**
 	 * Returns a given iterator after iterating over its first element.
+	 * 
+	 * @param iterator
+	 *            the iterator to iterate over its first element.
+	 * @return the iterator after it has been moved past its first element.
+	 *         Throws error if the iterator's range is empty.
+	 * @param <E>
+	 *            the type of the elements in the iterators range.
 	 */
-	public static <T> Iterator<T> removeFirst(Iterator<T> iterator) {
+	public static <E> Iterator<E> removeFirst(Iterator<E> iterator) {
 		if (iterator.hasNext()) {
 			iterator.next();
 			return iterator;
@@ -2340,21 +2496,6 @@ public class Util {
 		return null;
 	}
 
-	/**
-	 * Returns i-th element in iterator's range, or <null> if such element does
-	 * not exist.
-	 */
-	public static <T> T getIthElementInRange(Iterator<T> iterator, int i) {
-		while (iterator.hasNext()) {
-			T element = iterator.next();
-			if (i == 0) {
-				return element;
-			}
-			i--;
-		}
-		return null;
-	}
-	
 	public static <T> List<T> getAllButFirst(List<T> list) {
 		Iterator<T> iterator = list.iterator();
 		iterator.next();
@@ -2366,30 +2507,45 @@ public class Util {
 	/**
 	 * Compares two integers, taking into account that -1 means "infinite",
 	 * using the same return value convention as {@link Comparator}.
+	 * 
+	 * @param limit1
+	 *            the first integer to compare.
+	 * @param limit2
+	 *            the second integer to compare.
+	 * @return the comparison between the two given integers, taking into
+	 *         account that -1 means "infinite", using the same return value
+	 *         convention as {@link Comparator}.
+	 * 
 	 */
-	public static int compareIntegersWithMinusOneMeaningInfinite(int limit1, int limit2) {
+	public static int compareIntegersWithMinusOneMeaningInfinite(int limit1,
+			int limit2) {
 		if (limit1 == -1) {
 			if (limit2 == -1) {
 				return 0;
-			}
-			else {
+			} else {
 				return +1;
 			}
-		}
-		else {
+		} else {
 			if (limit2 == -1) {
 				return -1;
-			}
-			else {
+			} else {
 				return limit1 - limit2;
 			}
 		}
 	}
-	
+
 	/**
 	 * Indicates whether an iterator's range contains a given element.
+	 * 
+	 * @param iterator
+	 *            the iterator whose range is to be tested.
+	 * @param element
+	 *            the element to test if it is in the given iterators range.
+	 * @return true if the given element is in the given iterators range.
+	 * @param <E>
+	 *            the type of the elements.
 	 */
-	public static <T> boolean contains(Iterator<T> iterator, T element) {
+	public static <E> boolean contains(Iterator<E> iterator, E element) {
 		while (iterator.hasNext()) {
 			if (iterator.next().equals(element)) {
 				return true;
@@ -2400,20 +2556,45 @@ public class Util {
 
 	/**
 	 * Indicates whether an element appears in a list from a given position.
+	 * 
+	 * @param list
+	 *            the list whose elements are to be tested.
+	 * @param i
+	 *            the starting position in the list to start testing from.
+	 * @param element
+	 *            the element to test if it is in the given sublist.
+	 * @return true if the element appears in the list from a given position,
+	 *         false otherwise.
+	 * @param <E>
+	 *            the type of the elements.
 	 */
-	public static <T> boolean listFromIContains(ArrayList<T> list, int i, T element) {
-		ListIterator<T> iterator = list.listIterator(i);
+	public static <E> boolean listFromIContains(ArrayList<E> list, int i,
+			E element) {
+		ListIterator<E> iterator = list.listIterator(i);
 		boolean result = contains(iterator, element);
 		return result;
 	}
 
 	/**
-	 * Indicates whether an element appears in a list in a position up to, but different from, i.
+	 * Indicates whether an element appears in a list in a position up to, but
+	 * different from, i.
+	 * 
+	 * @param list
+	 *            the list whose elements are to be tested.
+	 * @param i
+	 *            the index in the list that are to be tested to.
+	 * @param element
+	 *            the element to test if its is in the given sublist.
+	 * @return true if the element appears in the list is a position up to, but
+	 *         different from, i.
+	 * @param <E>
+	 *            the type of the elements.
 	 */
-	public static <T> boolean listUpToIExclusiveContains(ArrayList<T> list, int i, T element) {
-		Iterator<T> iterator = list.iterator();
+	public static <E> boolean listUpToIExclusiveContains(ArrayList<E> list,
+			int i, E element) {
+		Iterator<E> iterator = list.iterator();
 		for (int j = 0; iterator.hasNext() && j != i; j++) {
-			T element2 = iterator.next();
+			E element2 = iterator.next();
 			if (element2.equals(element)) {
 				return true;
 			}
@@ -2455,36 +2636,44 @@ public class Util {
 		return rational.compareTo(integer) == 0;
 	}
 
-
-	/** Returns multiple of delta closest to a given number. */
-	public static double round(double number, double delta) {
-		if (delta == 0) {
-			return number;
-		}
-	
-		double numberOfDeltasInNumber = number / delta;
-		long   roundedNumberOfDeltasInNumber = Math.round(numberOfDeltasInNumber);
-		double result = delta * roundedNumberOfDeltasInNumber;
-		return result;
-	}
-
-	/** Removes the elements that satisfy a predicate from a list. */
-	public static <T> void removeElementsSatisfying(List<? extends T> list, Predicate<T> predicate) {
-		ListIterator<? extends T> iterator = list.listIterator();
+	/**
+	 * Removes the elements that satisfy a predicate from a list.
+	 * 
+	 * @param list
+	 *            the list of elements to be tested.
+	 * @param predicate
+	 *            the predicate to test the elements on the list with.
+	 * @param <E>
+	 *            the type of the elements.
+	 */
+	public static <E> void removeElementsSatisfying(List<? extends E> list,
+			Predicate<E> predicate) {
+		ListIterator<? extends E> iterator = list.listIterator();
 		while (iterator.hasNext()) {
-			T element = iterator.next();
+			E element = iterator.next();
 			if (predicate.apply(element)) {
 				iterator.remove();
 			}
 		}
 	}
 
-	/** Removes the elements that satisfy a predicate from a set -- works for sets not containing null elements only. */
-	public static <T> void removeElementsSatisfying(Set<? extends T> set, Predicate<T> predicate) {
+	/**
+	 * Removes the elements that satisfy a predicate from a set -- works for
+	 * sets not containing null elements only.
+	 * 
+	 * @param set
+	 *            the set of elements to be tested.
+	 * @param predicate
+	 *            the predicate to test the elements on the set with.
+	 * @param <E>
+	 *            the type of the elements.
+	 */
+	public static <E> void removeElementsSatisfying(Set<? extends E> set,
+			Predicate<E> predicate) {
 		boolean removed;
 		do {
 			removed = false;
-			T element = getFirstSatisfyingPredicateOrNull(set, predicate);
+			E element = getFirstSatisfyingPredicateOrNull(set, predicate);
 			if (element != null) {
 				set.remove(element);
 				removed = true;
@@ -2492,24 +2681,18 @@ public class Util {
 		} while (removed);
 	}
 
-	/**
-	 * Returns the number of occurrences of a substring in a string.
-	 */
-	public static int numberOfOccurrencesOf(String substring, String string) {
-		int result = 0;
-		int index = -1;
-		while ((index = string.indexOf(substring, index + 1)) != -1) {
-			result++;
-		}
-		return result;
-	}
-
 	public static <T> Pair<T, T> pair(T first, T second) {
-		return new Pair<T,T>(first, second);
+		return new Pair<T, T>(first, second);
 	}
 
 	/**
-	 * Returns an object's toString() result, or string "null" if object is null.
+	 * Returns an object's toString() result, or string "null" if object is
+	 * null.
+	 * 
+	 * @param object
+	 *            the object to be toString'd.
+	 * @return the object's toString() result, or string "null" if the object is
+	 *         null.
 	 */
 	public static String toStringOrNull(Object object) {
 		if (object == null) {
@@ -2518,12 +2701,19 @@ public class Util {
 		return object.toString();
 	}
 
-	/** Returns +1 if given int is greater than 0, 0 if it is 0, and -1 if it is less than 0. */
+	/**
+	 * Returns +1 if given int is greater than 0, 0 if it is 0, and -1 if it is
+	 * less than 0.
+	 * 
+	 * @param integer
+	 *            the integer to be tested.
+	 * @return +1 if given int is greater than 0, 0 if it is 0, and -1 if it is
+	 *         less than 0.
+	 */
 	public static int signal(int integer) {
 		if (integer == 0) {
 			return 0;
-		}
-		else if (integer > 0) {
+		} else if (integer > 0) {
 			return +1;
 		}
 		return -1;
@@ -2531,17 +2721,31 @@ public class Util {
 
 	/**
 	 * Creates a map from a list of keys and a list of values.
+	 * 
+	 * @param keys
+	 *            a list of keys to be contained in the returned map.
+	 * @param values
+	 *            a list of values to be contained in the returned map.
+	 * @return a map from the given lists of keys and values.
+	 * @param <K>
+	 *            the type of the keys.
+	 * @param <V>
+	 *            the type of the values.
 	 */
-	public static <K, V> Map<K, V> mapFromListOfKeysAndListOfValues(List<K> keys, List<V> values) {
+	public static <K, V> Map<K, V> mapFromListOfKeysAndListOfValues(
+			List<K> keys, List<V> values) {
 		if (keys.size() != values.size()) {
-			throw new Error("mapFromListOfKeysAndListOfValues requires two lists of same size but got " + keys + " with " + keys.size() + " elements and " + values + " with " + values.size() + " elements.");
+			throw new Error(
+					"mapFromListOfKeysAndListOfValues requires two lists of same size but got "
+							+ keys + " with " + keys.size() + " elements and "
+							+ values + " with " + values.size() + " elements.");
 		}
-		
+
 		LinkedHashMap<K, V> result = new LinkedHashMap<K, V>();
-		Iterator<K>   keysIterator =   keys.iterator();
+		Iterator<K> keysIterator = keys.iterator();
 		Iterator<V> valuesIterator = values.iterator();
 		while (keysIterator.hasNext()) {
-			K key     = keysIterator.next();
+			K key = keysIterator.next();
 			V value = valuesIterator.next();
 			result.put(key, value);
 		}
@@ -2550,8 +2754,21 @@ public class Util {
 
 	/**
 	 * Given map1 and map2, returns a new map such that map(K) = map2(map1(K))
+	 * 
+	 * @param map1
+	 *            the first map to compose.
+	 * @param map2
+	 *            the second map to compose.
+	 * @return a new map such that map(K) = map2(map1(K))
+	 * @param <K>
+	 *            the type of map1's keys.
+	 * @param <V1>
+	 *            the type of map1's values and map2's keys. *
+	 * @param <V2>
+	 *            the type of map2's values.
 	 */
-	public static <K, V1, V2> Map<K, V2> composeMaps(Map<K, V1> map1, Map<V1, V2> map2) {
+	public static <K, V1, V2> Map<K, V2> composeMaps(Map<K, V1> map1,
+			Map<V1, V2> map2) {
 		Map<K, V2> result = new LinkedHashMap<K, V2>();
 		for (Map.Entry<K, V1> entry : map1.entrySet()) {
 			K key = entry.getKey();
@@ -2563,20 +2780,11 @@ public class Util {
 	}
 
 	/**
-	 * Replaces a given instance in a list by a new object.
+	 * Wait for some time, throwing an error in case of an exception.
+	 * 
+	 * @param time
+	 *            the time in milliseconds to wait.
 	 */
-	public static <T> void replaceInstanceInList(T instanceToBeReplaced, T newElement, List<T> list) {
-		ListIterator<T> iterator = list.listIterator();
-		while (iterator.hasNext()) {
-			T someInstanceInList = iterator.next();
-			if (someInstanceInList == instanceToBeReplaced) {
-				iterator.set(newElement);
-				break;
-			}
-		}
-	}
-
-    /** Wait for some time, throwing an error in case of an exception. */
 	public static void waitOrThrowError(long time) {
 		try {
 			Thread.sleep(time);
@@ -2585,60 +2793,92 @@ public class Util {
 		}
 	}
 
-    /**
-     * Returns the first object in an array that is an instance of a given class.
-     */
-    public static Object getObjectOfClass(Class clazz, Object[] args) {
-	for (Object object : args) {
-	    if (clazz.isInstance(object))
-		return object;
+	/**
+	 * Returns the first object in an array that is an instance of a given
+	 * class.
+	 * 
+	 * @param clazz
+	 *            the class of the object to be found.
+	 * @param args
+	 *            the elements to be tested if they are of the given class.
+	 * @return the first object in the given args array that is an instance of
+	 *         the given class.
+	 */
+	public static Object getObjectOfClass(Class clazz, Object[] args) {
+		for (Object object : args) {
+			if (clazz.isInstance(object)) {
+				return object;
+			}
+		}
+		return null;
 	}
-	return null;
-    }
 
 	/**
-	 * Incrementally calculates component-wise averages, given previously calculated averages
-	 * (out of n numbers) and a list of new numbers.
-	 * The average list is filled with the appropriate number of zeros if it is empty.
-	 * The result is stored in-place, destroying the previous average list. 
+	 * Incrementally calculates component-wise averages, given previously
+	 * calculated averages (out of n numbers) and a list of new numbers. The
+	 * average list is filled with the appropriate number of zeros if it is
+	 * empty. The result is stored in-place, destroying the previous average
+	 * list.
+	 * 
+	 * @param average
+	 *            previously calculated averages.
+	 * @param n
+	 *            averages out of 'n' numbers.
+	 * @param newItems
+	 *            new numbers.
+	 * @return an incrementally calculated component-wise average.
 	 */
-	static public List incrementalComputationOfComponentWiseAverage(List<Number> average, int n, List newItems) {
+	static public List incrementalComputationOfComponentWiseAverage(
+			List<Number> average, int n, List newItems) {
 		if (average == null) {
 			fatalError("Util.incrementalComputationOfComponentWiseAverage must receive a non-null List");
 		}
-	
+
 		if (average.size() == 0) {
 			for (int i = 0; i != newItems.size(); i++) {
 				average.add(new Double(0));
 			}
 		}
-	
+
 		for (int i = 0; i != newItems.size(); i++) {
 			double currentAverage = ((Double) average.get(i)).doubleValue();
-			double newItem        = ((Double) newItems.get(i)).doubleValue();
-			double newAverage     = (currentAverage * n + newItem) / (n + 1); 
+			double newItem = ((Double) newItems.get(i)).doubleValue();
+			double newAverage = (currentAverage * n + newItem) / (n + 1);
 			average.set(i, new Double(newAverage));
 		}
-	
+
 		return average;
 	}
 
 	/**
-	 * A more general version of {@link #incrementalComputationOfComponentWiseAverage(List<Number>, int, List<Number>)}
-	 * that operates on lists of lists of arbitrary depth, including depth 0, that is, on {@link Number}s.
-	 * It is in-place and returns <code>average</code> if given objects are lists, or returns a new Number otherwise.
+	 * A more general version of incrementalComputationOfComponentWiseAverage(List, int,
+	 * List) that operates on lists of lists of arbitrary depth,
+	 * including depth 0, that is, on {@link Number}s. It is in-place and
+	 * returns <code>average</code> if given objects are lists, or returns a new
+	 * Number otherwise.
+	 * 
+	 * @param average
+	 *            previously calculated averages.
+	 * @param n
+	 *            averages out of 'n' numbers.
+	 * @param newItems
+	 *            new numbers.
+	 * @return an incrementally calculated component-wise average.
 	 */
 	@SuppressWarnings("unchecked")
-	public static Object incrementalComponentWiseAverageArbitraryDepth(Object average, int n, Object newItems) {
+	public static Object incrementalComponentWiseAverageArbitraryDepth(
+			Object average, int n, Object newItems) {
 		if (average instanceof Number) {
-			return (((Number)average).doubleValue()*n + ((Number)newItems).doubleValue())/(n + 1);
+			return (((Number) average).doubleValue() * n + ((Number) newItems)
+					.doubleValue()) / (n + 1);
 		}
-		ListIterator averageIterator = ((List<Number>)average).listIterator();
-		ListIterator newItemsIt = ((List)newItems).listIterator();
+		ListIterator averageIterator = ((List<Number>) average).listIterator();
+		ListIterator newItemsIt = ((List) newItems).listIterator();
 		while (averageIterator.hasNext()) {
 			Object averageElement = averageIterator.next();
 			Object newItemsElement = newItemsIt.next();
-			Object newAverageElement = incrementalComponentWiseAverageArbitraryDepth(averageElement, n, newItemsElement);
+			Object newAverageElement = incrementalComponentWiseAverageArbitraryDepth(
+					averageElement, n, newItemsElement);
 			if (newAverageElement != averageElement) {
 				averageIterator.set(newAverageElement);
 			}
@@ -2647,11 +2887,16 @@ public class Util {
 	}
 
 	/**
-	 * Given an array <code>a</code>, returns a map from each string in it to the immediately following object.
-	 * More precisely, returns a map mapping
+	 * Given an array <code>a</code>, returns a map from each string in it to
+	 * the immediately following object. More precisely, returns a map mapping
 	 * each String <code>s</code> in position <code>i</code> of <code>a</code>
-	 * to the object in position <code>i+1</code> of <code>a</code>,
-	 * ignoring the remaining elements.
+	 * to the object in position <code>i+1</code> of <code>a</code>, ignoring
+	 * the remaining elements.
+	 * 
+	 * @param arguments
+	 *            the arguments to be processed.
+	 * @return a map from each string in the given arguments array to the
+	 *         immediately following object.
 	 */
 	public static Map<String, Object> getMapWithStringKeys(Object[] arguments) {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -2666,30 +2911,50 @@ public class Util {
 		return map;
 	}
 
-	/** 
-	 * Returns a {@link NullaryFunction<Iterator<T>>}
-	 * that returns a new iterator to the given <code>Collection<T></code>
-	 * each time is it invoked. 
+	/**
+	 * Returns a function that returns a new iterator to the given collection
+	 * each time is it invoked.
+	 * 
+	 * @param c
+	 *            the collection the returned function is to create an iterator
+	 *            over whenever it is applied.
+	 * @return a function that returns a new iterator to the given collection
+	 *         each time it is invoked.
+	 * @param <E> the type of the elements.
 	 */
-	static public <T> NullaryFunction<Iterator<T>> getIteratorNullaryFunction(final Collection<T> c) {
-		return new NullaryFunction<Iterator<T>>() {
-			public Iterator<T> apply() {
+	static public <E> NullaryFunction<Iterator<E>> getIteratorNullaryFunction(
+			final Collection<E> c) {
+		return new NullaryFunction<Iterator<E>>() {
+			public Iterator<E> apply() {
 				return c.iterator();
 			}
 		};
 	}
 
 	/**
-	 * Takes a list of lists, a dimension index (0 for rows, 1 for columns) and an index (either row or column index),
-	 * and returns the corresponding slice (data[index,*] if dimension is 0, or data[*,index] if dimension is 1).
+	 * Takes a list of lists, a dimension index (0 for rows, 1 for columns) and
+	 * an index (either row or column index), and returns the corresponding
+	 * slice (data[index,*] if dimension is 0, or data[*,index] if dimension is
+	 * 1).
+	 * 
+	 * @param data
+	 *            a list of lists
+	 * @param dimension
+	 *            a dimension index (0 for rows, 1 for columns)
+	 * @param index
+	 *            an row or column index.
+	 * @return the corresponding slice
+	 * @param <E>
+	 *            the type of the elements.
 	 */
-	public static <T> List<T> matrixSlice(List<List<T>> data, int dimension, int index) {
+	public static <E> List<E> matrixSlice(List<List<E>> data, int dimension,
+			int index) {
 		if (dimension == 0) {
-			return (List<T>) data.get(index);
+			return (List<E>) data.get(index);
 		}
-		List<T> result = new LinkedList<T>();
-		for (Iterator<List<T>> rowIt = data.iterator(); rowIt.hasNext();) {
-			List<T> row = rowIt.next();
+		List<E> result = new LinkedList<E>();
+		for (Iterator<List<E>> rowIt = data.iterator(); rowIt.hasNext();) {
+			List<E> row = rowIt.next();
 			result.add(row.get(index));
 		}
 		return result;
@@ -2720,7 +2985,14 @@ public class Util {
 	}
 
 	/**
-	 * Randomly picks an element of given array using a given {@link Random} number generator.
+	 * Randomly picks an element of given array using a given {@link Random}
+	 * number generator.
+	 * 
+	 * @param random
+	 *            the random number generator to use.
+	 * @param items
+	 *            the items from which an element is to be randomly picked from.
+	 * @return the randomly picked element from the given array of items.
 	 */
 	public static Object randomPick(Random random, Object[] items) {
 		int index = random.nextInt(items.length);
@@ -2729,10 +3001,20 @@ public class Util {
 	}
 
 	/**
-	 * Randomly picks <code>n</code> elements (possibly repeated) of given array using
-	 * a given {@link Random} number generator.
+	 * Randomly picks <code>n</code> elements (possibly repeated) of given array
+	 * using a given {@link Random} number generator.
+	 * 
+	 * @param n
+	 *            the number of items to randomly pick.
+	 * @param random
+	 *            the random number generator to use.
+	 * @param items
+	 *            the items from which an element is to be randomly picked from.
+	 * @return a list of elements (possibly repeated) randomly selected from the
+	 *         given array of items.
 	 */
-	public static ArrayList<Object> randomPick(int n, Random random, Object[] items) {
+	public static ArrayList<Object> randomPick(int n, Random random,
+			Object[] items) {
 		ArrayList<Object> result = new ArrayList<Object>(n);
 		for (int i = 0; i != n; i++) {
 			result.add(randomPick(random, items));
@@ -2741,42 +3023,66 @@ public class Util {
 	}
 
 	/**
-	 * Randomly picks an element of given list ({@link ArrayList}s will be most efficient)
-     * using a given {@link Random} number generator.
-	 * @param <T>
+	 * Randomly picks an element of given list ({@link ArrayList}s will be most
+	 * efficient) using a given {@link Random} number generator.
+	 * 
+	 * @param random
+	 *            the random number generator to use.
+	 * @param items
+	 *            the items from which an element is to be randomly picked from.
+	 * @return the randomly picked element from the given list of items.
+	 * @param <E>
+	 *            the type of the elements.
 	 */
-	public static <T> T randomPick(Random random, List<T> items) {
+	public static <E> E randomPick(Random random, List<E> items) {
 		int index = random.nextInt(items.size());
-		T result = items.get(index);
+		E result = items.get(index);
 		return result;
 	}
 
 	/**
 	 * Randomly picks <code>n</code> elements (possibly repeated) of given list
-	 * ({@link ArrayList}s will be most efficient) using a
-	 * given {@link Random} number generator.
-	 * @param <T>
+	 * ({@link ArrayList}s will be most efficient) using a given {@link Random}
+	 * number generator.
+	 * 
+	 * @param n
+	 *            the number of items to randomly pick.
+	 * @param random
+	 *            the random number generator to use.
+	 * @param items
+	 *            the items from which an element is to be randomly picked from.
+	 * @return a list of elements (possibly repeated) randomly selected from the
+	 *         given list of items.
+	 * @param <E>
+	 *            the type of the elements.
 	 */
-	public static <T> ArrayList<T> randomPick(int n, Random random, List<T> items) {
-		ArrayList<T> result = new ArrayList<T>(n);
+	public static <E> List<E> randomPick(int n, Random random, List<E> items) {
+		List<E> result = new ArrayList<E>(n);
 		for (int i = 0; i != n; i++) {
 			result.add(randomPick(random, items));
 		}
 		return result;
 	}
 
-	/** 
-	 * Determines whether all elements in collection are {@link Object#equals(Object)},
-	 * including <code>null</code>.
+	/**
+	 * Determines whether all elements in collection are
+	 * {@link Object#equals(Object)}, including <code>null</code>.
+	 * 
+	 * @param collection
+	 *            the collection of elements to be tested.
+	 * @return true of all elements in the given collection are equal, including
+	 *         null.
+	 * @param <E>
+	 *            the type of the elements.
 	 */
-	public static <T> boolean allEqual(Collection<T> collection) {
+	public static <E> boolean allEqual(Collection<E> collection) {
 		boolean result = true;
-		Iterator<T> iterator = collection.iterator();
+		Iterator<E> iterator = collection.iterator();
 		if (iterator.hasNext()) {
-			T previous = iterator.next();
+			E previous = iterator.next();
 			while (result && iterator.hasNext()) {
-				T nextOne = iterator.next();
-				if ( ! equals(nextOne, previous)) {
+				E nextOne = iterator.next();
+				if (!equals(nextOne, previous)) {
 					result = false;
 				}
 			}
@@ -2786,16 +3092,19 @@ public class Util {
 	}
 
 	public static <T> T pickElementInFirstCollectionButNotSecondAndNotEqualTo(
-			Collection<T> collection1, Collection<T> collection2, T valueItMustBeDifferentFrom) {
+			Collection<T> collection1, Collection<T> collection2,
+			T valueItMustBeDifferentFrom) {
 		for (T value1 : collection1) {
-			if ( ! value1.equals(valueItMustBeDifferentFrom) && ! collection2.contains(value1) ) {
+			if (!value1.equals(valueItMustBeDifferentFrom)
+					&& !collection2.contains(value1)) {
 				return value1;
 			}
 		}
 		return null;
 	}
 
-	public static <T> Set<T> makeSetWithoutExcludedElement(Collection<T> collection, T excludedElement) {
+	public static <T> Set<T> makeSetWithoutExcludedElement(
+			Collection<T> collection, T excludedElement) {
 		Set<T> result;
 		result = new LinkedHashSet<T>(collection);
 		result.remove(excludedElement);
@@ -2803,33 +3112,63 @@ public class Util {
 	}
 
 	/**
-	 * Pushes all elements of a collection into a stack and returns the size of this collection.
+	 * Pushes all elements of a collection into a stack and returns the size of
+	 * this collection.
+	 * 
+	 * @param stack
+	 *            the stack to have elements pushed onto.
+	 * @param toBePushed
+	 *            the elements to be pushed onto the given stack.
+	 * @return the number of elements pushed onto the stack.
+	 * @param <E>
+	 *            the type of the elements.
 	 */
-	public static <T> int pushAll(Stack<T> stack, Collection<T> toBePushed) {
-		for (T element : toBePushed) {
+	public static <E> int pushAll(Stack<E> stack, Collection<E> toBePushed) {
+		for (E element : toBePushed) {
 			stack.push(element);
 		}
 		return toBePushed.size();
 	}
-	
+
 	/**
 	 * Pops n elements from stack.
+	 * 
+	 * @param stack
+	 *            the stack to be popped.
+	 * @param n
+	 *            the number of elements to be popped from the stack.
+	 * @param <E>
+	 *            the type of the elements.
 	 */
-	public static <T> void popAll(Stack<T> stack, int n) {
+	public static <E> void popAll(Stack<E> stack, int n) {
 		for (int i = 0; i != n; i++) {
 			stack.pop();
 		}
 	}
 
 	/**
-	 * Receives a collection of keys and returns a map from them to their respective results from a given function.
+	 * Receives a collection of keys and returns a map from them to their
+	 * respective results from a given function.
+	 * 
+	 * @param keys
+	 *            the keys to be used as arguments to given function.
+	 * @param function
+	 *            the function to apply to the given keys to generate
+	 *            corresponding values.
+	 * @return a Map of the given keys with values generated from applying the
+	 *         given function to the keys.
+	 * @param <K>
+	 *            the type of the keys.
+	 * @param <V>
+	 *            the type of the values.
 	 */
-	public static <T1, T2> Map<T1, T2> getFunctionMapForGivenKeys(Collection<T1> keys, Function<T1, T2> function) {
-		Map<T1, T2> result = new LinkedHashMap<T1, T2>();
-		for (T1 key : keys) {
+	public static <K, V> Map<K, V> getFunctionMapForGivenKeys(
+			Collection<K> keys, Function<K, V> function) {
+		Map<K, V> result = new LinkedHashMap<K, V>();
+		for (K key : keys) {
 			result.put(key, function.apply(key));
 		}
 		return result;
 	}
-	
+
 }

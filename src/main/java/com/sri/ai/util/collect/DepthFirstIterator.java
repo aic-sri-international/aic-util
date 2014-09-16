@@ -68,7 +68,7 @@ import com.google.common.base.Predicate;
  * The walk can be pruned by overriding the method {@link #pruneChildren()},
  * which must return <code>true</code> if the <i>children</i> of {@link #root}
  * must not be traversed. Note that each visited node has a corresponding
- * DepthFirstIterator, so it will be its root. Therefore, {@link #prune} will be
+ * DepthFirstIterator, so it will be its root. Therefore, {@link #pruneChildren()} will be
  * applied to each visited node.
  * <p>
  * Also note that, if prune returns <code>true</code> for a certain node, that
@@ -81,7 +81,7 @@ import com.google.common.base.Predicate;
  * avoid visiting the node itself, we can use {@link PredicateIterator} to
  * filter them out as well.
  * <p>
- * By default, {@link #prune} returns the result of evaluating
+ * By default, {@link #pruneChildren()} returns the result of evaluating
  * {@link #pruneChildrenPredicate} on {@link #root} if that field is not
  * <code>null</code>, and <code>false</code> otherwise. Therefore, pruning
  * functionality can be implemented either by overriding

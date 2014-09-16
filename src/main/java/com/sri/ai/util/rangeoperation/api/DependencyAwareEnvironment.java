@@ -42,7 +42,7 @@ import java.util.Map;
 import com.google.common.annotations.Beta;
 
 /**
- * An extension of {@link TreeMap<String, Object>} that is able to keep track
+ * An extension of {@link Map} that is able to keep track
  * and manage dependencies between its entries as computed by {@link DAEFunction}s.
  * If a variable v1 depends on v2 and v2 is changed, we want v1 to be removed
  * so it is recalculated next time its value is requested.

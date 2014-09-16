@@ -47,7 +47,7 @@ import com.google.common.annotations.Beta;
  * needs only to extend it and define {@link #calculateNext()}, which must
  * calculate the next object in the sequence, or <code>null</code> if it is
  * over. EZIterator defines the Iterator interface based on this method (without
- * supporting the {@link #removeElement()} method.
+ * supporting the {@link #remove()} method.
  * 
  * @author braz
  */

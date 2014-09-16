@@ -45,7 +45,7 @@ import com.google.common.annotations.Beta;
 /**
  * An iterator ranging over a base iterator's range but including only those
  * elements satisfying a condition. The condition is provided by the abstract
- * method {@link include(E)}.
+ * method {@link #include(Object)}.
  * 
  * @author braz
  */
