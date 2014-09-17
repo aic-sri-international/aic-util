@@ -554,7 +554,7 @@ public class Util {
 	public static <K, V> void addToCollectionValuePossiblyCreatingIt(
 			Map<K, Collection<V>> mapToCollections, K key, V element,
 			Class newCollectionClass) {
-		Collection<V> c = (Collection<V>) mapToCollections.get(key);
+		Collection<V> c = mapToCollections.get(key);
 		if (c == null) {
 			try {
 				c = (Collection<V>) newCollectionClass.newInstance();
@@ -2924,6 +2924,7 @@ public class Util {
 	static public <E> NullaryFunction<Iterator<E>> getIteratorNullaryFunction(
 			final Collection<E> c) {
 		return new NullaryFunction<Iterator<E>>() {
+			@Override
 			public Iterator<E> apply() {
 				return c.iterator();
 			}
@@ -2949,7 +2950,7 @@ public class Util {
 	public static <E> List<E> matrixSlice(List<List<E>> data, int dimension,
 			int index) {
 		if (dimension == 0) {
-			return (List<E>) data.get(index);
+			return data.get(index);
 		}
 		List<E> result = new LinkedList<E>();
 		for (Iterator<List<E>> rowIt = data.iterator(); rowIt.hasNext();) {
