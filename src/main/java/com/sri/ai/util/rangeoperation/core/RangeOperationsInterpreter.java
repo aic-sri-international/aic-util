@@ -62,7 +62,7 @@ import com.sri.ai.util.rangeoperation.api.RangeOperation;
  * be the ranging operations and function received, with a current <code>env</code> environment.
  * If <code>n = 0</code>, the returned value <code>I(r1, ..., rn, function, env)</code>
  *    is <code>function(env)</code>.
- * If <code>n > 0</code>, the returned value <code>I(r1, ..., rn, function, env)</code>
+ * If <code>n &gt; 0</code>, the returned value <code>I(r1, ..., rn, function, env)</code>
  *    is <code>I(r2, ..., rn, function, env + var = val1) op ... op I(r2, ..., rn, function, env + var = valm)</code>,
  *    where <code>op</code>, <code>var</code> and <code>val1,...,valm</code> are
  *    the aggregate operator, variable, and range of <code>r1</code>, respectively.
@@ -125,7 +125,11 @@ public class RangeOperationsInterpreter {
 	}
 
 	/**
-	 * Evaluates the range operations and {@link DAEFunction} present in a list of arguments. 
+	 * Evaluates the range operations and {@link DAEFunction} present in a list of arguments.
+	 * 
+	 * @param arguments
+	 *        the list of arguments to be evaluated.
+	 * @return the evaluated value.
 	 */
 	public static Object apply(Object ... arguments) {
 		List<DefaultRangeOperation> rangeOperations = new LinkedList<DefaultRangeOperation>();

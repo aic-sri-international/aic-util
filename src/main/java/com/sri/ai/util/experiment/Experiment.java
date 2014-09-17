@@ -308,7 +308,7 @@ public class Experiment {
 	}
 
 	/**
-	 * An extension of {@link List<String>} for keeping pre-commands for a {@link Gnuplot} graph.
+	 * An extension of {@link List} for keeping pre-commands for a {@link Gnuplot} graph.
 	 */
 	@SuppressWarnings("serial")
 	private static class PreCommands extends LinkedList<String> {

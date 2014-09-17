@@ -504,6 +504,9 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Clone a Rational.
 	 * <p>
 	 * [As Rationals are immutable, this copy-constructor is not that useful.]
+	 * 
+	 * @param that
+	 *        a rational value that the newly constructed rational is to be a clone of.
 	 */
 	public Rational(Rational that) {
 		normalizeFrom(that);
@@ -520,7 +523,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * "[+-]i" 
 	 * "[+-]iE[+-]e" 
 	 * "[+-]i.fE[+-]e" 
-	 * (latter two only with radix <= 10, due to possible ambiguities); 
+	 * (latter two only with radix &lt;= 10, due to possible ambiguities); 
 	 * numerator and denominator can be any of the
 	 * latter (i.e. mixed representations such as "-1.2E-3/-4.5E-6" are
 	 * supported).
@@ -751,7 +754,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * "[+-]i" 
 	 * "[+-]iE[+-]e" 
 	 * "[+-]i.fE[+-]e" 
-	 * (latter two only with radix <= 10, due to possible ambiguities); 
+	 * (latter two only with radix &lt;= 10, due to possible ambiguities); 
 	 * numerator and denominator can be any of the
 	 * latter (i.e. mixed representations such as "-1.2E-3/-4.5E-6" are
 	 * supported).
@@ -1180,6 +1183,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * <p>
 	 * If one of the operands is zero, [as an optimization] the other Rational
 	 * is returned.
+	 * 
+	 * @param that
+	 *        the rational to be added to this rational.
+	 * @return a new Rational that is the addition of this and that.
 	 */
 	// [Name: see class BigInteger.]
 	public Rational add(Rational that) {
@@ -1224,6 +1231,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 
 	/**
 	 * Add a long fix number integer to this Rational and return a new Rational.
+	 * 
+	 * @param that
+	 *        a long to be added to this rational.
+	 * @return a new Rational that is the addition of this and that.
 	 */
 	public Rational add(long that) {
 		return add(valueOf(that));
@@ -1234,6 +1245,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * <p>
 	 * If the second operand is zero, [as an optimization] this Rational is
 	 * returned.
+	 * 
+	 * @param that
+	 *        the rational to be subtracted from this rational.
+	 * @return a new Rational that is the result of subtracting that from this.
 	 */
 	// [Name: see class BigInteger.]
 	public Rational subtract(Rational that) {
@@ -1281,6 +1296,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	/**
 	 * Subtract a long fix number integer from this Rational and return a new
 	 * Rational.
+	 *
+	 * @param that
+	 *        the long value to be subtracted from this rational.
+	 * @return a new Rational that is the result of subtracting that from this.
 	 */
 	public Rational subtract(long that) {
 		return subtract(valueOf(that));
@@ -1291,6 +1310,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * <p>
 	 * If one of the operands is one, [as an optimization] the other Rational is
 	 * returned.
+	 * 
+	 * @param that
+	 *        the rational to be multiplied with this rational.
+	 * @return a new Rational that is the result of multiplying this with that.
 	 */
 	// [Name: see class BigInteger.]
 	public Rational multiply(Rational that) {
@@ -1329,6 +1352,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	/**
 	 * Multiply a long fix number integer to this Rational and return a new
 	 * Rational.
+	 * 
+	 * @param that
+	 *        the long to be multiplied with this rational.
+	 * @return a new Rational that is the result of multiplying this with that.
 	 */
 	public Rational multiply(long that) {
 		return multiply(valueOf(that));
@@ -1339,6 +1366,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * <p>
 	 * If the second operand is one, [as an optimization] this Rational is
 	 * returned.
+	 * 
+	 * @param that
+	 *        the rational to be divided by this rational.
+	 * @return a new Rational that is the result of dividing that with this.
 	 */
 	// [Name: see class BigInteger.]
 	public Rational divide(Rational that) {
@@ -1381,6 +1412,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	/**
 	 * Divide this Rational through a long fix number integer and return a new
 	 * Rational.
+	 * 
+	 * @param that
+	 *        the long to be divided by this rational.
+	 * @return a new Rational that is the result of dividing that with this.
 	 */
 	public Rational divide(long that) {
 		return divide(valueOf(that));
@@ -1392,6 +1427,11 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * The integer exponent may be negative.
 	 * <p>
 	 * If the exponent is one, [as an optimization] this Rational is returned.
+	 * 
+	 * @param exponent
+	 *            the exponent to raise this rational by
+	 * @return a new Rational that is the result of raising this rational by the
+	 *         given power.
 	 */
 	// [Name: see classes Math, BigInteger.]
 	public Rational pow(int exponent) {
@@ -1454,6 +1494,12 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * The remainder is based on round down (towards zero) / truncate. 5/3 == 1
 	 * + 2/3 (remainder 2), 5/-3 == -1 + 2/-3 (remainder 2), -5/3 == -1 + -2/3
 	 * (remainder -2), -5/-3 == 1 + -2/-3 (remainder -2).
+	 * 
+	 * @param that
+	 *            the rational to be divided by this rational to get a
+	 *            remainder.
+	 * @return a new Rational that is the result of obtaining the remainder from
+	 *         dividing that with this.
 	 */
 	// [Name: see class BigInteger.]
 	public Rational remainder(Rational that) {
@@ -1489,6 +1535,12 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	/**
 	 * Calculate the remainder of this Rational and a long fix number integer
 	 * and return a new Rational.
+	 * 
+	 * @param that
+	 *            the long to be divided by this rational to get a
+	 *            remainder.
+	 * @return a new Rational that is the result of obtaining the remainder from
+	 *         dividing that with this.
 	 */
 	public Rational remainder(long that) {
 		return remainder(valueOf(that));
@@ -1503,6 +1555,12 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Modulus is based on round floor (towards negative). 5/3 == 1 + 2/3
 	 * (modulus 2), 5/-3 == -2 + -1/-3 (modulus -1), -5/3 == -2 + 1/3 (modulus
 	 * 1), -5/-3 == 1 + -2/-3 (modulus -2).
+	 * 
+	 * @param that
+	 *            the rational to be divided by this rational to get a
+	 *            mod.
+	 * @return a new Rational that is the result of obtaining the mod from
+	 *         dividing that with this.
 	 */
 	// [Name: see class BigInteger.]
 	public Rational mod(Rational that) {
@@ -1539,6 +1597,12 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	/**
 	 * Calculate the modulus of this Rational and a long fix number integer and
 	 * return a new Rational.
+	 * 
+	 * @param that
+	 *            the long to be divided by this rational to get a
+	 *            mod.
+	 * @return a new Rational that is the result of obtaining the mod from
+	 *         dividing that with this.
 	 */
 	public Rational mod(long that) {
 		return mod(valueOf(that));
@@ -1546,8 +1610,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 
 	/**
 	 * Signum. -1, 0, or 1.
-	 * <p>
-	 * If this Rational is negative, -1 is returned; if it is zero, 0 is
+	 * 
+	 * @return If this Rational is negative, -1 is returned; if it is zero, 0 is
 	 * returned; if it is positive, 1 is returned.
 	 */
 	// [Name: see class BigInteger.]
@@ -1557,8 +1621,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	}
 
 	/**
-	 * Return a new Rational with the absolute value of this Rational.
-	 * <p>
+	 * @return a new Rational with the absolute value of this Rational.
 	 * If this Rational is zero or positive, [as an optimization] this Rational
 	 * is returned.
 	 */
@@ -1580,7 +1643,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	}
 
 	/**
-	 * Return a new Rational with the negative value of this.
+	 * @return a new Rational with the negative value of this.
 	 * 
 	 */
 	// [Name: see class BigInteger.]
@@ -1607,7 +1670,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	}
 
 	/**
-	 * Return a new Rational with the inverted (reciprocal) value of this.
+	 * @return a new Rational with the inverted (reciprocal) value of this.
 	 */
 	public Rational invert() {
 		if (isZero()) {
@@ -1627,7 +1690,11 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	}
 
 	/**
-	 * Return the minimal value of two Rationals.
+	 * Calculate the minimal value of two Rationals.
+	 * 
+	 * @param that
+	 *        the other rational to test.
+	 * @return the minimal value of two Rationals.
 	 */
 	// [Name: see classes Math, BigInteger.]
 	public Rational min(Rational that) {
@@ -1636,6 +1703,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 
 	/**
 	 * Return the minimal value of a Rational and a long fix number integer.
+	 * 
+	 * @param that
+	 *        the other long to test.
+	 * @return the minimal value of this and that.
 	 */
 	public Rational min(long that) {
 		return min(valueOf(that));
@@ -1643,6 +1714,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 
 	/**
 	 * Return the maximal value of two Rationals.
+	 * 
+	 * @param that
+	 *        the other rational to test. 
+	 * @return the maximal value of two Rationals.
 	 */
 	// [Name: see classes Math, BigInteger.]
 	public Rational max(Rational that) {
@@ -1651,6 +1726,9 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 
 	/**
 	 * Return the maximum value of a Rational and a long fix number integer.
+	 * @param that
+	 *        the other long to test.
+	 * @return the maximum value of a Rational and a long fix number integer.
 	 */
 	public Rational max(long that) {
 		return max(valueOf(that));
@@ -1661,6 +1739,11 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * that only Rationals can be equal. Never throws.
 	 * <p>
 	 * Overwrites Object.equals(Object).
+	 * 
+	 * @param object
+	 *            the object to be compared with this for equality.
+	 * @return true if object is a rational and this and the object have the
+	 *         same value, false otherwise.
 	 */
 	@Override
 	public boolean equals(Object object) {
@@ -1691,6 +1774,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Hash code. Overwrites Object.hashCode().
 	 * <p>
 	 * Overwrites Object.hashCode().
+	 * 
+	 * @return {@inheritDoc}
 	 */
 	@Override
 	public int hashCode() {
@@ -1703,6 +1788,11 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 
 	/**
 	 * Compare this Rational to another Rational.
+	 * 
+	 * @param that
+	 *            the Rational value to be compared to.
+	 * @return a negative integer, zero, or a positive integer as this object is
+	 *         less than, equal to, or greater than the specified object.
 	 */
 	public int compareTo(Rational that) {
 		// optimization
@@ -1730,6 +1820,11 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 
 	/**
 	 * Compare this Rational to a BigInteger.
+	 * 
+	 * @param that
+	 *            the BigInteger value to be compared to.
+	 * @return a negative integer, zero, or a positive integer as this object is
+	 *         less than, equal to, or greater than the specified object.
 	 */
 	public int compareTo(BigInteger that) {
 		return compareTo(valueOf(that));
@@ -1737,6 +1832,11 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 
 	/**
 	 * Compare this Rational to a long.
+	 * 
+	 * @param that
+	 *            the long value to be compared to.
+	 * @return a negative integer, zero, or a positive integer as this object is
+	 *         less than, equal to, or greater than the specified object.
 	 */
 	public int compareTo(long that) {
 		return compareTo(valueOf(that));
@@ -1757,7 +1857,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * For backward compatibility reasons we keep compareTo(Object) additionally
 	 * to compareTo(Rational). Comparable&lt;Object&gt; is declared to be
 	 * implemented rather than Comparable&lt;Rational&gt;.
+	 * 
+	 * @return {@inheritDoc}
 	 */
+	@Override
 	public int compareTo(Object object) {
 		if (object instanceof Byte) {
 			return compareTo(((Byte) object).longValue());
@@ -1788,6 +1891,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Convert to BigInteger, by rounding.
 	 * <p>
 	 * Possible loss of precision.
+	 * 
+	 * @return a BigInteger representation of this rational, with possible rounding.
 	 */
 	// @PrecisionLoss
 	public BigInteger bigIntegerValue() {
@@ -1804,6 +1909,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Possible loss of precision.
 	 * <p>
 	 * Overwrites Number.longValue().
+	 * 
+	 * @return a long representation of this rational, with possible rounding.
 	 */
 	// @PrecisionLoss
 	@Override
@@ -1822,6 +1929,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Possible loss of precision.
 	 * <p>
 	 * Overwrites Number.intValue().
+	 * 
+	 * @return an int representation of this rational, with possible rounding.
 	 */
 	// @PrecisionLoss
 	@Override
@@ -1837,6 +1946,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Possible loss of precision.
 	 * <p>
 	 * Overwrites Number.doubleValue().
+	 * 
+	 * @return a double representation of this rational, with possible rounding.
 	 */
 	// @PrecisionLoss
 	@Override
@@ -1857,6 +1968,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Possible loss of precision.
 	 * <p>
 	 * Overwrites Number.floatValue().
+	 * 
+	 * @return a float representation of this rational, with possible rounding.
 	 */
 	// @PrecisionLoss
 	@Override
@@ -1871,6 +1984,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * double by Double.longBitsToDouble().
 	 * <p>
 	 * Possible loss of precision.
+	 * 
+	 * @return a double bits value representation of this rational, with possible rounding.
 	 */
 	// @PrecisionLoss
 	public long doubleBitsValue() {
@@ -1884,6 +1999,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * float by Float.intBitsToFloat().
 	 * <p>
 	 * Possible loss of precision.
+	 * 
+	 * @return a float bits value representation of this rational, with possible rounding.
 	 */
 	// @PrecisionLoss
 	public int floatBitsValue() {
@@ -1897,10 +2014,12 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * <p>
 	 * As a short value is returned rather than a int, care has to be taken no
 	 * unwanted sign expansion happens in subsequent operations, e.g. by masking
-	 * (x.halfBitsValue()&0xffffl) or similar
+	 * (x.halfBitsValue()&amp;0xffffl) or similar
 	 * (x.halfBitsValue()==(short)0xbc00).
 	 * <p>
 	 * Possible loss of precision.
+	 * 
+	 * @return a half bits representation of this rational, with possible rounding.
 	 */
 	// @PrecisionLoss
 	public short halfBitsValue() {
@@ -1916,6 +2035,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * significant long first).
 	 * <p>
 	 * Possible loss of precision.
+	 * 
+	 * @return a quad bits representation of this rational, with possible rounding.
 	 */
 	// @PrecisionLoss
 	public long[] quadBitsValue() {
@@ -1927,6 +2048,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	/**
 	 * Convert this Rational to a long integer, either returning an exact result
 	 * (no rounding or truncation needed), or throw an ArithmeticException.
+	 * 
+	 * @return an exact long representation of this rational.
 	 */
 	public long longValueExact() {
 		final long i = longValue();
@@ -1941,6 +2064,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	/**
 	 * Convert this Rational to an int, either returning an exact result (no
 	 * rounding or truncation needed), or throw an ArithmeticException.
+	 * 
+	 * @return an exact int representation of this rational.
 	 */
 	public int intValueExact() {
 		final int i = intValue();
@@ -1954,6 +2079,11 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 
 	/**
 	 * Convert this Rational to its constant (ONE, ZERO, MINUS_ONE) if possible.
+	 * 
+	 * @param value
+	 *            the value to be converted if possible.
+	 * @return the constrant representation of the given value if one exists,
+	 *         other the input value.
 	 */
 	public static Rational valueOf(Rational value) {
 		if (value == null) {
@@ -2008,6 +2138,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Build a Rational from a String.
 	 * <p>
 	 * [Roughly] equivalent to <CODE>new Rational(value)</CODE>.
+	 * 
+	 * @param value
+	 *        the value to be converted to a rational.
+	 * @return a rational representation of the given value.
 	 */
 	public static Rational valueOf(String value) {
 		if (value == null) {
@@ -2036,6 +2170,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Build a Rational from a BigInteger.
 	 * <p>
 	 * Equivalent to <CODE>new Rational(value)</CODE>.
+	 * 
+	 * @param value
+	 *        the value to be converted to a rational.
+	 * @return a rational representation of the given value.
 	 */
 	public static Rational valueOf(BigInteger value) {
 		return new Rational(value);
@@ -2048,6 +2186,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * <p>
 	 * As an optimization, commonly used numbers are returned as a reused
 	 * constant.
+	 * 
+	 * @param value
+	 *        the value to be converted to a rational.
+	 * @return a rational representation of the given value.
 	 */
 	public static Rational valueOf(long value) {
 		// return the internal constants if possible
@@ -2083,6 +2225,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 
 	/**
 	 * Build a Rational from an int.
+	 * 
+	 * @param value
+	 *        the value to be converted to a rational.
+	 * @return a rational representation of the given value.
 	 */
 	public static Rational valueOf(int value) {
 		return valueOf((long) value);
@@ -2090,6 +2236,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 
 	/**
 	 * Build a Rational from a short.
+	 * 
+	 * @param value
+	 *        the value to be converted to a rational.
+	 * @return a rational representation of the given value.
 	 */
 	public static Rational valueOf(short value) {
 		return valueOf((long) value);
@@ -2097,6 +2247,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 
 	/**
 	 * Build a Rational from a byte.
+	 * 
+	 * @param value
+	 *        the value to be converted to a rational.
+	 * @return a rational representation of the given value.
 	 */
 	public static Rational valueOf(byte value) {
 		return valueOf((long) value);
@@ -2105,6 +2259,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	/**
 	 * Build a Rational from a [IEEE 754] double [size/precision] floating point
 	 * number.
+	 * 
+	 * @param value
+	 *        the value to be converted to a rational.
+	 * @return a rational representation of the given value.
 	 */
 	public static Rational valueOf(double value) {
 		return new Rational(value);
@@ -2113,6 +2271,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	/**
 	 * Build a Rational from a [IEEE 754] single [size/precision] floating point
 	 * number.
+	 * 
+	 * @param value
+	 *        the value to be converted to a rational.
+	 * @return a rational representation of the given value.
 	 */
 	public static Rational valueOf(float value) {
 		return new Rational(value);
@@ -2123,6 +2285,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * <p>
 	 * The resulting Rational is positive, i.e. the negative longs are mapped to
 	 * 2**63..2**64 (exclusive).
+	 * 
+	 * @param value
+	 *        the value to be converted to a rational.
+	 * @return a rational representation of the given value.
 	 */
 	public static Rational valueOfUnsigned(long value) {
 		final Rational b = valueOf(value);
@@ -2136,6 +2302,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * <p>
 	 * The resulting Rational is positive, i.e. the negative ints are mapped to
 	 * 2**31..2**32 (exclusive).
+	 * 
+	 * @param value
+	 *        the value to be converted to a rational.
+	 * @return a rational representation of the given value.
 	 */
 	public static Rational valueOfUnsigned(int value) {
 		// masking: suppress sign expansion
@@ -2147,6 +2317,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * <p>
 	 * The resulting Rational is positive, i.e. the negative shorts are mapped
 	 * to 2**15..2**16 (exclusive).
+	 * 
+	 * @param value
+	 *        the value to be converted to a rational.
+	 * @return a rational representation of the given value.
 	 */
 	public static Rational valueOfUnsigned(short value) {
 		// masking: suppress sign expansion
@@ -2158,6 +2332,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * <p>
 	 * The resulting Rational is positive, i.e. the negative bytes are mapped to
 	 * 2**7..2**8 (exclusive).
+	 * 
+	 * @param value
+	 *        the value to be converted to a rational.
+	 * @return a rational representation of the given value.
 	 */
 	public static Rational valueOfUnsigned(byte value) {
 		// masking: suppress sign expansion
@@ -2177,6 +2355,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * <p>
 	 * The conversion from the bits to a Rational is done without loss of
 	 * precision.
+	 * 
+	 * @param value
+	 *        the value to be converted to a rational.
+	 * @return a rational representation of the given value.
 	 */
 	public static Rational valueOfDoubleBits(long value) {
 		return fromIEEE754(new long[] { value, }, DOUBLE_FLOAT_FRACTION_SIZE,
@@ -2196,6 +2378,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * <p>
 	 * The conversion from the bits to a Rational is done without loss of
 	 * precision.
+	 * 
+	 * @param value
+	 *        the value to be converted to a rational.
+	 * @return a rational representation of the given value.
 	 */
 	public static Rational valueOfFloatBits(int value) {
 		// [masking: suppress sign expansion, that leads to excess bits,
@@ -2217,6 +2403,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * <p>
 	 * The conversion from the bits to a Rational is done without loss of
 	 * precision.
+	 * 
+	 * @param value
+	 *        the value to be converted to a rational.
+	 * @return a rational representation of the given value.
 	 */
 	public static Rational valueOfHalfBits(short value) {
 		// [masking: suppress sign expansion, that leads to excess bits,
@@ -2239,6 +2429,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * <p>
 	 * The conversion from the bits to a Rational is done without loss of
 	 * precision.
+	 * 
+	 * @param value
+	 *        the value to be converted to a rational.
+	 * @return a rational representation of the given value.
 	 */
 	public static Rational valueOfQuadBits(long[] value) {
 		return fromIEEE754(value, QUAD_FLOAT_FRACTION_SIZE,
@@ -2249,6 +2443,12 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Compare two IEEE 754 quad size (quadruple precision, binary128) floating
 	 * point numbers (each represented as two longs). NaNs are not considered;
 	 * comparison is done by bits. [Convenience method.]
+	 * 
+	 * @param a 
+	 *        the first value to compare.
+	 * @param b
+	 *        the second value to compare.
+	 * @return true if both values are the same.
 	 */
 	// note: especially due the NaN issue commented above
 	// (a NaN maps to many bits representations),
@@ -2276,6 +2476,11 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * optimization] this Rational is returned.
 	 * <p>
 	 * Possible loss of precision.
+	 * 
+	 * @param roundMode
+	 *            the rounding mode to use.
+	 * @return a new Rational based on rounding this rational using the given
+	 *         rounding mode.
 	 */
 	// @PrecisionLoss
 	public Rational round(int roundMode) {
@@ -2294,6 +2499,9 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Round by default mode (ROUND_HALF_UP).
 	 * <p>
 	 * Possible loss of precision.
+	 * 
+	 * @return a new Rational based on rounding this rational using the ROUND_HALF_UP
+	 *         rounding mode.
 	 */
 	// @PrecisionLoss
 	public Rational round() {
@@ -2305,6 +2513,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Floor, round towards negative infinity.
 	 * <p>
 	 * Possible loss of precision.
+	 * 
+	 * @return a new rational representing the floor value of this rational.
 	 */
 	// @PrecisionLoss
 	public Rational floor() {
@@ -2316,6 +2526,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Ceiling, round towards positive infinity.
 	 * <p>
 	 * Possible loss of precision.
+	 * 
+	 * @return a new rational representing the ceiling value of this rational.
 	 */
 	// [Name: see class Math.]
 	// @PrecisionLoss
@@ -2328,6 +2540,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Truncate, round towards zero.
 	 * <p>
 	 * Possible loss of precision.
+	 * 
+	 * @return a new rational representing the truncated value of this rational.
 	 */
 	// @PrecisionLoss
 	public Rational truncate() {
@@ -2339,6 +2553,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Integer part.
 	 * <p>
 	 * Possible loss of precision.
+	 * 
+     * @return a new rational representing the integer part value of this rational.
 	 */
 	// @PrecisionLoss
 	public Rational integerPart() {
@@ -2350,6 +2566,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Fractional part.
 	 * <p>
 	 * Possible loss of precision.
+	 * 
+	 * @return a new rational representing the fractional part of this rational.
 	 */
 	// @PrecisionLoss
 	public Rational fractionalPart() {
@@ -2362,6 +2580,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Return an array of Rationals with both integer and fractional part.
 	 * <p>
 	 * Integer part is returned at offset 0; fractional part at offset 1.
+	 * 
+     * @return an array of Rationals with both integer and fractional part.
 	 */
 	public Rational[] integerAndFractionalPart() {
 		// note: this duplicates fractionalPart() code, for speed.
@@ -2376,6 +2596,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	
 	/**
 	 * Clone the current Rational.
+	 * 
+	 * @return {@inheritDoc}
 	 */
 	@Override
 	public Rational clone() throws CloneNotSupportedException {

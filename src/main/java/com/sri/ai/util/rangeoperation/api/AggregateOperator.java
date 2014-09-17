@@ -40,19 +40,29 @@ package com.sri.ai.util.rangeoperation.api;
 import com.google.common.annotations.Beta;
 
 /**
- * Represents an aggregate operator by defining initializing and incrementing functions.
+ * Represents an aggregate operator by defining initializing and incrementing
+ * functions.
  * 
  * @author braz
+ * @param <V>
+ *            the type of the incremental value.
+ * @param <R>
+ *            the type of the result.
  */
 @Beta
-public interface AggregateOperator<T1, T2> {
-	
+public interface AggregateOperator<V, R> {
+
 	/** Prepares operator for another round of cumulative operations. */
 	public void initialize();
-	
-	/** Returns current result. */
-	public T2 getResult();
-	
-	/** Increments result by another value. */
-	public void increment(T1 value);
+
+	/** @return current result. */
+	public R getResult();
+
+	/**
+	 * Increments result by another value.
+	 * 
+	 * @param value
+	 *            the value to increment the result by.
+	 */
+	public void increment(V value);
 }

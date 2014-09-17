@@ -60,7 +60,11 @@ public abstract class AbstractRange<T> implements Range<T> {
 	protected DependencyAwareEnvironment environment;
 	protected Collection<BinaryProcedure<String, T>> listeners = new LinkedList<BinaryProcedure<String, T>>();
 
-	/** Builds a range with a given variable name. */
+	/** 
+	 * Builds a range with a given variable name.
+	 * @param name
+	 *        the name to be given to the range. 
+	 */
 	public AbstractRange(String name) {
 		this.name = name;
 	}

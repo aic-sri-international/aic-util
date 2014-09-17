@@ -56,7 +56,14 @@ public class Dimension<T> extends DefaultRangeOperation<T, List<T>> {
 		super(new Concatenate<T>(), range);
 	}
 	
-	/** Creates an axis on a discrete range. */
+	/** 
+	 * Creates an axis on a discrete range.
+	 * 
+	 *  @param name
+	 *         the name for the dimension.
+	 *  @param collection
+	 *         the discrete range.
+	 */
 	public Dimension(String name, Collection<T> collection) {
 		this(new DiscreteRange<T>(name, collection));
 	}
@@ -70,7 +77,18 @@ public class Dimension<T> extends DefaultRangeOperation<T, List<T>> {
 		this(name, first, last, 1);
 	}
 	
-	/** Creates an axis on a geometric integer series. */
+	/** 
+	 * Creates an axis on a geometric integer series.
+	 * 
+	 * @param name
+	 *        the name for the dimension.
+	 * @param first
+	 *        the first value in the series.
+	 * @param last
+	 *        the last value in the series.
+	 * @param rate
+	 *        the rate of the series.
+	 */
 	@SuppressWarnings("unchecked")
 	public Dimension(String name, final int first, final int last, final float rate) {
 		this((Range<T>) new GeometricIntegerRange(name, first, last, rate));

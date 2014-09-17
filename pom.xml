@@ -162,16 +162,6 @@
 					<redirectTestOutputToFile>true</redirectTestOutputToFile>
 				</configuration>
 			</plugin>
-			
-			<plugin>
-      			<groupId>org.apache.maven.plugins</groupId>
-      			<artifactId>maven-javadoc-plugin</artifactId>
-      			<version>2.9.1</version>      		
-      			<configuration>
-      				<javadocVersion>1.8</javadocVersion>
-        			<additionalparam>-Xdoclint:none</additionalparam>
-      			</configuration>
-    		</plugin>
 		</plugins>
 
 		<!-- This is workaround for the "maven-enforcer-plugin (goal "enforce") 
