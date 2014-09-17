@@ -86,13 +86,17 @@ public class ConsoleIterator implements Iterator<String> {
 		return answer;
 	}
 
-	/** Returns next() cast to String. */
+	/** 
+	 * @return {@link #next()} cast to a String. 
+	 */
 	public String nextString() {
 		return answer;
 	}
 
 	/**
 	 * Gives access to current string without iterating.
+	 * 
+	 * @return the current string without iterating.
 	 */
 	public String currentString() {
 		return answer;

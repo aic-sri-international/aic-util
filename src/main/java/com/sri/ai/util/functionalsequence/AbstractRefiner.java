@@ -71,7 +71,7 @@ public abstract class AbstractRefiner<T> implements Refiner<T> {
 		currentValue = initialValue;
 	}
 
-	/** Returns the next best refinement of the value being computed, or null if that is not possible. */
+	/** @return the next best refinement of the value being computed, or null if that is not possible. */
 	protected abstract T refineOrNull();
 	
 	@Override

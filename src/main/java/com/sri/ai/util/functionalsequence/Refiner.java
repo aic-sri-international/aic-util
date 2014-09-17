@@ -56,6 +56,11 @@ public interface Refiner<T> {
 	 * there have been any refinements since the last time a value has been
 	 * provided to the subscriber (that is, if a more refined value than the
 	 * last one can be provided at no cost).
+	 * 
+	 * @param subscriber
+	 *            a subscriber to the refiner.
+	 * @return the current version of a computed value, without attempting to
+	 *         refine it.
 	 */
 	T getCurrentValue(Object subscriber);
 
@@ -63,12 +68,19 @@ public interface Refiner<T> {
 	 * Indicates whether there have been any refinements since the last time a
 	 * value has been provided to subscriber (that is, if a more refined value
 	 * than the last one can be provided at no cost).
+	 * 
+	 * @param subscriber
+	 *            a subscriber to the refiner.
+	 * @return true if there have been any refinements since the last time a
+	 *         value has ben provided to the given subscriber.
 	 */
 	boolean hasMoreRefinedValueSinceLastTimeAtNoCost(Object subscriber);
 
 	/**
 	 * Attempts to refine the value, returning an indication of whether that has
 	 * been possible.
+	 * 
+	 * @return true if it was possible to refine the value, false otherwise.
 	 */
 	boolean refineIfPossible();
 }

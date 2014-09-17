@@ -82,7 +82,12 @@ public class NestedIterator<E> extends EZIteratorWithNull<E> {
 		this(Arrays.asList(objects).iterator());
 	}
 	
-	/** Resets NestedIterator to operate over a new base iterator. */
+	/** 
+	 * Resets NestedIterator to operate over a new base iterator.
+	 * 
+	 * @param baseIterator
+	 *        the new base iterator to operate over.
+	 */
 	public void setBaseIterator(Iterator<Object> baseIterator) {
 		this.baseIterator = baseIterator;
 		subIterator = null;

@@ -44,12 +44,23 @@ import com.google.common.annotations.Beta;
  * 
  * @see com.google.common.base.Predicate
  * @author braz
+ * @param <A1>
+ *            the type for the predicates first argument.
+ * @param <A2>
+ *            the type for the predicates second argument.
+ * @param <A3>
+ *            the type for the predicates third argument.
  */
 @Beta
-public interface TernaryPredicate<T1, T2, T3> {
+public interface TernaryPredicate<A1, A2, A3> {
 	/**
-	 * 
+	 * @param input1
+	 *            the first argument.
+	 * @param input2
+	 *            the second argument.
+	 * @param input3
+	 *            the third argument.
 	 * @return the result of applying this predicate to {@code input1}, {@code input2} and {@code input3}.
 	 */
-	boolean apply(T1 input1, T2 input2, T3 input3);
+	boolean apply(A1 input1, A2 input2, A3 input3);
 }

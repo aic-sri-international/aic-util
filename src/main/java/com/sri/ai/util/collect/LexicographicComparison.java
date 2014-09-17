@@ -51,12 +51,12 @@ import com.google.common.collect.Ordering;
  * Given two iterators over ranges a1, a2, ..., an and b1, b2, ..., bm,
  * defines
  * <pre>
- * lex(a1..an, b1..bm) = -1 if (n = 0 and m > 0) or a1 < b1
- *                     =  1 if (m = 0 and n > 0) or b1 > a1
+ * lex(a1..an, b1..bm) = -1 if (n = 0 and m &gt; 0) or a1 &lt; b1
+ *                     =  1 if (m = 0 and n &gt; 0) or b1 &gt; a1
  *                     = lex(a2..an, b2..bm) if n = m = 0 or a1 == b1
  * </pre>
  *                     
- * The operator < can be provided as a comparator, or the given base type default comparison is used.
+ * The operator &lt; can be provided as a comparator, or the given base type default comparison is used.
  * 
  * This class does not extend {@link Comparator} because it has the side effect of exhausting the iterators. 
  *                     

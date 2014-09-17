@@ -41,12 +41,13 @@ import com.google.common.annotations.Beta;
 import com.google.common.base.Predicate;
 
 /**
- * A {@link Predicate} given an element on construction that tests if
- * it is <i>not</i> equal to a given object when it is applied.
+ * A {@link Predicate} given an element on construction that tests if it is
+ * <i>not</i> equal to a given object when it is applied.
  * 
  * @author braz
  * 
- * @param <T> the type of the element to be tested for equality.
+ * @param <T>
+ *            the type of the element to be tested for equality.
  */
 @Beta
 public class NotEquals<T> implements Predicate<T> {
@@ -56,15 +57,24 @@ public class NotEquals<T> implements Predicate<T> {
 	public NotEquals(T element) {
 		this.element = element;
 	}
-	
-	/** A "constructor" that captures the type automatically. */
+
+	/**
+	 * A "constructor" that captures the type automatically.
+	 * 
+	 * @param element
+	 *            the element to construct the NotEquals predicate with.
+	 * @return a new NotEquals predicate using the given element.
+	 * @param <T1>
+	 *            the type of the element.
+	 */
 	public static <T1> NotEquals<T1> make(T1 element) {
 		return new NotEquals<T1>(element);
 	}
-	
+
 	@Override
 	public boolean apply(T obj) {
-		boolean equals = (element == null && obj == null) || element.equals(obj);
+		boolean equals = (element == null && obj == null)
+				|| element.equals(obj);
 		boolean result = !equals;
 		return result;
 	}

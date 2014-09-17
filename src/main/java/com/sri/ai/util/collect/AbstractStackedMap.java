@@ -73,13 +73,25 @@ public abstract class AbstractStackedMap<K, V> implements StackedMap<K, V> {
 		top = makeMap();
 	}
 
-	/** Constructor receiving a base map. */
+	/**
+	 * Constructor receiving a base map.
+	 * 
+	 * @param base
+	 *            the base Map that this Map stacks itself on top of.
+	 */
 	public AbstractStackedMap(Map<K, V> base) {
 		this();
 		this.base = base;
 	}
 
-	/** Constructor receiving top and base maps */
+	/**
+	 * Constructor receiving top and base maps
+	 * 
+	 * @param top
+	 *            the top Map that this Map has on its stack.
+	 * @param base
+	 *            the base Map that this Map stacks itself on top of.
+	 */
 	public AbstractStackedMap(Map<K, V> top, Map<K, V> base) {
 		this.top  = top;
 		this.base = base;

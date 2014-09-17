@@ -43,12 +43,24 @@ import com.google.common.annotations.Beta;
  * An interface for procedures receiving three arguments.
  * 
  * @author braz
+ * @param <A1>
+ *            the type for the procedures first argument.
+ * @param <A2>
+ *            the type for the procedures second argument.
+ * @param <A3>
+ *            the type for the procedures third argument.
  */
 @Beta
-public interface TernaryProcedure<T1, T2, T3> {
+public interface TernaryProcedure<A1, A2, A3> {
 	
 	/**
+	 * @param input1
+	 *            the first argument.
+	 * @param input2
+	 *            the second argument.
+	 * @param input3
+	 *            the third argument.
 	 * Perform the procedure using the arguments {@code input1}, {@code input2}, and {@code input3}.
 	 */
-	void apply(T1 input1, T2 input2, T3 input3);
+	void apply(A1 input1, A2 input2, A3 input3);
 }

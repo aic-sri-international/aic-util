@@ -53,6 +53,7 @@ public class LogXFactory {
 	 * Get a LogX instance by name.
 	 * 
 	 * @param name
+	 *            the identifying name.
 	 * @return the LogX instance corresponding to the given name.
 	 */
 	public static LogX getLogX(String name) {
@@ -63,6 +64,7 @@ public class LogXFactory {
 	 * Get a LogX instance by name.
 	 * 
 	 * @param name
+	 *            the identifying name.
 	 * @param fqcn
 	 *            the fully qualified class name of the caller.
 	 * @return the LogX instance corresponding to the given name.
@@ -76,6 +78,7 @@ public class LogXFactory {
 	 * the class.
 	 * 
 	 * @param clazz
+	 *            the identifying class.
 	 * @return a new LogX instance named after the given class.
 	 */
 	public static LogX getLogX(Class<?> clazz) {
@@ -87,6 +90,7 @@ public class LogXFactory {
 	 * the class.
 	 * 
 	 * @param clazz
+	 *            the identifying class.
 	 * @param fqcn
 	 *            the fully qualified class name of the caller.
 	 * @return a new LogX instance named after the given class.

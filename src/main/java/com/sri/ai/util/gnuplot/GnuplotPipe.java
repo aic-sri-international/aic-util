@@ -68,7 +68,14 @@ public class GnuplotPipe extends BufferedOutputStream {
 		return process.getOutputStream();
 	}
 
-	/** Sends a command to gnuplot through the pipe. */
+	/**
+	 * Sends a command to gnuplot through the pipe.
+	 * 
+	 * @param command
+	 *            the command to send.
+	 * @throws IOException
+	 *             if the command fails.
+	 */
 	public void send(String command) throws IOException {
 		write((command + "\n").getBytes());
 		flush();

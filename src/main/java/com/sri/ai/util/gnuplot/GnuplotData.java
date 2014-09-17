@@ -78,7 +78,7 @@ public class GnuplotData {
 		}
 	}
 
-	/** Returns a comma-separated string of descriptions. */
+	/** @return a comma-separated string of descriptions. */
 	public String getGnuplotCommandLinePlotArguments() {
 		return Util.join(",", commandLineDescriptions);
 	}

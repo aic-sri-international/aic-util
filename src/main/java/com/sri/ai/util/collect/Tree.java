@@ -58,6 +58,10 @@ public interface Tree {
 	/**
 	 * Inserts a valid path of elements into the tree, returning
 	 * <code>true</code> if new nodes had to be created.
+	 * 
+	 * @param path
+	 *        an iterator over a path of elements.
+	 * @return true if new nodes had to be created.
 	 */
 	boolean put(Iterator<?> path);
 
@@ -69,18 +73,18 @@ public interface Tree {
 	 */
 	public interface GetResult {
 		/**
-		 * The elements consumed from iterator in the {@link Tree#get(Iterator)}
-		 * .
+		 * @return the elements consumed from iterator in the {@link Tree#get(Iterator)}.
 		 */
 		List<?> getConsumedElements();
 
 		/**
-		 * Indicates whether the consumed path has reached a leaf.
+		 * @return true if the consumed path has reached a leaf.
 		 */
 		boolean isValid();
 
 		/**
 		 * If found a valid path, the valid path.
+		 * @return a valid path.
 		 */
 		List<?> getValidPath();
 	}
@@ -91,6 +95,12 @@ public interface Tree {
 	 * with the next element). Returns a {@link GetResult} object containing the
 	 * elements consumed in the process, and whether a valid path has been found
 	 * and, if so, the longest valid path found.
+	 * 
+	 * @param path
+	 *            and iterator over the path of elements.
+	 * @return a {@link GetResult} object containing the elements consumed in
+	 *         the process, and whether a valid path has been found and, if so,
+	 *         the longest valid path found.
 	 */
 	GetResult get(Iterator<?> path);
 }

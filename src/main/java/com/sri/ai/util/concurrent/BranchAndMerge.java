@@ -129,6 +129,7 @@ public class BranchAndMerge {
 	 *         ordering of the results will correspond to the ordering of the
 	 *         tasks that generated them (null results are allowed, either
 	 *         intentionally or due to a failure when calling a task).
+	 * @param <V> the type of the results.
 	 */
 	public static <V> Result<List<V>> execute(List<? extends Callable<V>> tasks) {
 		return execute(tasks, new NoResultsTransform<V>());
@@ -149,8 +150,9 @@ public class BranchAndMerge {
 	 *         ordering of the results will correspond to the ordering of the
 	 *         tasks that generated them (null results are allowed, either
 	 *         intentionally or due to a failure when calling a task).
+	 * @param <V> the type of the results.
 	 */
-	public static <V, T> Result<List<V>> execute(
+	public static <V> Result<List<V>> execute(
 			List<? extends Callable<V>> tasks,
 			Predicate<V> cancelOutstandingOnSuccess) {
 		return execute(tasks, cancelOutstandingOnSuccess,
@@ -176,8 +178,9 @@ public class BranchAndMerge {
 	 *         ordering of the results will correspond to the ordering of the
 	 *         tasks that generated them (null results are allowed, either
 	 *         intentionally or due to a failure when calling a task).
+	 * @param <V> the type of the results.
 	 */
-	public static <V, T> Result<List<V>> execute(
+	public static <V> Result<List<V>> execute(
 			List<? extends Callable<V>> tasks,
 			Predicate<V> cancelOutstandingOnSuccess,
 			Predicate<Throwable> cancelOutstandingOnFailure) {
@@ -201,6 +204,8 @@ public class BranchAndMerge {
 	 *            failure when calling the task.
 	 * @return the result returned from applying transformResults on the list of
 	 *         results collected from the branched tasks.
+	 * @param <V> the type of the result.
+	 * @param <T> the type of the transformed result.
 	 */
 	public static <V, T> Result<T> execute(List<? extends Callable<V>> tasks,
 			Function<List<V>, T> transformResults) {
@@ -229,6 +234,8 @@ public class BranchAndMerge {
 	 *            failure when calling the task.
 	 * @return the result returned from applying transformResults on the list of
 	 *         results collected from the branched tasks.
+	 * @param <V> the type of the result.
+	 * @param <T> the type of the transformed result.
 	 */
 	public static <V, T> Result<T> execute(List<? extends Callable<V>> tasks,
 			Predicate<V> cancelOutstandingOnSuccess,
@@ -262,6 +269,8 @@ public class BranchAndMerge {
 	 *            failure when calling the task.
 	 * @return the result returned from applying transformResults on the list of
 	 *         results collected from the branched tasks.
+	 * @param <V> the type of the result.
+	 * @param <T> the type of the transformed result.
 	 */
 	public static <V, T> Result<T> execute(List<? extends Callable<V>> tasks,
 			Predicate<V> cancelOutstandingOnSuccess,
