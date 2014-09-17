@@ -46,33 +46,44 @@ import com.sri.ai.util.rangeoperation.api.DependencyAwareEnvironment;
 
 /**
  * A range can be thought of as a "virtual list" of values for a named variable,
- * based on a generator of values or an actual collection.
- * Technically, it is a {@link NullaryFunction} producing a new iterator upon request.
- * It must keep a {@link DependencyAwareEnvironment}
- * set by {@link #setEnvironment(DependencyAwareEnvironment)}
- * that is updated by the iterator's method {@link #next()} every time the variable is updated.
- * It may also receive {@link BinaryProcedure} listeners to be called
- * with variable and value pairs whenever {@link #next()} is invoked.
+ * based on a generator of values or an actual collection. Technically, it is a
+ * {@link NullaryFunction} producing a new iterator upon request. It must keep a
+ * {@link DependencyAwareEnvironment} set by
+ * {@link #setEnvironment(DependencyAwareEnvironment)} that is updated by the
+ * iterator's method {@link #next()} every time the variable is updated. It may
+ * also receive {@link BinaryProcedure} listeners to be called with variable and
+ * value pairs whenever {@link #next()} is invoked.
  * 
  * @author braz
  */
 @Beta
 public interface Range<T> extends NullaryFunction<Iterator<T>> {
-	/** The variable set by this range. */
+	/** @return The variable set by this range. */
 	public String getName();
-	
-	/** Informs the range which environment to use. */
+
+	/**
+	 * Informs the range which environment to use.
+	 * 
+	 * @param environment
+	 *            the environment the range is to use.
+	 */
 	public void setEnvironment(DependencyAwareEnvironment environment);
-	
+
 	/** Makes range ready for iteration over variable values. */
 	public void initialize();
-	
-	/** Indicates that there are still values to be iterated over. */
+
+	/** @return true if there are still values to be iterated over. */
 	public boolean hasNext();
-	
+
 	/** Go to the next value. */
 	public void next();
-	
-	/** Add a binary procedure to be invoke upon iteration, with variable and value as parameters. */
+
+	/**
+	 * Add a binary procedure to be invoke upon iteration, with variable and
+	 * value as parameters.
+	 * 
+	 * @param listener
+	 *            the listener to be added.
+	 */
 	public void addIterationListener(BinaryProcedure<String, T> listener);
 }

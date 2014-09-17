@@ -3172,23 +3172,37 @@ public class Util {
 
 	/**
 	 * @return a {@link Collector} to a {@link LinkedList}.
+	 * @param <E>
+	 *            the type of the elements the constructed linked list should
+	 *            contain.
 	 */
-	public static <T> Collector<T, ?, LinkedList<T>> toLinkedList() {
-		return Collectors.toCollection(() -> new LinkedList<T>());
+	public static <E> Collector<E, ?, LinkedList<E>> toLinkedList() {
+		return Collectors.toCollection(() -> new LinkedList<E>());
 	}
 
 	/**
-	 * @return a {@link Collector} to a {@link LinkedHashSet} with given initial capacity.
+	 * @return a {@link Collector} to a {@link LinkedHashSet} with given initial
+	 *         capacity.
+	 * @param initialCapacity
+	 *            the initial capacity of the instantiated {@link LinkedHashSet}
+	 * @param <E>
+	 *            the type of the elements the constructed linked hash set
+	 *            should contain.
 	 */
-	public static <T> Collector<T, ?, LinkedHashSet<T>> toLinkedHashSet(int n) {
-		return Collectors.toCollection(() -> new LinkedHashSet<T>(n));
+	public static <E> Collector<E, ?, LinkedHashSet<E>> toLinkedHashSet(int initialCapacity) {
+		return Collectors.toCollection(() -> new LinkedHashSet<E>(initialCapacity));
 	}
 
 	/**
-	 * @return a {@link collector} to an array list with given initial capacity.
+	 * @return a {@link Collector} to an array list with given initial capacity.
+	 * @param initialCapacity
+	 *            the initial capacity of the instantiated {@link ArrayList}.
+	 * @param <E>
+	 *            the type of the elements the constructed array list should
+	 *            contain.
 	 */
-	public static <T> Collector<T, ?, ArrayList<T>> toArrayList(int n) {
-		return Collectors.toCollection(() -> new ArrayList<T>(n));
+	public static <E> Collector<E, ?, ArrayList<E>> toArrayList(int initialCapacity) {
+		return Collectors.toCollection(() -> new ArrayList<E>(initialCapacity));
 	}
 
 }

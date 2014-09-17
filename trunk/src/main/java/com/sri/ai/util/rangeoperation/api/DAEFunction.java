@@ -54,8 +54,9 @@ public interface DAEFunction extends Function<DependencyAwareEnvironment, Object
 	public abstract Object apply(DependencyAwareEnvironment environment);
 
 	/**
-	 * Indicates whether the DAEFunction is random (default implementation returns <code>false</code>,
+	 * @return whether the DAEFunction is random (default implementation returns <code>false</code>,
 	 * which requires it to be recomputed every time it is requested.
+	 * 
 	 */
 	public abstract boolean isRandom();
 

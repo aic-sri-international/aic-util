@@ -42,26 +42,28 @@ import java.util.Map;
 import com.google.common.annotations.Beta;
 
 /**
- * An extension of {@link Map} that is able to keep track
- * and manage dependencies between its entries as computed by {@link DAEFunction}s.
- * If a variable v1 depends on v2 and v2 is changed, we want v1 to be removed
- * so it is recalculated next time its value is requested.
+ * An extension of {@link Map} that is able to keep track and manage
+ * dependencies between its entries as computed by {@link DAEFunction}s. If a
+ * variable v1 depends on v2 and v2 is changed, we want v1 to be removed so it
+ * is recalculated next time its value is requested.
  * <p>
  * This is useful if we want to use the map as a store for multiple variables
  * and want to make sure that all stored values are valid and consistent.
  * <p>
- * This works by computing new values using {@link DAEFunction}s.
- * These are functions from an environment to a new value (stored under the function's String representation)
- * with the method {@link #getResultOrRecompute(DAEFunction)}.
- * This method monitors accesses made by the function to the environment
- * in order to determine which values depend on which other values.
- * This monitoring is possible due to DAEFunctions only being able to access the environment
- * through methods {@link #get(String)} and {@link #getResultOrRecompute(DAEFunction)},
- * because these methods have internal hooks that do the necessary bookkeeping automatically.
+ * This works by computing new values using {@link DAEFunction}s. These are
+ * functions from an environment to a new value (stored under the function's
+ * String representation) with the method
+ * {@link #getResultOrRecompute(DAEFunction)}. This method monitors accesses
+ * made by the function to the environment in order to determine which values
+ * depend on which other values. This monitoring is possible due to DAEFunctions
+ * only being able to access the environment through methods
+ * {@link #get(String)} and {@link #getResultOrRecompute(DAEFunction)}, because
+ * these methods have internal hooks that do the necessary bookkeeping
+ * automatically.
  * <p>
- * If a {@link DAEFunction}'s method {@link DAEFunction#isRandom()} returns <code>true</code>,
- * or depends on a value computed by a random DAEFunction, it is always recomputed
- * since its values cannot be reused.
+ * If a {@link DAEFunction}'s method {@link DAEFunction#isRandom()} returns
+ * <code>true</code>, or depends on a value computed by a random DAEFunction, it
+ * is always recomputed since its values cannot be reused.
  *
  * @author braz
  */
@@ -69,9 +71,13 @@ import com.google.common.annotations.Beta;
 public interface DependencyAwareEnvironment extends Map<String, Object> {
 
 	/**
-	 * Returns the result of the evaluation of a {@link DAEFunction} on the current environment,
-	 * only actually evaluating it if the variables it depends on have been changed since the last evaluation
-	 * (during which invocations of {@link #get(String)} are monitored in order to determine such dependencies).
+	 * @param function
+	 *            the function to be evaluated.
+	 * @return the result of the evaluation of a {@link DAEFunction} on the
+	 *         current environment, only actually evaluating it if the variables
+	 *         it depends on have been changed since the last evaluation (during
+	 *         which invocations of {@link #get(String)} are monitored in order
+	 *         to determine such dependencies).
 	 */
 	public abstract Object getResultOrRecompute(DAEFunction function);
 
@@ -81,7 +87,7 @@ public interface DependencyAwareEnvironment extends Map<String, Object> {
 
 	public abstract void remove(String variable);
 
-	///////////// CONVENIENCE METHODS ///////////////
+	// /////////// CONVENIENCE METHODS ///////////////
 
 	public abstract Object getOrUseDefault(String variable, Object defaultValue);
 
