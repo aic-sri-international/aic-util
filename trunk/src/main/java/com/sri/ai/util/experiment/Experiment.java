@@ -147,6 +147,9 @@ public class Experiment {
 	 * and specifies their gnuplot labels and styles as well.
 	 * Note that the plot's y-axis does not correspond to any dimensions of the matrix, but to its values
 	 * (the ones computed by the {@link DAEFunction}).
+	 * 
+	 * @param arguments
+	 *        the experiments arguments.
 	 */ 
 	public static void experiment(Object ... arguments) {
 

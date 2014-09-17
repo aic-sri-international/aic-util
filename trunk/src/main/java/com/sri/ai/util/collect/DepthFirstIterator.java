@@ -113,7 +113,19 @@ public abstract class DepthFirstIterator<E> extends EZIterator<E> {
 	public abstract DepthFirstIterator<E> newInstance(E object);
 
 	/**
-	 * Given an object, makes a DepthFirstIterator (an instance of the invoking extension, rather than DepthFirstIterator proper) with that object as root.
+	 * Given an object, makes a DepthFirstIterator (an instance of the invoking
+	 * extension, rather than DepthFirstIterator proper) with that object as
+	 * root.
+	 * 
+	 * @param object
+	 *            the root objet for the iterator.
+	 * @return a new DepthFirstIterator with the given object as root.
+	 * @throws InstantiationException
+	 *         an instantiation exception.
+	 * @throws IllegalAccessException
+	 *         an illegal access exception.
+	 * @throws InvocationTargetException
+	 *         an invocation target exception.
 	 */
 	protected DepthFirstIterator<E> makeDepthFirstIteratorOfCurrentExtendingClass(E object)
 			throws InstantiationException, IllegalAccessException,
@@ -181,16 +193,24 @@ public abstract class DepthFirstIterator<E> extends EZIterator<E> {
 	}
 
 	/**
-	 * Returns the current prune children predicate, used by the default implementation of {@link #pruneChildren()} to decide whether to prune the children of the current node
-	 * (that default implementation returns <code>false</code> if the prune predicate is <code>null</code>).
+	 * @return the current prune children predicate, used by the default
+	 *         implementation of {@link #pruneChildren()} to decide whether to
+	 *         prune the children of the current node (that default
+	 *         implementation returns <code>false</code> if the prune predicate
+	 *         is <code>null</code>).
 	 */
 	public Predicate getPruneChildrenPredicate() {
 		return pruneChildrenPredicate;
 	}
 
 	/**
-	 * Sets the prune children predicate, used by the default implementation of {@link #pruneChildren()} to decide whether to prune the children of the current node
-	 * (that default implementation returns <code>false</code> if the prune predicate is <code>null</code>).
+	 * Sets the prune children predicate, used by the default implementation of
+	 * {@link #pruneChildren()} to decide whether to prune the children of the
+	 * current node (that default implementation returns <code>false</code> if
+	 * the prune predicate is <code>null</code>).
+	 * 
+	 * @param prunePredicate
+	 *        the prune predicate to set.
 	 */
 	public void setPruneChildrenPredicate(Predicate<E> prunePredicate) {
 		this.pruneChildrenPredicate = prunePredicate;

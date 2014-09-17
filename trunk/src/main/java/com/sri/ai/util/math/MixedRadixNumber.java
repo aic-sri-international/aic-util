@@ -142,6 +142,9 @@ public class MixedRadixNumber extends Number {
 	 * Returns the value of the mixed radix number with the specified array of
 	 * numerals and the current array of radices.
 	 * 
+	 * @param radixValues
+	 *            the current radix values.
+	 * 
 	 * @return the value of the mixed radix number
 	 * 
 	 * @throws IllegalArgumentException

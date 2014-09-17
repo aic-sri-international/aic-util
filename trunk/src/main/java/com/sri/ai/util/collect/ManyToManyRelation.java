@@ -74,7 +74,12 @@ public class ManyToManyRelation<A,B> {
 		removeThisBFromBsOfThisA(a, b);
 	}
 	
-	/** Remove all tuples with <code>a</code> as first dimension. */
+	/**
+	 * Remove all tuples with <code>a</code> as first dimension.
+	 * 
+	 * @param a
+	 *            the item used in the removal logic.
+	 */
 	public void removeA(A a) {
 		Collection<B> bsOfThisA = fromAToItsBs.get(a);
 		
@@ -90,19 +95,37 @@ public class ManyToManyRelation<A,B> {
 		}
 	}
 
-	/** Remove all tuples with elements in collection <code>as</code> as first dimension. */
+	/**
+	 * Remove all tuples with elements in collection <code>as</code> as first
+	 * dimension.
+	 * 
+	 * @param as
+	 *            the items used in the removal logic.
+	 */
 	public void removeAllAs(Collection<A> as) {
 		for (A a : as) {
 			removeA(a);
 		}
 	}
 	
-	/** Indicates whether an element <code>a</code> is present in the first dimension. */
+	/**
+	 * Indicates whether an element <code>a</code> is present in the first
+	 * dimension.
+	 * 
+	 * @param a
+	 *            the item to test if its in the first dimension.
+	 * @return true if the given argument is in the first dimension.
+	 */
 	public boolean containsA(A a) {
 		return fromAToItsBs.containsKey(a);
 	}
 
-	/** Remove all tuples with <code>b</code> as second dimension. */
+	/**
+	 * Remove all tuples with <code>b</code> as second dimension.
+	 * 
+	 * @param b
+	 *            the argument to match on.
+	 */
 	public void removeB(B b) {
 		Collection<A> asOfThisB = fromBToItsAs.get(b);
 
@@ -118,14 +141,24 @@ public class ManyToManyRelation<A,B> {
 		}
 	}
 
-	/** Remove all tuples with elements in collection <code>bs</code> as second dimension. */
+	/**
+	 * Remove all tuples with elements in collection <code>bs</code> as second
+	 * dimension.
+	 * 
+	 * @param bs
+	 *            the arguments to match on.
+	 */
 	public void removeAllBs(Collection<B> bs) {
 		for (B b : bs) {
 			removeB(b);
 		}
 	}
 	
-	/** Indicates whether an element <code>b</code> is present in the second dimension. */
+	/**
+	 * @param b
+	 *        element to test for containment.
+	 * @return true if element <code>b</code> is present in the second dimension. 
+	 */
 	public boolean containsB(B b) {
 		return fromBToItsAs.containsKey(b);
 	}
@@ -143,7 +176,12 @@ public class ManyToManyRelation<A,B> {
 		return new LinkedHashSet<B>(fromBToItsAs.keySet());
 	}
 
-	/** Returns collection of second-dimension elements relating to <code>a</code>. */
+	/**
+	 * @param a
+	 *            the element to relate to.
+	 * @return collection of second-dimension elements relating to
+	 *         <code>a</code>.
+	 */
 	public Collection<B> getBsOfA(A a) {
 		Collection<B> bsOfThisA = fromAToItsBs.get(a);
 		if (bsOfThisA == null) {
@@ -152,7 +190,11 @@ public class ManyToManyRelation<A,B> {
 		return new LinkedHashSet<B>(bsOfThisA);
 	}
 	
-	/** Returns collection of first-dimension elements relating to <code>b</code>. */
+	/**
+	 * @param b
+	 *         the element to relate to. 
+ 	 * @return collection of first-dimension elements relating to <code>b</code>. 
+ 	 */
 	public Collection<A> getAsOfB(B b) {
 		Collection<A> asOfThisB = fromBToItsAs.get(b);
 		if (asOfThisB == null) {
@@ -184,7 +226,10 @@ public class ManyToManyRelation<A,B> {
 		}
 	}
 	
-	/** Returns an iterator over the pairs in this relationship; the iterator is <i>not</i> supported by the underlying relationship storage. */
+	/**
+	 * @return an iterator over the pairs in this relationship; the iterator is
+	 *         <i>not</i> supported by the underlying relationship storage.
+	 */
 	public Iterator<Pair<A,B>> iterator() {
 		List<Pair<A,B>> list = new LinkedList<Pair<A,B>>();
 		for (A a : getAs()) {

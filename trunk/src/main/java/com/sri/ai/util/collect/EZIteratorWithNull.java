@@ -68,8 +68,10 @@ public abstract class EZIteratorWithNull<E> implements Iterator<E> {
 	private boolean endOfRange = false;
 	
 	/**
-	 * Method responsible for calculating next element in sequence,
-	 * returning <code>null</code> if there are no more elements.
+	 * Method responsible for calculating next element in sequence, returning
+	 * <code>null</code> if there are no more elements.
+	 * 
+	 * @return the next calculated element, null if there are no more elements.
 	 */
 	protected abstract E calculateNext();
 

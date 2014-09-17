@@ -141,7 +141,9 @@ public class DisjointSets<E> {
 	 * different sets.
 	 * 
 	 * @param element1
+	 *        the first element to union together.
 	 * @param element2
+	 *        the second element to union together.
 	 * @throws IllegalArgumentException
 	 *             if element1 or element 2 is not already associated with a
 	 *             disjoint set (i.e. makeSet() was not called for the argument

@@ -59,6 +59,10 @@ import com.sri.ai.util.base.NullaryFunction;
  * cache.
  * 
  * @author braz
+ * @param <K>
+ * 			the type of the Map's keys.
+ * @param <V>
+ *          the type of the Map's values.
  */
 @Beta
 public interface CacheMap<K, V> extends Map<K, V> {
@@ -71,6 +75,9 @@ public interface CacheMap<K, V> extends Map<K, V> {
 	 * these objects the ones that need to be kept, eliminating references for any
 	 * other kept objects (which will then, if not referenced anywhere else,
 	 * be garbage-collected by the Java virtual machine).
+	 * 
+	 * @param reacheableObjectsIterator
+	 *        an iterator over reachable objects.
 	 */
 	void garbageCollect(Iterator<K> reacheableObjectsIterator);
 
@@ -81,14 +88,20 @@ public interface CacheMap<K, V> extends Map<K, V> {
 	 * provided by {@link #getReachableObjectIteratorMaker()} function.
 	 * A value of <code>-1</code> indicates that no automatic garbage collection
 	 * takes place.
+	 * 
+	 * @return the garbage collection period associated with the cache map.
 	 */
 	int getGarbageCollectionPeriod();
 
 	/**
-	 * Allows the user to set the number of cache calls between
-	 * automatic garbage collections.
-	 * A value of <code>-1</code> indicates that no automatic garbage collection
-	 * takes place.
+	 * Allows the user to set the number of cache calls between automatic
+	 * garbage collections. A value of <code>-1</code> indicates that no
+	 * automatic garbage collection takes place.
+	 * 
+	 * @param period
+	 *            set the number of cache calls between number of automatic
+	 *            garbage collections, a value of <code>-1</code> indicates that
+	 *            no automatic garbage collection.
 	 */
 	void setGarbageCollectionPeriod(int period);
 
@@ -96,6 +109,8 @@ public interface CacheMap<K, V> extends Map<K, V> {
 	 * Returns the current reachable objects iterator maker.
 	 * A <code>null</code> value indicates that no automatic garbage collection
 	 * takes place.
+	 * 
+	 * @return the factory method for creating a reachable objects iterator.
 	 */
 	NullaryFunction<Iterator<K>> getReachableObjectIteratorMaker();
 	
@@ -103,11 +118,15 @@ public interface CacheMap<K, V> extends Map<K, V> {
 	 * Allows the user to provide a new reachable objects iterator maker.
 	 * A <code>null</code> value indicates that no automatic garbage collection
 	 * takes place.
+	 * 
+	 * @param iteratorMaker
+	 *        a factory method for creating a reachable object iterator. If null, 
+	 *        not automatic garbage collection will take place.
 	 */
 	void setReachableObjectIteratorMaker(NullaryFunction<Iterator<K>> iteratorMaker);
 	
 	/**
-	 * 
+	 * @return runtime statistics associated with the cache.
 	 * @see Cache#stats()
 	 */
 	CacheStats stats();

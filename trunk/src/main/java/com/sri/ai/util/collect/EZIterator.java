@@ -61,8 +61,11 @@ public abstract class EZIterator<E> implements Iterator<E> {
 	protected E next;
 	
 	/**
-	 * Method responsible for calculating next element in sequence,
-	 * returning <code>null</code> if there are no more elements.
+	 * Method responsible for calculating next element in sequence, returning
+	 * <code>null</code> if there are no more elements.
+	 * 
+	 * @return the next calculated element in sequence, null if there are no
+	 *         more elements.
 	 */
 	protected abstract E calculateNext();
 

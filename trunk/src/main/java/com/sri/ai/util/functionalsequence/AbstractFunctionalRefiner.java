@@ -64,19 +64,19 @@ import com.sri.ai.util.Util;
  * refined value, the functional refiner indicates that no further refinement of
  * its own value is possible.
  * <p>
- * Here is a more precise definition: let f : V^n -> T be a n-ary function from
+ * Here is a more precise definition: let f : V^n -&gt; T be a n-ary function from
  * arguments of type V to a set T and s_1, ..., s_n be n (possibly infinite)
  * sequences, with s_{i,j} the j-th element of the sequence s_i. Let k be a
  * (possibly infinite) sequence of index arrays (k_{1,1} ... k_{1,n}), ...,
  * (k_{m,1}, ..., k_{m, n}), ..., where k_{t,i} is an integer greater than 0,
  * k_{1,i} = 1 for all i, and each array k_t differs from k_{t+1} in at least
- * one element, with k_{t+1,i} >= k_{t,i} for all i. (note that this means some
+ * one element, with k_{t+1,i} &gt;= k_{t,i} for all i. (note that this means some
  * argument sequence values can be "skipped"; at the implementation level, this
  * happens when an argument's refiner performs more than one refinement at some
  * other client's request, in between requests from this functional refiner,
  * which never gets to see the intermediary ones -- this is ok because the
  * values are always better refinements). Let f0 be an initial value in T. Then
- * we define a <i>functional refiner<i> fr(f, f0, s, k) as a refiner with the
+ * we define a <i>functional refiner</i> fr(f, f0, s, k) as a refiner with the
  * following sequence of refined values: f0, f(s_{1,k_{1,1}}, ...,
  * s_{n,k_{1,n}}), ..., f(s_{1,k_{t,1}}, ..., s_{n,k_{t,n}}), ...
  * <p>
@@ -122,6 +122,8 @@ public abstract class AbstractFunctionalRefiner<T, V> extends AbstractRefiner<T>
 	/**
 	 * Computes the function from current argument values in {@link #arguments},
 	 * being responsible for computing and storing the first value of an argument if it is not already there.
+	 * 
+	 * @return the function from current argument values.
 	 */
 	abstract protected T computeFunction();
 
@@ -129,6 +131,8 @@ public abstract class AbstractFunctionalRefiner<T, V> extends AbstractRefiner<T>
 	 * Returns an iterator ranging over arguments in decreasing preference for refinement attempt.
 	 * Default implementation returns an arbitrary ranking,
 	 * typically in the order arguments are used the first time function is run.
+	 * 
+	 * @return the argument update ranking iterator.
 	 */
 	protected Iterator<Refiner<V>> argumentUpdateRankingIterator() {
 		return arguments.iterator();

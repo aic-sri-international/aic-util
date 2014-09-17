@@ -94,34 +94,37 @@ public abstract class AbstractFunctionalSequence<T, V> extends EZIterator<T>
 	// Methods to be implemented or overridden
 
 	/**
-	 * Returns the initial value of the functional sequence. This must return
-	 * null if we do not wish to include an arbitrary initial value, in which
-	 * case the first value will be computed from applying the function to the
-	 * first elements of the arguments sequences.
+	 * @return the initial value of the functional sequence. This must return
+	 *         null if we do not wish to include an arbitrary initial value, in
+	 *         which case the first value will be computed from applying the
+	 *         function to the first elements of the arguments sequences.
 	 */
 	abstract protected T initialValue();
 
 	/**
-	 * Indicates whether provided value should indicate end of range for this
-	 * rewriter functional sequence after being produced by it. Default
-	 * implementation returns false every time.
+	 * @param value
+	 *            the value to test.
+	 * @return whether provided value should indicate end of range for this
+	 *         rewriter functional sequence after being produced by it. Default
+	 *         implementation returns false every time.
 	 */
 	protected boolean isFinalValue(T value) {
 		return false;
 	}
 
 	/**
-	 * Computes the function from current argument values in
-	 * {@link #fromArgumentsToArgumentValues}, being responsible for computing
-	 * and storing the first value of an argument if it is not already there.
+	 * @return Computes the function from current argument values in
+	 *         {@link #fromArgumentsToArgumentValues}, being responsible for
+	 *         computing and storing the first value of an argument if it is not
+	 *         already there.
 	 */
 	abstract protected T computeFunction();
 
 	/**
-	 * Picks next argument to be updated, returning <code>null</code> if no
-	 * argument has a next value to be updated to. The default implementation
-	 * picks the first argument used in the first execution of the function that
-	 * has a next value.
+	 * @return Picks next argument to be updated, returning <code>null</code> if
+	 *         no argument has a next value to be updated to. The default
+	 *         implementation picks the first argument used in the first
+	 *         execution of the function that has a next value.
 	 */
 	protected Iterator<V> nextArgumentToUpdate() {
 		Set<Iterator<V>> arguments = fromArgumentsToArgumentValues.keySet();
@@ -137,6 +140,16 @@ public abstract class AbstractFunctionalSequence<T, V> extends EZIterator<T>
 	 * {@link #fromArgumentsToArgumentValues} (including the one just updated).
 	 * The default implementation simply recomputes the function from the stored
 	 * argument values.
+	 * 
+	 * @param currentResult
+	 *            the current result
+	 * @param argument
+	 *            an iterator over arguments.
+	 * @param previousArgumentValue
+	 *            the previous argument value.
+	 * @param newArgumentValue
+	 *            the new argument value.
+	 * @return the incrementally computed value.
 	 */
 	protected T computeFunctionIncrementally(T currentResult,
 			Iterator<V> argument, V previousArgumentValue, V newArgumentValue) {

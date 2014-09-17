@@ -44,11 +44,26 @@ import com.google.common.annotations.Beta;
  * 
  * @see com.google.common.base.Function
  * @author braz
+ * @param <A1>
+ *            the type for the functions first argument.
+ * @param <A2>
+ *            the type for the functions second argument.
+ * @param <A3>
+ *            the type for the functions third argument.
+ * @param <R>
+ *            the return type for the function.
  */
 @Beta
-public interface TernaryFunction<F1, F2, F3, T> {
+public interface TernaryFunction<A1, A2, A3, R> {
 	/**
-	 * @return the result of applying this function to {@code input1}, {@code input2}, and {@code input3}.
+	 * @param input1
+	 *            the first argument.
+	 * @param input2
+	 *            the second argument.
+	 * @param input3
+	 *            the third argument.
+	 * @return the result of applying this function to {@code input1},
+	 *         {@code input2}, and {@code input3}.
 	 */
-	T apply(F1 input1, F2 input2, F3 input3);
+	R apply(A1 input1, A2 input2, A3 input3);
 }

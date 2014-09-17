@@ -854,6 +854,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * positive.
 	 * <p>
 	 * [For convenience.]
+	 * 
+	 * @return true if the rational is larger than zero.
 	 */
 	public boolean isPositive() {
 		return (signum() > 0);
@@ -866,6 +868,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * either.
 	 * <p>
 	 * [For convenience.]
+	 * 
+	 * @return true is the rational is smaller than zero.
 	 */
 	public boolean isNegative() {
 		return (signum() < 0);
@@ -877,6 +881,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Indicates whether this Rational is zero.
 	 * <p>
 	 * [For convenience and speed.]
+	 * 
+	 * @return true if the rational is zero.
 	 */
 	public boolean isZero() {
 		// optimization, first test is for speed.
@@ -894,6 +900,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Indicates whether this Rational is 1.
 	 * <p>
 	 * [For convenience and speed.]
+	 * 
+	 * @return true if the rational is 1.
 	 */
 	public boolean isOne() {
 		// optimization
@@ -911,6 +919,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Indicates whether this Rational is -1.
 	 * <p>
 	 * [For convenience and speed.]
+	 * 
+	 * @return true if the rational is -1;
 	 */
 	public boolean isMinusOne() {
 		// optimization
@@ -927,6 +937,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * <p>
 	 * Indicates whether this Rational convertible to a BigInteger without loss
 	 * of precision. True iff denominator/quotient is one.
+	 * 
+	 * @return true if the rational is an integer.
 	 */
 	public boolean isInteger() {
 		return bigIntegerIsOne(denominator);
@@ -936,6 +948,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Rational string representation, format "[-]numerator[/denominator]".
 	 * <p>
 	 * Sample output: "6172839/5000".
+	 * 
+	 * @param radix
+	 *        the radix to use.
+	 * @return a string representation of the rational.
 	 */
 	public String toString(int radix) {
 		checkRadixArgument(radix);
@@ -957,6 +973,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Sample output: "6172839/5000".
 	 * <p>
 	 * Overwrites Object.toString().
+	 * 
+	 * @return a default string representation of the rational.
 	 */
 	@Override
 	public String toString() {
@@ -972,6 +990,12 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Sample output: "1234.567800".
 	 * <p>
 	 * Possible loss of precision.
+	 * 
+	 * @param precision
+	 *        the precision to use.
+	 * @param radix
+	 *        the radix to use.
+	 * @return a fixed dot-format string representation of the rational.
 	 */
 	// @PrecisionLoss
 	public String toStringDot(int precision, int radix) {
@@ -985,6 +1009,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Sample output: "1234.567800".
 	 * <p>
 	 * Possible loss of precision.
+	 * 
+	 * @param precision
+	 *        the precision to use.
+	 * @return a fixed dot-format string representation of the rational.
 	 */
 	// @PrecisionLoss
 	public String toStringDot(int precision) {
@@ -1001,6 +1029,12 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * total loss of precision).
 	 * <p>
 	 * Possible loss of precision.
+	 * 
+	 * @param precision
+	 *        the precision to use.
+	 * @param radix
+	 *        the radix to use.
+	 * @return a fixed dot-format string representation of the rational.
 	 */
 	// @PrecisionLoss
 	public String toStringDotRelative(int precision, int radix) {
@@ -1073,6 +1107,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * total loss of precision).
 	 * <p>
 	 * Possible loss of precision.
+	 * 
+	 * @param precision
+	 *        the precision to use.
+	 * @return a fixed dot-format string representation of the rational.
 	 */
 	// @PrecisionLoss
 	public String toStringDotRelative(int precision) {
@@ -1088,6 +1126,11 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Sample output: "1.2E3".
 	 * <p>
 	 * Possible loss of precision.
+	 * @param precision
+	 *        the precision to use.
+	 * @param radix
+	 *        the radix to use.
+	 * @return an exponent-format string representation of the rational.
 	 */
 	// @PrecisionLoss
 	public String toStringExponent(int precision, int radix) {
@@ -1121,6 +1164,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Sample output: "1.2E3".
 	 * <p>
 	 * Possible loss of precision.
+	 * @param precision
+	 *        the precision to use.
+	 * @return an exponent-format string representation of the rational.
+
 	 */
 	// @PrecisionLoss
 	public String toStringExponent(int precision) {

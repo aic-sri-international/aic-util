@@ -65,6 +65,7 @@ import com.google.common.annotations.Beta;
  * @author braz
  * 
  * @param <CoDomain>
+ *            the type of the co-domain.
  */
 @Beta
 public interface FunctionalSequence<CoDomain> extends Iterator<CoDomain> {
