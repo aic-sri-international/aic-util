@@ -63,6 +63,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import com.google.common.annotations.Beta;
@@ -817,7 +818,7 @@ public class Util {
 		final AtomicInteger currentIndex = new AtomicInteger(-1);
 		List<T> result = c.stream()
 				.filter(e -> currentIndex.incrementAndGet() != elementIndex)
-				.collect(Collectors.toCollection(() -> new LinkedList<T>()));
+				.collect(toLinkedList());
 
 		return result;
 	}
@@ -927,9 +928,7 @@ public class Util {
 		ArrayList<T> result = collection
 				.stream()
 				.map(e -> function.apply(e))
-				.collect(
-						Collectors.toCollection(() -> new ArrayList<T>(
-								collection.size())));
+				.collect(toArrayList(collection.size()));
 
 		return result;
 	}
@@ -987,9 +986,7 @@ public class Util {
 		Set<T> result = set
 				.stream()
 				.map(e -> function.apply(e))
-				.collect(
-						Collectors.toCollection(() -> new LinkedHashSet<T>(set
-								.size())));
+				.collect(toLinkedHashSet(set.size()));
 
 		return result;
 	}
@@ -2275,8 +2272,10 @@ public class Util {
 	 */
 	public static <E> LinkedList<E> removeNonDestructively(List<E> list,
 			Predicate<E> predicate) {
-		LinkedList<E> result = list.stream().filter(e -> !predicate.apply(e))
-				.collect(Collectors.toCollection(() -> new LinkedList<E>()));
+		LinkedList<E> result =
+				list.stream()
+				.filter(e -> !predicate.apply(e))
+				.collect(toLinkedList());
 
 		return result;
 	}
@@ -3169,6 +3168,27 @@ public class Util {
 			result.put(key, function.apply(key));
 		}
 		return result;
+	}
+
+	/**
+	 * @return a {@link Collector} to a {@link LinkedList}.
+	 */
+	public static <T> Collector<T, ?, LinkedList<T>> toLinkedList() {
+		return Collectors.toCollection(() -> new LinkedList<T>());
+	}
+
+	/**
+	 * @return a {@link Collector} to a {@link LinkedHashSet} with given initial capacity.
+	 */
+	public static <T> Collector<T, ?, LinkedHashSet<T>> toLinkedHashSet(int n) {
+		return Collectors.toCollection(() -> new LinkedHashSet<T>(n));
+	}
+
+	/**
+	 * @return a {@link collector} to an array list with given initial capacity.
+	 */
+	public static <T> Collector<T, ?, ArrayList<T>> toArrayList(int n) {
+		return Collectors.toCollection(() -> new ArrayList<T>(n));
 	}
 
 }
