@@ -58,7 +58,7 @@ import com.google.common.base.Predicate;
  * single-parameter constructor. If however C does not have a single-parameter
  * constructor, it needs to override
  * {@link #makeDepthFirstIteratorOfCurrentExtendingClass(Object child)} to
- * provide a depth-first iterator on a given child Typically
+ * provide a depth-first iterator on a given child. Typically
  * {@link #makeDepthFirstIteratorOfCurrentExtendingClass(Object child)} will do
  * this by using a C constructor taking more than one parameter, but any
  * depth-first iterator based on the child will do (in fact, any iterator of
@@ -118,7 +118,7 @@ public abstract class DepthFirstIterator<E> extends EZIterator<E> {
 	 * root.
 	 * 
 	 * @param object
-	 *            the root objet for the iterator.
+	 *            the root object for the iterator.
 	 * @return a new DepthFirstIterator with the given object as root.
 	 * @throws InstantiationException
 	 *         an instantiation exception.
