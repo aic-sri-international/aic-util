@@ -927,14 +927,69 @@ public class Util {
 
 		ArrayList<T> result = collection
 				.stream()
-				.map(e -> function.apply(e))
+				.map(function::apply)
 				.collect(toArrayList(collection.size()));
+
+		return result;
+	}
+
+	/**
+	 * Stores results of applying a function to an array's elements in a
+	 * new, empty array list and returns it.
+	 * 
+	 * @param array
+	 *            the array whose elements a function is to be applied to.
+	 * @param function
+	 *            the function to be applied to the given collection's elements.
+	 * @return an ArrayList of the results from the function applications on the
+	 *         given collection's elements.
+	 * @param <F>
+	 *            the type of the collection's elements.
+	 * @param <T>
+	 *            the result type of the function applied to the collection's
+	 *            elements.
+	 */
+	public static <F, T> ArrayList<T> mapIntoArrayList(F[] array, Function<F, T> function) {
+
+		ArrayList<T> result = Arrays
+				.stream(array)
+				.map(function::apply)
+				.collect(toArrayList(array.length));
 
 		return result;
 	}
 
 	public static <F, T> List<T> mapIntoList(F[] array, Function<F, T> function) {
 		return mapIntoList(Arrays.asList(array), function);
+	}
+
+	/**
+	 * Stores results of applying a function to a collection's elements in a
+	 * new array and returns it.
+	 * 
+	 * @param collection
+	 *            the collection whose elements a function is to be applied to.
+	 * @param function
+	 *            the function to be applied to the given collection's elements.
+	 * @return an array of the results from the function applications on the
+	 *         given collection's elements.
+	 * @param <F>
+	 *            the type of the collection's elements.
+	 * @param <T>
+	 *            the result type of the function applied to the collection's
+	 *            elements.
+	 */
+	public static <F, T> T[] mapIntoArray(
+			Collection<? extends F> collection, Function<F, T> function) {
+
+		@SuppressWarnings("unchecked")
+		T[] result = (T[]) new Object[collection.size()];
+		int i = 0;
+		for(F element : collection) {
+			result[i++] = function.apply(element);
+		}
+
+		return result;
 	}
 
 	/**
@@ -985,7 +1040,7 @@ public class Util {
 
 		Set<T> result = set
 				.stream()
-				.map(e -> function.apply(e))
+				.map(function::apply)
 				.collect(toLinkedHashSet(set.size()));
 
 		return result;
@@ -1208,8 +1263,8 @@ public class Util {
 	 */
 	public static <E> Collection<E> collect(Collection<E> collection,
 			Collection<E> collected, Predicate<E> predicate) {
-		collection.stream().filter(e -> predicate.apply(e))
-				.forEach(e -> collected.add(e));
+		collection.stream().filter(predicate::apply)
+				.forEach(collected::add);
 		return collected;
 	}
 
@@ -1612,7 +1667,7 @@ public class Util {
 	 */
 	public static <E> boolean forAll(Collection<E> collection,
 			Predicate<E> predicate) {
-		boolean result = collection.stream().allMatch(e -> predicate.apply(e));
+		boolean result = collection.stream().allMatch(predicate::apply);
 		return result;
 	}
 
@@ -1655,7 +1710,7 @@ public class Util {
 	 */
 	public static <E> boolean thereExists(Collection<E> collection,
 			Predicate<E> predicate) {
-		boolean result = collection.stream().anyMatch(e -> predicate.apply(e));
+		boolean result = collection.stream().anyMatch(predicate::apply);
 		return result;
 	}
 
@@ -2150,7 +2205,7 @@ public class Util {
 	 */
 	public static <E> Collection<E> setDifference(Collection<E> c1,
 			Collection<E> c2, Collection<E> result) {
-		c1.stream().filter(e -> !c2.contains(e)).forEach(e -> result.add(e));
+		c1.stream().filter(e -> !c2.contains(e)).forEach(result::add);
 
 		return result;
 	}
