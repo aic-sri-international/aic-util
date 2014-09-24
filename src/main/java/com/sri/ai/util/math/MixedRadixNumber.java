@@ -47,8 +47,7 @@ import com.google.common.annotations.Beta;
  * href="http://demonstrations.wolfram.com/MixedRadixNumberRepresentations/"
  * >Mixed Radix Number Representations.</a>
  * 
- * Will proceed from right to left in geometric sequence based on the radix
- * values provided.
+ * Will proceed from right to left in sequence based on the radix values provided.
  * 
  * @author Ciaran O'Reilly
  */
@@ -161,8 +160,8 @@ public class MixedRadixNumber extends Number {
 		BigInteger cvalue = BigInteger.ZERO;
 		BigInteger mvalue = BigInteger.ONE;
 		for (int i = radixValues.length-1; i >= 0; i--) {
-			if (radixValues[i] < 0 || radixValues[i] > radices[i]) {
-				throw new IllegalArgumentException("Radix value " + i
+			if (radixValues[i] < 0 || radixValues[i] >= radices[i]) {
+				throw new IllegalArgumentException("Radix numeral value " + i
 						+ " is out of range for radix at this position");
 			}
 			if (i != radixValues.length-1) {
@@ -192,19 +191,17 @@ public class MixedRadixNumber extends Number {
 	 * @return true if you can increment by 1 the current value, false
 	 *         otherwise.
 	 */
-	public boolean canIncrement() {
-		boolean canIncrement = true;
-		int numberAtMaxValue = 0;
-		for (int i = 0; i < radices.length; i++) {
-			if (currentNumeralValue[i] == radices[i] - 1) {
-				numberAtMaxValue++;
-			}
-		}
-		if (numberAtMaxValue == radices.length) {
-			canIncrement = false;
-		}
-		return canIncrement;
-	}
+    public boolean canIncrement() {
+        boolean canIncrement = false;
+        for (int i = 0; i < radices.length; i++) {
+            if (currentNumeralValue[i] != radices[i] - 1) {
+                canIncrement = true;
+                break;
+            }
+        }
+
+        return canIncrement;
+    }
 
 	/**
 	 * Increments the value of the mixed radix number, if the value is less than
@@ -216,7 +213,7 @@ public class MixedRadixNumber extends Number {
 	public boolean increment() {
 		boolean canIncrement = canIncrement();
 
-		if (canIncrement()) {
+		if (canIncrement) {
 			for (int i = radices.length-1; i >= 0; i--) {
 				if (currentNumeralValue[i] < radices[i] - 1) {
 					currentNumeralValue[i] = currentNumeralValue[i] + 1;
@@ -238,17 +235,15 @@ public class MixedRadixNumber extends Number {
 	 *         otherwise.
 	 */
 	public boolean canDecrement() {
-		boolean canDecrement = true;
-		int numberAtMinValue = 0;
-		for (int i = 0; i < radices.length; i++) {
-			if (currentNumeralValue[i] == 0) {
-				numberAtMinValue++;
-			}
-		}
-		if (numberAtMinValue == radices.length) {
-			canDecrement = false;
-		}
-		return canDecrement;
+		boolean canDecrement = false;
+		for (int i = radices.length-1; i >= 0; i--) {
+	        if (currentNumeralValue[i] != 0) {
+	            canDecrement = true;
+	            break;
+	        }
+	    }
+
+    	return canDecrement;
 	}
 
 	/**
