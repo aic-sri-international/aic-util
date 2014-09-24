@@ -1957,12 +1957,12 @@ public class Util {
 	 * {@link Util#selectPair(List, Predicate, Predicate, BinaryPredicate)} and
 	 * {@link Util#selectPairInEitherOrder(List, Predicate, Predicate, BinaryPredicate)} results.
 	 * 
-	 * @param <T> the type of the pairs.
+	 * @param <P> the type of the pairs.
 	 */
-	public static class SelectPairResult<T> {
-		public SelectPairResult(T first, T second, int indexOfFirst,
-				int indexOfSecond, T satisfiesFirstPredicate,
-				T satisfiesSecondPredicate) {
+	public static class SelectPairResult<P> {
+		public SelectPairResult(P first, P second, int indexOfFirst,
+				int indexOfSecond, P satisfiesFirstPredicate,
+				P satisfiesSecondPredicate) {
 			super();
 			this.first = first;
 			this.second = second;
@@ -1973,10 +1973,10 @@ public class Util {
 		}
 
 		/** Element appearing first. */
-		public T first;
+		public P first;
 
 		/** Element appearing second. */
-		public T second;
+		public P second;
 
 		/** Index of element appearing first. */
 		public int indexOfFirst;
@@ -1985,10 +1985,10 @@ public class Util {
 		public int indexOfSecond;
 
 		/** Element satisfying first predicate. */
-		public T satisfiesFirstPredicate;
+		public P satisfiesFirstPredicate;
 
 		/** Element satisfying second predicate. */
-		public T satisfiesSecondPredicate;
+		public P satisfiesSecondPredicate;
 	}
 
 	/**
