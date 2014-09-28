@@ -2477,6 +2477,38 @@ public class Util {
 		return replacementList;
 	}
 
+	/**
+	 * Evaluates replacement function on i-th element of given list
+	 * and returns a new list with -ith element replaced by the result,
+	 * if the result is different from the original element,
+	 * or the same list if the result is equal to the original element.
+	 * 
+	 * @param list
+	 *            the list.
+	 * @param i the index of the element to be possibly replaced
+	 * @param replacementFunction
+	 *            the element replacement function.
+	 * @return the same list if the i-th element gets evaluated to itself,
+	 *         or a new (array) list with copied elements but for the i-th,
+	 *         which gets replaced by the evaluation result.
+	 * @param <E>
+	 *            the type of the elements in the list.
+	 */
+	public static <E> List<E> replaceElementNonDestructively(
+			List<E> list, int i, Function<E, E> replacementFunction) {
+		E element = list.get(i);
+		E evaluationResult = replacementFunction.apply(element);
+		List<E> result;
+		if (evaluationResult.equals(element)) {
+			result = list;
+		}
+		else {
+			result = new ArrayList<E>(list);
+			result.set(i, evaluationResult);
+		}
+		return result;
+	}
+	
 	public static <T1, T2> boolean isPairWiseTrue(BinaryPredicate<T1, T2> p,
 			Collection<T1> c1, Iterator<T2> it2) {
 		return isPairWiseTrue(p, c1.iterator(), it2);
@@ -3261,4 +3293,25 @@ public class Util {
 		return Collectors.toCollection(() -> new ArrayList<E>(initialCapacity));
 	}
 
+	/**
+	 * Attempts to cast an object to a given class,
+	 * and if that does not succeed, throws an error with a message generated from a template
+	 * following the format conventions of {@link String#format(String, Object...)},
+	 * with formatting arguments being the object being cast, and the expected and actual received classes' simple names,
+	 * in this order.
+	 * @param object the object to be cast
+	 * @param messageTemplate the message template from which an error message is generated
+	 * @return the cast object
+	 */
+	public static <T1, T2> T2 castOrThrowError(Class<T2> clazz, T1 object, String messageTemplate) {
+		T2 result;
+		try {
+			result = clazz.cast(object);
+		}
+		catch (ClassCastException e) {
+			String message = String.format(messageTemplate, object, clazz.getSimpleName(), object.getClass().getSimpleName());
+			throw new Error(message);
+		}
+		return result;
+	}
 }
