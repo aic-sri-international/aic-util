@@ -469,6 +469,20 @@ public class Util {
 	}
 
 	/**
+	 * Construct an {@link ArrayList} of the given type populated with the provided elements.
+	 * 
+	 * @param elements
+	 *            the elements to construct the List from.
+	 * @return the received arguments in an array list.
+	 * @param <T>
+	 *            the type of the List to be constructed and the elements it is
+	 *            to contain.
+	 */
+	public static <T> ArrayList<T> arrayList(T... elements) {
+		return new ArrayList<T>(Arrays.asList(elements));
+	}
+
+	/**
 	 * Construct an iterator of the given type populated that iterates over the
 	 * provided elements.
 	 * 
