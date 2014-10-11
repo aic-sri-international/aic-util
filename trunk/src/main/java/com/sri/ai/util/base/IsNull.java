@@ -47,6 +47,7 @@ import com.google.common.base.Predicate;
  */
 @Beta
 public class IsNull<T> implements Predicate<T> {
+	@Override
 	public boolean apply(T input) {
 		return input == null;
 	}

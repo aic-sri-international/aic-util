@@ -51,6 +51,7 @@ import com.google.common.base.Function;
 @Beta
 public interface DAEFunction extends Function<DependencyAwareEnvironment, Object> {
 
+	@Override
 	public abstract Object apply(DependencyAwareEnvironment environment);
 
 	/**

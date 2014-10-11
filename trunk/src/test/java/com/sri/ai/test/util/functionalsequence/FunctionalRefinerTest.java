@@ -113,6 +113,7 @@ public class FunctionalRefinerTest {
 						argument("none")
 						);
 
+		@Override
 		protected List<IteratorRefiner<String>> getArguments() {
 			return arguments;
 		}
@@ -129,6 +130,7 @@ public class FunctionalRefinerTest {
 		// even though we have the Henrys, there will be no computed values because
 		// we have no values for the remaining arguments.
 
+		@Override
 		protected List<IteratorRefiner<String>> getArguments() {
 			return arguments;
 		}

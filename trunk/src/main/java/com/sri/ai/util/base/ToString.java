@@ -46,6 +46,7 @@ import com.google.common.base.Function;
  */
 @Beta
 public class ToString<T> implements Function<T, String> {
+	@Override
 	public String apply(T object) {
 		String result = object.toString();
 		return result;

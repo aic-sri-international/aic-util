@@ -59,6 +59,7 @@ public class IsInstanceOf<E> implements Predicate<E> {
 		this.clazz = clazz;
 	}
 
+	@Override
 	public boolean apply(E obj) {
 		return clazz.isInstance(obj);
 	}

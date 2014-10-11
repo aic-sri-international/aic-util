@@ -48,7 +48,7 @@ public class IntegerRangeOperation<T> extends DefaultRangeOperation<T, T> {
 	
 	@SuppressWarnings("unchecked")
 	public IntegerRangeOperation(AggregateOperator<T,T> operator, String name, final int first, final int last, final int step) {
-		super(operator, (Range<T>) ((Range) new IntegerRange(name, first, last)));
+		super(operator, ((Range) new IntegerRange(name, first, last)));
 	}
 	
 	public IntegerRangeOperation(AggregateOperator<T, T> operator, String name, final int first, final int last) {

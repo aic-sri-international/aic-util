@@ -83,6 +83,7 @@ public interface DependencyAwareEnvironment extends Map<String, Object> {
 
 	public abstract Object get(String variable);
 
+	@Override
 	public abstract Object put(String variable, Object value);
 
 	public abstract void remove(String variable);

@@ -69,8 +69,10 @@ public class CacheMapTest {
 		
 		final Mutable<Integer> counter = new Mutable<Integer>(0);
 		
-		cache1 = new DefaultCacheMap<Integer, String>(CacheMap.NO_MAXIMUM_SIZE, new NullaryFunction<Iterator<Integer>>() { public Iterator<Integer> apply() { return new EvenIntegerIterator(counter.value.intValue()); }}, GARBAGE_COLLECTION_PERIOD);
-		cache2 = new DefaultCacheMap<Integer, Integer>(CacheMap.NO_MAXIMUM_SIZE, new NullaryFunction<Iterator<Integer>>() { public Iterator<Integer> apply() { return new EvenIntegerIterator(counter.value.intValue()); }}, GARBAGE_COLLECTION_PERIOD);
+		cache1 = new DefaultCacheMap<Integer, String>(CacheMap.NO_MAXIMUM_SIZE, new NullaryFunction<Iterator<Integer>>() { @Override
+		public Iterator<Integer> apply() { return new EvenIntegerIterator(counter.value.intValue()); }}, GARBAGE_COLLECTION_PERIOD);
+		cache2 = new DefaultCacheMap<Integer, Integer>(CacheMap.NO_MAXIMUM_SIZE, new NullaryFunction<Iterator<Integer>>() { @Override
+		public Iterator<Integer> apply() { return new EvenIntegerIterator(counter.value.intValue()); }}, GARBAGE_COLLECTION_PERIOD);
 		
 		long mem1;
 		long mem2;
