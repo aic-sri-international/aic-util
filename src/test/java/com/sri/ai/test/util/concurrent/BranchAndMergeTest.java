@@ -51,6 +51,7 @@ import org.junit.Test;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.sri.ai.util.AICUtilConfiguration;
+import com.sri.ai.util.Configuration;
 import com.sri.ai.util.concurrent.BranchAndMerge;
 import com.sri.ai.util.concurrent.BranchAndMerge.Result;
 
@@ -63,7 +64,7 @@ public class BranchAndMergeTest {
 	@Before
 	public void setUp() {
 		// Ensure is enabled
-		AICUtilConfiguration.setProperty(AICUtilConfiguration.KEY_BRANCH_AND_MERGE_THREADING_ENABLED, Boolean.TRUE.toString());
+		Configuration.setProperty(AICUtilConfiguration.KEY_BRANCH_AND_MERGE_THREADING_ENABLED, Boolean.TRUE.toString());
 		BranchAndMerge.reset();	
 		
 		tasksExecutedCount = new AtomicInteger(0);

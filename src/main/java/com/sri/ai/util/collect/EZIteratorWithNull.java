@@ -86,18 +86,23 @@ public abstract class EZIteratorWithNull<E> implements Iterator<E> {
 		}
 	}
 
+	@Override
 	public boolean hasNext() {
 		ensureBeingOnNext();
 		return ! endOfRange;
 	}
 
+	@Override
 	public E next() {
 		ensureBeingOnNext();
-		if (endOfRange) throw new NoSuchElementException();
+		if (endOfRange) {
+			throw new NoSuchElementException();
+		}
 		onNext = false;
 		return next;
 	}
 
+	@Override
 	public void remove() {
 		throw new UnsupportedOperationException();
 	}

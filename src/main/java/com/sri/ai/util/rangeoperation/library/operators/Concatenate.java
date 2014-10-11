@@ -55,6 +55,6 @@ public class Concatenate<T> extends AbstractAggregateOperator<T, List<T>> {
 	
 	@Override
 	public void increment(T value) {
-		((List<T>) result).add(value);
+		result.add(value);
 	}
 }

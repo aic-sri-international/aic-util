@@ -60,6 +60,7 @@ public class And<T> implements Predicate<T> {
 		return new And<T1>(base1, base2);
 	}
 	
+	@Override
 	public boolean apply(T input) {
 		boolean result = base1.apply(input) && base2.apply(input);
 		return result;

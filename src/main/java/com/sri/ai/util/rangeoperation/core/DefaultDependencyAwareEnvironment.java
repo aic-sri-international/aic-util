@@ -131,7 +131,7 @@ public class DefaultDependencyAwareEnvironment extends TreeMap<String, Object> i
 	protected void removeChildrenOf(String variable) {
 		Collection<String> children = fromParentsToChildren.get(variable);
 		if (children != null) {
-			for (String child : ((Collection<String>) children)) {
+			for (String child : (children)) {
 				remove(child);
 			}
 		}

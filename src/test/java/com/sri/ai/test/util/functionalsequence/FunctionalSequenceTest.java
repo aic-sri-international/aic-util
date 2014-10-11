@@ -107,6 +107,7 @@ public class FunctionalSequenceTest {
 						Util.<String>iterator()
 						);
 
+		@Override
 		protected List<Iterator<String>> getArguments() {
 			return arguments;
 		}
@@ -126,6 +127,7 @@ public class FunctionalSequenceTest {
 						Util.<String>iterator()
 						);
 
+		@Override
 		protected List<Iterator<String>> getArguments() {
 			return arguments;
 		}
@@ -142,6 +144,7 @@ public class FunctionalSequenceTest {
 		// even though we have the Henrys, there will be no computed values because
 		// we have no values for the remaining arguments.
 
+		@Override
 		protected List<Iterator<String>> getArguments() {
 			return arguments;
 		}

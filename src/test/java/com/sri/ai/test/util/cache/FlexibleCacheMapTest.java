@@ -67,12 +67,15 @@ public class FlexibleCacheMapTest {
 		}
 		int nationality;
 		int genes;
+		@Override
 		public String toString() {
 			return "Person(" + nationality + ", " + genes + ")";
 		}
+		@Override
 		public int hashCode() {
 			return nationality + genes;
 		}
+		@Override
 		public boolean equals(Object obj) {
 			try {
 				Person another = (Person) obj;
@@ -91,12 +94,15 @@ public class FlexibleCacheMapTest {
 		}
 		int nationalDistributor;
 		int activePrinciple;
+		@Override
 		public String toString() {
 			return "Medicine(" + nationalDistributor + ", " + activePrinciple + ")";
 		}
+		@Override
 		public int hashCode() {
 			return nationalDistributor + activePrinciple;
 		}
+		@Override
 		public boolean equals(Object obj) {
 			try {
 				Medicine another = (Medicine) obj;

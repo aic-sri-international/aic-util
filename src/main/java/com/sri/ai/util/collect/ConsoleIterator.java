@@ -67,6 +67,7 @@ public class ConsoleIterator implements Iterator<String> {
 		this.ender = ender;
 	}
 
+	@Override
 	public boolean hasNext() {
 		try {
 			System.out.print(prompt);
@@ -82,6 +83,7 @@ public class ConsoleIterator implements Iterator<String> {
 		return true;
 	}
 
+	@Override
 	public String next() {
 		return answer;
 	}
@@ -102,6 +104,7 @@ public class ConsoleIterator implements Iterator<String> {
 		return answer;
 	}
 
+	@Override
 	public void remove() throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}

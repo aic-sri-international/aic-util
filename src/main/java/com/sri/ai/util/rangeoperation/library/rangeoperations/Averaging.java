@@ -53,7 +53,7 @@ public class Averaging extends DefaultRangeOperation<Object, Object> {
 	
 	@SuppressWarnings("unchecked")
 	public Averaging(String name, final int first, final int last, final int step) {
-		super(new Average(), (Range<Object>) ((Range) new IntegerRange(name, first, last)));
+		super(new Average(), ((Range) new IntegerRange(name, first, last)));
 	}
 	
 	public Averaging(String name, final int first, final int last) {

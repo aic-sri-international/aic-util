@@ -57,7 +57,7 @@ public class Sum extends AbstractAggregateOperator<Number, Number> {
 	@Override
 	public void increment(Number another) {
 		try {
-			result = ((Number) result).doubleValue() + ((Number) another).doubleValue();
+			result = result.doubleValue() + another.doubleValue();
 		}
 		catch (ClassCastException e) {
 			throw new Error("com.sri.ai.util.rangeoperation.library.operators.Sum applied to non-Number object " + another);

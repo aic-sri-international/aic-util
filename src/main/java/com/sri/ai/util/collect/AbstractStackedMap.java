@@ -198,8 +198,9 @@ public abstract class AbstractStackedMap<K, V> implements StackedMap<K, V> {
 		result.putAll(top);
 		if (base != null) {
 			for (Map.Entry<K, V> entry : base.entrySet()) {
-				if ( ! top.containsKey(entry.getKey()))
+				if ( ! top.containsKey(entry.getKey())) {
 					result.put(entry.getKey(), entry.getValue());
+				}
 			}
 		}
 		return result.entrySet();
@@ -246,7 +247,8 @@ public abstract class AbstractStackedMap<K, V> implements StackedMap<K, V> {
 		 return result;
 	 }
 
-	 public String toString() {
+	 @Override
+	public String toString() {
 		 Map<K, V> auxiliary = new LinkedHashMap<K, V>(this);
 		 return auxiliary.toString();
 	 }

@@ -62,11 +62,13 @@ public abstract class FilterIterator<E> implements Iterator<E> {
 
 	public abstract boolean include(E element);
 
+	@Override
 	public boolean hasNext() {
 		ensureNextIsCalculated();
 		return onNext;
 	}
 
+	@Override
 	public E next() {
 		if ( ! hasNext()) {
 			throw new NoSuchElementException();
@@ -75,6 +77,7 @@ public abstract class FilterIterator<E> implements Iterator<E> {
 		return next;
 	}
 
+	@Override
 	public void remove() {
 		base.remove();
 	}

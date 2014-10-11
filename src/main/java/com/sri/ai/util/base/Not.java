@@ -58,6 +58,7 @@ public class Not<T> implements Predicate<T> {
 		return new Not<T1>(base);
 	}
 	
+	@Override
 	public boolean apply(T input) {
 		boolean result = ! base.apply(input);
 		return result;

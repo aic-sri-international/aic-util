@@ -280,7 +280,7 @@ public class Experiment {
 		Dimension<T> dataSeriesDimension = getDataSeriesDimension(dimensions, dataSeriesSpec);
 		if (dataSeriesDimension != null) {
 			int dimension = dimensions.indexOf(dataSeriesDimension);
-			Iterator rangeIterator = (Iterator) dataSeriesDimension.getRange().apply();
+			Iterator rangeIterator = dataSeriesDimension.getRange().apply();
 			Iterator<List<String>> directiveIterator = dataSeriesSpec.directivesList.iterator();
 			int sliceIndex = 0;
 			while(rangeIterator.hasNext()) {
@@ -288,7 +288,7 @@ public class Experiment {
 				if ( ! directiveIterator.hasNext()) {
 					throw new Error("DataSeriesSpec on '" + dataSeriesSpec.getName() + "' does not have enough directives (it needs one per value of '" + dataSeriesSpec.getName() + "')");
 				}
-				List<String> directives = (List<String>) directiveIterator.next();
+				List<String> directives = directiveIterator.next();
 				@SuppressWarnings("unchecked")
 				List<T> dataSeriesData = Util.matrixSlice((List<List<T>>) data, dimension, sliceIndex);
 				dataSeriesList.add(new DataSeries<T>(directives, dataSeriesData));
@@ -301,7 +301,7 @@ public class Experiment {
 			}
 			List<String> directives = Util.getFirst(dataSeriesSpec.directivesList);
 			@SuppressWarnings("unchecked")
-			List<T> dataList = (List<T>) data;
+			List<T> dataList = data;
 			dataSeriesList.add(new DataSeries<T>(directives, dataList));
 		}
 		return dataSeriesList;

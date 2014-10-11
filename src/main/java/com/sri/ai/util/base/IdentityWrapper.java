@@ -58,14 +58,17 @@ public class IdentityWrapper {
 		return object;
 	}
 	
+	@Override
 	public int hashCode() {
 		return System.identityHashCode(object);
 	}
 	
+	@Override
 	public boolean equals(Object another) {
 		return object == ((IdentityWrapper)another).object;
 	}
 	
+	@Override
 	public String toString() {
 		return System.identityHashCode(object) + ": " + object;
 	}
