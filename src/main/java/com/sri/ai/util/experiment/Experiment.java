@@ -45,8 +45,8 @@ import java.util.Map;
 
 import com.google.common.annotations.Beta;
 import com.sri.ai.util.Util;
-import com.sri.ai.util.gnuplot.Gnuplot;
 import com.sri.ai.util.gnuplot.DataSeries;
+import com.sri.ai.util.gnuplot.Gnuplot;
 import com.sri.ai.util.rangeoperation.api.DAEFunction;
 import com.sri.ai.util.rangeoperation.api.DependencyAwareEnvironment;
 import com.sri.ai.util.rangeoperation.api.Range;
