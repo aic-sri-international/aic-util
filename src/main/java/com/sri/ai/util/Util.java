@@ -282,7 +282,7 @@ public class Util {
 	@SuppressWarnings("unchecked")
 	public static String join(String separator, Iterator it) {
 		StringJoiner sj = new StringJoiner(separator);
-		it.forEachRemaining(e -> sj.add(e.toString()));
+		it.forEachRemaining(e -> sj.add(e == null? "null" : e.toString()));
 		return sj.toString();
 	}
 
