@@ -42,7 +42,6 @@ import java.util.Iterator;
 import com.google.common.annotations.Beta;
 import com.sri.ai.util.base.BinaryProcedure;
 import com.sri.ai.util.base.NullaryFunction;
-import com.sri.ai.util.rangeoperation.api.DependencyAwareEnvironment;
 
 /**
  * A range can be thought of as a "virtual list" of values for a named variable,
