@@ -944,6 +944,11 @@ public class Util {
 				.map(function::apply)
 				.collect(toArrayList(collection.size()));
 
+//		ArrayList<T> result = new ArrayList<T>(collection.size());
+//		for (F element : collection) {
+//			result.add(function.apply(element));
+//		}
+
 		return result;
 	}
 
