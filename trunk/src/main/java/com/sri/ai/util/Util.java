@@ -1034,8 +1034,8 @@ public class Util {
 			}
 		}
 		boolean result = !i1.hasNext() && !i2.hasNext(); // only true if they
-															// are both done at
-															// the same time
+														 // are both done at
+														 // the same time
 		return result;
 	}
 
