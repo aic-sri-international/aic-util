@@ -90,6 +90,7 @@ public class CartesianProductEnumeration<E> implements Enumeration<List<E>> {
 	private List<E>          currentElements                 = new ArrayList<E>();
 	private List<List<E>>    elementValues                   = new ArrayList<List<E>>();
 	private BigInteger       sizeOfCrossProduct              = null;
+	private boolean          firstTime                       = true;
 
 	public CartesianProductEnumeration(
 			List<? extends List<E>> listOfListsOfElements) {
@@ -139,15 +140,16 @@ public class CartesianProductEnumeration<E> implements Enumeration<List<E>> {
 	// START - Enumeration Interface
 	@Override
 	public boolean hasMoreElements() {
-		return mixedRadixNumber.canIncrement();
+		return firstTime || mixedRadixNumber.canIncrement();
 	}
 
 	@Override
 	public List<E> nextElement() {
-		if (!mixedRadixNumber.canIncrement()) {
+		if (!hasMoreElements()) {
 			throw new NoSuchElementException("No more elements.");
 		}
-		if (currentElements.size() == 0) {
+		if (firstTime) {
+			firstTime = false;
 			// First time in, collect the elements from
 			// the first row.
 			if (enumerateFastestFromRightToLeft) {
