@@ -37,6 +37,7 @@
  */
 package com.sri.ai.test.util.collect;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -195,6 +196,29 @@ public class CartesianProductEnumerationTest {
 		row = cpe.nextElement();
 		Assert.assertEquals(Arrays.asList("list_1_Element_2", "list_2_Element_1", "list_3_Element_2"), row);
 		
+		Assert.assertFalse(cpe.hasMoreElements());
+	}
+	
+	@Test
+	public void testSize1CartesianProduct() {
+		List<List<String>> listOfListsOfElements = new ArrayList<List<String>>();
+		List<String> elementList1 = new ArrayList<String>();
+		elementList1.add("list_1_Element_1");
+		List<String> elementList2 = new ArrayList<String>();
+		elementList2.add("list_2_Element_1");
+		List<String> elementList3 = new ArrayList<String>();
+		elementList3.add("list_3_Element_1");
+		
+		listOfListsOfElements.add(elementList1);
+		listOfListsOfElements.add(elementList2);
+		listOfListsOfElements.add(elementList3);
+		
+		CartesianProductEnumeration<String> cpe = new CartesianProductEnumeration<String>(listOfListsOfElements);
+		
+		Assert.assertEquals(BigInteger.ONE, cpe.size());
+		Assert.assertTrue(cpe.hasMoreElements());
+		List<String> row = cpe.nextElement();
+		Assert.assertEquals(Arrays.asList("list_1_Element_1", "list_2_Element_1", "list_3_Element_1"), row);
 		Assert.assertFalse(cpe.hasMoreElements());
 	}
 }
