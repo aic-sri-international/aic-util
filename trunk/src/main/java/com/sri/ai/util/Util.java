@@ -3209,7 +3209,7 @@ public class Util {
 		return null;
 	}
 
-	public static <T> Set<T> makeSetWithoutExcludedElement(
+	public static <T> Set<T> copySetWithoutThisElement(
 			Collection<T> collection, T excludedElement) {
 		Set<T> result;
 		result = new LinkedHashSet<T>(collection);
