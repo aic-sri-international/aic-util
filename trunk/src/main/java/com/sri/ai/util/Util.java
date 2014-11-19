@@ -3333,4 +3333,20 @@ public class Util {
 		}
 		return result;
 	}
+
+	/**
+	 * Given two objects, returns a pair in which either the first element satisfies given predicate, or neither object does.
+	 * @param t1
+	 * @param t2
+	 * @param predicate
+	 * @return
+	 */
+	public static <T> Pair<T, T> sortPairMakingFirstOneSatisfyPredicateIfPossible(T t1, T t2, Predicate<T> predicate) {
+		if (predicate.apply(t1)) {
+			return Pair.make(t1, t2);
+		}
+		else {
+			return Pair.make(t2, t1);
+		}
+	}
 }
