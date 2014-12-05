@@ -3349,4 +3349,20 @@ public class Util {
 			return Pair.make(t2, t1);
 		}
 	}
+
+	/**
+	 * Returns a list containing the elements in collection that satisfy the predicate.
+	 * @param collection
+	 * @param predicate
+	 * @return
+	 */
+	public static <T> List<T> filter(Collection<T> collection, Predicate<T> predicate) {
+		List<T> result = new LinkedList<T>();
+		for (T element : collection) {
+			if (predicate.apply(element)) {
+				result.add(element);
+			}
+		}
+		return result;
+	}
 }
