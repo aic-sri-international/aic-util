@@ -1054,7 +1054,7 @@ public class Util {
 	 * @param <T>
 	 *            the type of the result from applying the given function.
 	 */
-	public static <F, T> Set<T> mapIntoSet(Set<? extends F> set,
+	public static <F, T> Set<T> mapIntoSet(Collection<? extends F> set,
 			Function<F, T> function) {
 
 		Set<T> result = set
