@@ -1066,6 +1066,36 @@ public class Util {
 	}
 
 	/**
+	 * Stores results of applying a function to an set's elements in a new,
+	 * empty hash set and returns it if any elements are distinct instances from originals,
+	 * or original set otherwise.
+	 * 
+	 * @param set
+	 *            the set to map from.
+	 * @param function
+	 *            the function to apply to each element in the set.
+	 * @return the results of applying the given function to the elements of the
+	 *         given set, or same set if there are no changes
+	 * @param <F>
+	 *            the type of the elements in the Set.
+	 * @param <T>
+	 *            the type of the result from applying the given function.
+	 */
+	public static <T> Collection<T> mapIntoSetOrSameIfNoDistinctElementInstances(Collection<T> set,
+			Function<T, T> function) {
+
+		Set<T> possibleResult = new LinkedHashSet<T>();
+		boolean change = false;
+		for (T element : set) {
+			T elementResult = function.apply(element);
+			possibleResult.add(elementResult);
+			change = change || elementResult != element;
+		}
+
+		return change? possibleResult : set;
+	}
+
+	/**
 	 * Collects elements in an iterator's range satisfying two different
 	 * conditions, returning false if some element does not satisfy either.
 	 * 
