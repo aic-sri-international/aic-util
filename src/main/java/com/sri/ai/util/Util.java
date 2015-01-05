@@ -1365,6 +1365,38 @@ public class Util {
 		return (List<T>) collect(collection, new LinkedList<T>(), predicate);
 	}
 
+	/**
+	 * Returns a list containing the elements in collection that satisfy the predicate.
+	 * @param collection
+	 * @param predicate
+	 * @return
+	 */
+	public static <T> List<T> filter(Collection<T> collection, Predicate<T> predicate) {
+		List<T> result = new LinkedList<T>();
+		for (T element : collection) {
+			if (predicate.apply(element)) {
+				result.add(element);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Returns the number of elements in collection satisfying predicate.
+	 * @param collection
+	 * @param predicate
+	 * @return
+	 */
+	public static <T> int count(Collection<T> collection, Predicate<T> predicate) {
+		int result = 0;
+		for (T element : collection) {
+			if (predicate.apply(element)) {
+				result++;
+			}
+		}
+		return result;
+	}
+
 	public static Number numberInJustNeededType(double number) {
 		if (Math.floor(number) == number) {
 			return Integer.valueOf((int) number);
@@ -3378,21 +3410,5 @@ public class Util {
 		else {
 			return Pair.make(t2, t1);
 		}
-	}
-
-	/**
-	 * Returns a list containing the elements in collection that satisfy the predicate.
-	 * @param collection
-	 * @param predicate
-	 * @return
-	 */
-	public static <T> List<T> filter(Collection<T> collection, Predicate<T> predicate) {
-		List<T> result = new LinkedList<T>();
-		for (T element : collection) {
-			if (predicate.apply(element)) {
-				result.add(element);
-			}
-		}
-		return result;
 	}
 }
