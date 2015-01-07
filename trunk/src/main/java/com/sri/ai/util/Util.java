@@ -1076,8 +1076,6 @@ public class Util {
 	 *            the function to apply to each element in the set.
 	 * @return the results of applying the given function to the elements of the
 	 *         given set, or same set if there are no changes
-	 * @param <F>
-	 *            the type of the elements in the Set.
 	 * @param <T>
 	 *            the type of the result from applying the given function.
 	 */
@@ -1368,8 +1366,10 @@ public class Util {
 	/**
 	 * Returns a list containing the elements in collection that satisfy the predicate.
 	 * @param collection
+	 *        a collection to filter
 	 * @param predicate
-	 * @return
+	 *        a predicate to filter the given collection with.
+	 * @return  a new list containing the elements in the give collection that satisfy the given predicate.
 	 */
 	public static <T> List<T> filter(Collection<T> collection, Predicate<T> predicate) {
 		List<T> result = new LinkedList<T>();
@@ -1384,8 +1384,12 @@ public class Util {
 	/**
 	 * Returns the number of elements in collection satisfying predicate.
 	 * @param collection
+	 *        a collection to count
 	 * @param predicate
-	 * @return
+	 *        a predicate to indicate which elements should be counted.
+	 * @return the number of elements in the given collection satisfying the given predicate.
+	 * @param <T> 
+	 *        the type of the elements in the collection.
 	 */
 	public static <T> int count(Collection<T> collection, Predicate<T> predicate) {
 		int result = 0;
