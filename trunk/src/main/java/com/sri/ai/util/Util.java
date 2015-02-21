@@ -3415,4 +3415,86 @@ public class Util {
 			return Pair.make(t2, t1);
 		}
 	}
+
+	/**
+	 * A safeguard method is an abstract method intended to force an extending class to indicate whether it follows certain assumptions made my
+	 * default implementations of certain methods in the super class.
+	 * For example, suppose a class Vehicle (superClassName) provides a default implementation for checkUp() (nameOfMethodWhoseDefaultImplementationUsesThisMethod)
+	 * that assumes the Vehicle has tires in the first place,
+	 * and uses an abstract method tiresType() (thisMethodsName). Since a lot of vehicles do use tires, such default implementation is very convenient.
+	 * However, we do not want to make life harder for people extending Vehicle to represent vehicles without tires (such as a class Boat (thisClassName)),
+	 * and forcing them to implement tiresType() with some dummy code would be ugly and distracting.
+	 * Besides, the developer may not notice that checkUp() assumes tires and not override it,
+	 * in which case that dummy code may be invoked even though it should not.
+	 * <p>
+	 * This method seeks to support the following solution to this problem.
+	 * In the example above, we can declare an abstract "safeguard" method Vehicle#hasTires() (safeguardMethodsName)
+	 * that any extending class must implement to
+	 * inform whether the assumption made holds, that is, whether the vehicle has tires or not.
+	 * We can then change tiresType() from an abstract method to one with a default implementation that checks the safeguard hasTires()
+	 * and does the following: if hasTires() returns true, it throws an Error indicating that hasTires() must be overridden
+	 * (with an implementation providing the appropriate information about tires type for that particular extending class),
+	 * and if hasTires() returns false, it throws an Error indicating that hasTires() is being invoked even though
+	 * the extending class indicates the vehicle not have tires, and suggesting that this happened either because
+	 * the default implementation of checkUp() was not properly overridden in a way that does not invoke checkUp,
+	 * or that maybe some other new or overridden method is invoking tiresType().
+	 * <p>
+	 * In fact, it may be that multiple methods with default implementations use the same assumption,
+	 * so a list of such methods names must be provided.
+	 * <p>
+	 * Note that the method always throws an Error, so the code after it will never be executed even though the compiler will not detect that,
+	 * so a dummy <code>return null<code> or some such must be placed.
+	 * @param safeguardMethodResult
+	 * @param thisMethodsName
+	 * @param nameOfMethodWhoseDefaultImplementationUsesThisMethod
+	 * @throws Error
+	 */
+	public static void throwAppropriateSafeguardError(
+			boolean safeguardMethodResult,
+			String safeguardMethodsName,
+			String thisClassName,
+			String thisMethodsName,
+			String superClassName,
+			String... namesOfMethodsWhoseDefaultImplementationUsesThisMethod) throws Error {
+
+		if (safeguardMethodResult) {
+			throw new Error(
+					thisMethodsName + " must be overridden in classes using default implementation of " + 
+							join(namesOfMethodsWhoseDefaultImplementationUsesThisMethod) + ", but " + thisClassName + " does not do that.");
+		}
+		else {
+			String isAre;
+			String methodMethods;
+			String hasHave;
+			String itThey;
+			String itsTheir;
+			if (namesOfMethodsWhoseDefaultImplementationUsesThisMethod.length == 1) {
+				isAre = "is";
+				methodMethods = "method";
+				hasHave = "has";
+				itThey = "it";
+				itsTheir = "its";
+			}
+			else {
+				isAre = "are";
+				methodMethods = "methods";
+				hasHave = "have";
+				itThey = "its";
+				itsTheir = "their";
+			}
+			throw new Error(
+					thisMethodsName + " is being invoked, even though " + thisClassName + "'s " + safeguardMethodsName + " indicates "
+							+ "that the assumptions made by the super class " + superClassName + " default implementation of " +
+							join(namesOfMethodsWhoseDefaultImplementationUsesThisMethod) + ", "
+							+ "which uses " + thisMethodsName + ", do not hold. " +
+							join(namesOfMethodsWhoseDefaultImplementationUsesThisMethod) + 
+							" " + isAre + " the only " + methodMethods + " in " + superClassName + " supposed to invoke " + thisMethodsName +
+							", so this means one of two things: " +
+							" either " + join(namesOfMethodsWhoseDefaultImplementationUsesThisMethod) +
+							" " + hasHave + " not been overridden (and " + itThey + " should since the assumptions made by " + itsTheir +
+							" default implementation do not hold)," +
+							" or some new or overridden method in " + thisClassName + " invokes " + thisMethodsName +
+							" even though it does not make sense to use it in " + thisClassName + ".");
+		}
+	}
 }
