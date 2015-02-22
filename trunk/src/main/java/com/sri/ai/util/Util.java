@@ -3444,6 +3444,8 @@ public class Util {
 	 * <p>
 	 * Note that the method always throws an Error, so the code after it will never be executed even though the compiler will not detect that,
 	 * so a dummy <code>return null<code> or some such must be placed.
+	 * <p>
+	 * OPTIMIZATION: much of this could be obtained by reflection
 	 * @param safeguardMethodResult
 	 * @param thisMethodsName
 	 * @param nameOfMethodWhoseDefaultImplementationUsesThisMethod
