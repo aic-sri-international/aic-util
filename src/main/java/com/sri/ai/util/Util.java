@@ -3417,86 +3417,59 @@ public class Util {
 	}
 
 	/**
-	 * A safeguard method is an abstract method intended to force an extending class to indicate whether it follows certain assumptions made my
-	 * default implementations of certain methods in the super class.
-	 * For example, suppose a class Vehicle (superClassName) provides a default implementation for checkUp() (nameOfMethodWhoseDefaultImplementationUsesThisMethod)
+	 * A utility method throwing an error to indicate that a method used by a default implementation of another method
+	 * has not been overridden.
+	 * <p>
+	 * This is useful in the following situation.
+	 * Suppose a class Vehicle (superClassName) provides a default implementation for checkUp() (nameOfMethodWhoseDefaultImplementationUsesThisMethod)
 	 * that assumes the Vehicle has tires in the first place,
 	 * and uses an abstract method tiresType() (thisMethodsName). Since a lot of vehicles do use tires, such default implementation is very convenient.
 	 * However, we do not want to make life harder for people extending Vehicle to represent vehicles without tires (such as a class Boat (thisClassName)),
 	 * and forcing them to implement tiresType() with some dummy code would be ugly and distracting.
-	 * Besides, the developer may not notice that checkUp() assumes tires and not override it,
-	 * in which case that dummy code may be invoked even though it should not.
+	 * Besides, the developer may not notice that checkUp() assumes tires, and as a result may not override it (as they should since Boat violates that assumption).
+	 * In that case, the dummy code in tiresType() code will be invoked even though it should not.
 	 * <p>
-	 * This method seeks to support the following solution to this problem.
-	 * In the example above, we can declare an abstract "safeguard" method Vehicle#hasTires() (safeguardMethodsName)
-	 * that any extending class must implement to
-	 * inform whether the assumption made holds, that is, whether the vehicle has tires or not.
-	 * We can then change tiresType() from an abstract method to one with a default implementation that checks the safeguard hasTires()
-	 * and does the following: if hasTires() returns true, it throws an Error indicating that hasTires() must be overridden
-	 * (with an implementation providing the appropriate information about tires type for that particular extending class),
-	 * and if hasTires() returns false, it throws an Error indicating that hasTires() is being invoked even though
-	 * the extending class indicates the vehicle not have tires, and suggesting that this happened either because
-	 * the default implementation of checkUp() was not properly overridden in a way that does not invoke checkUp,
-	 * or that maybe some other new or overridden method is invoking tiresType().
+	 * The solution is to change tiresType() from abstract to an implemented method simply invoking this Error-throwing safeguard utility.
+	 * If the developer overrides checkUp(), as they should in the case of Boat, the fact that tiresType() is no longer an abstract method
+	 * will prevent the compiler from insisting on its unnecessary implementation.
+	 * If the developer does not override checkUp() (for example, while extending Vehicle to a class Car),
+	 * but forgets to override tiresType() (since it is not abstract anymore, the compiler will not complain),
+	 * then there will be an Error thrown at run-time by this utility safeguard method.
 	 * <p>
-	 * In fact, it may be that multiple methods with default implementations use the same assumption,
-	 * so a list of such methods names must be provided.
-	 * <p>
-	 * Note that the method always throws an Error, so the code after it will never be executed even though the compiler will not detect that,
-	 * so a dummy <code>return null<code> or some such must be placed.
-	 * <p>
-	 * OPTIMIZATION: much of this could be obtained by reflection
-	 * @param safeguardMethodResult
+	 * In other words, because tiresType() is "abstract" only as a result of using a default, optional implementation,
+	 * we make it not technically abstract and required in compile-time, but still "abstract" in a run-time sense of
+	 * an implementation being demanded in case it is actually needed.
+	 * 
+	 * @param thisClassName
 	 * @param thisMethodsName
-	 * @param nameOfMethodWhoseDefaultImplementationUsesThisMethod
+	 * @param superClassName
+	 * @param namesOfMethodsWhoseDefaultImplementationUsesThisMethod
 	 * @throws Error
 	 */
-	public static void throwAppropriateSafeguardError(
-			boolean safeguardMethodResult,
-			String safeguardMethodsName,
+	public static void throwSafeguardError(
 			String thisClassName,
 			String thisMethodsName,
 			String superClassName,
 			String... namesOfMethodsWhoseDefaultImplementationUsesThisMethod) throws Error {
 
-		if (safeguardMethodResult) {
-			throw new Error(
-					thisMethodsName + " must be overridden in classes using default implementation of " + 
-							join(namesOfMethodsWhoseDefaultImplementationUsesThisMethod) + ", but " + thisClassName + " does not do that.");
-		}
-		else {
-			String isAre;
-			String methodMethods;
-			String hasHave;
-			String itThey;
-			String itsTheir;
-			if (namesOfMethodsWhoseDefaultImplementationUsesThisMethod.length == 1) {
-				isAre = "is";
-				methodMethods = "method";
-				hasHave = "has";
-				itThey = "it";
-				itsTheir = "its";
-			}
-			else {
-				isAre = "are";
-				methodMethods = "methods";
-				hasHave = "have";
-				itThey = "its";
-				itsTheir = "their";
-			}
-			throw new Error(
-					thisMethodsName + " is being invoked, even though " + thisClassName + "'s " + safeguardMethodsName + " indicates "
-							+ "that the assumptions made by the super class " + superClassName + " default implementation of " +
-							join(namesOfMethodsWhoseDefaultImplementationUsesThisMethod) + ", "
-							+ "which uses " + thisMethodsName + ", do not hold. " +
-							join(namesOfMethodsWhoseDefaultImplementationUsesThisMethod) + 
-							" " + isAre + " the only " + methodMethods + " in " + superClassName + " supposed to invoke " + thisMethodsName +
-							", so this means one of two things: " +
-							" either " + join(namesOfMethodsWhoseDefaultImplementationUsesThisMethod) +
-							" " + hasHave + " not been overridden (and " + itThey + " should since the assumptions made by " + itsTheir +
-							" default implementation do not hold)," +
-							" or some new or overridden method in " + thisClassName + " invokes " + thisMethodsName +
-							" even though it does not make sense to use it in " + thisClassName + ".");
-		}
+		String oneOf = namesOfMethodsWhoseDefaultImplementationUsesThisMethod.length > 1? "one of " : "";
+		throw new Error(
+				thisMethodsName + " is being invoked but has not been overridden by " + thisClassName + ". " +
+						"It is probably being invoked by the default implementation of " + oneOf + 
+						join(namesOfMethodsWhoseDefaultImplementationUsesThisMethod) + " in " + superClassName +
+						", unless some other overriding method invokes it. "
+						+ "If the default implementation of " +
+						join(namesOfMethodsWhoseDefaultImplementationUsesThisMethod) + " in " + superClassName +
+						" is being used, " + thisMethodsName + " should be overridden,"
+						+ " or if " + thisMethodsName + " does not make sense for " + thisClassName +
+						" (because of some assumption made by the default implementation of " +
+						join(namesOfMethodsWhoseDefaultImplementationUsesThisMethod) + " that does not hold in " + thisClassName +
+						"), then a new implementation of " + join(namesOfMethodsWhoseDefaultImplementationUsesThisMethod) + 
+						" should override the default one;"
+						+ " if on the other hand the default implementation of " + join(namesOfMethodsWhoseDefaultImplementationUsesThisMethod) +
+						" has been overridden, then its new version, or some other overriding method, is invoking " + thisMethodsName +
+						", which (typically) should not happen (because " + thisMethodsName + " conforms to the assumptions made by the default"
+						+ " implementation of " + join(namesOfMethodsWhoseDefaultImplementationUsesThisMethod)
+						+ " and the overriding of the latter indicates that those assumptions probably do not hold anymore.");
 	}
 }
