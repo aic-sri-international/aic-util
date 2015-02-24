@@ -98,6 +98,28 @@ public class MixedRadixNumber extends Number {
 		}
 		initialize();
 	}
+	
+	/**
+	 * Constructs a mixed radix number with a specified array of numerals and a
+	 * specified array of radices.
+	 * 
+	 * @param radixValues
+	 *            the numerals of the mixed radix number
+	 * @param radices
+	 *            the radices of the mixed radix number
+	 */
+	public MixedRadixNumber(List<Integer> radixValues, List<Integer> radices) {
+		this.radices = new int[radices.size()];
+		for (int i = 0; i < radices.size(); i++) {
+			this.radices[i] = radices.get(i);
+		}
+		initialize();
+		int[] radValues = new int[radixValues.size()];
+		for (int i = 0; i < radValues.length; i++) {
+			radValues[i] = radixValues.get(i);
+		}
+		setCurrentValueFor(radValues);
+	}
 
 	/**
 	 * Constructs a mixed radix number with a specified array of numerals and a
