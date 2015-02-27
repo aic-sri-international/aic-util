@@ -37,6 +37,8 @@
  */
 package com.sri.ai.util;
 
+import static com.sri.ai.util.base.PairOf.makePairOf;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -73,6 +75,7 @@ import com.sri.ai.util.base.BinaryFunction;
 import com.sri.ai.util.base.BinaryPredicate;
 import com.sri.ai.util.base.NullaryFunction;
 import com.sri.ai.util.base.Pair;
+import com.sri.ai.util.base.PairOf;
 import com.sri.ai.util.base.TernaryFunction;
 import com.sri.ai.util.math.Rational;
 
@@ -3471,5 +3474,13 @@ public class Util {
 						", which (typically) should not happen (because " + thisMethodsName + " conforms to the assumptions made by the default"
 						+ " implementation of " + join(namesOfMethodsWhoseDefaultImplementationUsesThisMethod)
 						+ " and the overriding of the latter indicates that those assumptions probably do not hold anymore.");
+	}
+
+	public static <T> PairOf<List<T>> collectToLists(List<T> collection, Predicate<T> predicate) {
+		List<T> positive = new LinkedList<T>();
+		List<T> negative = new LinkedList<T>();
+		collect(collection, positive, predicate, negative);
+		PairOf<List<T>> result = makePairOf(positive, negative);
+		return result;
 	}
 }
