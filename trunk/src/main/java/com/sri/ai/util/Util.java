@@ -73,6 +73,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.sri.ai.util.base.BinaryFunction;
 import com.sri.ai.util.base.BinaryPredicate;
+import com.sri.ai.util.base.Equals;
 import com.sri.ai.util.base.NullaryFunction;
 import com.sri.ai.util.base.Pair;
 import com.sri.ai.util.base.PairOf;
@@ -2375,8 +2376,7 @@ public class Util {
 	 * @param <E>
 	 *            the type of the elements.
 	 */
-	public static <E> Collection<E> removeRepeatedNonDestructively(
-			Collection<E> c) {
+	public static <E> Collection<E> removeRepeatedNonDestructively(Collection<E> c) {
 		LinkedHashSet<E> s = new LinkedHashSet<E>(c);
 		if (s.size() == c.size()) {
 			return c;
@@ -2384,8 +2384,7 @@ public class Util {
 		return new ArrayList<E>(s);
 	}
 
-	public static <T> List<T> removeNonDestructively(List<T> list,
-			int excludedIndex) {
+	public static <T> List<T> removeNonDestructively(List<T> list, int excludedIndex) {
 		if (excludedIndex >= list.size()) {
 			return list;
 		}
@@ -2401,11 +2400,11 @@ public class Util {
 	}
 
 	/**
-	 * Returns a new linked list containing the elements of list that do not
+	 * Returns a new linked list containing the elements of collection that do not
 	 * satisfy a predicate.
 	 * 
-	 * @param list
-	 *            the list of elements to be tested.
+	 * @param collection
+	 *            the collection of elements to be tested.
 	 * @param predicate
 	 *            the predicate to be used to test the elements.
 	 * @return a new linked list containing the elements of list that do not
@@ -2413,13 +2412,30 @@ public class Util {
 	 * @param <E>
 	 *            the type of the elements.
 	 */
-	public static <E> LinkedList<E> removeNonDestructively(List<E> list,
-			Predicate<E> predicate) {
+	public static <E> LinkedList<E> removeNonDestructively(Collection<E> collection, Predicate<E> predicate) {
 		LinkedList<E> result =
-				list.stream()
+				collection.stream()
 				.filter(e -> !predicate.apply(e))
 				.collect(toLinkedList());
 
+		return result;
+	}
+	
+	/**
+	 * Returns a new linked list containing the elements of collection that are not equal to
+	 * a given one.
+	 * 
+	 * @param collection
+	 *            the collection of elements to be tested.
+	 * @param element
+	 *            the element to be removed
+	 * @return a new linked list containing the elements of list that are not equal to the
+	 * 			  given element.
+	 * @param <E>
+	 *            the type of the elements.
+	 */
+	public static <T> List<T> removeNonDestructively(Collection<T> collection, T element) {
+		List<T> result = removeNonDestructively(collection, Equals.make(element));
 		return result;
 	}
 
