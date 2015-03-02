@@ -1576,6 +1576,30 @@ public class Util {
 	}
 
 	/**
+	 * Returns the maximum value of given function to an element of collection,
+	 * or null if collection is empty.
+	 * 
+	 * @param c
+	 *            the collection to find a maximum from.
+	 * @param function
+	 *            the function.
+	 * @return the maximum value of function on any element of the given collection,
+	 *            or null if the collection is empty.
+	 * @param <T>
+	 *            the type of the elements in the collection.
+	 */
+	public static <T> Integer max(Collection<? extends T> c, Function<T, Integer> function) {
+		Integer result = null;
+		for (T element : c) {
+			Integer value = function.apply(element);
+			if (result == null || value.compareTo(result) > 0) {
+				result = value;
+			}
+		}
+		return result;
+	}
+	
+	/**
 	 * Returns the minimum element in a collection according to a comparator.
 	 * 
 	 * @param c
@@ -1597,6 +1621,82 @@ public class Util {
 		return result;
 	}
 
+	/**
+	 * Returns the minimum value of given function to an element of collection,
+	 * or null if collection is empty.
+	 * 
+	 * @param c
+	 *            the collection to find a minimum from.
+	 * @param function
+	 *            the function.
+	 * @return the minimum value of function on any element of the given collection,
+	 *            or null if the collection is empty.
+	 * @param <T>
+	 *            the type of the elements in the collection.
+	 */
+	public static <T> Integer min(Collection<? extends T> c, Function<T, Integer> function) {
+		Integer result = null;
+		for (T element : c) {
+			Integer value = function.apply(element);
+			if (result == null || value.compareTo(result) < 0) {
+				result = value;
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Returns the element in a collection whose value for the given function is minimum,
+	 * or null if collection is empty.
+	 * 
+	 * @param c
+	 *            the collection to find an element with a minimum function value.
+	 * @param function
+	 *            the function.
+	 * @return the element with a minimum function value,
+	 *            or null if the collection is empty.
+	 * @param <T>
+	 *            the type of the elements in the collection.
+	 */
+	public static <T> T argmin(Collection<? extends T> c, Function<T, Integer> function) {
+		Integer minimum = null;
+		T result = null;
+		for (T element : c) {
+			Integer value = function.apply(element);
+			if (minimum == null || value.compareTo(minimum) < 0) {
+				minimum = value;
+				result = element;
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Returns the element in a collection whose value for the given function is maximum,
+	 * or null if collection is empty.
+	 * 
+	 * @param c
+	 *            the collection to find an element with a maximum function value.
+	 * @param function
+	 *            the function.
+	 * @return the element with a maximum function value,
+	 *            or null if the collection is empty.
+	 * @param <T>
+	 *            the type of the elements in the collection.
+	 */
+	public static <T> T argmax(Collection<? extends T> c, Function<T, Integer> function) {
+		Integer maximum = null;
+		T result = null;
+		for (T element : c) {
+			Integer value = function.apply(element);
+			if (maximum == null || value.compareTo(maximum) < 0) {
+				maximum = value;
+				result = element;
+			}
+		}
+		return result;
+	}
+	
 	public static Boolean and(Iterator<Boolean> booleansIt) {
 		while (booleansIt.hasNext()) {
 			if (!booleansIt.next()) {
