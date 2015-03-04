@@ -3599,4 +3599,32 @@ public class Util {
 		PairOf<List<T>> result = makePairOf(positive, negative);
 		return result;
 	}
+
+	/**
+	 * Non-destructively replaces each element in collection by the elements of a list, if expander produces a non-null one when given the element,
+	 * returning the same List instance if no expansion is done.
+	 * @param list
+	 * @param expander
+	 * @return
+	 */
+	public static <T> List<T> nonDestructivelyExpandElementsIfFunctionReturnsNonNullCollection(List<T> list, Function<T, Collection<T>> expander) {
+		List<T> result = new LinkedList<T>();
+		boolean expansionOccurred = false;
+		for (T element : list) {
+			Collection<T> expansion = expander.apply(element);
+			if (expansion == null) {
+				result.add(element);
+			}
+			else {
+				result.addAll(expansion);
+				expansionOccurred = true;
+			}
+		}
+		
+		if ( ! expansionOccurred) {
+			result = list;
+		}
+		
+		return result;
+	}
 }
