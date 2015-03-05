@@ -97,33 +97,21 @@ public abstract class AbstractStackedMap<K, V> implements StackedMap<K, V> {
 		this.base = base;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.sri.ai.util.collect.StackedMap#getTop()
-	 */
 	@Override
 	public Map<K, V> getTop() {
 		return top;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.sri.ai.util.collect.StackedMap#setTop(java.util.Map)
-	 */
 	@Override
 	public void setTop(Map<K, V> top) {
 		this.top = top;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.sri.ai.util.collect.StackedMap#getBase()
-	 */
 	@Override
 	public Map<K, V> getBase() {
 		return base;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.sri.ai.util.collect.StackedMap#setBase(java.util.Map)
-	 */
 	@Override
 	public void setBase(Map<K, V> base) {
 		this.base = base;
