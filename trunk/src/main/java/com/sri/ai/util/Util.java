@@ -541,12 +541,30 @@ public class Util {
 					+ ".");
 		}
 		Map<K, V> result = new LinkedHashMap<K, V>();
+		putAll(result, keysAndValues);
+		return result;
+	}
+
+	/**
+	 * 
+	 * @param keysAndValues
+	 *            a sequence of key and value pairs to be placed into a given Map.
+	 * 
+	 * @return the received arguments (interpreted as a sequence of key and
+	 *         value pairs) in a given map.
+	 * @param <K>
+	 *            the type of the Map's key.
+	 * @param <V>
+	 *            the type of the Map's value.
+	 */
+	@SuppressWarnings("unchecked")
+	public static <K, V> Map<K, V> putAll(Map<K, V> map, Object... keysAndValues) {
 		int i = 0;
 		while (i != keysAndValues.length) {
-			result.put((K) keysAndValues[i], (V) keysAndValues[i + 1]);
+			map.put((K) keysAndValues[i], (V) keysAndValues[i + 1]);
 			i += 2;
 		}
-		return result;
+		return map;
 	}
 
 	/**
