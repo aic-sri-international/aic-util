@@ -3007,6 +3007,12 @@ public class Util {
 		c.removeAll(toBeRemoved);
 	}
 
+	public static <K, V> void removeAll(Map<K, V> map, Collection<K> keysToRemove) {
+		for (K key : keysToRemove) {
+			map.remove(key);
+		}
+	}
+
 	public static boolean lessThan(Rational r1, Rational r2) {
 		int comparison = r1.compareTo(r2);
 		return comparison == -1;
