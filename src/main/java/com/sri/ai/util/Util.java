@@ -647,8 +647,8 @@ public class Util {
 	 * @param map2
 	 * @return 
 	 */
-	public static <K, V> Map<K, Collection<V>> addAllForEachEntry(Map<K, Collection<V>> map1, Map<K, Collection<V>> map2) {
-		Map<K, Collection<V>> result;
+	public static <M extends Map<K, Collection<V>>, K, V> M addAllForEachEntry(M map1, M map2) {
+		M result;
 		if (map1 == null) {
 			result = map2;
 		}
@@ -685,6 +685,50 @@ public class Util {
 		return result;
 	}
 
+	/**
+	 * Given a map, a function on its entries, and a value combination function,
+	 * returns a pair of:
+	 * <ul>
+	 * <li> a new map containing the transformed entries;
+	 * if multiple entries have their keys transformed to the same new key,
+	 * their values will be combined with the value combination function.
+	 * <li> a set of keys of the entries in the original map that were transformed;
+	 * an entry is considered transformed if the returned pair is not null,
+	 * and if either its key or value identities (instances) have changed
+	 * </ul>
+	 * The function receives an entry from the original map as its input and returns
+	 * a {@link Pair} with new key and new value as output.
+	 *
+	 * @param map
+	 * @param function
+	 * @return
+	 */
+	public static <K1, V1, K2, V2> Pair<Map<K2,V2>, Set<K1>>
+	getTransformedSubMap(
+			Map<K1, V1> map,
+			Function<Map.Entry<K1, V1>, Pair<K2, V2>> function,
+			BinaryFunction<V2, V2, V2> valueCombination) {
+		Map<K2, V2> newMap = new LinkedHashMap<K2, V2>();
+		Set<K1> transformedOriginalKeys = new LinkedHashSet<K1>();
+		for (Map.Entry<K1, V1> entry : map.entrySet()) {
+			Pair<K2, V2> transformedEntry = function.apply(entry);
+			if (transformedEntry != null &&
+					(transformedEntry.first != entry.getKey() || transformedEntry.second != entry.getValue())) {
+				V2 newValue = transformedEntry.second;
+				V2 alreadyPresentValueForNewKey = newMap.get(transformedEntry.first);
+				if (alreadyPresentValueForNewKey == null) {
+					newValue = transformedEntry.second;
+				}
+				else {
+					newValue = valueCombination.apply(alreadyPresentValueForNewKey, transformedEntry.second);
+				}
+				newMap.put(transformedEntry.first, newValue);
+				transformedOriginalKeys.add(entry.getKey());
+			}
+		}
+		return Pair.make(newMap, transformedOriginalKeys);
+	}
+	
 	/**
 	 * Adds all elements of iterator's range to collection.
 	 * 
