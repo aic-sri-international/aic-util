@@ -638,6 +638,54 @@ public class Util {
 	}
 
 	/**
+	 * Given two maps of collections, add all elements in each collection2 of second map
+	 * to the corresponding (that is, associated with the same key) collection1 in first map,
+	 * guaranteeing to keep collection2's instance if collection1 is absent or empty,
+	 * and returns the first map, unless it is null, in which case the second map is returned.
+	 *
+	 * @param map1
+	 * @param map2
+	 * @return 
+	 */
+	public static <K, V> Map<K, Collection<V>> addAllForEachEntry(Map<K, Collection<V>> map1, Map<K, Collection<V>> map2) {
+		Map<K, Collection<V>> result;
+		if (map1 == null) {
+			result = map2;
+		}
+		else {
+			for (Map.Entry<K,Collection<V>> entry : map2.entrySet()) {
+				Collection<V> collectionInMap1 = map1.get(entry.getKey());
+				Collection<V> collectionInMap2 = entry.getValue();
+				Collection<V> entryUnion = addAllOrSame(collectionInMap1, collectionInMap2);
+				if (entryUnion != collectionInMap1) {
+					map1.put(entry.getKey(), entryUnion);
+				}
+			}
+			result = map1;
+		}
+		return result;
+	}
+
+	/**
+	 * Adds to a collection all given new elements in a second collection, returning the second collection
+	 * same instance if the first is null or empty.
+	 * @param collection
+	 * @param newElements
+	 * @return
+	 */
+	public static <T> Collection<T> addAllOrSame(Collection<T> collection, Collection<T> newElements) {
+		Collection<T> result;
+		if (collection == null || collection.isEmpty()) {
+			result = newElements;
+		}
+		else {
+			collection.addAll(newElements);
+			result = collection;
+		}
+		return result;
+	}
+
+	/**
 	 * Adds all elements of iterator's range to collection.
 	 * 
 	 * @param c
