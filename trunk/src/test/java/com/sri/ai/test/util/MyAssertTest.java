@@ -77,7 +77,6 @@ public class MyAssertTest {
 		// good, passed the unit test
 	}
 
-
 	@Test
 	public void testMyAssertWithNullaryFunctions() {
 		System.clearProperty(Util.MY_ASSERT_OFF);
@@ -86,11 +85,42 @@ public class MyAssertTest {
 		nullary();
 	}
 
-
 	private void nullary() {
 		try {
 			Util.myAssert(() -> true , () -> "error message 1");
 			Util.myAssert(() -> false, () -> "error message 2");
+			if (System.getProperty(Util.MY_ASSERT_OFF) == null) {
+				fail("Should have thrown an AssertionError but did not. System.getProperty(Util.MY_ASSERT_OFF) = " + System.getProperty(Util.MY_ASSERT_OFF));
+			}
+		}
+		catch (AssertionError error) {
+			if (error.getMessage().equals("error message 2")) {
+				if (System.getProperty(Util.MY_ASSERT_OFF) == null) {
+					// good, passed the unit test
+				}
+				else {
+					fail("Threw assertion error when it should not have.");
+				}
+			}
+			else {
+				fail("Threw the wrong assertion error.");
+			}
+		}
+		// good, passed the unit test
+	}
+
+	@Test
+	public void testMyAssertWithNullaryFunctionAndString() {
+		System.clearProperty(Util.MY_ASSERT_OFF);
+		nullaryAndString();
+		System.setProperty(Util.MY_ASSERT_OFF, "true");
+		nullaryAndString();
+	}
+
+	private void nullaryAndString() {
+		try {
+			Util.myAssert(() -> true , "error message 1");
+			Util.myAssert(() -> false, "error message 2");
 			if (System.getProperty(Util.MY_ASSERT_OFF) == null) {
 				fail("Should have thrown an AssertionError but did not. System.getProperty(Util.MY_ASSERT_OFF) = " + System.getProperty(Util.MY_ASSERT_OFF));
 			}
