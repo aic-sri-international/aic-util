@@ -47,9 +47,9 @@ public class MyAssertTest {
 
 	@Test
 	public void testMyAssert() {
-		System.clearProperty(Util.MY_ASSERT);
+		System.clearProperty(Util.MY_ASSERT_OFF);
 		regular();
-		System.setProperty(Util.MY_ASSERT, "true");
+		System.setProperty(Util.MY_ASSERT_OFF, "true");
 		regular();
 	}
 
@@ -57,13 +57,13 @@ public class MyAssertTest {
 		try {
 			Util.myAssert(true,  "error message 1");
 			Util.myAssert(false, "error message 2");
-			if (System.getProperty(Util.MY_ASSERT) != null) {
-				fail("Should have thrown an AssertionError but did not. System.getProperty(Util.MY_ASSERT) = " + System.getProperty(Util.MY_ASSERT));
+			if (System.getProperty(Util.MY_ASSERT_OFF) == null) {
+				fail("Should have thrown an AssertionError but did not. System.getProperty(Util.MY_ASSERT_OFF) = " + System.getProperty(Util.MY_ASSERT_OFF));
 			}
 		}
 		catch (AssertionError error) {
 			if (error.getMessage().equals("error message 2")) {
-				if (System.getProperty(Util.MY_ASSERT) != null) {
+				if (System.getProperty(Util.MY_ASSERT_OFF) == null) {
 					// good, passed the unit test
 				}
 				else {
@@ -80,9 +80,9 @@ public class MyAssertTest {
 
 	@Test
 	public void testMyAssertWithNullaryFunctions() {
-		System.clearProperty(Util.MY_ASSERT);
+		System.clearProperty(Util.MY_ASSERT_OFF);
 		nullary();
-		System.setProperty(Util.MY_ASSERT, "true");
+		System.setProperty(Util.MY_ASSERT_OFF, "true");
 		nullary();
 	}
 
@@ -91,13 +91,13 @@ public class MyAssertTest {
 		try {
 			Util.myAssert(() -> true , () -> "error message 1");
 			Util.myAssert(() -> false, () -> "error message 2");
-			if (System.getProperty(Util.MY_ASSERT) != null) {
-				fail("Should have thrown an AssertionError but did not. System.getProperty(Util.MY_ASSERT) = " + System.getProperty(Util.MY_ASSERT));
+			if (System.getProperty(Util.MY_ASSERT_OFF) == null) {
+				fail("Should have thrown an AssertionError but did not. System.getProperty(Util.MY_ASSERT_OFF) = " + System.getProperty(Util.MY_ASSERT_OFF));
 			}
 		}
 		catch (AssertionError error) {
 			if (error.getMessage().equals("error message 2")) {
-				if (System.getProperty(Util.MY_ASSERT) != null) {
+				if (System.getProperty(Util.MY_ASSERT_OFF) == null) {
 					// good, passed the unit test
 				}
 				else {
