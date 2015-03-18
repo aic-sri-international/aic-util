@@ -3744,26 +3744,26 @@ public class Util {
 		return result;
 	}
 	
-	public static final String MY_ASSERT = "com.sri.ai.util.myAssert";
+	public static final String MY_ASSERT_OFF = "com.sri.ai.util.myAssertOff";
 
 	/**
 	 * A java <code>assert</code> substitute that, unlike the standard one, is on by default and
-	 * can be turned off by setting any value to property {@link #MY_ASSERT}.
+	 * can be turned off by setting any value to property {@link #MY_ASSERT_OFF}.
 	 * It throws an {@link AssertionError} with the given message.
 	 */
 	public static void myAssert(boolean test, String message) {
-		if ( ! test && System.getProperty(MY_ASSERT) != null) {
+		if ( ! test && System.getProperty(MY_ASSERT_OFF) == null) {
 			throw new AssertionError(message);
 		}
 	}
 	
 	/**
 	 * Similar to {@link #myAssert(boolean, String)}, but takes nullary functions
-	 * for the test and the error message, and only executes them if property {@link #MY_ASSERT} is not null,
-	 * thus maximizing performance when it <code>is</code> null.
+	 * for the test and the error message, and only executes them if property {@link #MY_ASSERT_OFF} is null,
+	 * thus maximizing performance when it <code>isn't</code> null.
 	 */
 	public static <T> void myAssert(NullaryFunction<Boolean> test, NullaryFunction<String> message) {
-		if (System.getProperty(MY_ASSERT) != null && ! test.apply()) {
+		if (System.getProperty(MY_ASSERT_OFF) == null && ! test.apply()) {
 			throw new AssertionError(message.apply());
 		}
 	}
