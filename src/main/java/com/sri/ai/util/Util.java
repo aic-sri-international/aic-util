@@ -546,7 +546,8 @@ public class Util {
 	}
 
 	/**
-	 * 
+	 * @param map
+	 *        a map.
 	 * @param keysAndValues
 	 *            a sequence of key and value pairs to be placed into a given Map.
 	 * 
@@ -644,8 +645,13 @@ public class Util {
 	 * and returns the first map, unless it is null, in which case the second map is returned.
 	 *
 	 * @param map1
+	 *        map 1
 	 * @param map2
-	 * @return 
+	 *        map 2
+	 * @return the first map, unless it is null, in which case the second map is returned
+	 * @param <M> a map type
+	 * @param <V> a value type
+	 * @param <K> a key type
 	 */
 	public static <M extends Map<K, Collection<V>>, K, V> M addAllForEachEntry(M map1, M map2) {
 		M result;
@@ -670,8 +676,11 @@ public class Util {
 	 * Adds to a collection all given new elements in a second collection, returning the second collection
 	 * same instance if the first is null or empty.
 	 * @param collection
+	 *        a collection
 	 * @param newElements
-	 * @return
+	 *        new elements
+	 * @return if collection null then newElements, else collection with newElements added to it.
+	 * @param <T> the type of the elements in the collection.
 	 */
 	public static <T> Collection<T> addAllOrSame(Collection<T> collection, Collection<T> newElements) {
 		Collection<T> result;
@@ -700,8 +709,16 @@ public class Util {
 	 * a {@link Pair} with new key and new value as output.
 	 *
 	 * @param map
+	 *        a map
 	 * @param function
-	 * @return
+	 *        a function
+	 * @param valueCombination
+	 *        a value combination
+	 * @return a pair with values as described in description.
+	 * @param <K1> type of key 1
+	 * @param <V1> type of value 1
+	 * @param <K2> type of key 2
+	 * @param <V2> type of value 2
 	 */
 	public static <K1, V1, K2, V2> Pair<Map<K2,V2>, Set<K1>>
 	getTransformedSubMap(
@@ -1484,6 +1501,7 @@ public class Util {
 	 * @param predicate
 	 *        a predicate to filter the given collection with.
 	 * @return  a new list containing the elements in the give collection that satisfy the given predicate.
+	 * @param <T> the type of elements in the list
 	 */
 	public static <T> List<T> filter(Collection<T> collection, Predicate<T> predicate) {
 		List<T> result = new LinkedList<T>();
@@ -2641,7 +2659,7 @@ public class Util {
 	 *            the element to be removed
 	 * @return a new linked list containing the elements of list that are not equal to the
 	 * 			  given element.
-	 * @param <E>
+	 * @param <T>
 	 *            the type of the elements.
 	 */
 	public static <T> List<T> removeNonDestructively(Collection<T> collection, T element) {
@@ -3622,6 +3640,8 @@ public class Util {
 	 * @param object the object to be cast
 	 * @param messageTemplate the message template from which an error message is generated
 	 * @return the cast object
+	 * @param <T1> object type
+	 * @param <T2> class type
 	 */
 	public static <T1, T2> T2 castOrThrowError(Class<T2> clazz, T1 object, String messageTemplate) {
 		T2 result;
@@ -3638,9 +3658,12 @@ public class Util {
 	/**
 	 * Given two objects, returns a pair in which either the first element satisfies given predicate, or neither object does.
 	 * @param t1
+	 *        type 1
 	 * @param t2
+	 *        type 2
 	 * @param predicate
-	 * @return
+	 *        a predicate
+	 * @return a pair in which either the first element satisfies given predicate, or neither object does.
 	 */
 	public static <T> Pair<T, T> sortPairMakingFirstOneSatisfyPredicateIfPossible(T t1, T t2, Predicate<T> predicate) {
 		if (predicate.apply(t1)) {
