@@ -3767,4 +3767,15 @@ public class Util {
 			throw new AssertionError(message.apply());
 		}
 	}
+
+	/**
+	 * Similar to {@link #myAssert(boolean, String)}, but takes a nullary function
+	 * for the test, and only executes it if property {@link #MY_ASSERT_OFF} is null,
+	 * thus maximizing performance when it <code>isn't</code> null.
+	 */
+	public static <T> void myAssert(NullaryFunction<Boolean> test, String message) {
+		if (System.getProperty(MY_ASSERT_OFF) == null && ! test.apply()) {
+			throw new AssertionError(message);
+		}
+	}
 }
