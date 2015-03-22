@@ -3783,7 +3783,7 @@ public class Util {
 	/**
 	 * Similar to {@link #myAssert(boolean, String)}, but takes nullary functions
 	 * for the test and the error message, and only executes them if property {@link #MY_ASSERT_OFF} is null,
-	 * thus maximizing performance when it <code>isn't</code> null.
+	 * thus maximizing performance when it <i>isn't</i> null.
 	 */
 	public static <T> void myAssert(NullaryFunction<Boolean> test, NullaryFunction<String> message) {
 		if (System.getProperty(MY_ASSERT_OFF) == null && ! test.apply()) {
