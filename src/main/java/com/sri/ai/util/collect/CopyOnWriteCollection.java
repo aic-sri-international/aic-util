@@ -2,7 +2,6 @@ package com.sri.ai.util.collect;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 
 /**
  * A {@link Collection} implementation meant to behave as a copy of a given base Collection.
@@ -14,11 +13,11 @@ import java.util.LinkedHashSet;
 public class CopyOnWriteCollection<E> implements Collection<E> {
 
 	private Collection<E> baseCollection;
-	private Class<LinkedHashSet> clazz;
+	private Class<?> clazz;
 	
-	public CopyOnWriteCollection(Collection<E> baseCollection) {
+	public CopyOnWriteCollection(Collection<E> baseCollection, Class<?> clazz) {
 		this.baseCollection = baseCollection;
-		this.clazz = LinkedHashSet.class;
+		this.clazz = clazz;
 	}
 	
 	/**
@@ -34,7 +33,7 @@ public class CopyOnWriteCollection<E> implements Collection<E> {
 	private void copy() {
 		Collection<E> newBaseCollection = null;
 		try {
-			newBaseCollection = clazz.newInstance();
+			newBaseCollection = (Collection<E>) clazz.newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
