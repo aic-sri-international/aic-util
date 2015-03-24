@@ -129,4 +129,17 @@ public class CopyOnWriteCollection<E> implements Collection<E> {
 	public <T> T[] toArray(T[] a) {
 		return baseCollection.toArray(a);
 	}
+	
+	@Override
+	public boolean equals(Object another) {
+		if (another instanceof CopyOnWriteCollection) {
+			another = ((CopyOnWriteCollection) another).baseCollection;
+		}
+		return baseCollection.equals(another);
+	}
+	
+	@Override
+	public int hashCode() {
+		return baseCollection.hashCode();
+	}
 }

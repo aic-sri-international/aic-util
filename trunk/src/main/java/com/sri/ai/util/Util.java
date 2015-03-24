@@ -59,6 +59,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -701,7 +702,7 @@ public class Util {
 	 * <li> a new map containing the transformed entries;
 	 * if multiple entries have their keys transformed to the same new key,
 	 * their values will be combined with the value combination function.
-	 * <li> a set of keys of the entries in the original map that were transformed;
+	 * <li> a set of keys of the original entries that were transformed;
 	 * an entry is considered transformed if the returned pair is not null,
 	 * and if either its key or value identities (instances) have changed
 	 * </ul>
@@ -721,29 +722,29 @@ public class Util {
 	 * @param <V2> type of value 2
 	 */
 	public static <K1, V1, K2, V2> Pair<Map<K2,V2>, Set<K1>>
-	getTransformedSubMap(
+	getTransformedSubMapAndOriginalKeysOfTransformedEntries(
 			Map<K1, V1> map,
 			Function<Map.Entry<K1, V1>, Pair<K2, V2>> function,
 			BinaryFunction<V2, V2, V2> valueCombination) {
-		Map<K2, V2> newMap = new LinkedHashMap<K2, V2>();
-		Set<K1> transformedOriginalKeys = new LinkedHashSet<K1>();
+		Map<K2, V2> transformedSubMap = new LinkedHashMap<K2, V2>();
+		Set<K1> originalKeysOfTransformedEntries = new LinkedHashSet<K1>();
 		for (Map.Entry<K1, V1> entry : map.entrySet()) {
 			Pair<K2, V2> transformedEntry = function.apply(entry);
 			if (transformedEntry != null &&
 					(transformedEntry.first != entry.getKey() || transformedEntry.second != entry.getValue())) {
 				V2 newValue = transformedEntry.second;
-				V2 alreadyPresentValueForNewKey = newMap.get(transformedEntry.first);
+				V2 alreadyPresentValueForNewKey = transformedSubMap.get(transformedEntry.first);
 				if (alreadyPresentValueForNewKey == null) {
 					newValue = transformedEntry.second;
 				}
 				else {
 					newValue = valueCombination.apply(alreadyPresentValueForNewKey, transformedEntry.second);
 				}
-				newMap.put(transformedEntry.first, newValue);
-				transformedOriginalKeys.add(entry.getKey());
+				transformedSubMap.put(transformedEntry.first, newValue);
+				originalKeysOfTransformedEntries.add(entry.getKey());
 			}
 		}
-		return Pair.make(newMap, transformedOriginalKeys);
+		return Pair.make(transformedSubMap, originalKeysOfTransformedEntries);
 	}
 	
 	/**
@@ -1197,9 +1198,9 @@ public class Util {
 	}
 
 	/**
-	 * Stores results of applying a function to an set's elements in a new,
-	 * empty hash set and returns it if any elements are distinct instances from originals,
-	 * or original set otherwise.
+	 * Stores results of applying a function to an collection's elements in a new,
+	 * empty linked hash set and returns it if any elements are distinct instances from originals,
+	 * or original collection otherwise.
 	 * 
 	 * @param set
 	 *            the set to map from.
@@ -1213,7 +1214,7 @@ public class Util {
 	public static <T> Collection<T> mapIntoSetOrSameIfNoDistinctElementInstances(Collection<T> set,
 			Function<T, T> function) {
 
-		Set<T> possibleResult = new LinkedHashSet<T>();
+		Collection<T> possibleResult = new LinkedHashSet<T>();
 		boolean change = false;
 		for (T element : set) {
 			T elementResult = function.apply(element);
@@ -3800,5 +3801,18 @@ public class Util {
 		if (System.getProperty(MY_ASSERT_OFF) == null && ! test.apply()) {
 			throw new AssertionError(message);
 		}
+	}
+
+	/**
+	 * Returns the entryIndex-th entry in a {@link LinkedHashMap},
+	 * assuming there is such entry (throws an exception otherwise).
+	 * @param entryIndex
+	 */
+	public static <K, V> Map.Entry<K, V> getIthEntry(LinkedHashMap<K, V> map, int entryIndex) {
+		Map.Entry<K, V> result;
+		Iterator<Map.Entry<K, V>> iterator = map.entrySet().iterator();
+		for (int i = 0; i != entryIndex; i++) { iterator.next(); }
+		result = iterator.next();
+		return result;
 	}
 }
