@@ -4,20 +4,20 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * A {@link Collection} implementation meant to behave as a copy of a given base Collection.
+ * A {@link Collection} implementation meant to behave as a copy of a given base B, which must be a Collection type.
  * However, it only performs the copy upon modification, using the base Collection for reading meanwhile.
  * When the copy is performed, the default constructor of a given Collection implementation will be used.
  * IMPORTANT: this collection will reflect any changes made to the base Collection while it is not copied,
  * so this is best used on Collections not meant to change after being used as a base.
  */
-public class CopyOnWriteCollection<E> implements Collection<E> {
+public class CopyOnWriteCollection<E, B extends Collection<E>> implements Collection<E> {
 
-	private Collection<E> baseCollection;
-	private Class<?> clazz;
+	protected B baseCollection;
+	private Class classForNewlyCopiedBaseCollections;
 	
-	public CopyOnWriteCollection(Collection<E> baseCollection, Class<?> clazz) {
+	public CopyOnWriteCollection(B baseCollection, Class classForNewlyCopiedBaseCollections) {
 		this.baseCollection = baseCollection;
-		this.clazz = clazz;
+		this.classForNewlyCopiedBaseCollections = classForNewlyCopiedBaseCollections;
 	}
 	
 	/**
@@ -31,9 +31,9 @@ public class CopyOnWriteCollection<E> implements Collection<E> {
 	
 	@SuppressWarnings("unchecked")
 	private void copy() {
-		Collection<E> newBaseCollection = null;
+		B newBaseCollection = null;
 		try {
-			newBaseCollection = (Collection<E>) clazz.newInstance();
+			newBaseCollection = (B) classForNewlyCopiedBaseCollections.newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
