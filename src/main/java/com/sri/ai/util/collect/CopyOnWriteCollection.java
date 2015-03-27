@@ -142,4 +142,9 @@ public class CopyOnWriteCollection<E> implements Collection<E> {
 	public int hashCode() {
 		return baseCollection.hashCode();
 	}
+	
+	@Override
+	public String toString() {
+		return baseCollection.toString();
+	}
 }

@@ -3815,4 +3815,35 @@ public class Util {
 		result = iterator.next();
 		return result;
 	}
+	
+	/**
+	 * Iterates given iterator till it has no more elements or it is past a given element (ignored if null),
+	 * detecting the passage through them with the identity comparison (==).
+	 * @param iterator
+	 * @param element
+	 */
+	public static <T> void iterateTillPastElementByIdentity(Iterator<T> iterator, T element) {
+		boolean elementRequirementSatisfied = element == null; 
+		while (iterator.hasNext() && (!elementRequirementSatisfied)) {
+			T current = iterator.next();
+			elementRequirementSatisfied = elementRequirementSatisfied || current == element;
+		}
+	}
+	
+	/**
+	 * Iterates given iterator till it has no more elements or it is past both given elements (ignored if null),
+	 * detecting the passage through them with the identity comparison (==).
+	 * @param iterator
+	 * @param element1
+	 * @param element2
+	 */
+	public static <T> void iterateTillPastBothElementsByIdentity(Iterator<T> iterator, T element1, T element2) {
+		boolean element1RequirementSatisfied = element1 == null; 
+		boolean element2RequirementSatisfied = element2 == null;
+		while (iterator.hasNext() && (!element1RequirementSatisfied || !element2RequirementSatisfied)) {
+			T current = iterator.next();
+			element1RequirementSatisfied = element1RequirementSatisfied || current == element1;
+			element2RequirementSatisfied = element2RequirementSatisfied || current == element2;
+		}
+	}
 }
