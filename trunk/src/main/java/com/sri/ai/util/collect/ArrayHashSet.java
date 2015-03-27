@@ -54,7 +54,7 @@ import com.google.common.annotations.Beta;
  * @param <E>
  */
 @Beta
-public class ArrayHashSet<E> extends AbstractSet<E> {
+public class ArrayHashSet<E> extends AbstractSet<E> implements ArraySet<E> {
 
 	private HashSet<E>   set;
 	private ArrayList<E> arrayList;
@@ -64,34 +64,38 @@ public class ArrayHashSet<E> extends AbstractSet<E> {
 		this.arrayList = new ArrayList<E>();
 	}
 	
-	// additional random access methods
+	public ArrayHashSet(Collection<E> collection) {
+		this();
+		addAll(collection);
+	}
 	
+	// ArraySet methods
+	
+	@Override
 	public ArrayHashSetIterator listIterator() {
 		return new ArrayHashSetIterator(arrayList.listIterator());
 	}
 
+	@Override
 	public ArrayHashSetIterator listIterator(int index) {
 		return new ArrayHashSetIterator(arrayList.listIterator(index));
 	}
 
+	@Override
 	public E get(int index) {
 		return listIterator(index).next();
 	}
 
+	@Override
 	public void set(int index, E element) {
 		ArrayHashSet<E>.ArrayHashSetIterator listIterator = listIterator(index);
 		listIterator.next();
 		listIterator.set(element);
 	}
 
-	// end of additional random access methods
+	// end of ArraySet methods
 	
 	// required implementations
-	
-	public ArrayHashSet(Collection<E> collection) {
-		this();
-		addAll(collection);
-	}
 	
 	@Override
 	public boolean add(E element) {
