@@ -2221,12 +2221,13 @@ public class Util {
 		return getFirstSatisfyingPredicateOrNull(i, p);
 	}
 
-	public static <E> int getIndexOfFirstSatisfyingPredicateOrMinusOne(
-			List<? extends E> c, Predicate<E> p) {
-		for (int i = 0; i != c.size(); i++) {
-			if (p.apply(c.get(i))) {
+	public static <E> int getIndexOfFirstSatisfyingPredicateOrMinusOne(Collection<? extends E> c, Predicate<E> p) {
+		int i = 0;
+		for (E e : c) {
+			if (p.apply(e)) {
 				return i;
 			}
+			i++;
 		}
 		return -1;
 	}
