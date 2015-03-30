@@ -64,6 +64,11 @@ public class ArrayHashSet<E> extends AbstractSet<E> implements ArraySet<E> {
 		this.arrayList = new ArrayList<E>();
 	}
 	
+	public ArrayHashSet(int capacity) {
+		this.set  = new HashSet<E>();
+		this.arrayList = new ArrayList<E>(capacity);
+	}
+	
 	public ArrayHashSet(Collection<E> collection) {
 		this();
 		addAll(collection);

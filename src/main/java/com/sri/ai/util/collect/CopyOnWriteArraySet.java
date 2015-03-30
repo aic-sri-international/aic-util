@@ -2,13 +2,15 @@ package com.sri.ai.util.collect;
 
 import java.util.ListIterator;
 
+import com.sri.ai.util.base.NullaryFunction;
+
 /**
  * A specialization of {@link CopyOnWriteCollection} for {@link ArraySet}.
  */
 public class CopyOnWriteArraySet<E> extends CopyOnWriteCollection<E, ArraySet<E>> implements ArraySet<E> {
 
-	public CopyOnWriteArraySet(ArraySet<E> baseArraySet, Class classForNewlyCopiedBaseCollections) {
-		super(baseArraySet, classForNewlyCopiedBaseCollections);
+	public CopyOnWriteArraySet(ArraySet<E> baseArraySet, NullaryFunction<ArraySet<E>> maker) {
+		super(baseArraySet, maker);
 	}
 
 	@Override
