@@ -3,6 +3,8 @@ package com.sri.ai.util.collect;
 import java.util.Collection;
 import java.util.Iterator;
 
+import com.sri.ai.util.base.NullaryFunction;
+
 /**
  * A {@link Collection} implementation meant to behave as a copy of a given base B, which must be a Collection type.
  * However, it only performs the copy upon modification, using the base Collection for reading meanwhile.
@@ -13,11 +15,11 @@ import java.util.Iterator;
 public class CopyOnWriteCollection<E, B extends Collection<E>> implements Collection<E> {
 
 	protected B baseCollection;
-	private Class classForNewlyCopiedBaseCollections;
+	private NullaryFunction<B> maker;
 	
-	public CopyOnWriteCollection(B baseCollection, Class classForNewlyCopiedBaseCollections) {
+	public CopyOnWriteCollection(B baseCollection, NullaryFunction<B> maker) {
 		this.baseCollection = baseCollection;
-		this.classForNewlyCopiedBaseCollections = classForNewlyCopiedBaseCollections;
+		this.maker = maker;
 	}
 	
 	/**
@@ -29,14 +31,9 @@ public class CopyOnWriteCollection<E, B extends Collection<E>> implements Collec
 		return baseCollection;
 	}
 	
-	@SuppressWarnings("unchecked")
 	private void copy() {
 		B newBaseCollection = null;
-		try {
-			newBaseCollection = (B) classForNewlyCopiedBaseCollections.newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
-			e.printStackTrace();
-		}
+		newBaseCollection = maker.apply();
 		newBaseCollection.addAll(baseCollection);
 		baseCollection = newBaseCollection;
 	}
