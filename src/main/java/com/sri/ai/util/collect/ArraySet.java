@@ -46,7 +46,7 @@ import com.google.common.annotations.Beta;
  * A {@link Set} interface enriched with random access methods and a list iterator.
  * @author braz
  *
- * @param <E>
+ * @param <E> the type of the elements.
  */
 @Beta
 public interface ArraySet<E> extends Set<E> {

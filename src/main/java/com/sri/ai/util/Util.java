@@ -59,7 +59,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -3639,6 +3638,7 @@ public class Util {
 	 * following the format conventions of {@link String#format(String, Object...)},
 	 * with formatting arguments being the object being cast, and the expected and actual received classes' simple names,
 	 * in this order.
+	 * @param clazz the class to be cast to
 	 * @param object the object to be cast
 	 * @param messageTemplate the message template from which an error message is generated
 	 * @return the cast object
@@ -3666,6 +3666,7 @@ public class Util {
 	 * @param predicate
 	 *        a predicate
 	 * @return a pair in which either the first element satisfies given predicate, or neither object does.
+	 * @param <T> the type of the pair's elements.
 	 */
 	public static <T> Pair<T, T> sortPairMakingFirstOneSatisfyPredicateIfPossible(T t1, T t2, Predicate<T> predicate) {
 		if (predicate.apply(t1)) {
@@ -3700,11 +3701,15 @@ public class Util {
 	 * we make it not technically abstract and required in compile-time, but still "abstract" in a run-time sense of
 	 * an implementation being demanded in case it is actually needed.
 	 * 
-	 * @param thisClassName
-	 * @param thisMethodsName
-	 * @param superClassName
-	 * @param namesOfMethodsWhoseDefaultImplementationUsesThisMethod
-	 * @throws Error
+	 * @param thisClassName 
+	 * 			the name of the class
+	 * @param thisMethodsName 
+	 * 			the method name
+	 * @param superClassName 
+	 * 			the super class name
+	 * @param namesOfMethodsWhoseDefaultImplementationUsesThisMethod 
+	 * 			names of methods whose default implementation uses this method
+	 * @throws Error if one occurs
 	 */
 	public static void throwSafeguardError(
 			String thisClassName,
@@ -3745,8 +3750,11 @@ public class Util {
 	 * Non-destructively replaces each element in collection by the elements of a list, if expander produces a non-null one when given the element,
 	 * returning the same List instance if no expansion is done.
 	 * @param list
+	 *        a list
 	 * @param expander
-	 * @return
+	 *        an expander
+	 * @return if expansion occurred a new list with all the old elements plus the expansions, otherwise the input list.
+	 * @param <T> the type of the list's elements.
 	 */
 	public static <T> List<T> nonDestructivelyExpandElementsIfFunctionReturnsNonNullCollection(List<T> list, Function<T, Collection<T>> expander) {
 		List<T> result = new LinkedList<T>();
@@ -3775,6 +3783,10 @@ public class Util {
 	 * A java <code>assert</code> substitute that, unlike the standard one, is on by default and
 	 * can be turned off by setting any value to property {@link #MY_ASSERT_OFF}.
 	 * It throws an {@link AssertionError} with the given message.
+	 * @param test
+	 *        result of the test
+	 * @param message
+	 *        message to display if test failed.
 	 */
 	public static void myAssert(boolean test, String message) {
 		if ( ! test && System.getProperty(MY_ASSERT_OFF) == null) {
@@ -3786,8 +3798,13 @@ public class Util {
 	 * Similar to {@link #myAssert(boolean, String)}, but takes nullary functions
 	 * for the test and the error message, and only executes them if property {@link #MY_ASSERT_OFF} is null,
 	 * thus maximizing performance when it <i>isn't</i> null.
+	 * 
+	 * @param test
+	 *        result of the test
+	 * @param message
+	 *        message to display if test failed.
 	 */
-	public static <T> void myAssert(NullaryFunction<Boolean> test, NullaryFunction<String> message) {
+	public static void myAssert(NullaryFunction<Boolean> test, NullaryFunction<String> message) {
 		if (System.getProperty(MY_ASSERT_OFF) == null && ! test.apply()) {
 			throw new AssertionError(message.apply());
 		}
@@ -3797,8 +3814,13 @@ public class Util {
 	 * Similar to {@link #myAssert(boolean, String)}, but takes a nullary function
 	 * for the test, and only executes it if property {@link #MY_ASSERT_OFF} is null,
 	 * thus maximizing performance when it <code>isn't</code> null.
+	 * 
+	 * @param test
+	 *        result of the test
+	 * @param message
+	 *        message to display if test failed.
 	 */
-	public static <T> void myAssert(NullaryFunction<Boolean> test, String message) {
+	public static void myAssert(NullaryFunction<Boolean> test, String message) {
 		if (System.getProperty(MY_ASSERT_OFF) == null && ! test.apply()) {
 			throw new AssertionError(message);
 		}
@@ -3807,7 +3829,13 @@ public class Util {
 	/**
 	 * Returns the entryIndex-th entry in a {@link LinkedHashMap},
 	 * assuming there is such entry (throws an exception otherwise).
+	 * @param map
+	 *        a map
 	 * @param entryIndex
+	 *        an entry index
+	 * @return the entry at the given index
+	 * @param <K> the map's key type
+	 * @param <V> the map's value type       
 	 */
 	public static <K, V> Map.Entry<K, V> getIthEntry(LinkedHashMap<K, V> map, int entryIndex) {
 		Map.Entry<K, V> result;
@@ -3821,7 +3849,10 @@ public class Util {
 	 * Iterates given iterator till it has no more elements or it is past a given element (ignored if null),
 	 * detecting the passage through them with the identity comparison (==).
 	 * @param iterator
+	 *        an iterator
 	 * @param element
+	 *        an element
+	 * @param <T> the type of the elements.
 	 */
 	public static <T> void iterateTillPastElementByIdentity(Iterator<T> iterator, T element) {
 		boolean elementRequirementSatisfied = element == null; 
@@ -3835,8 +3866,12 @@ public class Util {
 	 * Iterates given iterator till it has no more elements or it is past both given elements (ignored if null),
 	 * detecting the passage through them with the identity comparison (==).
 	 * @param iterator
+	 *        an iterator
 	 * @param element1
+	 *        an element
 	 * @param element2
+	 *        an element
+	 * @param <T> the type of the elements.
 	 */
 	public static <T> void iterateTillPastBothElementsByIdentity(Iterator<T> iterator, T element1, T element2) {
 		boolean element1RequirementSatisfied = element1 == null; 

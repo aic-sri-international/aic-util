@@ -27,7 +27,7 @@ public class CopyOnWriteCollection<E, B extends Collection<E>> implements Collec
 	/**
 	 * Returns the base collection being reflected, which will <i>not</i> be
 	 * the originally given one if a copy has already been performed.
-	 * @return
+	 * @return the base collection.
 	 */
 	public Collection<E> getBaseCollection() {
 		return baseCollection;
