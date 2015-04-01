@@ -15,10 +15,12 @@ import com.sri.ai.util.base.NullaryFunction;
 public class CopyOnWriteCollection<E, B extends Collection<E>> implements Collection<E> {
 
 	protected B baseCollection;
+	private boolean ownsBase;
 	private NullaryFunction<B> maker;
 	
 	public CopyOnWriteCollection(B baseCollection, NullaryFunction<B> maker) {
 		this.baseCollection = baseCollection;
+		this.ownsBase = false;
 		this.maker = maker;
 	}
 	
@@ -32,10 +34,12 @@ public class CopyOnWriteCollection<E, B extends Collection<E>> implements Collec
 	}
 	
 	private void copy() {
-		B newBaseCollection = null;
-		newBaseCollection = maker.apply();
-		newBaseCollection.addAll(baseCollection);
-		baseCollection = newBaseCollection;
+		if ( ! ownsBase) {
+			B newBaseCollection = maker.apply();
+			newBaseCollection.addAll(baseCollection);
+			baseCollection = newBaseCollection;
+			ownsBase = true;
+		}
 	}
 	
 	@Override
