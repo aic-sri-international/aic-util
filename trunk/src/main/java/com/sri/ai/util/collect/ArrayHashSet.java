@@ -46,12 +46,12 @@ import java.util.ListIterator;
 import com.google.common.annotations.Beta;
 
 /**
- * Analogous to {@link LinkedHashSet}, but with an {@link ArrayList} instead of a {@link LinkedList},
+ * Analogous to {@link java.util.LinkedHashSet}, but with an {@link java.util.ArrayList} instead of a {@link java.util.LinkedList},
  * offering the same advantages (random access) and disadvantages (slower addition and removal of elements),
- * but with the extra advantage of offering an iterator that is actually a {@link ListIterator}.
+ * but with the extra advantage of offering an iterator that is actually a {@link java.util.ListIterator}.
  * @author braz
  *
- * @param <E>
+ * @param <E> the type of the elements
  */
 @Beta
 public class ArrayHashSet<E> extends AbstractSet<E> implements ArraySet<E> {
