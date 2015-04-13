@@ -438,6 +438,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Default round mode, ROUND_HALF_UP.
 	 */
 	public final static int DEFAULT_ROUND_MODE = ROUND_HALF_UP;
+	
+	
+	//
+	private static int _toStringDotRoundingMode = ROUND_HALF_UP;
 
 	//
 	// PUBLIC METHODS
@@ -849,6 +853,18 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 
 	// END - Constructors
 	//
+	
+	/**
+	 * Set the toStringDot() rounding mode to be used.
+	 * @param roundingMode
+	 *        the rounding mode to use when toStringDot() is called.
+	 * @return the previously set toStringDot() rounding mode.
+	 */
+	public static int setToStringDotRoundingMode(int roundingMode) {
+		int result = _toStringDotRoundingMode;
+		_toStringDotRoundingMode = roundingMode;
+		return result;
+	}
 
 	/**
 	 * Positive predicate.
@@ -3479,7 +3495,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 
 		// default round mode.
 		// [rounding step, possible loss of precision step]
-		Rational n = multiply(scaleValue).round();
+		Rational n = multiply(scaleValue).round(_toStringDotRoundingMode);
 		final boolean negt = n.isNegative();
 		if (negt) {
 			n = n.negate();
