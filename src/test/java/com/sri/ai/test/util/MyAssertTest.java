@@ -37,6 +37,7 @@
  */
 package com.sri.ai.test.util;
 
+import static com.sri.ai.util.Util.myAssert;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
@@ -55,8 +56,8 @@ public class MyAssertTest {
 
 	private void regular() {
 		try {
-			Util.myAssert(true,  "error message 1");
-			Util.myAssert(false, "error message 2");
+			myAssert(() -> true,  () -> "error message 1");
+			myAssert(() -> false, () -> "error message 2");
 			if (System.getProperty(Util.MY_ASSERT_OFF) == null) {
 				fail("Should have thrown an AssertionError but did not. System.getProperty(Util.MY_ASSERT_OFF) = " + System.getProperty(Util.MY_ASSERT_OFF));
 			}
@@ -119,8 +120,8 @@ public class MyAssertTest {
 
 	private void nullaryAndString() {
 		try {
-			Util.myAssert(() -> true , "error message 1");
-			Util.myAssert(() -> false, "error message 2");
+			myAssert(() -> true , () -> "error message 1");
+			myAssert(() -> false, () -> "error message 2");
 			if (System.getProperty(Util.MY_ASSERT_OFF) == null) {
 				fail("Should have thrown an AssertionError but did not. System.getProperty(Util.MY_ASSERT_OFF) = " + System.getProperty(Util.MY_ASSERT_OFF));
 			}
