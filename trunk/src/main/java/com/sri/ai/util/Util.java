@@ -38,6 +38,7 @@
 package com.sri.ai.util;
 
 import static com.sri.ai.util.base.PairOf.makePairOf;
+import static java.util.Arrays.asList;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -2002,8 +2003,7 @@ public class Util {
 	 * @param <E>
 	 *            the type of the iterators range elements.
 	 */
-	public static <E> boolean thereExists(Iterator<E> iterator,
-			Predicate<E> predicate) {
+	public static <E> boolean thereExists(Iterator<E> iterator, Predicate<E> predicate) {
 		while (iterator.hasNext()) {
 			if (predicate.apply(iterator.next())) {
 				return true;
@@ -2025,10 +2025,24 @@ public class Util {
 	 * @param <E>
 	 *            the type of the collections elements.
 	 */
-	public static <E> boolean thereExists(Collection<E> collection,
-			Predicate<E> predicate) {
+	public static <E> boolean thereExists(Collection<E> collection, Predicate<E> predicate) {
 		boolean result = collection.stream().anyMatch(predicate::apply);
 		return result;
+	}
+
+	/**
+	 * Indicates whether there is a true element in array.
+	 * 
+	 * @param array the array of booleans.
+	 * @return true if any element in the collection is true, false otherwise.
+	 */
+	public static boolean thereExists(boolean[] array) {
+		for (boolean element : array) {
+			if (element) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
