@@ -3810,6 +3810,21 @@ public class Util {
 // Commented out because it can have unsuspected performance impact even when testing is turned off.	
 	
 	/**
+	 * A java <code>assert</code> substitute that, unlike the standard one, is on by default and
+	 * can be turned off by setting any value to property {@link #MY_ASSERT_OFF}.
+	 * It throws an {@link AssertionError} with the given message.
+	 * @param test
+	 *        result of the test
+	 * @param message
+	 *        message to display if test failed.
+	 */
+	public static void myAssert(boolean test, NullaryFunction<String> message) {
+		if ( ! test && System.getProperty(MY_ASSERT_OFF) == null) {
+			throw new AssertionError(message.apply());
+		}
+	}
+
+	/**
 	 * Similar to {@link #myAssert(boolean, String)}, but takes nullary functions
 	 * for the test and the error message, and only executes them if property {@link #MY_ASSERT_OFF} is null,
 	 * thus maximizing performance when it <i>isn't</i> null.
