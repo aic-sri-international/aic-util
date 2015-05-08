@@ -1,4 +1,7 @@
-# Overview
+# aic-uil
+SRI International's AIC Utility Library (for Java 1.8+)
+
+### Overview
 A general purpose Java library, developed at [SRI International's Artificial Intelligence Center](http://www.ai.sri.com/) 
 and built on top of Google's guava-libraries, which adds capabilities in the following areas:
 
@@ -11,7 +14,7 @@ and built on top of Google's guava-libraries, which adds capabilities in the fol
 * Programmatic interface to gnuplot.
 * Declarative mini-language for specifying experiments, with file and gnuplot generation.
 
-# Acknowledgements
+### Acknowledgements
 SRI International gratefully acknowledges the support of the Defense Advanced Research Projects Agency (DARPA) 
 Machine Reading Program, and Probabilistic Programming for Advanced Machine Learning Program, under Air Force 
 Research Laboratory (AFRL) prime Contract Nos. FA8750-09-C-0181 and FA8750-14-C-0005, respectively. Any opinions, 
