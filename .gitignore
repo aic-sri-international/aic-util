@@ -11,11 +11,18 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
+# Eclipse IDEA
+/target/
+.classpath
+.project
+.settings/
+
 # IntelliJ IDEA
 *.iml
-.idea
+.idea/
 
 # Mac Specific
 .DS_Store
 .AppleDouble
 .LSOverride
+
