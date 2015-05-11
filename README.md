@@ -3,7 +3,7 @@ SRI International's AIC Utility Library (for Java 1.8+)
 
 ### Overview
 A general purpose Java library, developed at [SRI International's Artificial Intelligence Center](http://www.ai.sri.com/) 
-and built on top of Google's guava-libraries, which adds capabilities in the following areas:
+and built on top of Google's [guava-libraries](https://github.com/google/guava), which adds capabilities in the following areas:
 
 * General purpose utility routines for String manipulation, Collections, Error, and Math.
 * Extended Iterator semantics (functional sequences and refiners).
