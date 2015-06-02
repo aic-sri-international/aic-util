@@ -1,4 +1,4 @@
-# aic-uil
+# AIC-Util
 SRI International's AIC Utility Library (for Java 1.8+)
 
 ### Overview
