@@ -14,7 +14,7 @@ and built on top of Google's [guava-libraries](https://github.com/google/guava),
 * Programmatic interface to gnuplot.
 * Declarative mini-language for specifying experiments, with file and gnuplot generation.
 
-#### Acknowledgements
+##### Acknowledgements
 SRI International gratefully acknowledges the support of the Defense Advanced Research Projects Agency (DARPA) 
 Machine Reading Program, and Probabilistic Programming for Advanced Machine Learning Program, under Air Force 
 Research Laboratory (AFRL) prime Contract Nos. FA8750-09-C-0181 and FA8750-14-C-0005, respectively. Any opinions, 
