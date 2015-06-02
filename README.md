@@ -14,6 +14,20 @@ and built on top of Google's [guava-libraries](https://github.com/google/guava),
 * Programmatic interface to gnuplot.
 * Declarative mini-language for specifying experiments, with file and gnuplot generation.
 
+### Getting Started
+* [Introduction](https://github.com/aic-sri-international/aic-util/wiki/Introduction)
+* Latest Maven Information (for integration as a third party library)
+      
+      ```
+      <dependency>
+          <groupId>com.googlecode.aic-util</groupId>
+          <artifactId>aic-util</artifactId>
+          <version>1.0.0</version>
+      </dependency>
+      ```
+* [Latest Release](https://github.com/aic-sri-international/aic-util/releases)
+* [Instructions on how to set up your workspace (for aic-util developers)](https://github.com/aic-sri-international/aic-util/wiki/Getting-Started)
+
 ##### Acknowledgements
 SRI International gratefully acknowledges the support of the Defense Advanced Research Projects Agency (DARPA) 
 Machine Reading Program, and Probabilistic Programming for Advanced Machine Learning Program, under Air Force 
