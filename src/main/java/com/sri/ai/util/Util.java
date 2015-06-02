@@ -3825,7 +3825,7 @@ public class Util {
 	}
 
 	/**
-	 * Similar to {@link #myAssert(boolean, String)}, but takes nullary functions
+	 * Similar to {@link #myAssert(boolean, NullaryFunction)}, but takes nullary functions
 	 * for the test and the error message, and only executes them if property {@link #MY_ASSERT_OFF} is null,
 	 * thus maximizing performance when it <i>isn't</i> null.
 	 * 
