@@ -22,7 +22,7 @@ and built on top of Google's [guava-libraries](https://github.com/google/guava),
       <dependency>
           <groupId>com.googlecode.aic-util</groupId>
           <artifactId>aic-util</artifactId>
-          <version>1.0.0</version>
+          <version>1.1.0</version>
       </dependency>
       ```
 * [Latest Release](https://github.com/aic-sri-international/aic-util/releases)
