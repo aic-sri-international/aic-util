@@ -15,7 +15,7 @@ and built on top of Google's [guava-libraries](https://github.com/google/guava),
 * Declarative mini-language for specifying experiments, with file and gnuplot generation.
 
 ### Getting Started
-* [Introduction](https://github.com/aic-sri-international/aic-util/wiki/Introduction)
+* [User Guide](https://github.com/aic-sri-international/aic-util/wiki/Introduction)
 * Latest Maven Information (for integration as a third party library)
       
       ```
