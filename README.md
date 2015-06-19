@@ -1,5 +1,5 @@
-# AIC-Util
-SRI International's AIC Utility Library (for Java 1.8+)[![Build Status](https://travis-ci.org/aic-sri-international/aic-util.svg?branch=master)](https://travis-ci.org/aic-sri-international/aic-util)
+# AIC-Util [![Build Status](https://travis-ci.org/aic-sri-international/aic-util.svg?branch=master)](https://travis-ci.org/aic-sri-international/aic-util)
+SRI International's AIC Utility Library (for Java 1.8+)
 
 
 ### Overview
