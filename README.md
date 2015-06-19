@@ -1,5 +1,6 @@
 # AIC-Util
-SRI International's AIC Utility Library (for Java 1.8+)
+SRI International's AIC Utility Library (for Java 1.8+)[![Build Status](https://travis-ci.org/aic-sri-international/aic-util.svg?branch=master)](https://travis-ci.org/aic-sri-international/aic-util)
+
 
 ### Overview
 A general purpose Java library, developed at [SRI International's Artificial Intelligence Center](http://www.ai.sri.com/) 
