@@ -63,7 +63,7 @@ import com.sri.ai.util.base.NullaryFunction;
  * For example,
  * <code>NestedIterator(list.iterator())</code> will range over
  * <code>"a", "b", "c", ...</code> if <code>list</code> is
- * <code>list("a", list("b", "c"), (NullaryFunction) () -> iterator("e", list("f", "g")), ...)</code>,
+ * <code>list("a", list("b", "c"), (NullaryFunction) () -&gt; iterator("e", list("f", "g")), ...)</code>,
  * where <code>list</code> and <code>iterator</code> are functions creating lists and iterators from a variable number of arguments.
  * <p>
  * The method
