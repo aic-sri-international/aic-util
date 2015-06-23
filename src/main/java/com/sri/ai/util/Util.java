@@ -48,6 +48,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.io.Reader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -227,6 +229,25 @@ public class Util {
 			Util.fatalError("Could not read " + inputStream, e);
 		}
 		return null;
+	}
+	
+	/**
+	 * Returns a string with the entire contents of an input reader.
+	 * 
+	 * @param inputReader
+	 *        the input reader to be read from.
+	 * @return all of the contents read from the input reader.
+	 * @throws IOException if an error occurs.
+	 */
+	public static String readAll(Reader inputReader) throws IOException {
+		StringWriter result = new StringWriter();
+		char[] cbuf = new char[1024];
+		int read = 0;
+		while ((read = inputReader.read(cbuf)) != -1) {
+			result.write(cbuf, 0, read);
+		}
+		
+		return result.toString();
 	}
 
 	/**
