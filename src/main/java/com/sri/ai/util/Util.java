@@ -38,7 +38,6 @@
 package com.sri.ai.util;
 
 import static com.sri.ai.util.base.PairOf.makePairOf;
-import static java.util.Arrays.asList;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -516,6 +515,16 @@ public class Util {
 		return new LinkedHashSet<T>(Arrays.asList(elements));
 	}
 
+	@SuppressWarnings("unchecked")
+	public static <T> List<T> singletonListIfNotNullOrEmptyListIfNull(T element) {
+		if (element == null) {
+			return new LinkedList<T>();
+		}
+		else {
+			return list(element);
+		}
+	}
+	
 	public static boolean isEven(int number) {
 		return number % 2 == 0;
 	}
@@ -2144,7 +2153,7 @@ public class Util {
 	public static <T> T getFirst(Collection<T> c) {
 		return getFirst(c.iterator());
 	}
-
+	
 	/**
 	 * Return all but the first element in an iterator's range, in a newly made
 	 * list.

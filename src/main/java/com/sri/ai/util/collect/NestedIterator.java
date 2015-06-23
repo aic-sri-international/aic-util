@@ -43,18 +43,30 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import com.google.common.annotations.Beta;
+import com.sri.ai.util.base.NullaryFunction;
 
 
 /**
  * An iterator that does not range over its elements, but over ranges of
  * sub-iterators computed from its elements. By default, the sub-iterators of
- * elements are: the iterator over the collection if the element is a
- * collection, the iterator itself if the element is an iterator, and the
- * iterator over the singleton composed by the element if it is neither a
- * collection nor a iterator. For example,
+ * elements are:
+ * <ul>
+ * <li>the iterator over the collection if the element is a
+ * collection
+ * <li> the iterator itself if the element is an iterator,
+ * <li> the sub-iterator of an object <code>O</code> if the element is a {@link NullaryFunction} returning <code>O</code>
+ *      (this can be used to create collections or iterators lazily, only when this point is reached), and
+ * <li> the iterator over the singleton composed by the element if it is neither a
+ * collection nor a iterator not a {@link NullaryFunction}.
+ * </ul>
+ * <p>
+ * For example,
  * <code>NestedIterator(list.iterator())</code> will range over
  * <code>"a", "b", "c", ...</code> if <code>list</code> is
- * <code>["a", ["b", "c"], ["e", ["f", "g"]], ...]</code> The method
+ * <code>list("a", list("b", "c"), (NullaryFunction) () -> iterator("e", list("f", "g")), ...)</code>,
+ * where <code>list</code> and <code>iterator</code> are functions creating lists and iterators from a variable number of arguments.
+ * <p>
+ * The method
  * {@link #determineSubIterator(Object)} can be overridden in order to customize
  * the decision of when to recurse or not.
  * 
@@ -100,6 +112,9 @@ public class NestedIterator<E> extends EZIteratorWithNull<E> {
 		}
 		else if (element instanceof Iterator) {
 			return (Iterator<E>) element;
+		}
+		else if (element instanceof NullaryFunction) {
+			return determineSubIterator(((NullaryFunction) element).apply());
 		}
 		return Collections.singletonList((E) element).iterator();
 	}
