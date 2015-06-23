@@ -63,7 +63,8 @@ public class Pair<T1, T2> {
 
 	@Override
 	public int hashCode() {
-		return first.hashCode() + second.hashCode();
+		// Subtract different primes to ensure re-orderings do not generate the same hash codes.
+		return (first.hashCode() - 11) + (second.hashCode() - 17);
 	}
 
 	@Override
