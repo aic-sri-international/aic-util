@@ -66,8 +66,7 @@ import com.sri.ai.util.base.NullaryFunction;
  * <code>list("a", list("b", "c"), (NullaryFunction) () -&gt; iterator("e", list("f", "g")), ...)</code>,
  * where <code>list</code> and <code>iterator</code> are functions creating lists and iterators from a variable number of arguments.
  * <p>
- * The method
- * {@link #determineSubIterator(Object)} can be overridden in order to customize
+ * The method {@link #determineSubIterator(Object)} can be overridden in order to customize
  * the decision of when to recurse or not.
  * 
  * @author braz
