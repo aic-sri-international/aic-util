@@ -1583,6 +1583,19 @@ public class Util {
 		return sum(numbers.iterator());
 	}
 
+	/**
+	 * Returns the sum of the elements in an array of integers.
+	 * @param array
+	 * @return
+	 */
+	public static int sum(int[] array) {
+		int result = 0;
+		for (int element : array) {
+			result += element;
+		}
+		return result;
+	}
+
 	public static Rational sumArbitraryPrecision(Iterator<Number> numbersIt) {
 		Rational sum = Rational.ZERO;
 		while (numbersIt.hasNext()) {
@@ -3942,5 +3955,23 @@ public class Util {
 			element1RequirementSatisfied = element1RequirementSatisfied || current == element1;
 			element2RequirementSatisfied = element2RequirementSatisfied || current == element2;
 		}
+	}
+	
+	private static Rational recfact(long start, long n) {
+	    long i;
+	    if (n <= 16) { 
+	    	Rational r = new Rational(start);
+	        for (i = start + 1; i < start + n; i++) {
+	        	r = r.multiply(i);
+	        }
+	        return r;
+	    }
+	    i = n / 2;
+	    Rational result = recfact(start, i).multiply(recfact(start + i, n - i));
+		return result;
+	}
+	
+	public static Rational factorial(long n) {
+		return recfact(1, n);
 	}
 }

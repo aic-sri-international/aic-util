@@ -35,81 +35,58 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.sri.ai.util.collect;
+package com.sri.ai.util.math;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 
-import com.google.common.annotations.Beta;
+import com.sri.ai.util.collect.EZIterator;
 
 /**
- * An abstract class meant to make the implementation of iterators easier. One
- * needs only to extend it and define {@link #calculateNext()}, which must
- * calculate the next object in the sequence, or <code>null</code> if it is
- * over. EZIterator defines the Iterator interface based on this method (without
- * supporting the {@link #remove()} method.
- * 
- * @author braz
+ * An {@link Iterator} over {@link Multinomial}s.
+ * Provided multinomial is internally kept by iterator and modifiable,
+ * so operations on it will reflect on future operations with the iterator.
  */
-@Beta
-public abstract class EZIterator<E> implements Iterator<E> {
+public class MultinomialIterator extends EZIterator<Multinomial> {
 
-	/** Field indicating if next element has already been computed. */
-	protected boolean onNext = false;
-
-	/** The next element if already computed. */
-	protected E next;
+	private Multinomial multinomial;
 	
 	/**
-	 * Method responsible for calculating next element in sequence, returning
-	 * <code>null</code> if there are no more elements.
-	 * 
-	 * @return the next calculated element in sequence, null if there are no
-	 *         more elements.
+	 * Creates an iterator around a given multinomial.
+	 * @param multinomial
 	 */
-	protected abstract E calculateNext();
-
-	/**
-	 * A default constructor that assumes {@link next} needs to be computed.
-	 */
-	public EZIterator() {
-		this(false);
+	public MultinomialIterator(Multinomial multinomial) {
+		this.multinomial = multinomial;
+		this.onNext = true;
+		this.next = multinomial;
 	}
 	
 	/**
-	 * A constructor indicating that the field {@link next} already contains
-	 * the next value to be provided by {@link #next} right at construction.
-	 * @param onNext
+	 * Creates an iterator around a multinomial constructed with {@link Multinomial#Multinomial(int, int)}.
+	 * @param n
+	 * @param m
 	 */
-	public EZIterator(boolean onNext) {
-		this.onNext = onNext;
+	public MultinomialIterator(int n, int m) {
+		this(new Multinomial(n, m));
 	}
 	
-	private void ensureBeingOnNext() {
-		if (!onNext) {
-			next = calculateNext();
-			onNext = true;
+	/**
+	 * Creates an iterator around a multinomial constructed with {@link Multinomial#Multinomial(int[])}.
+	 * @param counters
+	 */
+	public MultinomialIterator(int[] counters) {
+		this(new Multinomial(counters));
+	}
+	
+	@Override
+	protected Multinomial calculateNext() {
+		Multinomial result;
+		boolean hasSuccessor = multinomial.iterate();
+		if (hasSuccessor) {
+			result = multinomial;
 		}
-	}
-
-	@Override
-	public boolean hasNext() {
-		ensureBeingOnNext();
-		return next != null;
-	}
-
-	@Override
-	public E next() {
-		ensureBeingOnNext();
-		if (next == null) {
-			throw new NoSuchElementException();
+		else {
+			result = null;
 		}
-		onNext = false;
-		return next;
-	}
-
-	@Override
-	public void remove() {
-		throw new UnsupportedOperationException();
+		return result;
 	}
 }
