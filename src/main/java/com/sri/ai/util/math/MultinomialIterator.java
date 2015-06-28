@@ -52,7 +52,7 @@ public class MultinomialIterator extends EZIterator<Multinomial> {
 	
 	/**
 	 * Creates an iterator around a given multinomial.
-	 * @param multinomial
+	 * @param multinomial the multinomial to iterate
 	 */
 	public MultinomialIterator(Multinomial multinomial) {
 		this.multinomial = multinomial;
@@ -62,8 +62,8 @@ public class MultinomialIterator extends EZIterator<Multinomial> {
 	
 	/**
 	 * Creates an iterator around a multinomial constructed with {@link Multinomial#Multinomial(int, int)}.
-	 * @param n
-	 * @param m
+	 * @param n the number of elements being distributed
+	 * @param m the number of classes into which elements are being distributed
 	 */
 	public MultinomialIterator(int n, int m) {
 		this(new Multinomial(n, m));
@@ -71,7 +71,7 @@ public class MultinomialIterator extends EZIterator<Multinomial> {
 	
 	/**
 	 * Creates an iterator around a multinomial constructed with {@link Multinomial#Multinomial(int[])}.
-	 * @param counters
+	 * @param counters an array of class counters to construct a multinomial from.
 	 */
 	public MultinomialIterator(int[] counters) {
 		this(new Multinomial(counters));

@@ -192,6 +192,18 @@ public class MultinomialTest {
 		expectedCoefficients = new long[]{ 1L };
 		expectedRationals = mapIntoList(Longs.asList(expectedCoefficients), Rational::new);
 		assertEquals(expectedRationals, coefficients);
-}
+
+
+
+		// This one for stress testing only: the expected array is too large to put in a Java compilation unit.
+		// Kept commented out in order to avoid making routinely ran tests too long.
+//		iterator = new MultinomialIterator(20, 8);
+//		coefficients = mapIntoList(iterator, mValue -> {
+//			Rational result = mValue.choose();
+//			// System.out.println("coefficient of " + mValue + ": " + result);	
+//			// System.out.println();	
+//			return result;
+//		});
+	}
 
 }

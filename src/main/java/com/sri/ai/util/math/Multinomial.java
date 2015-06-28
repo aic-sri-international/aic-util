@@ -37,9 +37,11 @@
  */
 package com.sri.ai.util.math;
 
+import static com.sri.ai.util.Util.binomialCoefficient;
 import static com.sri.ai.util.Util.factorial;
 import static com.sri.ai.util.Util.join;
 import static com.sri.ai.util.Util.myAssert;
+import static com.sri.ai.util.math.Rational.ONE;
 
 import java.util.Collections;
 import java.util.List;
@@ -69,14 +71,33 @@ public class Multinomial implements Cloneable {
 	
 	//////////////////////////////////// PROPERTIES ////////////////////////////////
 
+	/**
+	 * This regulates between two ways of computing coefficients.
+	 * The incremental way decomposes the calculation into a binomial coefficient regarding the first class,
+	 * and the multinomial coefficient of the sub-multinomial.
+	 * The non-incremental way computes all factorials again every time.
+	 * Surprisingly, it turns out the non-incremental computation is a bit faster than the incremental one, given my tests so far.
+	 * I am not quite sure why this is. It may be related to the way factorials are computed (not the straightforward way).
+	 * Further analysis would be needed to determine the reason for this.
+	 */
+	static private boolean incrementalComputation = false;
+	
 	private int n;
-	/** Returns the number of objects being distributed. */
+	
+	/** 
+	 * Returns the number of objects being distributed.
+	 * @return the number of elements being distributed
+	 */
 	public int getN() {
 		return n;
 	}
 
 	private int m;
-	/** Returns the number of classes in which objects are being distributed. */
+	
+	/** 
+	 * Returns the number of classes in which objects are being distributed.
+	 * @return the number of classes  
+	 */
 	public int getM() {
 		return m;
 	}
@@ -92,7 +113,11 @@ public class Multinomial implements Cloneable {
 
 	//////////////////////////////////// CONSTRUCTORS ////////////////////////////////
 
-	/** Constructs a multinomial on n objects and m classes. */
+	/**
+	 * Constructs a multinomial on n objects and m classes.
+	 * @param n number of elements
+	 * @param m number of classes
+	 */
 	public Multinomial(int n, int m) {
 		this(makeCounters(n, m));
 	}
@@ -107,9 +132,9 @@ public class Multinomial implements Cloneable {
 	/**
 	 * Stores counters on given array, starting from offset <code>from</code>,
 	 * so that all <code>n</code> elements are placed in the last class;
-	 * @param counters
-	 * @param from
-	 * @param n
+	 * @param counters an array of counters for each class
+	 * @param from the index of counters from which to use it
+	 * @param n the number of elements being distributed among the classes.
 	 */
 	private static void placeAllElementsInLastClass(int[] counters, int from, int n) {
 		myAssert(() -> counters.length > 0, () -> "number of classes must be greater than 0.");
@@ -123,6 +148,7 @@ public class Multinomial implements Cloneable {
 	 * Constructs a multinomial on <code>(sum_i counters[i])</code> objects and <code>counters.length</code> classes,
 	 * with the count per class stored in the array.
 	 * The object keeps and may modify the array later.
+	 * @param counters an array with the counters for each class
 	 */
 	public Multinomial(int[] counters) {
 		this(counters, 0);
@@ -157,6 +183,21 @@ public class Multinomial implements Cloneable {
 	 * if there is a successor,
 	 * or leaves it unchanged and returns false otherwise.
 	 * <p>
+	 * If exhaustively used, this method will generate all possible distributions of
+	 * a Multinomial object coming after its current distribution, according to the total
+	 * order defined below.
+	 * <p>
+	 * A Multinomial created with the constructor {@link Multinomial#Multinomial(int, int)}
+	 * gets assigned the very first distribution in this order, and therefore
+	 * using this method exhaustively is guaranteed to generate all possible distributions.
+	 * <p>
+	 * The guarantees above should suffice for most users.
+	 * We now detail the order mentioned above for those interested in it.
+	 * <p>
+	 * The order is defined by the definition of the first distribution, and of the successor function.
+	 * The first distribution of a multinomial of <code>n</code> objects over <code>m</code> classes
+	 * assigns all objects to the <code>m</code>-th class. The success is defined as follows:
+	 * <p>
 	 * A single-classed distribution has no successor (the only possible single classed distribution
 	 * is that which contains all <code>n</code> objects in the single class).
 	 * <p>
@@ -167,7 +208,7 @@ public class Multinomial implements Cloneable {
 	 * if <code>n_0</code> is not <code>n</code>.
 	 * Otherwise, it has no successor.
 	 * 
-	 * @return
+	 * @return whether the multinomial had a success to iterate to; if not, the object is unchanged.
 	 */
 	public boolean iterate() {
 		boolean result;
@@ -175,39 +216,110 @@ public class Multinomial implements Cloneable {
 			result = false;
 		}
 		else if (subMultinomial.iterate()) {
+			if (incrementalComputation) {
+				choose = null; // forces re-computation using the new subMultinomial.choose(), but preserves binomialCoefficientOfFirstClass.
+			}
 			result = true;
 		}
 		else if (counters[myIndex] != getN()) {
 			counters[myIndex]++;
 			placeAllElementsInLastClass(counters, myIndex + 1, subMultinomial.getN() - 1);
 			subMultinomial = new Multinomial(counters, myIndex + 1);
+			if (incrementalComputation) {
+				choose = null;
+				binomialCoefficientOfFirstClass = null;
+				 // forces re-computation using the both new subMultinomial.choose() and binomialCoefficientOfFirstClass.
+			}
 			result = true;
 		}
 		else {
 			result = false;
 		}
+		
+		if (result && !incrementalComputation) {
+			invalidateCoefficientTemporaryFields();
+		}
+		
 		return result;
 	}
 
 	///////////////////////////////////// MULTINOMIAL COEFFICIENT ////////////////////////////////
 
-	/** Returns the multinomial coefficient for this distribution. */
+	private Rational choose = null;
+	
+	/** 
+	 * Returns the multinomial coefficient for this distribution.
+	 * @return the multinomial coefficient for this distribution.
+	 */
 	public Rational choose() {
-		Rational nFactorial = factorialOfN();
-		Rational productOfFactorials = productOfFactorials();
-		Rational result = nFactorial.divide(productOfFactorials);
-		
-//		System.out.println("choose of : " + join(Ints.asList(counters)));	
-//		System.out.println("n : " + getN());	
-//		System.out.println("m : " + getM());	
-//		System.out.println("n!: " + nFactorial);	
-//		System.out.println("prod of factorials: " + productOfFactorials);	
-//		System.out.println("n! / prod of factorials: " + result);	
+		if (choose == null) {
+			if (incrementalComputation) {
+				if (getM() == 1) {
+					choose = ONE;
+				}
+				else {
+					// the following equality can be understood by expanding the formulas into factorials,
+					// or by the intuition that the multinomial choice can be seen by picking the elements for the first class first,
+					// and the making the remaining choices for the remaining class.
+					choose = binomialCoefficientOfFirstClass().multiply(subMultinomial.choose());
+				}
+				
+//				Rational nFactorial = factorialOfN();
+//				Rational productOfFactorials = productOfFactorials();
+//				Rational oldChoose = nFactorial.divide(productOfFactorials);
+//				
+//				if ( ! choose.equals(oldChoose)) {
+//					System.out.println("choose of : " + join(Ints.asList(counters).subList(myIndex, counters.length)));	
+//					System.out.println("n : " + getN());	
+//					System.out.println("m : " + getM());	
+//					System.out.println("n!: " + nFactorial);	
+//					System.out.println("prod of factorials: " + productOfFactorials);	
+//					System.out.println("Old choose: " + oldChoose);
+//					System.out.println();
+//					if (getM() != 1) {
+//						System.out.println("binomial coefficient of first class: " + binomialCoefficientOfFirstClass());	
+//						System.out.println("multinomial coefficient of subMultinomial: " + subMultinomial.choose());
+//					}
+//					System.out.println("New choose: " + choose);	
+//					System.exit(-1);
+//				}
+				
+			}
+			else {
+				Rational nFactorial = factorialOfN();
+				Rational productOfFactorials = productOfFactorials();
+				choose = nFactorial.divide(productOfFactorials);
 
-		return result;
+				//		System.out.println("choose of : " + join(Ints.asList(counters)));	
+				//		System.out.println("n : " + getN());	
+				//		System.out.println("m : " + getM());	
+				//		System.out.println("n!: " + nFactorial);	
+				//		System.out.println("prod of factorials: " + productOfFactorials);	
+				//		System.out.println("n! / prod of factorials: " + result);	
+			}
+		}
+
+		return choose;
 	}
 
+	private Rational binomialCoefficientOfFirstClass = null;
+	
+	/** 
+	 * Calculates the binomial coefficient of <code>getN()</code> and <code>getClassSize(myIndex)</code>.
+	 * This is useful for computing the multinomial coefficient as a function of the subMultinomial coefficient.
+	 * 
+	 * @return the binomial coefficient choose(n, counters[myIndex]).
+	 */
+	private Rational binomialCoefficientOfFirstClass() {
+		if (binomialCoefficientOfFirstClass == null) {
+			binomialCoefficientOfFirstClass = binomialCoefficient(getN(), counters[myIndex]);
+			System.out.println("Computed binomial coefficient of n = " + getN() + " and n_0 = " + counters[myIndex] + " resulting in " + binomialCoefficientOfFirstClass);	
+		}
+		return binomialCoefficientOfFirstClass;
+	}
+	
 	private Rational factorialOfN = null;
+	
 	/** Calculates (at most once per object) the factorial of the number of objects. */
 	private Rational factorialOfN() {
 		if (factorialOfN == null) {
@@ -216,31 +328,48 @@ public class Multinomial implements Cloneable {
 		return factorialOfN;
 	}
 
-	/** Returns the product of factorials of classes sizes in this distribution. */
+	private Rational productOfFactorials = null;
+
+	/** 
+	 * Returns the product of factorials of classes sizes in this distribution.
+	 * @return the product of the factorials of the class counters. 
+	 */
 	public Rational productOfFactorials() {
-		Rational result;
-		if (getM() == 1) {
-			result = factorialOfN();
+		if (productOfFactorials == null) {
+			if (getM() == 1) {
+				productOfFactorials = factorialOfN();
+			}
+			else {
+				Rational factorialOfMyFirstClassSize = factorial(counters[myIndex]);
+				Rational productOfFactorialOfRemainingClassesSizes = subMultinomial.productOfFactorials();
+				productOfFactorials = factorialOfMyFirstClassSize.multiply(productOfFactorialOfRemainingClassesSizes);
+			}
 		}
-		else {
-			Rational factorialOfMyFirstClassSize = factorial(counters[myIndex]);
-			Rational productOfFactorialOfRemainingClassesSizes = subMultinomial.productOfFactorials();
-			result = factorialOfMyFirstClassSize.multiply(productOfFactorialOfRemainingClassesSizes);
-		}
-		return result;
+		return productOfFactorials;
+	}
+	
+	private void invalidateCoefficientTemporaryFields() {
+		choose = null;
+		binomialCoefficientOfFirstClass = null;
+		factorialOfN = null;
+		productOfFactorials = null;
 	}
 
 	/////////////////////////////////// CLASS DISTRIBUTION ////////////////////////////////
 
 	/**
 	 * Returns a list with the class counters.
-	 * @return
+	 * @return the class counters
 	 */
 	public List<Integer> getCounters() {
 		return Collections.unmodifiableList(Ints.asList(counters));
 	}
 
-	/** Returns the size class of a particular class. */
+	/** 
+	 * Returns the size class of a particular class.
+	 * @param classIndex the index of the class the size of which will be returned
+	 * @return the size of the <code>classIndex</code>-th class.
+	 */
 	public int getClassSize(int classIndex) {
 		return counters[classIndex];
 	}

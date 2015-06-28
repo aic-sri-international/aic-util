@@ -1585,8 +1585,8 @@ public class Util {
 
 	/**
 	 * Returns the sum of the elements in an array of integers.
-	 * @param array
-	 * @return
+	 * @param array an array of ints
+	 * @return the sum of the elements in an array of integers.
 	 */
 	public static int sum(int[] array) {
 		int result = 0;
@@ -3957,9 +3957,21 @@ public class Util {
 		}
 	}
 	
-	private static Rational recfact(long start, long n) {
+	
+	/**
+	 * Computes the rising factorial <code>start^(n)</code> defined as <code>start(start + 1)...(start + n - 1)</code>.
+	 * @param start the first number to be multiplied
+	 * @param n the number of numbers to multiply, starting and rising from <code>start</code>
+	 * @return the rising factorial <code>start^(n)</code>
+	 */
+	public static Rational risingFactorial(long start, long n) {
+		// more efficient implementation that works with smaller numbers than just multiplying numbers in sequence.
+		// there are more efficient ways of doing this, though.
 	    long i;
-	    if (n <= 16) { 
+	    if (n == 0) {
+	    	return Rational.ONE;
+	    }
+	    else if (n <= 16) { 
 	    	Rational r = new Rational(start);
 	        for (i = start + 1; i < start + n; i++) {
 	        	r = r.multiply(i);
@@ -3967,11 +3979,46 @@ public class Util {
 	        return r;
 	    }
 	    i = n / 2;
-	    Rational result = recfact(start, i).multiply(recfact(start + i, n - i));
+	    Rational result = risingFactorial(start, i).multiply(risingFactorial(start + i, n - i));
 		return result;
 	}
 	
+	/**
+	 * Computes the falling factorial <code>(start)_n</code> defined as <code>start(start - 1)...(start - n + 1)</code>.
+	 * It does that by reducing the problem to a rising factorial ({@link #risingFactorial(long, long)})
+	 * due to the equality <code>(start)_n = (start - n + 1)^(n)</code>.
+	 * @param start the first number to be multiplied
+	 * @param n the number of numbers to multiply, starting and decreasing from start
+	 * @return the falling factorial <code>(start)_n</code>
+	 */
+	public static Rational fallingFactorial(long start, long n) {
+		Rational result = risingFactorial(start - n + 1, n);
+		return result;
+	}
+	
+	/**
+	 * Computes the factorial of <code>n</code>.
+	 * It does that by reducing the problem to a rising factorial ({@link #risingFactorial(long, long)})
+	 * due to the equality <code>n! = 1^(n)</code>.
+	 * @param n the number whose factorial is returned
+	 * @return the factorial of n
+	 */
 	public static Rational factorial(long n) {
-		return recfact(1, n);
+		Rational result = risingFactorial(1, n);
+		return result;
+	}
+	
+	/**
+	 * Computes the binomial coefficient <code>choose(n, k) = n! / ((n - k)! k!)</code>.
+	 * It does that by reducing the problem to a falling factorial ({@link #fallingFactorial(long, long)})
+	 * and a factorial ({@link #factorial(long)})
+	 * due to the equality <code>n! / ((n - k)! k!) = (n)_k / k!</code>.
+	 * @param n the number of elements
+	 * @param k the number of elements selected for the set
+	 * @return the binomial coefficient
+	 */
+	public static Rational binomialCoefficient(long n, long k) {
+		Rational result = fallingFactorial(n, k).divide(factorial(k));
+		return result;
 	}
 }

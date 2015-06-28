@@ -79,7 +79,7 @@ public abstract class EZIterator<E> implements Iterator<E> {
 	/**
 	 * A constructor indicating that the field {@link next} already contains
 	 * the next value to be provided by {@link #next} right at construction.
-	 * @param onNext
+	 * @param onNext whether the constructor (of an extending class) already computes a <code>next</code> value. 
 	 */
 	public EZIterator(boolean onNext) {
 		this.onNext = onNext;
