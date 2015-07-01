@@ -79,6 +79,15 @@ public class Multinomial implements Cloneable {
 	 * Surprisingly, it turns out the non-incremental computation is a bit faster than the incremental one, given my tests so far.
 	 * I am not quite sure why this is. It may be related to the way factorials are computed (not the straightforward way).
 	 * Further analysis would be needed to determine the reason for this.
+	 * 
+	 * PS: a potential place for improving performance is realizing that if the j-th sub-multinomial successfully iterates,
+	 * the counters before that do not change, and therefore their binomial counters do not change.
+	 * However, both implementations still multiply factorials corresponding to these counters all over again.
+	 * The straightforward implementation does it because it is completely non-incremental anyway,
+	 * and the incremental way does it because if the j-th sub-multinomial coefficient changes,
+	 * the (j-1)-th is updated and is considered changed, thus triggering an update for the (j-2)-th one.
+	 * This can be avoided by keeping the multiplication of binomial coefficients from 1st to j-th counters always available,
+	 * something that is not done in the current code. 
 	 */
 	static private boolean incrementalComputation = false;
 	
