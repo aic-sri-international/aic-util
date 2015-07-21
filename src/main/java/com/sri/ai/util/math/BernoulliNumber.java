@@ -37,19 +37,63 @@
  */
 package com.sri.ai.util.math;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.google.common.annotations.Beta;
 
+/**
+ * Compute Bernoulli number:<br>
+ * https://en.wikipedia.org/wiki/Bernoulli_number
+ * 
+ * @author oreilly
+ *
+ */
 @Beta
 public class BernoulliNumber {
+	private static final Map<Integer, Rational> _precomputed = new HashMap<>();
+	static {
+		_precomputed.put(2,  new Rational(      1,    6));
+		_precomputed.put(4,  new Rational(     -1,   30));
+		_precomputed.put(6,  new Rational(      1,   42));
+		_precomputed.put(8,  new Rational(     -1,   30));
+		_precomputed.put(10, new Rational(      5,   66));
+		_precomputed.put(12, new Rational(   -691, 2730));
+		_precomputed.put(14, new Rational(      7,    6));
+		_precomputed.put(16, new Rational(  -3617,  510));
+		_precomputed.put(18, new Rational(  43867,  798));
+		_precomputed.put(20, new Rational(-174611,  330)); 
+	}
+	private static final Rational _firstB1  = new Rational(-1, 2);
+	private static final Rational _secondB1 = new Rational( 1, 2);
 
 	/**
-	 * Compute the first Bernoulli numbers (i.e. B1 = -1/2).
+	 * Compute the first Bernoulli numbers (i.e. B<sub>1</sub> = -1/2).
+	 * NOTE: Used by <a href="https://en.wikipedia.org/wiki/Faulhaber%27s_formula">Faulhaber's formula</a>.
 	 * 
 	 * @param n
-	 *        the Bernoully number to compute.
+	 *        the nth first Bernoulli number to compute.
 	 * @return the first Bernoulli number n.
 	 */
 	public static Rational computeFirst(int n) {
+		return compute(n, _firstB1);
+	}
+	
+	/**
+	 * Compute the second Bernoulli numbers (i.e. B<sub>1</sub> = 1/2).
+	 * 
+	 * @param n
+	 *        the nth second Bernoulli number to compute.
+	 * @return the second Bernoulli number n.
+	 */
+	public static Rational computeSecond(int n) {
+		return compute(n, _secondB1);
+	}
+	
+	//
+	// PRIVATE
+	//
+	private static Rational compute(int n, Rational b1Value) {
 		if (n < 0) {
 			throw new IllegalArgumentException("n must be >= 0");
 		}
@@ -58,25 +102,24 @@ public class BernoulliNumber {
 			result = Rational.ONE;
 		}
 		else if (n == 1) {
-			result = new Rational(-1, 2);
+			result = b1Value;
 		}
 		else if (n % 2 == 1) {
 			result = Rational.ZERO;
 		}
 		else {
-			switch (n) {
-			case  2: result = new Rational(1, 6); break;
-			case  4: result = new Rational(-1, 30); break;
-			case  6: result = new Rational(1, 42); break;
-			case  8: result = new Rational(-1, 30); break;
-			case 10: result = new Rational(5, 66); break;
-			case 12: result = new Rational(-691, 2730); break;
-			case 14: result = new Rational(7, 6); break;
-			case 16: result = new Rational(-3617, 510); break;
-			case 18: result = new Rational(43867, 798); break;
-			case 20: result = new Rational(-174611, 330); break;
-			default:
-				throw new UnsupportedOperationException("n > 20 currently not supported");			
+			result = _precomputed.get(n);
+			if (result == null) {
+				// NOTE: Simple implementation based on:
+				// https://en.wikipedia.org/wiki/Bernoulli_number#Algorithmic_description
+				Rational[] a = new Rational[n+1];
+				for (int m = 0; m <= n; m++) {
+					a[m] = Rational.ONE.divide(m+1);
+					for (int j = m; j >= 1; j--) {
+						a[j-1] = new Rational(j).multiply(a[j-1].subtract(a[j]));
+					}
+				}
+				result = a[0];
 			}
 		}
 		
