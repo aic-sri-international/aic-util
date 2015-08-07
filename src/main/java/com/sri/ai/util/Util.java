@@ -1035,6 +1035,46 @@ public class Util {
 	}
 
 	/**
+	 * Stores results of applying a function to an iterator's range in a given list.
+	 * 
+	 * @param iterator
+	 *            the iterator's whose range a function is to be applied to.
+	 * @param function
+	 *            the function to be applied to the given iterator's range.
+	 * @param result a list to which we add the results from the function applications on the given
+	 *         iterator's range.
+	 * @param <F>
+	 *            the type of the iterators arguments.
+	 * @param <T>
+	 *            the result type of the function applied to the iterator's
+	 *            range.
+	 */
+	protected static <F, T> void mapIntoList(Iterator<? extends F> iterator, Function<F, T> function, List<T> result) {
+		while (iterator.hasNext()) {
+			F nextElement = iterator.next();
+			result.add(function.apply(nextElement));
+		}
+	}
+
+	/**
+	 * Stores results of applying a function to the elements of a collection in a given list.
+	 * 
+	 * @param collection
+	 *            the collection to whose elements a function is to be applied to.
+	 * @param function
+	 *            the function to be applied to the given iterator's range.
+	 * @param result a list to which we add the results from the function applications on the given
+	 *         collection elements.
+	 * @param <F>
+	 *            the type of the collection elements.
+	 * @param <T>
+	 *            the result type of the function applied to the collection elements.
+	 */
+	public static <F, T> void mapIntoList(Collection<? extends F> collection, Function<F, T> function, List<T> result) {
+		mapIntoList(collection.iterator(), function, result);
+	}
+
+	/**
 	 * Stores results of applying a function to an iterator's range in a new,
 	 * empty list and returns it.
 	 * 
@@ -1053,11 +1093,7 @@ public class Util {
 	public static <F, T> List<T> mapIntoList(Iterator<? extends F> iterator,
 			Function<F, T> function) {
 		List<T> result = new LinkedList<T>();
-		while (iterator.hasNext()) {
-			F nextElement = iterator.next();
-			result.add(function.apply(nextElement));
-		}
-
+		mapIntoList(iterator, function, result);
 		return result;
 	}
 
