@@ -797,6 +797,23 @@ public class Util {
 	}
 
 	/**
+	 * Adds all elements of iterator's range to a new linked list.
+	 * 
+	 * @param i
+	 *            the iterator whose range is to be added to the list.
+	 * @return the list.
+	 * @param <T>
+	 *            the type of the elements given.
+	 */
+	public static <T> LinkedList<T> addAllToList(Iterator<T> i) {
+		LinkedList<T> result = new LinkedList<T>();
+		while (i.hasNext()) {
+			result.add(i.next());
+		}
+		return result;
+	}
+
+	/**
 	 * @param map
 	 *            the map to look up a value using the given key.
 	 * @param key
@@ -4056,5 +4073,31 @@ public class Util {
 	public static Rational binomialCoefficient(long n, long k) {
 		Rational result = fallingFactorial(n, k).divide(factorial(k));
 		return result;
+	}
+	
+	/**
+	 * Applies a function to the values of a map, returning a new map,
+	 * or the same map instance if the function has always returned the same value object instances.
+	 * @param map
+	 * @param function
+	 * @return
+	 */
+	public static <K,V> Map<K,V> mapValuesNonDestructively(Map<K,V> map, Function<V,V> function) {
+		Map<K,V> result = new LinkedHashMap<K,V>();
+		boolean instanceChange = false;
+		for (Map.Entry<K,V> entry : map.entrySet()) {
+			V value = entry.getValue();
+			V newValue = function.apply(value);
+			if (newValue != value) {
+				instanceChange = true;
+			}
+			result.put(entry.getKey(), newValue);
+		}
+		if (instanceChange) {
+			return result;
+		}
+		else {
+			return map;
+		}
 	}
 }
