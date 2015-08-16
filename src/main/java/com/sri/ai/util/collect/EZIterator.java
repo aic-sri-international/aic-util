@@ -48,6 +48,10 @@ import com.google.common.annotations.Beta;
  * calculate the next object in the sequence, or <code>null</code> if it is
  * over. EZIterator defines the Iterator interface based on this method (without
  * supporting the {@link #remove()} method.
+ * If the constructor already computes the next (thus, the first) element,
+ * the protected field {@link #onNext} must be set to <code>true</code>.
+ * If the constructor determines there is no next element, it must set
+ * {@link #onNext} to <code>true</code> and {@link #next} to <code>null</code>.
  * 
  * @author braz
  */

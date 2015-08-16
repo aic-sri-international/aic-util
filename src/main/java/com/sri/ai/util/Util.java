@@ -486,11 +486,23 @@ public class Util {
 	 *            the elements to construct the List from.
 	 * @return the received arguments in a linked list.
 	 * @param <T>
-	 *            the type of the List to be constructed and the elements it is
-	 *            to contain.
+	 *            the type of the elements in the list.
 	 */
 	public static <T> List<T> list(T... elements) {
 		return new LinkedList<T>(Arrays.asList(elements));
+	}
+
+	/**
+	 * Construct an iterator of the given type ranging over provided elements.
+	 * 
+	 * @param elements
+	 *            the elements to construct the List from.
+	 * @return an iterator over the received arguments.
+	 * @param <T>
+	 *            the type of elements the iterator will range over.
+	 */
+	public static <T> Iterator<T> iterator(T... elements) {
+		return Arrays.asList(elements).iterator();
 	}
 
 	/**
@@ -505,21 +517,6 @@ public class Util {
 	 */
 	public static <T> ArrayList<T> arrayList(T... elements) {
 		return new ArrayList<T>(Arrays.asList(elements));
-	}
-
-	/**
-	 * Construct an iterator of the given type populated that iterates over the
-	 * provided elements.
-	 * 
-	 * @param elements
-	 *            the elements the iterator is to walk over.
-	 * @return an iterator over the received arguments.
-	 * @param <T>
-	 *            the type of the Iterator to be constructed and the elements it
-	 *            is to iterate over.
-	 */
-	public static <T> Iterator<T> iterator(T... elements) {
-		return Arrays.asList(elements).iterator();
 	}
 
 	/**
@@ -807,6 +804,23 @@ public class Util {
 	 */
 	public static <T> LinkedList<T> addAllToList(Iterator<T> i) {
 		LinkedList<T> result = new LinkedList<T>();
+		while (i.hasNext()) {
+			result.add(i.next());
+		}
+		return result;
+	}
+
+	/**
+	 * Adds all elements of iterator's range to a new linked hash set.
+	 * 
+	 * @param i
+	 *            the iterator whose range is to be added to the set.
+	 * @return the set.
+	 * @param <T>
+	 *            the type of the elements given.
+	 */
+	public static <T> LinkedHashSet<T> addAllToSet(Iterator<T> i) {
+		LinkedHashSet<T> result = new LinkedHashSet<T>();
 		while (i.hasNext()) {
 			result.add(i.next());
 		}

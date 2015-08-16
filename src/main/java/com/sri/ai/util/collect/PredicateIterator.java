@@ -72,6 +72,22 @@ public class PredicateIterator<E> extends FilterIterator<E> {
 		this(collection.iterator(), predicate);
 	}
 
+	public static <E> PredicateIterator<E> make(Predicate<E> predicate, Iterator<E> base) {
+		return new PredicateIterator<E>(predicate, base);
+	}
+
+	public static <E> PredicateIterator<E> make(Iterator<E> base, Predicate<E> predicate) {
+		return new PredicateIterator<E>(predicate, base);
+	}
+
+	public static <E> PredicateIterator<E> make(Collection<E> collection, Predicate<E> predicate) {
+		return new PredicateIterator<E>(predicate, collection.iterator());
+	}
+
+	public static <E> PredicateIterator<E> make(Predicate<E> predicate, Collection<E> collection) {
+		return new PredicateIterator<E>(predicate, collection.iterator());
+	}
+
 	@Override
 	public boolean include(E element) {
 		return predicate.apply(element);
