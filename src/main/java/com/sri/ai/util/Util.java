@@ -4114,4 +4114,16 @@ public class Util {
 			return map;
 		}
 	}
+
+	/**
+	 * Iterates over all elements in iterator's range and picks one with uniform probability.
+	 * 
+	 * @param iterator
+	 * @return
+	 */
+	public static <T> T pickUniformly(Iterator<T> iterator) {
+		List<T> list = listFrom(iterator);
+		T result = list.get(new Random().nextInt(list.size()));
+		return result;
+	}
 }
