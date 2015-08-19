@@ -4121,9 +4121,9 @@ public class Util {
 	 * @param iterator
 	 * @return
 	 */
-	public static <T> T pickUniformly(Iterator<T> iterator) {
+	public static <T> T pickUniformly(Iterator<T> iterator, Random random) {
 		List<T> list = listFrom(iterator);
-		T result = list.get(new Random().nextInt(list.size()));
+		T result = list.get(random.nextInt(list.size()));
 		return result;
 	}
 }
