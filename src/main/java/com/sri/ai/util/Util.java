@@ -2775,6 +2775,28 @@ public class Util {
 	}
 	
 	/**
+	 * Returns a new linked hash set containing the elements of set that do not
+	 * satisfy a predicate.
+	 * 
+	 * @param set
+	 *            the set of elements to be tested.
+	 * @param predicate
+	 *            the predicate to be used to test the elements.
+	 * @return a new linked hash set containing the elements of set that do not
+	 *         satisfy a predicate.
+	 * @param <E>
+	 *            the type of the elements.
+	 */
+	public static <E> LinkedHashSet<E> removeNonDestructively(Set<E> set, Predicate<E> predicate) {
+		LinkedHashSet<E> result =
+				set.stream()
+				.filter(e -> !predicate.apply(e))
+				.collect(toLinkedHashSet(set.size()));
+
+		return result;
+	}
+	
+	/**
 	 * Returns a new linked list containing the elements of collection that are not equal to
 	 * a given one.
 	 * 
