@@ -2787,7 +2787,7 @@ public class Util {
 	 * @param <E>
 	 *            the type of the elements.
 	 */
-	public static <E> LinkedHashSet<E> removeNonDestructively(Set<E> set, Predicate<E> predicate) {
+	public static <E> LinkedHashSet<E> removeFromSetNonDestructively(Set<E> set, Predicate<E> predicate) {
 		LinkedHashSet<E> result =
 				set.stream()
 				.filter(e -> !predicate.apply(e))
