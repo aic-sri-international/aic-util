@@ -180,6 +180,7 @@ public class Multinomial implements Cloneable {
 		this.counters = counters;
 	}
 	
+	@Override
 	public Multinomial clone() {
 		Multinomial result = new Multinomial(counters.clone());
 		return result;
