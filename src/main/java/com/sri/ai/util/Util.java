@@ -2797,6 +2797,29 @@ public class Util {
 	}
 	
 	/**
+	 * Returns a new linked hash set containing the elements of array list that do not
+	 * satisfy a predicate.
+	 * 
+	 * @param arrayList
+	 *            the array list of elements to be tested.
+	 * @param predicate
+	 *            the predicate to be used to test the elements.
+	 * @return a new array list containing the elements of set that do not
+	 *         satisfy a predicate.
+	 * @param <E>
+	 *            the type of the elements.
+	 */
+	public static <E> ArrayList<E> removeFromArrayListNonDestructively(ArrayList<E> arrayList, Predicate<E> predicate) {
+		ArrayList<E> result = new ArrayList<E>(arrayList.size());
+		for (E element : arrayList) {
+			if (!predicate.apply(element)) {
+				result.add(element);
+			}
+		}
+		return result;
+	}
+	
+	/**
 	 * Returns a new linked list containing the elements of collection that are not equal to
 	 * a given one.
 	 * 
@@ -4148,4 +4171,27 @@ public class Util {
 		T result = list.get(random.nextInt(list.size()));
 		return result;
 	}
+	
+	/**
+	 * Adapts an {@link Iterator} to an {@link Iterable} for use in enhanced for
+	 * loops. If {@link Iterable#iterator()} is invoked more than once, an
+	 * {@link IllegalStateException} is thrown.
+	 */
+	public static <T> Iterable<T> in(final Iterator<T> iterator) {
+		assert iterator != null;
+		class SingleUseIterable implements Iterable<T> {
+			private boolean used = false;
+
+			@Override
+			public Iterator<T> iterator() {
+				if (used) {
+					throw new IllegalStateException("SingleUseIterable already invoked");
+				}
+				used = true;
+				return iterator;
+			}
+		}
+		return new SingleUseIterable();
+	}
+	
 }
