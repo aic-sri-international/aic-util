@@ -4137,9 +4137,11 @@ public class Util {
 	/**
 	 * Applies a function to the values of a map, returning a new map,
 	 * or the same map instance if the function has always returned the same value object instances.
-	 * @param map
-	 * @param function
-	 * @return
+	 * @param map the map
+	 * @param function the function
+	 * @param <K> the type of keys
+	 * @param <V> the type of values
+	 * @return a new map with each value v replaced by function(v), or the same map if f(v) == v for all v.
 	 */
 	public static <K,V> Map<K,V> mapValuesNonDestructively(Map<K,V> map, Function<V,V> function) {
 		Map<K,V> result = new LinkedHashMap<K,V>();
@@ -4163,8 +4165,10 @@ public class Util {
 	/**
 	 * Iterates over all elements in iterator's range and picks one with uniform probability.
 	 * 
-	 * @param iterator
-	 * @return
+	 * @param iterator the iterator
+	 * @param random a random number generator
+	 * @param <T> the type of elements
+	 * @return a uniformly sampled element from the iterator's range using the random number generator.
 	 */
 	public static <T> T pickUniformly(Iterator<T> iterator, Random random) {
 		List<T> list = listFrom(iterator);
@@ -4176,6 +4180,9 @@ public class Util {
 	 * Adapts an {@link Iterator} to an {@link Iterable} for use in enhanced for
 	 * loops. If {@link Iterable#iterator()} is invoked more than once, an
 	 * {@link IllegalStateException} is thrown.
+	 * @param iterator the iterator
+	 * @param <T> the type of elements
+	 * @return the iterable for iterator
 	 */
 	public static <T> Iterable<T> in(final Iterator<T> iterator) {
 		assert iterator != null;

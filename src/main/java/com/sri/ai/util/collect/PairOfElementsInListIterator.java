@@ -45,9 +45,12 @@ import com.google.common.annotations.Beta;
 import com.sri.ai.util.base.PairOf;
 
 /**
- * An iterator over pairs of distinct elements in an {@link List},
+ * An iterator over pairs of distinct elements in an {@link java.util.List},
  * such that each pair's first element occurs before the second in the list.
- * It is highly advisable that the list be an {@link ArrayList}.
+ * It is highly advisable that the list be an {@link java.util.ArrayList}
+ * since the class heavily uses random access.
+ * 
+ * @param <E> the type of elements
  *
  * @author braz
  */
