@@ -4200,5 +4200,42 @@ public class Util {
 		}
 		return new SingleUseIterable();
 	}
+
+	/**
+	 * Same as {@link #union(Iterator)} applied to given collection's iterator.
+	 * @param maps the collection of maps
+	 * @param <K> the type of keys
+	 * @param <V> the type of values
+	 * @return a new map with all entries from all maps in a collection
+	 */
+	public static <K,V> Map<K,V> union(Collection<Map<K,V>> maps) {
+		return union(maps.iterator());
+	}
+
+	/**
+	 * Returns a new map with all entries from all maps in an iterator's range.
+	 * @param mapsIterator the maps iterator
+	 * @param <K> the type of keys
+	 * @param <V> the type of values
+	 * @return a new map with all entries from all maps in an iterator's range
+	 */
+	public static <K,V> Map<K,V> union(Iterator<Map<K,V>> mapsIterator) {
+		return putAllFromAll(new LinkedHashMap<K,V>(), mapsIterator);
+	}
+
+	/**
+	 * Puts all entries from all maps in the range of an iterator to a given map.
+	 * @param map the map
+	 * @param mapsIterator the maps iterator
+	 * @param <K> the type of keys
+	 * @param <V> the type of values
+	 * @return the given map with all entries from all maps in interator's range
+	 */
+	public static <K,V> Map<K,V> putAllFromAll(Map<K,V> map, Iterator<Map<K,V>> mapsIterator) {
+		for (Map<K,V> eachMap : in(mapsIterator)) {
+			map.putAll(eachMap);
+		}
+		return map;
+	}
 	
 }
