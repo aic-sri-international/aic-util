@@ -18,7 +18,7 @@
  * notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
  * 
- * Neither the name of the aic-expresso nor the names of its
+ * Neither the name of the aic-util nor the names of its
  * contributors may be used to endorse or promote products derived from
  * this software without specific prior written permission.
  * 
@@ -37,61 +37,31 @@
  */
 package com.sri.ai.util.collect;
 
-import static com.sri.ai.util.base.PairOf.makePairOf;
-
+import java.util.LinkedList;
 import java.util.List;
 
 import com.google.common.annotations.Beta;
-import com.sri.ai.util.base.PairOf;
 
 /**
- * An iterator over pairs of distinct elements in an {@link java.util.List},
- * such that each pair's first element occurs before the second in the list.
- * It is highly advisable that the list be an {@link java.util.ArrayList}
- * since the class heavily uses random access.
+ * An iterator over permutations of integers from 1 to n,
+ * based on {@link InplaceIntegerPermutationIterator} but making a copy of each permutation.
  * 
- * @param <E> the type of elements
- *
  * @author braz
  */
 @Beta
-public class PairOfElementsInListIterator<E> extends EZIterator<PairOf<E>> {
+public class IntegerPermutationIterator extends EZIterator<List<Integer>> {
 
-	private List<E> list;
-	private int i; // invariant: next = PairOf.makePairOf(list.get(i), list.get(j))
-	private int j;
+	private InplaceIntegerPermutationIterator inplacePermutationIterator;
 	
-	public PairOfElementsInListIterator(List<E> list) {
-		this.list = list;
-		if (list.size() < 2) {
-			next = null;
-			onNext = true;
-		}
-		else {
-			this.i = 0;
-			this.j = 1;
-			next = makePairOf(list.get(i), list.get(j));
-			onNext = true;
-		}
+	public IntegerPermutationIterator(int n) {
+		inplacePermutationIterator = new InplaceIntegerPermutationIterator(n);
 	}
-	
-	@Override
-	protected PairOf<E> calculateNext() {
-		j++;
-		if (j != list.size()) {
-			next = makePairOf(list.get(i), list.get(j));
-		}
-		else {
-			i++;
-			if (i != list.size() - 1) {
-				j = i + 1;
-				next = makePairOf(list.get(i), list.get(j));
-			}
-			else {
-				next = null;
-			}
-		}
 
-		return next;
+	@Override
+	protected List<Integer> calculateNext() {
+		if (inplacePermutationIterator.hasNext()) {
+			return new LinkedList<Integer>(inplacePermutationIterator.next());
+		}
+		return null;
 	}
 }

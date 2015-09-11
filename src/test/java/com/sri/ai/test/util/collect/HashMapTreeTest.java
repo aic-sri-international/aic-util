@@ -43,9 +43,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.sri.ai.util.Util;
-import com.sri.ai.util.collect.HashMapTree;
+import com.sri.ai.util.collect.HashMapRandomAccessTree;
 import com.sri.ai.util.collect.StringIterator;
-import com.sri.ai.util.collect.Tree;
+import com.sri.ai.util.collect.RandomAccessTree;
 
 public class HashMapTreeTest {
 
@@ -55,11 +55,11 @@ public class HashMapTreeTest {
 
 	@Test
 	public void test() {
-		HashMapTree tree = new HashMapTree();
+		HashMapRandomAccessTree tree = new HashMapRandomAccessTree();
 		
 		StringIterator i;
 		boolean newNodes;
-		Tree.GetResult result;
+		RandomAccessTree.GetResult result;
 		
 		i = new StringIterator("abobora");
 		//System.out.println(Util.join("", i));

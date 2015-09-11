@@ -270,7 +270,7 @@ public class Multinomial implements Cloneable {
 				else {
 					// the following equality can be understood by expanding the formulas into factorials,
 					// or by the intuition that the multinomial choice can be seen by picking the elements for the first class first,
-					// and the making the remaining choices for the remaining class.
+					// and the making the remaining subTreeMakers for the remaining class.
 					choose = binomialCoefficientOfFirstClass().multiply(subMultinomial.choose());
 				}
 				

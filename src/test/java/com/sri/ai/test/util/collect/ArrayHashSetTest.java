@@ -96,24 +96,24 @@ public class ArrayHashSetTest {
 		assertEquals("almond", set.get(0));
 		assertEquals("tree", set.get(1));
 		
-		set.add("leaf");
+		set.add("information");
 		assertFalse(set.isEmpty());
 		assertEquals(set.size(), 3);
 		assertEquals("almond", set.get(0));
 		assertEquals("tree", set.get(1));
-		assertEquals("leaf", set.get(2));
+		assertEquals("information", set.get(2));
 
-		assertEquals(Util.list("almond", "tree", "leaf"), Util.listFrom(set.iterator())); // tests iteration order
+		assertEquals(Util.list("almond", "tree", "information"), Util.listFrom(set.iterator())); // tests iteration order
 		
 		set.remove("tree");
 		assertFalse(set.isEmpty());
 		assertEquals(set.size(), 2);
 		assertEquals("almond", set.get(0));
-		assertEquals("leaf", set.get(1));
+		assertEquals("information", set.get(1));
 
-		assertEquals(Util.list("almond", "leaf"), Util.listFrom(set.iterator())); // tests iteration order
+		assertEquals(Util.list("almond", "information"), Util.listFrom(set.iterator())); // tests iteration order
 
-		set.remove("leaf");
+		set.remove("information");
 		assertFalse(set.isEmpty());
 		assertEquals(set.size(), 1);
 		assertEquals("almond", set.get(0));
@@ -130,13 +130,13 @@ public class ArrayHashSetTest {
 		set.add("tree");
 		set.add("tree");
 		set.add("almond");
-		set.add("leaf");
+		set.add("information");
 		set.add("tree");
 
 		assertEquals("almond", set.get(0));
 		assertEquals("tree", set.get(1));
-		assertEquals("leaf", set.get(2));
-		assertEquals(Util.list("almond", "tree", "leaf"), Util.listFrom(set.iterator())); // tests iteration order
+		assertEquals("information", set.get(2));
+		assertEquals(Util.list("almond", "tree", "information"), Util.listFrom(set.iterator())); // tests iteration order
 
 		set.set(2, "trunk");
 		assertEquals("almond", set.get(0));
@@ -144,19 +144,19 @@ public class ArrayHashSetTest {
 		assertEquals("trunk", set.get(2));
 		assertEquals(Util.list("almond", "tree", "trunk"), Util.listFrom(set.iterator())); // tests iteration order
 		
-		set.set(2, "leaf");
+		set.set(2, "information");
 		
 		assertEquals("almond", set.get(0));
 		assertEquals("tree", set.get(1));
-		assertEquals("leaf", set.get(2));
-		assertEquals(Util.list("almond", "tree", "leaf"), Util.listFrom(set.iterator())); // tests iteration order
+		assertEquals("information", set.get(2));
+		assertEquals(Util.list("almond", "tree", "information"), Util.listFrom(set.iterator())); // tests iteration order
 		
-		set.set(2, "leaf");
+		set.set(2, "information");
 		
 		assertEquals("almond", set.get(0));
 		assertEquals("tree", set.get(1));
-		assertEquals("leaf", set.get(2));
-		assertEquals(Util.list("almond", "tree", "leaf"), Util.listFrom(set.iterator())); // tests iteration order
+		assertEquals("information", set.get(2));
+		assertEquals(Util.list("almond", "tree", "information"), Util.listFrom(set.iterator())); // tests iteration order
 		
 		try {
 			set.set(2, "almond"); // cannot add an already-present element in a different position
@@ -183,9 +183,9 @@ public class ArrayHashSetTest {
 		// should remain the same after failed operations
 		assertEquals("almond", set.get(0));
 		assertEquals("tree", set.get(1));
-		assertEquals("leaf", set.get(2));
-		assertEquals(Util.list("almond", "tree", "leaf"), Util.listFrom(set.iterator())); // tests iteration order
+		assertEquals("information", set.get(2));
+		assertEquals(Util.list("almond", "tree", "information"), Util.listFrom(set.iterator())); // tests iteration order
 
-		assertEquals(Util.list("leaf", "tree", "almond"), Util.listFrom(new BackListIterator<String>(set.listIterator(set.size())))); // tests back-iteration order
+		assertEquals(Util.list("information", "tree", "almond"), Util.listFrom(new BackListIterator<String>(set.listIterator(set.size())))); // tests back-iteration order
 	}
 }

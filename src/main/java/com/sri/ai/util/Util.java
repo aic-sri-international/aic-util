@@ -1049,6 +1049,24 @@ public class Util {
 	}
 
 	/**
+	 * Stores iterator's range in a new, empty array list and returns it.
+	 * 
+	 * @param iterator
+	 *            the iterator whose range is to be stored in a new ArrayList.
+	 * @return a new ArrayList populated with the elements from the given iterator's
+	 *         range.
+	 * @param <T>
+	 *            the type of the elements iterated over.
+	 */
+	public static <T> ArrayList<T> arrayListFrom(Iterator<T> iterator) {
+		ArrayList<T> result = new ArrayList<T>();
+		while (iterator.hasNext()) {
+			result.add(iterator.next());
+		}
+		return result;
+	}
+
+	/**
 	 * Makes a list out of an array.
 	 * 
 	 * @param array
@@ -1181,6 +1199,32 @@ public class Util {
 		return result;
 	}
 
+	/**
+	 * Stores results of applying a function to iterator's range in a
+	 * new, empty array list and returns it.
+	 * 
+	 * @param iterator
+	 *            the iterator whose range's elements a function is to be applied to.
+	 * @param function
+	 *            the function to be applied to the given iterator's range elements.
+	 * @return an ArrayList of the results from the function applications on the
+	 *         given iterator's range elements.
+	 * @param <F>
+	 *            the type of the iterator's range elements.
+	 * @param <T>
+	 *            the result type of the function applied to the iterator's range elements.
+	 */
+	public static <F, T> ArrayList<T> mapIntoArrayList(
+			Iterator<? extends F> iterator, Function<F, T> function) {
+
+		ArrayList<T> result = new ArrayList<T>();
+		for (F element : in(iterator)) {
+			result.add(function.apply(element));
+		}
+
+		return result;
+	}
+	
 	/**
 	 * Stores results of applying a function to an array's elements in a
 	 * new, empty array list and returns it.
@@ -3777,6 +3821,18 @@ public class Util {
 	}
 
 	/**
+	 * @return a {@link Collector} to a {@link LinkedHashSet}.
+	 * @param initialCapacity
+	 *            the initial capacity of the instantiated {@link LinkedHashSet}
+	 * @param <E>
+	 *            the type of the elements the constructed linked hash set
+	 *            should contain.
+	 */
+	public static <E> Collector<E, ?, LinkedHashSet<E>> toLinkedHashSet() {
+		return Collectors.toCollection(() -> new LinkedHashSet<E>());
+	}
+
+	/**
 	 * @return a {@link Collector} to a {@link LinkedHashSet} with given initial
 	 *         capacity.
 	 * @param initialCapacity
@@ -4236,6 +4292,20 @@ public class Util {
 			map.putAll(eachMap);
 		}
 		return map;
+	}
+
+	/**
+	 * Creates an array list of size n, filled with a given value.
+	 * @param n
+	 * @param value
+	 * @return an array list of size n, filled with a given value.
+	 */
+	public static <T> ArrayList<T> fill(int n, T value) {
+		ArrayList<T> result = new ArrayList<T>(n);
+		for (int i = 0; i != n; i++) {
+			result.add(value);
+		}
+		return result;
 	}
 	
 }

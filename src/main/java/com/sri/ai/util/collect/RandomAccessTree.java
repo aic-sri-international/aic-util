@@ -18,7 +18,7 @@
  * notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
  * 
- * Neither the name of the aic-expresso nor the names of its
+ * Neither the name of the aic-util nor the names of its
  * contributors may be used to endorse or promote products derived from
  * this software without specific prior written permission.
  * 
@@ -37,61 +37,70 @@
  */
 package com.sri.ai.util.collect;
 
-import static com.sri.ai.util.base.PairOf.makePairOf;
-
+import java.util.Iterator;
 import java.util.List;
 
 import com.google.common.annotations.Beta;
-import com.sri.ai.util.base.PairOf;
 
 /**
- * An iterator over pairs of distinct elements in an {@link java.util.List},
- * such that each pair's first element occurs before the second in the list.
- * It is highly advisable that the list be an {@link java.util.ArrayList}
- * since the class heavily uses random access.
+ * An interface for a tree, with inclusion and retrieval of valid paths. This is
+ * an efficient way of retrieving strings by incrementally testing characters
+ * sequentially.
  * 
- * @param <E> the type of elements
- *
  * @author braz
  */
 @Beta
-public class PairOfElementsInListIterator<E> extends EZIterator<PairOf<E>> {
+public interface RandomAccessTree {
+	void clear();
 
-	private List<E> list;
-	private int i; // invariant: next = PairOf.makePairOf(list.get(i), list.get(j))
-	private int j;
-	
-	public PairOfElementsInListIterator(List<E> list) {
-		this.list = list;
-		if (list.size() < 2) {
-			next = null;
-			onNext = true;
-		}
-		else {
-			this.i = 0;
-			this.j = 1;
-			next = makePairOf(list.get(i), list.get(j));
-			onNext = true;
-		}
-	}
-	
-	@Override
-	protected PairOf<E> calculateNext() {
-		j++;
-		if (j != list.size()) {
-			next = makePairOf(list.get(i), list.get(j));
-		}
-		else {
-			i++;
-			if (i != list.size() - 1) {
-				j = i + 1;
-				next = makePairOf(list.get(i), list.get(j));
-			}
-			else {
-				next = null;
-			}
-		}
+	RandomAccessTree getSubTree(Object key);
 
-		return next;
+	/**
+	 * Inserts a valid path of elements into the tree, returning
+	 * <code>true</code> if new nodes had to be created.
+	 * 
+	 * @param path
+	 *        an iterator over a path of elements.
+	 * @return true if new nodes had to be created.
+	 */
+	boolean put(Iterator<?> path);
+
+	/**
+	 * An interface for the results of method {@link DefaultLazyTree#get(Iterator)}.
+	 * 
+	 * @author rodrigo
+	 * 
+	 */
+	public interface GetResult {
+		/**
+		 * @return the elements consumed from iterator in the {@link DefaultLazyTree#get(Iterator)}.
+		 */
+		List<?> getConsumedElements();
+
+		/**
+		 * @return true if the consumed path has reached a information.
+		 */
+		boolean isValid();
+
+		/**
+		 * If found a valid path, the valid path.
+		 * @return a valid path.
+		 */
+		List<?> getValidPath();
 	}
+
+	/**
+	 * Follows path with elements from iterator's range until no progress is
+	 * possible anymore (by either reaching a information or having no subtree labeled
+	 * with the next element). Returns a {@link GetResult} object containing the
+	 * elements consumed in the process, and whether a valid path has been found
+	 * and, if so, the longest valid path found.
+	 * 
+	 * @param path
+	 *            and iterator over the path of elements.
+	 * @return a {@link GetResult} object containing the elements consumed in
+	 *         the process, and whether a valid path has been found and, if so,
+	 *         the longest valid path found.
+	 */
+	GetResult get(Iterator<?> path);
 }

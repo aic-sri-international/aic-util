@@ -18,7 +18,7 @@
  * notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
  * 
- * Neither the name of the aic-expresso nor the names of its
+ * Neither the name of the aic-util nor the names of its
  * contributors may be used to endorse or promote products derived from
  * this software without specific prior written permission.
  * 
@@ -35,63 +35,54 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.sri.ai.util.collect;
+package com.sri.ai.test.util.collect;
 
-import static com.sri.ai.util.base.PairOf.makePairOf;
+import static com.sri.ai.util.Util.list;
+import static org.junit.Assert.assertEquals;
 
+import java.util.Iterator;
 import java.util.List;
 
+import org.junit.Test;
+
 import com.google.common.annotations.Beta;
-import com.sri.ai.util.base.PairOf;
+import com.sri.ai.util.Util;
+import com.sri.ai.util.collect.IntegerPermutationIterator;
 
-/**
- * An iterator over pairs of distinct elements in an {@link java.util.List},
- * such that each pair's first element occurs before the second in the list.
- * It is highly advisable that the list be an {@link java.util.ArrayList}
- * since the class heavily uses random access.
- * 
- * @param <E> the type of elements
- *
- * @author braz
- */
 @Beta
-public class PairOfElementsInListIterator<E> extends EZIterator<PairOf<E>> {
+public class IntegerPermutationIteratorTest {
 
-	private List<E> list;
-	private int i; // invariant: next = PairOf.makePairOf(list.get(i), list.get(j))
-	private int j;
-	
-	public PairOfElementsInListIterator(List<E> list) {
-		this.list = list;
-		if (list.size() < 2) {
-			next = null;
-			onNext = true;
-		}
-		else {
-			this.i = 0;
-			this.j = 1;
-			next = makePairOf(list.get(i), list.get(j));
-			onNext = true;
-		}
+	@SuppressWarnings("unchecked")
+	@Test
+	public void test() {
+		int n;
+		List<List<Integer>> expected;
+		
+		n = 0;
+		expected = list(list());
+		runTest(expected, n);
+		
+		n = 3;
+		expected = list(
+				list(0, 1, 2),
+				list(0, 2, 1),
+				list(1, 0, 2),
+				list(1, 2, 0),
+				list(2, 0, 1),
+				list(2, 1, 0)
+				);
+		runTest(expected, n);
 	}
-	
-	@Override
-	protected PairOf<E> calculateNext() {
-		j++;
-		if (j != list.size()) {
-			next = makePairOf(list.get(i), list.get(j));
-		}
-		else {
-			i++;
-			if (i != list.size() - 1) {
-				j = i + 1;
-				next = makePairOf(list.get(i), list.get(j));
-			}
-			else {
-				next = null;
-			}
-		}
 
-		return next;
+	/**
+	 * @param expected
+	 * @param n
+	 */
+	private void runTest(List<List<Integer>> expected, int n) {
+		Iterator<List<Integer>> iterator;
+		List<List<Integer>> permutations;
+		iterator = new IntegerPermutationIterator(n);
+		permutations = Util.listFrom(iterator);
+		assertEquals(expected, permutations);
 	}
 }
