@@ -3822,8 +3822,6 @@ public class Util {
 
 	/**
 	 * @return a {@link Collector} to a {@link LinkedHashSet}.
-	 * @param initialCapacity
-	 *            the initial capacity of the instantiated {@link LinkedHashSet}
 	 * @param <E>
 	 *            the type of the elements the constructed linked hash set
 	 *            should contain.
@@ -4296,8 +4294,9 @@ public class Util {
 
 	/**
 	 * Creates an array list of size n, filled with a given value.
-	 * @param n
-	 * @param value
+	 * @param n the size of the array
+	 * @param value the value to fill the array with
+	 * @param <T> the type of value
 	 * @return an array list of size n, filled with a given value.
 	 */
 	public static <T> ArrayList<T> fill(int n, T value) {
@@ -4310,7 +4309,9 @@ public class Util {
 
 	/**
 	 * Given an array list and a list of integers, returns an array list with the indexed elements in the indices order.
-	 * @param indices
+	 * @param array the array from which to extract sub array.
+	 * @param indices the array of indices
+	 * @param <E> the type of values
 	 * @return array list with the indexed elements in the indices order.
 	 */
 	public static <E> ArrayList<E> makeCopyWithGivenIndices(ArrayList<E> array, List<Integer> indices) {

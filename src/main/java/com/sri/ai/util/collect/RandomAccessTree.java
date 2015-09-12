@@ -66,14 +66,14 @@ public interface RandomAccessTree {
 	boolean put(Iterator<?> path);
 
 	/**
-	 * An interface for the results of method {@link DefaultLazyTree#get(Iterator)}.
+	 * An interface for the results of method {@link RandomAccessTree#get(Iterator)}.
 	 * 
 	 * @author rodrigo
 	 * 
 	 */
 	public interface GetResult {
 		/**
-		 * @return the elements consumed from iterator in the {@link DefaultLazyTree#get(Iterator)}.
+		 * @return the elements consumed from iterator in the {@link RandomAccessTree#get(Iterator)}.
 		 */
 		List<?> getConsumedElements();
 

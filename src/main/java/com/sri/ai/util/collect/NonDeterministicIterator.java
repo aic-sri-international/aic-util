@@ -55,28 +55,6 @@ import com.sri.ai.util.base.NullaryFunction;
  * or a non-information tree containing an iterator over sub-tree makers, which are thunks.
  * These thunks are allowed to perform whatever bookkeeping necessary,
  * and then return a sub-tree. 
- * <p>
- * The class is, admittedly, a little subtle to use.
- * Here's an example of code using it:
- * <pre>
- * 	
-	private static Iterator<NullaryFunction<LazyTree<String>>> makeIterator(String prefix, int depth) {
-		if (depth == 2) {
-			return iterator(() -> new DefaultLazyTree(prefix));
-		}
-		Function<String, NullaryFunction<LazyTree<String>>> fromStringToSubTreeMaker =
-				s -> () -> new DefaultLazyTree<String>(makeIterator(prefix + s, depth + 1));
-		Iterator<NullaryFunction<LazyTree<String>>> result = 
-				FunctionIterator.make(iterator("a", "b", "c"), fromStringToSubTreeMaker);
-		return result;
-	}
-	
-	public static void main(String[] args) {
-		DefaultLazyTree<String> root = new DefaultLazyTree<String>(makeIterator("info: ", 0));
-		NonDeterministicIterator<String> it = new NonDeterministicIterator<String>(root);
-		System.out.println(Util.join(it));
-	}
-</pre>
  * 
  * @author braz
  */
