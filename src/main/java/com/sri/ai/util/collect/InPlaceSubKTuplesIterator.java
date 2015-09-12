@@ -38,6 +38,7 @@
 package com.sri.ai.util.collect;
 
 import static com.sri.ai.util.Util.iterator;
+import static com.sri.ai.util.Util.myAssert;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,63 +53,67 @@ import com.sri.ai.util.base.NullaryFunction;
 
 
 /**
- * An iterator over permutations of integers from 1 to n, using the same array list to store all permutations
+ * An iterator over sub-tuples of k integers from 0 to n - 1, using the same collection instance to store all sub-tuples.
  * 
  * @author braz
  */
 @Beta
-public class InplaceIntegerPermutationIterator extends NonDeterministicIterator<List<Integer>> {
+public class InPlaceSubKTuplesIterator<E> extends NonDeterministicIterator<List<E>> {
 
-	public InplaceIntegerPermutationIterator(int n) {
-		super(new DefaultLazyTree<List<Integer>>(makeChoicesIterator(0, n, new LinkedHashSet<Integer>(), Util.fill(n, -1))));
+	public InPlaceSubKTuplesIterator(ArrayList<E> array, int k) {
+		super(new DefaultLazyTree<List<E>>(makeChoicesIterator(0, array, k, new LinkedHashSet<E>(), Util.fill(k, null))));
 	}
 
 	@SuppressWarnings("unchecked")
-	private static Iterator<NullaryFunction<LazyTree<List<Integer>>>> makeChoicesIterator(int i, int n, Collection<Integer> alreadyTaken, ArrayList<Integer> list) {
+	private static <T> Iterator<NullaryFunction<LazyTree<List<T>>>> makeChoicesIterator(int i, ArrayList<T> array, int k, Collection<T> alreadyTaken, ArrayList<T> kTuple) {
 		
-		Iterator<NullaryFunction<LazyTree<List<Integer>>>> result;
+		myAssert(
+				() -> k <= array.size(),
+				() -> InPlaceSubKTuplesIterator.class + " requires k to be at most the array size, but we got instead k = " + k + " and array size = " + array);
 		
-		if (i == n) {
-			result = iterator(() -> new DefaultLazyTree(list));
+		Iterator<NullaryFunction<LazyTree<List<T>>>> result;
+		
+		if (i == k) {
+			result = iterator(() -> new DefaultLazyTree(kTuple));
 		}
 		else {
-			PredicateIterator<Integer> available = PredicateIterator.make(
-					new IntegerIterator(n), 
+			PredicateIterator<T> available = PredicateIterator.make(
+					array, 
 					j -> ! alreadyTaken.contains(j)
 					);
 			result =
 					FunctionIterator.make(
 							available,
 							j -> () -> {
-								list.set(i, j);
-								Collection<Integer> newAlreadyTaken = new LinkedList<Integer>(alreadyTaken); // maybe we can optimize to eliminate this copy without much extra search cost.
+								kTuple.set(i, j);
+								Collection<T> newAlreadyTaken = new LinkedList<T>(alreadyTaken); // maybe we can optimize to eliminate this copy without much extra search cost.
 								newAlreadyTaken.add(j);
-								return new DefaultLazyTree<List<Integer>>(makeChoicesIterator(i + 1, n, newAlreadyTaken, list));
+								return new DefaultLazyTree<List<T>>(makeChoicesIterator(i + 1, array, k, newAlreadyTaken, kTuple));
 							});
 		}
 		
 		return result;
 	}
 	
-	public static void main(String[] args) {
-		InplaceIntegerPermutationIterator iterator = new InplaceIntegerPermutationIterator(3);
-		while (iterator.hasNext()) {
-			List<Integer> permutation = iterator.next();
-			System.out.println(permutation);	
-		}
-		
-		System.out.println("---");	
-		iterator = new InplaceIntegerPermutationIterator(0);
-		while (iterator.hasNext()) {
-			List<Integer> permutation = iterator.next();
-			System.out.println(permutation);	
-		}
-		
-		long start = System.currentTimeMillis();
-		iterator = new InplaceIntegerPermutationIterator(10);
-		while (iterator.hasNext()) {
-			iterator.next();
-		}
-		System.out.println(System.currentTimeMillis() - start + " ms");	
-	}
+//	public static void main(String[] args) {
+//		Iterator<List<String>> iterator = new InPlaceSubKTuplesIterator<String>(arrayList("apple", "banana", "orange", "pineapple"), 3);
+//		while (iterator.hasNext()) {
+//			List<String> subTuple = iterator.next();
+//			System.out.println(subTuple);	
+//		}
+//		
+//		System.out.println("---");	
+//		iterator = new InPlaceSubKTuplesIterator<String>(arrayList(), 0);
+//		while (iterator.hasNext()) {
+//			List<String> subTuple = iterator.next();
+//			System.out.println(subTuple);	
+//		}
+//		
+//		long start = System.currentTimeMillis();
+//		Iterator<List<Integer>> integerIterator = new InPlaceSubKTuplesIterator<Integer>(arrayList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9), 4);
+//		while (integerIterator.hasNext()) {
+//			integerIterator.next();
+//		}
+//		System.out.println(System.currentTimeMillis() - start + " ms");	
+//	}
 }

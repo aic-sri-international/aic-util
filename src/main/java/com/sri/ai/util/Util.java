@@ -4307,5 +4307,20 @@ public class Util {
 		}
 		return result;
 	}
+
+	/**
+	 * Given an array list and a list of integers, returns an array list with the indexed elements in the indices order.
+	 * @param indices
+	 * @return array list with the indexed elements in the indices order.
+	 */
+	public static <E> ArrayList<E> makeCopyWithGivenIndices(ArrayList<E> array, List<Integer> indices) {
+		ArrayList<E> result = new ArrayList<E>(indices.size());
+		for (int i = 0; i != indices.size(); i++) {
+			Integer ithIndex = indices.get(i);
+			E elementAtIthIndex = array.get(ithIndex);
+			result.add(elementAtIthIndex);
+		}
+		return result;
+	}
 	
 }

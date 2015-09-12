@@ -35,39 +35,55 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.sri.ai.util.collect;
+package com.sri.ai.test.util.collect;
+
+import static com.sri.ai.util.Util.arrayList;
+import static com.sri.ai.util.Util.list;
+import static com.sri.ai.util.Util.listFrom;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import org.junit.Test;
+
 import com.google.common.annotations.Beta;
+import com.sri.ai.util.collect.SubKTuplesIterator;
 
-/**
- * An iterator over permutations of a given ArrayList.
- * 
- * @author braz
- */
 @Beta
-public class ArrayListPermutationIterator<E> extends EZIterator<ArrayList<E>> {
+public class SubKTuplesIteratorTest {
 
-	private ArrayList<E> array;
-	private InplaceIntegerPermutationIterator inplacePermutationIterator;
-	
-	public ArrayListPermutationIterator(ArrayList<E> array) {
-		this.array = array;
-		inplacePermutationIterator = new InplaceIntegerPermutationIterator(array.size());
+	@SuppressWarnings("unchecked")
+	@Test
+	public void test() {
+		ArrayList<String> array;
+		int k;
+		List<List<String>> expected;
+		
+		array = arrayList();
+		k = 0;
+		expected = list(list());
+		runTest(expected, new SubKTuplesIterator<String>(array, k));
+		
+		array = arrayList("apple", "orange", "banana");
+		k = 2;
+		expected = list(
+				list("apple", "orange"),
+				list("apple", "banana"),
+				list("orange", "apple"),
+				list("orange", "banana"),
+				list("banana", "apple"),
+				list("banana", "orange")
+				);
+		runTest(expected, new SubKTuplesIterator<String>(array, k));
 	}
 
-	@Override
-	protected ArrayList<E> calculateNext() {
-		if (inplacePermutationIterator.hasNext()) {
-			ArrayList<E> result = new ArrayList<E>(array);
-			List<Integer> integerPermutation = inplacePermutationIterator.next();
-			for (int i = 0; i != array.size(); i++) {
-				result.set(i, array.get(integerPermutation.get(i)));
-			}
-			return result;
-		}
-		return null;
+	/**
+	 * @param expected
+	 * @param array
+	 */
+	private void runTest(List<List<String>> expected, Iterator<ArrayList<String>> iterator) {
+		assertEquals(expected, listFrom(iterator));
 	}
 }

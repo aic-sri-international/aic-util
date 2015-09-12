@@ -37,31 +37,22 @@
  */
 package com.sri.ai.util.collect;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.annotations.Beta;
 
 /**
- * An iterator over permutations of integers from 1 to n,
- * based on {@link InplaceIntegerPermutationIterator} but making a copy of each permutation.
+ * An iterator over k-tuples of a given ArrayList.
  * 
  * @author braz
  */
 @Beta
-public class IntegerPermutationIterator extends EZIterator<List<Integer>> {
+public class SubKTuplesIterator<E> extends FunctionIterator<List<E>, ArrayList<E>> {
 
-	private InplaceIntegerPermutationIterator inplacePermutationIterator;
-	
-	public IntegerPermutationIterator(int n) {
-		inplacePermutationIterator = new InplaceIntegerPermutationIterator(n);
-	}
-
-	@Override
-	protected List<Integer> calculateNext() {
-		if (inplacePermutationIterator.hasNext()) {
-			return new LinkedList<Integer>(inplacePermutationIterator.next());
-		}
-		return null;
+	public SubKTuplesIterator(ArrayList<E> array, int k) {
+		super(
+				new InPlaceSubKTuplesIterator<E>(array, k),
+				subKTuple -> new ArrayList<E>(subKTuple));
 	}
 }

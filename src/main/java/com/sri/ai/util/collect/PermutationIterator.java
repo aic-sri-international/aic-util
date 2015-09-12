@@ -35,54 +35,24 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.sri.ai.test.util.collect;
+package com.sri.ai.util.collect;
 
-import static com.sri.ai.util.Util.list;
-import static org.junit.Assert.assertEquals;
-
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-
 import com.google.common.annotations.Beta;
-import com.sri.ai.util.Util;
-import com.sri.ai.util.collect.IntegerPermutationIterator;
 
+/**
+ * An iterator over permutations of a given ArrayList.
+ * 
+ * @author braz
+ */
 @Beta
-public class IntegerPermutationIteratorTest {
+public class PermutationIterator<E> extends FunctionIterator<List<E>, ArrayList<E>> {
 
-	@SuppressWarnings("unchecked")
-	@Test
-	public void test() {
-		int n;
-		List<List<Integer>> expected;
-		
-		n = 0;
-		expected = list(list());
-		runTest(expected, n);
-		
-		n = 3;
-		expected = list(
-				list(0, 1, 2),
-				list(0, 2, 1),
-				list(1, 0, 2),
-				list(1, 2, 0),
-				list(2, 0, 1),
-				list(2, 1, 0)
-				);
-		runTest(expected, n);
-	}
-
-	/**
-	 * @param expected
-	 * @param n
-	 */
-	private void runTest(List<List<Integer>> expected, int n) {
-		Iterator<List<Integer>> iterator;
-		List<List<Integer>> permutations;
-		iterator = new IntegerPermutationIterator(n);
-		permutations = Util.listFrom(iterator);
-		assertEquals(expected, permutations);
+	public PermutationIterator(ArrayList<E> array) {
+		super(
+				new InPlaceSubKTuplesIterator<E>(array, array.size()),
+				permutation -> new ArrayList<E>(permutation));
 	}
 }

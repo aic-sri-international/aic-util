@@ -39,6 +39,7 @@ package com.sri.ai.test.util.collect;
 
 import static com.sri.ai.util.Util.arrayList;
 import static com.sri.ai.util.Util.list;
+import static com.sri.ai.util.Util.listFrom;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
@@ -48,11 +49,10 @@ import java.util.List;
 import org.junit.Test;
 
 import com.google.common.annotations.Beta;
-import com.sri.ai.util.Util;
-import com.sri.ai.util.collect.ArrayListPermutationIterator;
+import com.sri.ai.util.collect.PermutationIterator;
 
 @Beta
-public class ArrayListPermutationIteratorTest {
+public class PermutationIteratorTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
@@ -62,7 +62,7 @@ public class ArrayListPermutationIteratorTest {
 		
 		array = arrayList();
 		expected = list(list());
-		runTest(expected, array);
+		runTest(expected, new PermutationIterator<String>(array));
 		
 		array = arrayList("apple", "orange", "banana");
 		expected = list(
@@ -73,18 +73,14 @@ public class ArrayListPermutationIteratorTest {
 				list("banana", "apple", "orange"),
 				list("banana", "orange", "apple")
 				);
-		runTest(expected, array);
+		runTest(expected, new PermutationIterator<String>(array));
 	}
 
 	/**
 	 * @param expected
 	 * @param array
 	 */
-	private void runTest(List<List<String>> expected, ArrayList<String> array) {
-		Iterator<ArrayList<String>> iterator;
-		List<ArrayList<String>> permutations;
-		iterator = new ArrayListPermutationIterator<String>(array);
-		permutations = Util.listFrom(iterator);
-		assertEquals(expected, permutations);
+	private void runTest(List<List<String>> expected, Iterator<ArrayList<String>> iterator) {
+		assertEquals(expected, listFrom(iterator));
 	}
 }
