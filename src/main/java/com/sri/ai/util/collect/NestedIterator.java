@@ -93,6 +93,18 @@ public class NestedIterator<E> extends EZIteratorWithNull<E> {
 		this(Arrays.asList(objects).iterator());
 	}
 	
+	public static <E> NestedIterator<E> make(Iterator<E> baseIterator) {
+		return new NestedIterator<E>(baseIterator);
+	}
+	
+	public static <E> NestedIterator<E> make(Collection<E> baseCollection) {
+		return new NestedIterator<E>(baseCollection);
+	}
+	
+	public static <E> NestedIterator<E> make(Object... objects) {
+		return new NestedIterator<E>(objects);
+	}
+	
 	/** 
 	 * Resets NestedIterator to operate over a new base iterator.
 	 * 

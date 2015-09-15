@@ -37,94 +37,95 @@
  */
 package com.sri.ai.test.util.collect;
 
-import static com.sri.ai.util.Util.arrayList;
-import static com.sri.ai.util.Util.arrayListFrom;
 import static com.sri.ai.util.Util.iterator;
 import static com.sri.ai.util.Util.join;
-import static org.junit.Assert.assertEquals;
+import static com.sri.ai.util.Util.listFrom;
+import static com.sri.ai.util.Util.map;
+import static org.junit.Assert.*;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
 import com.sri.ai.util.base.NullaryFunction;
-import com.sri.ai.util.collect.CartesianProductIterator;
+import com.sri.ai.util.collect.CartesianProductInMapIterator;
 
-public class CartesianProductIteratorTest {
+public class CartesianProductInMapIteratorTest {
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void test() {
-		ArrayList<NullaryFunction<Iterator<String>>> iteratorMakers;
+		Map<String, NullaryFunction<Iterator<String>>> iteratorMakers;
 		String expected;
 
 		iteratorMakers =
-				arrayList(
-						() -> iterator("small", "medium", "big"),
-						() -> iterator("red", "green", "blue"),
-						() -> iterator("square", "circle")
+				map(
+						"size",  (NullaryFunction<Iterator<String>>) () -> iterator("small", "medium", "big"),
+						"color", (NullaryFunction<Iterator<String>>) () -> iterator("red", "green", "blue"),
+						"shape", (NullaryFunction<Iterator<String>>) () -> iterator("square", "circle")
 						);
 		expected =
-				"[small, red, square]\n" +
-				"[small, red, circle]\n" + 
-				"[small, green, square]\n" + 
-				"[small, green, circle]\n" + 
-				"[small, blue, square]\n" + 
-				"[small, blue, circle]\n" + 
-				"[medium, red, square]\n" + 
-				"[medium, red, circle]\n" + 
-				"[medium, green, square]\n" + 
-				"[medium, green, circle]\n" + 
-				"[medium, blue, square]\n" + 
-				"[medium, blue, circle]\n" + 
-				"[big, red, square]\n" + 
-				"[big, red, circle]\n" + 
-				"[big, green, square]\n" + 
-				"[big, green, circle]\n" + 
-				"[big, blue, square]\n" + 
-				"[big, blue, circle]";
+				"{size=small, color=red, shape=square}\n" +
+				"{size=medium, color=red, shape=square}\n" + 
+				"{size=big, color=red, shape=square}\n" + 
+				"{size=small, color=green, shape=square}\n" + 
+				"{size=medium, color=green, shape=square}\n" + 
+				"{size=big, color=green, shape=square}\n" + 
+				"{size=small, color=blue, shape=square}\n" + 
+				"{size=medium, color=blue, shape=square}\n" + 
+				"{size=big, color=blue, shape=square}\n" + 
+				"{size=small, color=red, shape=circle}\n" + 
+				"{size=medium, color=red, shape=circle}\n" + 
+				"{size=big, color=red, shape=circle}\n" + 
+				"{size=small, color=green, shape=circle}\n" + 
+				"{size=medium, color=green, shape=circle}\n" + 
+				"{size=big, color=green, shape=circle}\n" + 
+				"{size=small, color=blue, shape=circle}\n" + 
+				"{size=medium, color=blue, shape=circle}\n" + 
+				"{size=big, color=blue, shape=circle}";
 		runTest(iteratorMakers, expected);
 
 		
 		iteratorMakers =
-				arrayList(
-						() -> iterator(),
-						() -> iterator("red", "green", "blue")
+				map(
+						"size",  (NullaryFunction<Iterator<String>>) () -> iterator(),
+						"color", (NullaryFunction<Iterator<String>>) () -> iterator("red", "green", "blue")
 						);
 		expected = "";
 		runTest(iteratorMakers, expected);
 
 		
 		iteratorMakers =
-				arrayList(
-						() -> iterator("red", "green", "blue"),
-						() -> iterator()
+				map(
+						"color", (NullaryFunction<Iterator<String>>) () -> iterator("red", "green", "blue"),
+						"size",  (NullaryFunction<Iterator<String>>) () -> iterator()
 						);
 		expected = "";
 		runTest(iteratorMakers, expected);
 
 		
 		iteratorMakers =
-				arrayList(
-						() -> iterator("one-size-fits-all"),
-						() -> iterator("red", "green", "blue")
+				map(
+						"size",  (NullaryFunction<Iterator<String>>) () -> iterator("one-size-fits-all"),
+						"color", (NullaryFunction<Iterator<String>>) () -> iterator("red", "green", "blue")
 						);
 		expected =
-				"[one-size-fits-all, red]\n" + 
-				"[one-size-fits-all, green]\n" + 
-				"[one-size-fits-all, blue]";
+				"{size=one-size-fits-all, color=red}\n" + 
+				"{size=one-size-fits-all, color=green}\n" + 
+				"{size=one-size-fits-all, color=blue}";
 		runTest(iteratorMakers, expected);
 
 		
 		iteratorMakers =
-				arrayList(() -> iterator("one-size-fits-all"));
-		expected = "[one-size-fits-all]";
+				map("size",  (NullaryFunction<Iterator<String>>) () -> iterator("one-size-fits-all"));
+		expected =
+				"{size=one-size-fits-all}";
 		runTest(iteratorMakers, expected);
 
 		
-		iteratorMakers = arrayList();
-		expected = "[]";
+		iteratorMakers = map();
+		expected = "{}";
 		runTest(iteratorMakers, expected);
 	}
 
@@ -132,12 +133,12 @@ public class CartesianProductIteratorTest {
 	 * @param iteratorMakers
 	 * @param expected
 	 */
-	protected void runTest(ArrayList<NullaryFunction<Iterator<String>>> iteratorMakers, String expected) {
-		Iterator<ArrayList<String>> iterator;
-		ArrayList<ArrayList<String>> list;
+	protected void runTest(Map<String, NullaryFunction<Iterator<String>>> iteratorMakers, String expected) {
+		Iterator<Map<String, String>> iterator;
+		List<Map<String, String>> list;
 		String description;
-		iterator = new CartesianProductIterator<String>(iteratorMakers);
-		list = arrayListFrom(iterator);
+		iterator = new CartesianProductInMapIterator<>(iteratorMakers);
+		list = listFrom(iterator);
 		description = join("\n", list);
 		assertEquals(expected, description);
 	}

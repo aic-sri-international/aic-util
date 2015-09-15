@@ -37,17 +37,19 @@
  */
 package com.sri.ai.util.collect;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import static com.sri.ai.util.Util.map;
+
 import java.util.Iterator;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import com.google.common.annotations.Beta;
 import com.sri.ai.util.base.NullaryFunction;
 
 /**
- * A iterator over the Cartesian product of the ranges of a list of iterators.
- * The constructor takes a list of iterator <i>makers</i>
+ * A iterator over the Cartesian product of the ranges of a map of iterators,
+ * indexed by an arbitrary type K.
+ * The constructor takes a map of iterator <i>makers</i>
  * because each dimension but the first one will need to be iterated multiple times,
  * so a new iterator will be needed for each sweeping.
  * An iterator maker for a given key is required to make iterators over the same range every time.
@@ -56,29 +58,26 @@ import com.sri.ai.util.base.NullaryFunction;
  * 
  */
 @Beta
-public class CartesianProductIterator<E> extends EZIterator<ArrayList<E>> {
+public class CartesianProductInMapIterator<K,V> extends EZIterator<Map<K,V>> {
 
-	private List<NullaryFunction<Iterator<E>>> iteratorMakers;
-	private List<Iterator<E>> iterators;
+	private Map<K, NullaryFunction<Iterator<V>>> iteratorMakers;
+	private Map<K, Iterator<V>> iterators;
 	
-	@SuppressWarnings("unchecked")
-	public CartesianProductIterator(NullaryFunction<Iterator<E>>... iteratorMakers) {
-		this(Arrays.asList(iteratorMakers));
-	}
-	
-	public CartesianProductIterator(List<NullaryFunction<Iterator<E>>> iteratorMakers) {
+	public CartesianProductInMapIterator(Map<K, NullaryFunction<Iterator<V>>> iteratorMakers) {
 		this.iteratorMakers = iteratorMakers;
-		this.iterators = new ArrayList<Iterator<E>>(iteratorMakers.size());
-		for (NullaryFunction<Iterator<E>> maker : iteratorMakers) {
-			iterators.add(maker.apply());
+		this.iterators = new LinkedHashMap<K, Iterator<V>>(iteratorMakers.size());
+		for (Map.Entry<K, NullaryFunction<Iterator<V>>> entry : iteratorMakers.entrySet()) {
+			iterators.put(entry.getKey(), entry.getValue().apply());
 		}
 		
-		next = new ArrayList<E>(iterators.size());
-		for (Iterator<E> iterator : iterators) {
+		next = map();
+		for (Map.Entry<K, Iterator<V>> entry : iterators.entrySet()) {
+			K key = entry.getKey();
+			Iterator<V> iterator = entry.getValue();
 			if (iterator.hasNext()) {
-				next.add(iterator.next());
+				next.put(key, iterator.next());
 			}
-			else { // Cartesian product is empty because this component is empty
+			else { // cartesian product is empty because this component is empty
 				next = null;
 				break;
 			}
@@ -87,28 +86,26 @@ public class CartesianProductIterator<E> extends EZIterator<ArrayList<E>> {
 	}
 	
 	@Override
-	protected ArrayList<E> calculateNext() {
+	protected Map<K, V> calculateNext() {
 		boolean iterated = false;
-		next = new ArrayList<E>(next);
-		for (int indexPlusOne = iterators.size(); indexPlusOne != 0; indexPlusOne--) {
-			// we iterate backwards to make the rightmost iterator the least significant one,
-			// which is arguably the more standard way to do it because rightmost digits are the least significant ones.
-			int index = indexPlusOne - 1;
-			Iterator<E> iterator = iterators.get(index);
+		next = new LinkedHashMap<K,V>(next);
+		for (Map.Entry<K, Iterator<V>> entry : iterators.entrySet()) {
+			K key = entry.getKey();
+			Iterator<V> iterator = entry.getValue();
 			if (iterator.hasNext()) {
-				next.set(index, iterator.next());
+				next.put(key, iterator.next());
 				iterated = true;
 				break; // iterated one component, done.
 			}
 			else {
-				iterator = iteratorMakers.get(index).apply();
-				iterators.set(index, iterator);
-				next.set(index, iterator.next());
+				iterator = iteratorMakers.get(key).apply();
+				iterators.put(key, iterator);
+				next.put(key, iterator.next());
 				// no need to check hasNext because iteratorMakers are required to make iterators over the same range every time.
 			}
 		}
 		
-		if ( ! iterated) { // ran out of possible arrays
+		if (!iterated) {
 			next = null;
 		}
 		

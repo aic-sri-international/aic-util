@@ -81,8 +81,16 @@ public class FunctionIterator<F, T> extends EZIteratorWithNull<T> {
 		return new FunctionIterator<F, T>(function, base);
 	}
 
+	public static <F, T> FunctionIterator<F, T> make(Iterable<F> base, Function<F, T> function) {
+		return new FunctionIterator<F, T>(function, base.iterator());
+	}
+
 	public static <F, T> FunctionIterator<F, T> make(Collection<F> base, Function<F, T> function) {
 		return new FunctionIterator<F, T>(function, base);
+	}
+
+	public static <F, T> FunctionIterator<F, T> make(Function<F, T> function, Iterable<F> base) {
+		return new FunctionIterator<F, T>(function, base.iterator());
 	}
 
 	public static <F, T> FunctionIterator<F, T> make(Function<F, T> function, Collection<F> base) {
