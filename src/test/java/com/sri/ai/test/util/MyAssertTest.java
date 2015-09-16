@@ -41,10 +41,17 @@ import static com.sri.ai.util.Util.myAssert;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
+import org.junit.After;
 
 import com.sri.ai.util.Util;
 
 public class MyAssertTest {
+	
+
+	@After
+	public void ensureMyAssertLeftOnAfterTest() {
+		System.clearProperty(Util.MY_ASSERT_OFF);
+	}
 
 	@Test
 	public void testMyAssert() {
