@@ -1675,6 +1675,23 @@ public class Util {
 		return result;
 	}
 
+	/**
+	 * Returns the number of elements in an iterator's range satisfying predicate.
+	 * @param iterator
+	 *        an iterator whose range to count the elements of
+	 * @return the number of elements in the given iterator's range.
+	 * @param <T> 
+	 *        the type of the elements in the iterator's range.
+	 */
+	public static <T> int count(Iterator<T> iterator) {
+		int result = 0;
+		while (iterator.hasNext()) {
+			iterator.next();
+			result++;
+		}
+		return result;
+	}
+
 	public static Number numberInJustNeededType(double number) {
 		if (Math.floor(number) == number) {
 			return Integer.valueOf((int) number);

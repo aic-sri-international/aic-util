@@ -38,7 +38,6 @@
 package com.sri.ai.util.collect;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
@@ -85,7 +84,7 @@ public class NestedIterator<E> extends EZIteratorWithNull<E> {
 		this.baseIterator = baseIterator;
 	}
 	
-	public NestedIterator(Collection<Object> baseCollection) {
+	public NestedIterator(Iterable<Object> baseCollection) {
 		this(baseCollection.iterator());
 	}
 	
@@ -97,7 +96,7 @@ public class NestedIterator<E> extends EZIteratorWithNull<E> {
 		return new NestedIterator<E>(baseIterator);
 	}
 	
-	public static <E> NestedIterator<E> make(Collection<E> baseCollection) {
+	public static <E> NestedIterator<E> make(Iterable<E> baseCollection) {
 		return new NestedIterator<E>(baseCollection);
 	}
 	
@@ -118,8 +117,8 @@ public class NestedIterator<E> extends EZIteratorWithNull<E> {
 
 	@SuppressWarnings("unchecked")
 	public Iterator<E> determineSubIterator(Object element) {
-		if (element instanceof Collection) {
-			return ((Collection<E>)element).iterator();
+		if (element instanceof Iterable) {
+			return ((Iterable<E>)element).iterator();
 		}
 		else if (element instanceof Iterator) {
 			return (Iterator<E>) element;

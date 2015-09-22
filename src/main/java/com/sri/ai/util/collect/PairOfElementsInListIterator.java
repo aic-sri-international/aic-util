@@ -39,6 +39,7 @@ package com.sri.ai.util.collect;
 
 import static com.sri.ai.util.base.PairOf.makePairOf;
 
+import java.util.Iterator;
 import java.util.List;
 
 import com.google.common.annotations.Beta;
@@ -75,6 +76,10 @@ public class PairOfElementsInListIterator<E> extends EZIterator<PairOf<E>> {
 		}
 	}
 	
+	public static <E> Iterator<PairOf<E>> make(List<E> list) {
+		return new PairOfElementsInListIterator<E>(list);
+	}
+
 	@Override
 	protected PairOf<E> calculateNext() {
 		j++;
