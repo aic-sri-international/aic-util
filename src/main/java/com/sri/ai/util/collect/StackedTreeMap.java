@@ -45,19 +45,34 @@ import java.util.TreeSet;
 import com.google.common.annotations.Beta;
 
 /**
- * An implementation of {@link AbstractStackedMap} using TreeMap and TreeSet. 
+ * An implementation of {@link AbstractStackedMap} using TreeMap and TreeSet.
+ * <p>
+ * IMPORTANT: see notes on super class documentation regarding incomplete implementation.
  *
  * @author braz
  */
 @Beta
 public class StackedTreeMap<K, V> extends AbstractStackedMap<K, V> {
+
+	public StackedTreeMap() {
+		super();
+	}
+
+	public StackedTreeMap(Map<K, V> base) {
+		super(base);
+	}
+
+	public StackedTreeMap(Map<K, V> top, Map<K, V> base) {
+		super(top, base);
+	}
+
 	@Override
 	Map<K, V> makeMap() {
 		return new TreeMap<K, V>();
 	}
 
 	@Override
-	Set<K> makeKSet() {
+	Set<K> makeSetForKeySet() {
 		return new TreeSet<K>();
 	}
 }

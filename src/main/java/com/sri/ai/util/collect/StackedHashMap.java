@@ -46,6 +46,8 @@ import com.google.common.annotations.Beta;
 
 /**
  * An implementation of {@link AbstractStackedMap} using HashMap and HashSet. 
+ * <p>
+ * IMPORTANT: see notes on super class documentation regarding incomplete implementation.
  *
  * @author braz
  */
@@ -69,7 +71,7 @@ public class StackedHashMap<K, V> extends AbstractStackedMap<K, V> {
 	}
 
 	@Override
-	Set<K> makeKSet() {
+	Set<K> makeSetForKeySet() {
 		return new LinkedHashSet<K>();
 	}
 }

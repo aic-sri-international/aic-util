@@ -67,7 +67,7 @@ public abstract class AbstractStackedMap<K, V> implements StackedMap<K, V> {
 
 	abstract Map<K, V> makeMap();
 
-	abstract Set<K> makeKSet();
+	abstract Set<K> makeSetForKeySet();
 
 	public AbstractStackedMap() {
 		top = makeMap();
@@ -96,7 +96,7 @@ public abstract class AbstractStackedMap<K, V> implements StackedMap<K, V> {
 		this.top  = top;
 		this.base = base;
 	}
-
+	
 	@Override
 	public Map<K, V> getTop() {
 		return top;
@@ -196,7 +196,7 @@ public abstract class AbstractStackedMap<K, V> implements StackedMap<K, V> {
 
 	@Override
 	public Set<K> keySet() {
-		Set<K> result = makeKSet();
+		Set<K> result = makeSetForKeySet();
 		result.addAll(top.keySet());
 		if (base != null) {
 			result.addAll(base.keySet());

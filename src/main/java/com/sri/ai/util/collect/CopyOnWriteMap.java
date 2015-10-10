@@ -8,7 +8,7 @@ import java.util.Set;
 /**
  * A {@link Map} implementation that directs methods to another map,
  * which is either a map received at construction, or a copy of it
- * made upon the first writing (or potentially writing} operation.
+ * to a new {@link HashMap} made upon the first writing (or potentially writing} operation.
  */
 public class CopyOnWriteMap<K, V> implements Map<K, V> {
 
@@ -26,7 +26,7 @@ public class CopyOnWriteMap<K, V> implements Map<K, V> {
 			ownsBase = true;
 		}
 	}
-	
+
 	@Override
 	public void clear() {
 		base = new HashMap<K,V>();

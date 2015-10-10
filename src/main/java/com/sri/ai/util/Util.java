@@ -559,7 +559,6 @@ public class Util {
 	 * @param <V>
 	 *            the type of the Map's value.
 	 */
-	@SuppressWarnings("unchecked")
 	public static <K, V> Map<K, V> map(Object... keysAndValues) {
 		if (!isEven(keysAndValues.length)) {
 			fatalError("Util.map(Object ...) must receive an even number of arguments but received "
