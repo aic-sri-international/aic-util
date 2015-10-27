@@ -4247,6 +4247,18 @@ public class Util {
 	}
 	
 	/**
+	 * Iterates over all elements in collection and picks one with uniform probability.
+	 * 
+	 * @param collection the collection
+	 * @param random a random number generator
+	 * @param <T> the type of elements
+	 * @return a uniformly sampled element from the iterator's range using the random number generator.
+	 */
+	public static <T> T pickUniformly(Collection<T> collection, Random random) {
+		return pickUniformly(collection.iterator(), random);
+	}
+	
+	/**
 	 * Adapts an {@link Iterator} to an {@link Iterable} for use in enhanced for
 	 * loops. If {@link Iterable#iterator()} is invoked more than once, an
 	 * {@link IllegalStateException} is thrown.
