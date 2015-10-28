@@ -4035,6 +4035,44 @@ public class Util {
 // Commented out because it can have unsuspected performance impact even when testing is turned off.	
 	
 	/**
+	 * Checks for a condition that needs to be true, or
+	 * throws an error with a given message.
+	 * This is similar to {@link #myAssert(boolean, NullaryFunction)},
+	 * but is performed even if property {@link #MY_ASSERT_OFF} is not null,
+	 * since it is meant for errors that may occur due to
+	 * incorrect input by a user.
+	 * It throws an {@link Error} with the given message.
+	 * @param test
+	 *        result of the test
+	 * @param message
+	 *        message in thrown {@link Error}.
+	 */
+	public static void check(boolean test, NullaryFunction<String> message) {
+		if ( ! test) {
+			throw new Error(message.apply());
+		}
+	}
+
+	/**
+	 * Checks for a condition that needs to be true, or
+	 * throws an error with a given message.
+	 * This is similar to {@link #myAssert(NullaryFunction, NullaryFunction)},
+	 * but is performed even if property {@link #MY_ASSERT_OFF} is not null,
+	 * since it is meant for errors that may occur due to
+	 * incorrect input by a user.
+	 * It throws an {@link Error} with the given message.
+	 * @param test
+	 *        result of the test
+	 * @param message
+	 *        message in thrown {@link Error}.
+	 */
+	public static void check(NullaryFunction<Boolean> test, NullaryFunction<String> message) {
+		if (! test.apply()) {
+			throw new Error(message.apply());
+		}
+	}
+
+	/**
 	 * A java <code>assert</code> substitute that, unlike the standard one, is on by default and
 	 * can be turned off by setting any value to property {@link #MY_ASSERT_OFF}.
 	 * It throws an {@link AssertionError} with the given message.

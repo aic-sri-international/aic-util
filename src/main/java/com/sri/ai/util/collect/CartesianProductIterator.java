@@ -62,6 +62,10 @@ public class CartesianProductIterator<E> extends EZIterator<ArrayList<E>> {
 	private List<Iterator<E>> iterators;
 	
 	@SuppressWarnings("unchecked")
+	/**
+	 * Constructs a cartesian product iterator given a sequence of iterator makers (one per dimension).
+	 * @param iteratorMakers
+	 */
 	public CartesianProductIterator(NullaryFunction<Iterator<E>>... iteratorMakers) {
 		this(Arrays.asList(iteratorMakers));
 	}
