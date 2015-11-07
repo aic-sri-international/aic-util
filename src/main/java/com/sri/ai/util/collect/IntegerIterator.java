@@ -51,6 +51,7 @@ import com.google.common.annotations.Beta;
 public class IntegerIterator extends EZIterator<Integer> {
 
 	private int i;
+	private boolean infinite;
 	private int end;
 	private int increment;
 
@@ -68,6 +69,7 @@ public class IntegerIterator extends EZIterator<Integer> {
 	public IntegerIterator(int start, int end, int increment) {
 		this.i = start;
 		this.end = end;
+		this.infinite = false;
 		this.increment = increment;
 	}
 
@@ -77,7 +79,7 @@ public class IntegerIterator extends EZIterator<Integer> {
 	 * @param start
 	 *            the starting integer, inclusive.
 	 * @param end
-	 *            the ending integer in the range, inclusive if can increment to
+	 *            the ending integer in the range, inclusive if increment will lead to it
 	 *            it or past it.
 	 */
 	public IntegerIterator(int start, int end) {
@@ -85,19 +87,18 @@ public class IntegerIterator extends EZIterator<Integer> {
 	}
 
 	/**
-	 * Constructor starting at 0 and a default increment of 1.
+	 * Constructor starting at a given integer and incrementing indefinitely.
 	 * 
-	 * @param end
-	 *            the ending integer in the range, inclusive if can increment to
-	 *            it or past it.
+	 * @param start the initial value (there is no end value)
 	 */
-	public IntegerIterator(int end) {
-		this(0, end, 1);
+	public IntegerIterator(int start) {
+		this.i = start;
+		this.infinite = true;
 	}
 
 	@Override
 	protected Integer calculateNext() {
-		if (i < end) {
+		if (infinite || i < end) {
 			Integer next = Integer.valueOf(i);
 			i += increment;
 			return next;
