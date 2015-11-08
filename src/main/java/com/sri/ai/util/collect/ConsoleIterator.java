@@ -37,15 +37,18 @@
  */
 package com.sri.ai.util.collect;
 
+import static com.sri.ai.util.Util.list;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Collection;
 import java.util.Iterator;
 
 import com.google.common.annotations.Beta;
 
 /**
  * An iterator ranging over lines entered on the console. Properties prompt and
- * ender can be set, defining which prompt appears, and which string ends the
+ * ender can be set, defining which prompt appears, and which strings ends the
  * iterator.
  * 
  * @author braz
@@ -56,15 +59,15 @@ public class ConsoleIterator implements Iterator<String> {
 	private BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
 
 	private String prompt = "> ";
-	private String ender = "end";
+	private Collection<String> enders = list("end", "bye", "good bye", "goodbye", "quit", "exit", "hasta la vista, baby", "adios", "hasta luego", "arrivederci", "auf wiedersehen", "ciao", "a bien tot", "adeus", "tchau");
 	private String answer;
 
 	public ConsoleIterator() {
 	}
 
-	public ConsoleIterator(String prompt, String ender) {
+	public ConsoleIterator(String prompt, Collection<String> enders) {
 		this.prompt = prompt;
-		this.ender = ender;
+		this.enders = enders;
 	}
 
 	@Override
@@ -72,7 +75,7 @@ public class ConsoleIterator implements Iterator<String> {
 		try {
 			System.out.print(prompt);
 			String reply = console.readLine();
-			if (reply.equals(ender)) {
+			if (enders.contains(reply)) {
 				return false;
 			}
 			answer = reply;
@@ -117,11 +120,11 @@ public class ConsoleIterator implements Iterator<String> {
 		this.prompt = prompt;
 	}
 
-	public String getEnder() {
-		return ender;
+	public Collection<String> getEnders() {
+		return enders;
 	}
 
-	public void setEnder(String ender) {
-		this.ender = ender;
+	public void setEnders(Collection<String> enders) {
+		this.enders = enders;
 	}
 }
