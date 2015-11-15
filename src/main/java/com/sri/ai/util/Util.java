@@ -80,6 +80,7 @@ import com.sri.ai.util.base.NullaryFunction;
 import com.sri.ai.util.base.Pair;
 import com.sri.ai.util.base.PairOf;
 import com.sri.ai.util.base.TernaryFunction;
+import com.sri.ai.util.collect.EZIterator;
 import com.sri.ai.util.math.Rational;
 
 /**
@@ -559,7 +560,7 @@ public class Util {
 	 * @param <V>
 	 *            the type of the Map's value.
 	 */
-	public static <K, V> Map<K, V> map(Object... keysAndValues) {
+	public static <K, V> LinkedHashMap<K, V> map(Object... keysAndValues) {
 		if (!isEven(keysAndValues.length)) {
 			fatalError("Util.map(Object ...) must receive an even number of arguments but received "
 					+ keysAndValues.length
@@ -567,7 +568,7 @@ public class Util {
 					+ join(";", keysAndValues)
 					+ ".");
 		}
-		Map<K, V> result = new LinkedHashMap<K, V>();
+		LinkedHashMap<K, V> result = new LinkedHashMap<K, V>();
 		putAll(result, keysAndValues);
 		return result;
 	}
@@ -1633,6 +1634,61 @@ public class Util {
 	public static <T> List<T> collectToList(Collection<T> collection,
 			Predicate<T> predicate) {
 		return (List<T>) collect(collection, new LinkedList<T>(), predicate);
+	}
+
+	/**
+	 * Collects elements in an iterator's range satisfying a given predicate into a new
+	 * linked list and returns it.
+	 * 
+	 * @param iterator
+	 *            the iterator from which elements are to be copied.
+	 * @param predicate
+	 *            the test to be applied to determine which elements should be
+	 *            copied into the returned list.
+	 * @return a List of the elements in the collection that matched the given
+	 *         predicate.
+	 * @param <T>
+	 *            the type of the elements to collect.
+	 */
+	public static <T> List<T> collectToList(Iterator<T> iterator,
+			Predicate<T> predicate) {
+		return (List<T>) collect(iterator, new LinkedList<T>(), predicate);
+	}
+
+	/**
+	 * Collects elements in a collection satisfying a given predicate into a new
+	 * array list and returns it.
+	 * 
+	 * @param collection
+	 *            the collection from which elements are to be copied.
+	 * @param predicate
+	 *            the test to be applied to determine which elements should be
+	 *            copied into the returned list.
+	 * @return a List of the elements in the collection that matched the given
+	 *         predicate.
+	 * @param <T>
+	 *            the type of the elements to collect.
+	 */
+	public static <T> ArrayList<T> collectToArrayList(Collection<T> collection, Predicate<T> predicate) {
+		return (ArrayList<T>) collect(collection, new ArrayList<T>(), predicate);
+	}
+
+	/**
+	 * Collects elements in an iterator's range satisfying a given predicate into a new
+	 * linked array list and returns it.
+	 * 
+	 * @param iterator
+	 *            the iterator from which elements are to be copied.
+	 * @param predicate
+	 *            the test to be applied to determine which elements should be
+	 *            copied into the returned list.
+	 * @return a List of the elements in the collection that matched the given
+	 *         predicate.
+	 * @param <T>
+	 *            the type of the elements to collect.
+	 */
+	public static <T> ArrayList<T> collectToArrayList(Iterator<T> iterator, Predicate<T> predicate) {
+		return (ArrayList<T>) collect(iterator, new ArrayList<T>(), predicate);
 	}
 
 	/**
@@ -4294,6 +4350,93 @@ public class Util {
 	 */
 	public static <T> T pickUniformly(Collection<T> collection, Random random) {
 		return pickUniformly(collection.iterator(), random);
+	}
+	
+	/**
+	 * Iterates over a random subset of another iterator's range,
+	 * by selecting whether each element in it belong to the subset or not
+	 * with 0.5 probability.
+	 * @param iterator
+	 * @param random
+	 * @return
+	 */
+	public static <T> Iterator<T> pickSubSet(Iterator<T> iterator, Random random) {
+		return new EZIterator<T>() {
+			@Override
+			protected T calculateNext() {
+				if (iterator.hasNext()) {
+					T next = iterator.next();
+					return random.nextBoolean()? next : null;
+				}
+				return null;
+			}
+		};
+	}
+
+	/**
+	 * Returns an array list with k elements out of the given list, without replacement.
+	 * This means that the returned list contains the elements of k unique positions
+	 * in the original list.
+	 * If the list contains unique elements, then so will the returned list,
+	 * but elements may be repeated if they appear more than once in the original list.
+	 * Naturally, k needs to be no greater than the list's size, or an error will be thrown.
+	 * @param list
+	 * @param k
+	 * @param random
+	 * @return a list of elements at k unique positions in the given list
+	 */
+	public static <T> ArrayList<T> pickKElementsWithoutReplacement(ArrayList<T> list, int k, Random random) {
+		ArrayList<T> result;
+		if (k == list.size()) { // unnecessary, but faster
+			result = list;
+		}
+		else {
+			myAssert(() -> k < list.size(), () -> "pickKElementsWithoutReplacement received k = " + k + " greater than list size " + list.size());
+			Set<Integer> alreadyPicked = set();
+			result = new ArrayList<T>(k);
+			for (int i = 0; i != k; i++) {
+				int j;
+				do {
+					j = random.nextInt(list.size());
+				} while (alreadyPicked.contains(j));
+				result.add(list.get(j));
+				alreadyPicked.add(j);
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Returns an array list with k elements out of the given list satisfying a given predicate, without replacement.
+	 * This means that the returned list contains the elements of k unique positions
+	 * in the original list.
+	 * If the list contains unique elements, then so will the returned list,
+	 * but elements may be repeated if they appear more than once in the original list.
+	 * Naturally, k needs to be no greater than the list's size, or an error will be thrown.
+	 * @param list
+	 * @param k
+	 * @param random
+	 * @return a list of elements at k unique positions in the given list
+	 */
+	public static <T> ArrayList<T> pickKElementsWithoutReplacement(ArrayList<T> list, int k, Predicate<T> requirement, Random random) {
+		ArrayList<T> result;
+		myAssert(() -> k < list.size(), () -> "pickKElementsWithoutReplacement received k = " + k + " greater than list size " + list.size());
+		Set<Integer> alreadyPicked = set();
+		result = new ArrayList<T>(k);
+		for (int i = 0; i != k; i++) {
+			int j;
+			do {
+				if (alreadyPicked.size() == list.size()) {
+					throw new Error("pickKElementsWithoutReplacement: only " + result.size() + " elements in " + list + " satisfy given requirement, but " + k + " elements have been requested.");
+				}
+				do {
+					j = random.nextInt(list.size());
+				} while (alreadyPicked.contains(j));
+				alreadyPicked.add(j);
+			} while (!requirement.apply(list.get(j)));
+			result.add(list.get(j));
+		}
+		return result;
 	}
 	
 	/**
