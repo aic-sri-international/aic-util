@@ -489,6 +489,7 @@ public class Util {
 	 * @param <T>
 	 *            the type of the elements in the list.
 	 */
+	@SafeVarargs
 	public static <T> List<T> list(T... elements) {
 		return new LinkedList<T>(Arrays.asList(elements));
 	}

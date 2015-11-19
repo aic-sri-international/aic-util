@@ -88,6 +88,23 @@ public class PredicateIterator<E> extends FilterIterator<E> {
 		return new PredicateIterator<E>(predicate, collection.iterator());
 	}
 
+
+	public static <E> PredicateIterator<E> predicateIterator(Predicate<E> predicate, Iterator<E> base) {
+		return new PredicateIterator<E>(predicate, base);
+	}
+
+	public static <E> PredicateIterator<E> predicateIterator(Iterator<E> base, Predicate<E> predicate) {
+		return new PredicateIterator<E>(predicate, base);
+	}
+
+	public static <E> PredicateIterator<E> predicateIterator(Collection<E> collection, Predicate<E> predicate) {
+		return new PredicateIterator<E>(predicate, collection.iterator());
+	}
+
+	public static <E> PredicateIterator<E> predicateIterator(Predicate<E> predicate, Collection<E> collection) {
+		return new PredicateIterator<E>(predicate, collection.iterator());
+	}
+
 	@Override
 	public boolean include(E element) {
 		return predicate.apply(element);
