@@ -37,70 +37,61 @@
  */
 package com.sri.ai.util.collect;
 
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.ListIterator;
+
 import com.google.common.annotations.Beta;
 
+
 /**
- * An iterator over a given integer interval
- * {@code [start, end[} (that is, with inclusive start and exclusive end)
- * with a specified increment over the interval.
+ * An iterator based on an array of sub-iterators that ranges
+ * over all i-th elements of each sub-iterator before ranging over the (i+1)-th elements.
  * 
  * @author braz
- * 
  */
 @Beta
-public class IntegerIterator extends EZIterator<Integer> {
+public class BreadthFirstIterator<T> extends EZIteratorWithNull<T> {
 
-	private int i;
-	private boolean infinite;
-	private int end;
-	private int increment;
-
-	/**
-	 * Constructor.
-	 * 
-	 * @param start
-	 *            the starting integer, inclusive.
-	 * @param end
-	 *            the ending integer in the range, exclusive.
-	 * @param increment
-	 *            the amount to increment on each iteration.
-	 */
-	public IntegerIterator(int start, int end, int increment) {
-		this.i = start;
-		this.end = end;
-		this.infinite = false;
-		this.increment = increment;
-	}
-
-	/**
-	 * Constructor with a default increment of 1.
-	 * 
-	 * @param start
-	 *            the starting integer, inclusive.
-	 * @param end
-	 *            the ending integer in the range, exclusive.
-	 */
-	public IntegerIterator(int start, int end) {
-		this(start, end, 1);
-	}
-
-	/**
-	 * Constructor starting at a given integer and incrementing indefinitely.
-	 * 
-	 * @param start the initial value (there is no end value)
-	 */
-	public IntegerIterator(int start) {
-		this.i = start;
-		this.infinite = true;
+	LinkedList<Iterator<T>> subIterators;
+	ListIterator<Iterator<T>> subIteratorsIterator;
+	
+	@SafeVarargs
+	public BreadthFirstIterator(Iterator<T>... subIterators) {
+		this.subIterators = new LinkedList<Iterator<T>>(Arrays.asList(subIterators));
+		this.subIteratorsIterator = this.subIterators.listIterator();
 	}
 
 	@Override
-	protected Integer calculateNext() {
-		if (infinite || i < end) {
-			Integer next = Integer.valueOf(i);
-			i += increment;
-			return next;
+	protected T calculateNext() {
+		while (true) {
+
+			// look for next sub-iterator that has next element in this round, if any
+			Iterator<T> subIteratorWhichHasNext = null;
+			while (subIteratorWhichHasNext == null && subIteratorsIterator.hasNext()) {
+				subIteratorWhichHasNext = subIteratorsIterator.next();
+				if ( ! subIteratorWhichHasNext.hasNext()) {
+					subIteratorsIterator.remove(); // discard depleted sub-iterator
+					subIteratorWhichHasNext = null; // discard empty sub-iterator as current sub-iterator
+				}
+			}
+
+			// if there was no sub-iterator with next element in this round,
+			// check if round yielded anything, or if whole iterator is over
+			if (subIteratorWhichHasNext != null){
+				// found iterator with next element, return next element
+				return subIteratorWhichHasNext.next();
+			}
+			else if ( ! subIterators.isEmpty()) { // must have gone over all sub-iterators, and only non-empty ones remain if any
+				// there are still sub-iterators with next elements; go for another round
+				subIteratorsIterator = subIterators.listIterator();
+			}
+			else {
+				// must have gone over all sub-iterators and they are all depleted -- iterator is over
+				endOfRange();
+				return null;
+			}
 		}
-		return null;
 	}
 }
