@@ -37,7 +37,7 @@
  */
 package com.sri.ai.util.base;
 
-import static com.sri.ai.util.Util.forAll;
+import static com.sri.ai.util.Util.thereExists;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -46,33 +46,33 @@ import com.google.common.annotations.Beta;
 import com.google.common.base.Predicate;
 
 /**
- * A {@link Predicate} that is a conjunction of a list of others.
+ * A {@link Predicate} that is a disjunction of a list of others.
  * 
  * @author braz
  */
 @Beta
-public class And<T> implements Predicate<T> {
+public class Or<T> implements Predicate<T> {
 	Collection<Predicate<T>> basePredicates;
 	
 	@SafeVarargs
-	public And(Predicate<T>... baseIterators) {
+	public Or(Predicate<T>... baseIterators) {
 		super();
 		this.basePredicates = Arrays.asList(baseIterators);
 	}
 
 	@SafeVarargs
-	public static <T1> And<T1> make(Predicate<T1>... baseIterators) {
-		return new And<T1>(baseIterators);
+	public static <T1> Or<T1> make(Predicate<T1>... baseIterators) {
+		return new Or<T1>(baseIterators);
 	}
 	
 	@SafeVarargs
-	public static <T1> And<T1> or(Predicate<T1>... baseIterators) {
-		return new And<T1>(baseIterators);
+	public static <T1> Or<T1> or(Predicate<T1>... baseIterators) {
+		return new Or<T1>(baseIterators);
 	}
 	
 	@Override
 	public boolean apply(T input) {
-		boolean result = forAll(basePredicates, bP -> bP.apply(input));
+		boolean result = thereExists(basePredicates, bP -> bP.apply(input));
 		return result;
 	}
 }
