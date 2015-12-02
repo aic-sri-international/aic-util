@@ -517,6 +517,7 @@ public class Util {
 	 *            the type of the List to be constructed and the elements it is
 	 *            to contain.
 	 */
+	@SafeVarargs
 	public static <T> ArrayList<T> arrayList(T... elements) {
 		return new ArrayList<T>(Arrays.asList(elements));
 	}
@@ -4530,6 +4531,24 @@ public class Util {
 			Integer ithIndex = indices.get(i);
 			E elementAtIthIndex = array.get(ithIndex);
 			result.add(elementAtIthIndex);
+		}
+		return result;
+	}
+
+	/**
+	 * Stores the elements from an iterable of iterables in an array list of array lists.
+	 * @param iterableOfIterables
+	 * @return
+	 */
+	public static <T> ArrayList<ArrayList<T>> storeIterableOfIterablesInArrayListOfArrayLists(Iterable<Iterable<T>> iterableOfIterables) {
+		ArrayList<ArrayList<T>> result;
+		result = arrayList();
+		for (Iterable<T> iterable : iterableOfIterables) {
+			ArrayList<T> innerArrayList = arrayList();
+			for (T element : iterable) {
+				innerArrayList.add(element);
+			}
+			result.add(innerArrayList);
 		}
 		return result;
 	}
