@@ -53,4 +53,8 @@ public class PairOf<T> extends Pair<T, T> {
 	public static <T> PairOf<T> makePairOf(T first, T second) {
 		return new PairOf<T>(first, second);
 	}
+	
+	public static <T> PairOf<T> pairOf(T first, T second) {
+		return new PairOf<T>(first, second);
+	}
 }

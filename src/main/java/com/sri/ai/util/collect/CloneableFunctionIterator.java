@@ -35,18 +35,31 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.sri.ai.util.base;
+package com.sri.ai.util.collect;
 
 import com.google.common.annotations.Beta;
+import com.google.common.base.Function;
+import com.sri.ai.util.base.CloneableIterator;
 
 /**
- * An interface for iterables that provide a {@link ContinuationIterator},
- * which are iterators able to produce {@link ContinuationIterable}s that produce iterators
- * in the same state as the original iterator.
+ * An extension of {@link FunctionIterator} implementing {@link CloneableIterator}.
  * 
  * @author braz
  */
 @Beta
-public interface ContinuationIterable<T> extends Iterable<T> {
-	public ContinuationIterator<T> iterator();
+public class CloneableFunctionIterator<F, T> extends FunctionIterator<F, T> implements CloneableIterator<T> {
+	
+	public CloneableFunctionIterator(CloneableIterator<F> base, Function<F, T> function) {
+		super(base, function);
+	}
+
+	@Override
+	public CloneableIterator<F> getBase() {
+		return (CloneableIterator<F>) super.getBase();
+	}
+
+	@Override
+	public CloneableFunctionIterator<F, T> clone() {
+		return new CloneableFunctionIterator<F, T>(getBase().clone(), getFunction());
+	}
 }

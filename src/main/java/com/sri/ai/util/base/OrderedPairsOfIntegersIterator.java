@@ -18,7 +18,7 @@
  * notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
  * 
- * Neither the name of the aic-util nor the names of its
+ * Neither the name of the aic-expresso nor the names of its
  * contributors may be used to endorse or promote products derived from
  * this software without specific prior written permission.
  * 
@@ -37,35 +37,87 @@
  */
 package com.sri.ai.util.base;
 
+import static com.sri.ai.util.Util.myAssert;
+import static com.sri.ai.util.base.PairOf.pairOf;
+
 import com.google.common.annotations.Beta;
+import com.sri.ai.util.collect.EZIterator;
 
 /**
- * An interface for iterators that can provide a continuation iterable that will
- * generate new continuation iterators ranging
- * over the current and future values of the original iterator.
- * In other words, the iterator can make an iterable that generates a continuation of the original iterator.
- * <p>
- * The above mechanism is used to provide a default clone method, making this a {link CloneableIterator} as well.
+ * A cloneable iterator over ordered pairs of integers less than <code>n</code>.
  * 
  * @author braz
+ *
  */
 @Beta
-public interface ContinuationIterator<T> extends CloneableIterator<T> {
-	public ContinuationIterable<T> makeContinuationIterable();
+public class OrderedPairsOfIntegersIterator extends EZIterator<PairOf<Integer>> implements CloneableIterator<PairOf<Integer>> {
+
+	private int n;
+	private int i;
+	private int j;
 	
+	public OrderedPairsOfIntegersIterator(int n) {
+		this(n, 0, 1, true);
+	}
+
+	public OrderedPairsOfIntegersIterator(int n, int i, int j) {
+		this(n, i, j, true);
+	}
+
+	OrderedPairsOfIntegersIterator(int n, int i, int j, boolean onNext) {
+		super();
+		myAssert(() -> i >= 0 && i < n - 1, () -> "i must be in [0, n - 1] but was " + i + " whereas n is " + n);
+		myAssert(() -> j >= 0 && i < n    , () -> "j must be in [0, n]     but was " + j + " whereas n is " + n);
+		this.n = n;
+		this.i = i;
+		this.j = j;
+		this.onNext = onNext;
+		this.next = pairOf(i, j);
+	}
+
+	@Override
+	public OrderedPairsOfIntegersIterator clone() {
+		return new OrderedPairsOfIntegersIterator(n, i, j, onNext);
+	}
+
+	@Override
+	protected PairOf<Integer> calculateNext() {
+		if ( ! increment()) {
+			return null;
+		}
+		return next; // relies on the fact that increment sets 'next'
+	}
+
 	/**
-	 * Provides a default clone method to be used by implementations
-	 * (calling this 'clone' would not work because implementations would still use their
-	 * Object.clone implementation. One needs to override Object.clone, and
-	 * has the option of invoking this method for convenience.
+	 * Moves to next pair, unless there is none, in which case returns false.
 	 * @return
 	 */
-	default ContinuationIterator<T> continuationIteratorDefaultClone() {
-		ContinuationIterable<T> iterable = makeContinuationIterable();
-		ContinuationIterator<T> newIterator = iterable.iterator();
-		return newIterator;
+	public boolean increment() {
+		if (j == n - 1) {
+			if ( ! incrementI()) {
+				return false;
+			}
+		}
+		else {
+			j++;
+			next = pairOf(i, j);
+			onNext = true;
+		}
+		return true;
 	}
-	
-	@Override
-	ContinuationIterator<T> clone();
+
+	/**
+	 * Increments i and sets j to i + 1, unless there is no such position, in which case returns false.
+	 * @return
+	 */
+	public boolean incrementI() {
+		if (i == n - 2) {
+			return false;
+		}
+		i++;
+		j = i + 1;
+		next = pairOf(i, j);
+		onNext = true;
+		return true;
+	}
 }

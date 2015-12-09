@@ -61,6 +61,10 @@ public class Pair<T1, T2> {
 		return new Pair<T1, T2>(first, second);
 	}
 
+	public static <T1, T2> Pair<T1, T2> pair(T1 first, T2 second) {
+		return new Pair<T1, T2>(first, second);
+	}
+
 	@Override
 	public int hashCode() {
 		// Subtract different primes to ensure re-orderings do not generate the same hash codes.
