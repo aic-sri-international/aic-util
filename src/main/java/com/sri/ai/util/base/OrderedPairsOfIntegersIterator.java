@@ -37,7 +37,6 @@
  */
 package com.sri.ai.util.base;
 
-import static com.sri.ai.util.Util.myAssert;
 import static com.sri.ai.util.base.PairOf.pairOf;
 
 import com.google.common.annotations.Beta;
@@ -45,6 +44,12 @@ import com.sri.ai.util.collect.EZIterator;
 
 /**
  * A cloneable iterator over ordered pairs of integers less than <code>n</code>.
+ * <p>
+ * One of the constructors takes the initial indices as parameters as well.
+ * <p>
+ * If <code>n</code> is 0 or 1, no pairs are provided (naturally).
+ * <p>
+ * If <code>n</code> is 2 or greater but the initial indices don't lead to the create of ordered pairs, no pairs are provided.
  * 
  * @author braz
  *
@@ -64,15 +69,30 @@ public class OrderedPairsOfIntegersIterator extends EZIterator<PairOf<Integer>> 
 		this(n, i, j, true);
 	}
 
-	OrderedPairsOfIntegersIterator(int n, int i, int j, boolean onNext) {
+	private OrderedPairsOfIntegersIterator(int n, int i, int j, boolean onNext) {
 		super();
-		myAssert(() -> i >= 0 && i < n - 1, () -> "i must be in [0, n - 1] but was " + i + " whereas n is " + n);
-		myAssert(() -> j >= 0 && i < n    , () -> "j must be in [0, n]     but was " + j + " whereas n is " + n);
-		this.n = n;
-		this.i = i;
-		this.j = j;
-		this.onNext = onNext;
-		this.next = pairOf(i, j);
+//		myAssert(() -> initialIIsValid(n, i), () -> "i must be in [0, n - 1] but was " + i + " whereas n is " + n);
+//		myAssert(() -> initialJIsValid(n, j), () -> "j must be in [0, n]     but was " + j + " whereas n is " + n);
+		if (initialIIsValid(n, i) && initialJIsValid(n, j)) {
+			this.n = n;
+			this.i = i;
+			this.j = j;
+			this.onNext = onNext;
+			this.next = pairOf(i, j);
+		}
+		else {
+			// no pairs available
+			this.onNext = true;
+			this.next = null;
+		}
+	}
+
+	private boolean initialIIsValid(int n, int i) {
+		return i >= 0 && i < n - 1;
+	}
+
+	private boolean initialJIsValid(int n, int j) {
+		return j >= 0 && j < n;
 	}
 
 	@Override

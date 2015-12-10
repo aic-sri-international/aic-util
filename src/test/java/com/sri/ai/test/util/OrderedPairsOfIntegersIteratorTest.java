@@ -61,6 +61,36 @@ public class OrderedPairsOfIntegersIteratorTest {
 		List<Pair<Integer, Integer>> expected;
 		Pair<Integer, Integer> pair;
 		
+		n = 0;
+		i = 0;
+		j = 1;
+		expected = list();
+		runTest(n, i, j, expected);
+		
+		n = 1;
+		i = 0;
+		j = 1;
+		expected = list();
+		runTest(n, i, j, expected);
+		
+		n = 2;
+		i = 0;
+		j = 1;
+		expected = list(pair(0,1));
+		runTest(n, i, j, expected);
+		
+		n = 2;
+		i = 1; // invalid
+		j = 1;
+		expected = list();
+		runTest(n, i, j, expected);
+		
+		n = 2;
+		i = 1; // invalid
+		j = 2; // invalid
+		expected = list();
+		runTest(n, i, j, expected);
+		
 		n = 3;
 		i = 0;
 		j = 1;

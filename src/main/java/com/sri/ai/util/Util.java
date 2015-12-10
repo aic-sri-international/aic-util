@@ -788,7 +788,7 @@ public class Util {
 	 * @param <T>
 	 *            the type of the elements given.
 	 */
-	public static <T> Collection<T> addAll(Collection<T> c, Iterator<T> i) {
+	public static <T, C extends Collection<T>> C addAll(C c, Iterator<T> i) {
 		while (i.hasNext()) {
 			c.add(i.next());
 		}
