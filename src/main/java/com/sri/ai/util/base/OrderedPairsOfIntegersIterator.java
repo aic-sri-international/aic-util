@@ -114,7 +114,7 @@ public class OrderedPairsOfIntegersIterator extends EZIterator<PairOf<Integer>> 
 	 */
 	public boolean increment() {
 		if (j == n - 1) {
-			if ( ! incrementI()) {
+			if ( ! makeSureToBeAtRowBeginning()) {
 				return false;
 			}
 		}
@@ -127,17 +127,24 @@ public class OrderedPairsOfIntegersIterator extends EZIterator<PairOf<Integer>> 
 	}
 
 	/**
-	 * Increments i and sets j to i + 1, unless there is no such position, in which case returns false.
+	 * Iterate, if needed, until next element is at beginning of row
+	 * (that is, with a position (i, i + 1) for some i),
+	 * or return false if that is not possible.
 	 * @return
 	 */
-	public boolean incrementI() {
-		if (i == n - 2) {
-			return false;
+	public boolean makeSureToBeAtRowBeginning() {
+		if (onNext && j == i + 1) { // already at beginning of row
+			return true;
 		}
-		i++;
-		j = i + 1;
-		next = pairOf(i, j);
-		onNext = true;
-		return true;
+		else { // not at row beginning
+			if (i == n - 2) { // try to move forward but not possible
+				return false;
+			}
+			i++; // move forward
+			j = i + 1;
+			next = pairOf(i, j);
+			onNext = true;
+			return true;
+		}
 	}
 }

@@ -120,7 +120,7 @@ public class OrderedPairsOfIntegersIteratorTest {
 		pair = iterator.next();
 		assertEquals(pair(0, 2), pair);
 		
-		iterator.incrementI();
+		iterator.makeSureToBeAtRowBeginning();
 		assertEquals(true, iterator.hasNext());
 		pair = iterator.next();
 		assertEquals(pair(1, 2), pair);
@@ -129,14 +129,14 @@ public class OrderedPairsOfIntegersIteratorTest {
 		pair = iterator.next();
 		assertEquals(pair(1, 3), pair);
 
-		iterator.incrementI();
+		iterator.makeSureToBeAtRowBeginning();
 		assertEquals(true, iterator.hasNext());
 		pair = iterator.next();
 		assertEquals(pair(2, 3), pair);
 
 		assertEquals(false, iterator.hasNext());
 
-		iterator.incrementI();
+		iterator.makeSureToBeAtRowBeginning();
 		assertEquals(false, iterator.hasNext());
 
 		iterator.increment();
