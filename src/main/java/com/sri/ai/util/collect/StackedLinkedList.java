@@ -38,7 +38,9 @@
 package com.sri.ai.util.collect;
 
 import static com.sri.ai.util.Util.forAll;
+import static com.sri.ai.util.Util.join;
 import static com.sri.ai.util.Util.thereExists;
+import static com.sri.ai.util.collect.NestedIterator.nestedIterator;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -103,7 +105,8 @@ public class StackedLinkedList<E> implements List<E> {
 
 	@Override
 	public Object[] toArray() {
-		Object[] result = new Object[size()];
+		@SuppressWarnings("unchecked")
+		E[] result = (E[]) new Object[size()];
 		base.toArray(result);
 		int i = base.size();
 		for (E element : extension) {
@@ -117,7 +120,7 @@ public class StackedLinkedList<E> implements List<E> {
 	public <T> T[] toArray(T[] a) {
 		T[] result;
 		
-		if (a.length > size()) {
+		if (a.length < size()) {
 			result = (T[]) new Object[size()];
 		}
 		else {
@@ -274,5 +277,10 @@ public class StackedLinkedList<E> implements List<E> {
 	@Override
 	public List<E> subList(int fromIndex, int toIndex) {
 		throw new UnsupportedOperationException("subList not supported for " + getClass());
+	}
+	
+	@Override
+	public String toString() {
+		return "[" + join(", ", nestedIterator(base, extension)) + "]";
 	}
 }
