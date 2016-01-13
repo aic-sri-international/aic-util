@@ -49,6 +49,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -1261,6 +1262,7 @@ public class Util {
 	 * Stores results of applying a function to a collection's elements in a
 	 * new array and returns it.
 	 * 
+	 * @param clazz the type of the objects in the array
 	 * @param collection
 	 *            the collection whose elements a function is to be applied to.
 	 * @param function
@@ -1273,8 +1275,36 @@ public class Util {
 	 *            the result type of the function applied to the collection's
 	 *            elements.
 	 */
-	public static <F, T> T[] mapIntoArray(
+	public static <F, T> T[] mapIntoArray(Class<T> clazz,
 			Collection<? extends F> collection, Function<F, T> function) {
+
+		@SuppressWarnings("unchecked")
+		T[] result = (T[]) Array.newInstance(clazz, collection.size());
+		int i = 0;
+		for(F element : collection) {
+			result[i++] = function.apply(element);
+		}
+
+		return result;
+	}
+
+	/**
+	 * Stores results of applying a function to a collection's elements in a
+	 * new array of Objects and returns it.
+	 * 
+	 * @param collection
+	 *            the collection whose elements a function is to be applied to.
+	 * @param function
+	 *            the function to be applied to the given collection's elements.
+	 * @return an array of the results from the function applications on the
+	 *         given collection's elements.
+	 * @param <F>
+	 *            the type of the collection's elements.
+	 * @param <T>
+	 *            the result type of the function applied to the collection's
+	 *            elements.
+	 */
+	public static <F, T> T[] mapIntoObjectArray(Collection<? extends F> collection, Function<F, T> function) {
 
 		@SuppressWarnings("unchecked")
 		T[] result = (T[]) new Object[collection.size()];
