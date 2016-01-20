@@ -61,23 +61,18 @@ public class OrderedPairsOfIntegersIterator extends EZIterator<PairOf<Integer>> 
 	private int i;
 	private int j;
 	
+	private boolean hadPreviousAndItWasLastOfRowForPreviousIAndJ;
+
 	public OrderedPairsOfIntegersIterator(int n) {
-		this(n, 0, 1, true);
+		this(n, 0, 1);
 	}
 
 	public OrderedPairsOfIntegersIterator(int n, int i, int j) {
-		this(n, i, j, true);
-	}
-
-	private OrderedPairsOfIntegersIterator(int n, int i, int j, boolean onNext) {
 		super();
-//		myAssert(() -> initialIIsValid(n, i), () -> "i must be in [0, n - 1] but was " + i + " whereas n is " + n);
-//		myAssert(() -> initialJIsValid(n, j), () -> "j must be in [0, n]     but was " + j + " whereas n is " + n);
 		if (initialIIsValid(n, i) && initialJIsValid(n, j)) {
-			this.n = n;
 			this.i = i;
 			this.j = j;
-			this.onNext = onNext;
+			this.onNext = true;
 			this.next = pairOf(i, j);
 		}
 		else {
@@ -85,6 +80,9 @@ public class OrderedPairsOfIntegersIterator extends EZIterator<PairOf<Integer>> 
 			this.onNext = true;
 			this.next = null;
 		}
+		
+		this.n = n;
+		this.hadPreviousAndItWasLastOfRowForPreviousIAndJ = false; // has not had a previous element yet
 	}
 
 	private boolean initialIIsValid(int n, int i) {
@@ -95,13 +93,22 @@ public class OrderedPairsOfIntegersIterator extends EZIterator<PairOf<Integer>> 
 		return j >= 0 && j < n;
 	}
 
+	/**
+	 * A cloning method delegating to super.clone().
+	 */
 	@Override
 	public OrderedPairsOfIntegersIterator clone() {
-		return new OrderedPairsOfIntegersIterator(n, i, j, onNext);
+		try {
+			return (OrderedPairsOfIntegersIterator) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new Error("Trying to clone " + getClass() + " but cloning is not supported for this class.");
+		}
 	}
-
+	
 	@Override
 	protected PairOf<Integer> calculateNext() {
+		recordWhetherHadPreviousAndItWasLastOfRowBeforeUpdatingIAndJ();
+		
 		if ( ! increment()) {
 			return null;
 		}
@@ -109,10 +116,11 @@ public class OrderedPairsOfIntegersIterator extends EZIterator<PairOf<Integer>> 
 	}
 
 	/**
-	 * Moves to next pair, unless there is none, in which case returns false.
+	 * If there is a next pair, move to it and returns true. Otherwise, returns false.
 	 * @return
 	 */
 	public boolean increment() {
+		recordWhetherHadPreviousAndItWasLastOfRowBeforeUpdatingIAndJ();
 		if (j == n - 1) {
 			if ( ! makeSureToBeAtRowBeginning()) {
 				return false;
@@ -133,6 +141,7 @@ public class OrderedPairsOfIntegersIterator extends EZIterator<PairOf<Integer>> 
 	 * @return
 	 */
 	public boolean makeSureToBeAtRowBeginning() {
+		recordWhetherHadPreviousAndItWasLastOfRowBeforeUpdatingIAndJ();
 		if (onNext && j == i + 1) { // already at beginning of row
 			return true;
 		}
@@ -145,6 +154,40 @@ public class OrderedPairsOfIntegersIterator extends EZIterator<PairOf<Integer>> 
 			next = pairOf(i, j);
 			onNext = true;
 			return true;
+		}
+	}
+	
+	private void recordWhetherHadPreviousAndItWasLastOfRowBeforeUpdatingIAndJ() {
+		// at this point, we are about to *calculate* next pair (i', j') to current (i, j), so we will lose this information (current (i, j)).
+		// Therefore, we must record the information of whether current (i, j) is at the end of a row,
+		// because if hadPreviousAndItWasLastOfRow is invoked *before* (i', j') gets returned (that is, becomes the "previous"ly returned element),
+		// (i, j) remains the current "previous" and hadPreviousAndItWasLastOfRow needs to inform about it. 
+		hadPreviousAndItWasLastOfRowForPreviousIAndJ = j == n - 1;
+	}
+
+	/**
+	 * Returns whether there is a next element and it is at the beginning of a row.
+	 * @return
+	 */
+	public boolean hasNextAndItIsAtRowBeginning() {
+		if (hasNext()) {
+			boolean result = j == i + 1;
+			return result;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	public boolean hadPreviousAndItWasLastOfRow() {
+		if ( ! onNext) {
+			// (i, j) still points to previously returned element, so we check if it is at the end of a row			
+			boolean result = j == n - 1;
+			return result;
+		}
+		else {
+			// if we have already computed 'next', current (i, j) no longer refer to the previously returned element. Therefore we must return the information recorded when (i, j) were still at the previously returned element
+			return hadPreviousAndItWasLastOfRowForPreviousIAndJ;
 		}
 	}
 }

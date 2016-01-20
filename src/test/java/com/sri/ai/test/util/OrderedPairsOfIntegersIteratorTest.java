@@ -40,7 +40,7 @@ package com.sri.ai.test.util;
 import static com.sri.ai.util.Util.addAllToList;
 import static com.sri.ai.util.Util.list;
 import static com.sri.ai.util.Util.pair;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -112,35 +112,54 @@ public class OrderedPairsOfIntegersIteratorTest {
 		n = 4;
 		OrderedPairsOfIntegersIterator iterator = new OrderedPairsOfIntegersIterator(n);
 		assertEquals(true, iterator.hasNext());
+		assertTrue(iterator.hasNextAndItIsAtRowBeginning());
+		assertFalse(iterator.hadPreviousAndItWasLastOfRow()); // has not had a previous yet
 		pair = iterator.next();
 		assertEquals(pair(0, 1), pair);
+		assertFalse(iterator.hadPreviousAndItWasLastOfRow());
 		
 		iterator.increment();
 		assertEquals(true, iterator.hasNext());
+		assertFalse(iterator.hasNextAndItIsAtRowBeginning());
+		assertFalse(iterator.hadPreviousAndItWasLastOfRow()); // has had a previous but it was not last in row
 		pair = iterator.next();
 		assertEquals(pair(0, 2), pair);
+		assertFalse(iterator.hadPreviousAndItWasLastOfRow()); // has had a previous but it was not last in row
 		
 		iterator.makeSureToBeAtRowBeginning();
 		assertEquals(true, iterator.hasNext());
+		assertTrue(iterator.hasNextAndItIsAtRowBeginning());
+		assertFalse(iterator.hadPreviousAndItWasLastOfRow()); // same previous, so same result here as last call
 		pair = iterator.next();
 		assertEquals(pair(1, 2), pair);
+		assertFalse(iterator.hadPreviousAndItWasLastOfRow()); // has had a previous but it was not last in row
 		
 		assertEquals(true, iterator.hasNext());
+		assertFalse(iterator.hasNextAndItIsAtRowBeginning());
 		pair = iterator.next();
 		assertEquals(pair(1, 3), pair);
+		assertTrue(iterator.hadPreviousAndItWasLastOfRow()); // has had a previous *and* it was last in row
 
 		iterator.makeSureToBeAtRowBeginning();
 		assertEquals(true, iterator.hasNext());
+		assertTrue(iterator.hasNextAndItIsAtRowBeginning());
+		assertTrue(iterator.hadPreviousAndItWasLastOfRow()); // same previous, so same result here as last call
 		pair = iterator.next();
 		assertEquals(pair(2, 3), pair);
+		assertTrue(iterator.hadPreviousAndItWasLastOfRow()); // has had a previous *and* it was last in row
 
 		assertEquals(false, iterator.hasNext());
+		assertFalse(iterator.hasNextAndItIsAtRowBeginning());
+		assertTrue(iterator.hadPreviousAndItWasLastOfRow()); // same previous, so same result here as last call
 
 		iterator.makeSureToBeAtRowBeginning();
 		assertEquals(false, iterator.hasNext());
+		assertTrue(iterator.hadPreviousAndItWasLastOfRow()); // same previous, so same result here as last call
+		assertFalse(iterator.hasNextAndItIsAtRowBeginning());
 
 		iterator.increment();
 		assertEquals(false, iterator.hasNext());
+		assertFalse(iterator.hasNextAndItIsAtRowBeginning());
 }
 
 	public void runTest(int n, int i, int j, List<Pair<Integer, Integer>> expected) {
