@@ -39,7 +39,6 @@ package com.sri.ai.util.collect;
 
 import static com.sri.ai.util.Util.forAll;
 import static com.sri.ai.util.Util.join;
-import static com.sri.ai.util.Util.thereExists;
 import static com.sri.ai.util.collect.NestedIterator.nestedIterator;
 
 import java.util.Collection;
@@ -52,35 +51,26 @@ import com.google.common.annotations.Beta;
 import com.sri.ai.util.Util;
 
 /**
- * An implementation of {@link List}
+ * An implementation of an immutable {@link List}
  * sharing elements with a pre-existing given list.
- * <p>
- * This works by receiving the base list at construction time and keeping a linked list of additional elements.
- * <p>
- * Modification of the base list is not allowed and
- * will throw a {@link UnsupportedOperationException}.
- * <p>
- * An immutable, more efficient version is offered at {@link ImmutableStackedLinkedList}.
- * 
+ * The immutability allows a faster implementation
+ * through caching, as opposed to non-immutable {@link StackedLinkedList}.
+ *
  * @author braz
  */
 @Beta
-public class StackedLinkedList<E> implements List<E> {
-
+public class ImmutableStackedLinkedList<E> implements List<E> {
+	
 	private List<E> base;
 	private List<E> extension;
 	
-	public StackedLinkedList(List<E> base) {
+	public ImmutableStackedLinkedList(E top, List<E> base) {
 		this.base = base;
 		this.extension = new LinkedList<E>();
-	}
-	
-	public StackedLinkedList(E top, List<E> base) {
-		this(base);
 		this.extension.add(top);
 	}
 	
-	public StackedLinkedList(List<E> top, List<E> base) {
+	public ImmutableStackedLinkedList(List<E> top, List<E> base) {
 		this.base = base;
 		this.extension = top;
 	}
@@ -88,16 +78,29 @@ public class StackedLinkedList<E> implements List<E> {
 	public List<E> getBase() {
 		return base;
 	}
+
+	private boolean sizeIsCached = false;
+	private int cachedSize;
 	
 	@Override
 	public int size() {
-		return base.size() + extension.size();
+		if ( ! sizeIsCached) {
+			cachedSize = base.size() + extension.size();
+			sizeIsCached = true;
+		}
+		return cachedSize;
 	}
 
+	private boolean isEmptyIsCached = false;
+	private boolean cachedIsEmpty;
+	
 	@Override
 	public boolean isEmpty() {
-		boolean result = base.isEmpty() && extension.isEmpty();
-		return result;
+		if ( ! isEmptyIsCached) {
+			cachedIsEmpty = base.isEmpty() && extension.isEmpty();
+			isEmptyIsCached = true;
+		}
+		return cachedIsEmpty;
 	}
 
 	@Override
@@ -111,16 +114,19 @@ public class StackedLinkedList<E> implements List<E> {
 		return new NestedIterator<E>(base, extension);
 	}
 
+	private Object[] array;
+	
 	@Override
 	public Object[] toArray() {
-		@SuppressWarnings("unchecked")
-		E[] result = (E[]) new Object[size()];
-		base.toArray(result);
-		int i = base.size();
-		for (E element : extension) {
-			result[i++] = element;
+		if (array == null) {
+			array = new Object[size()];
+			base.toArray(array);
+			int i = base.size();
+			for (E element : extension) {
+				array[i++] = element;
+			}
 		}
-		return result;
+		return array;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -150,17 +156,12 @@ public class StackedLinkedList<E> implements List<E> {
 
 	@Override
 	public boolean add(E e) {
-		boolean result = extension.add(e);
-		return result;
+		throw new UnsupportedOperationException("add method not supported for immutable stacked linked lists.");
 	}
 
 	@Override
 	public boolean remove(Object o) {
-		if (base.contains(o)) {
-			throw new UnsupportedOperationException("Cannot remove objects in base list of " + getClass());
-		}
-		boolean result = extension.remove(o);
-		return result;
+		throw new UnsupportedOperationException("remove method not supported for immutable stacked linked lists.");
 	}
 
 	@Override
@@ -171,23 +172,17 @@ public class StackedLinkedList<E> implements List<E> {
 
 	@Override
 	public boolean addAll(Collection<? extends E> c) {
-		boolean result = extension.addAll(c);
-		return result;
+		throw new UnsupportedOperationException("addAll method not supported for immutable stacked linked lists.");
 	}
 
 	@Override
 	public boolean addAll(int index, Collection<? extends E> c) {
-		if (index < base.size()) {
-			throw new UnsupportedOperationException("Cannot add objects to base list of " + getClass() + ". Base size is " + base.size() + " and given index is " + index);
-		}
-		boolean result = extension.addAll(index - base.size(), c);
-		return result;
+		throw new UnsupportedOperationException("addAll method not supported for immutable stacked linked lists.");
 	}
 
 	@Override
 	public boolean removeAll(Collection<?> c) {
-		boolean result = thereExists(c, this::remove);
-		return result;
+		throw new UnsupportedOperationException("removeAll method not supported for immutable stacked linked lists.");
 	}
 
 	@Override
@@ -197,12 +192,7 @@ public class StackedLinkedList<E> implements List<E> {
 
 	@Override
 	public void clear() {
-		if (base.isEmpty()) {
-			extension.clear();
-		}
-		else {
-			throw new UnsupportedOperationException("Cannot clear a " + getClass() + " if base list is not empty.");
-		}
+		throw new UnsupportedOperationException("clear method not supported for immutable stacked linked lists.");
 	}
 
 	@Override
@@ -219,36 +209,17 @@ public class StackedLinkedList<E> implements List<E> {
 
 	@Override
 	public E set(int index, E element) {
-		E result;
-		if (index < base.size()) {
-			throw new UnsupportedOperationException("Cannot set elements to base list of " + getClass() + ". Base size is " + base.size() + " and given index is " + index);
-		}
-		else {
-			result = extension.set(index - base.size(), element);
-		}
-		return result;
+		throw new UnsupportedOperationException("set method not supported for immutable stacked linked lists.");
 	}
 
 	@Override
 	public void add(int index, E element) {
-		if (index < base.size()) {
-			throw new UnsupportedOperationException("Cannot add elements to base list of " + getClass() + ". Base size is " + base.size() + " and given index is " + index);
-		}
-		else {
-			extension.add(index - base.size(), element);
-		}
+		throw new UnsupportedOperationException("add method not supported for immutable stacked linked lists.");
 	}
 
 	@Override
 	public E remove(int index) {
-		E result;
-		if (index < base.size()) {
-			throw new UnsupportedOperationException("Cannot remove elements from base list of " + getClass() + ". Base size is " + base.size() + " and given index is " + index);
-		}
-		else {
-			result = extension.remove(index - base.size());
-			return result;
-		}
+		throw new UnsupportedOperationException("remove method not supported for immutable stacked linked lists.");
 	}
 
 	@Override
