@@ -788,6 +788,7 @@ public class Util {
 	 * @return the given collection.
 	 * @param <T>
 	 *            the type of the elements given.
+	 * @param <C> the type of the collection
 	 */
 	public static <T, C extends Collection<T>> C addAll(C c, Iterator<T> i) {
 		while (i.hasNext()) {
@@ -2245,6 +2246,29 @@ public class Util {
 			Predicate<E> predicate) {
 		boolean result = collection.stream().allMatch(predicate::apply);
 		return result;
+	}
+
+	/**
+	 * Indicates whether all elements in iterator's range satisfy the given predicate.
+	 * 
+	 * @param iterator
+	 *            the iterator over elements to test.
+	 * @param predicate
+	 *            the predicate to test the elements within the iterator's range.
+	 * @return true if all elements in the iterator's range match the given predicate,
+	 *         false otherwise.
+	 * @param <E>
+	 *            the type of the elements iterated over.
+	 */
+	public static <E> boolean forAll(Iterator<E> iterator, Predicate<E> predicate) {
+		while (iterator.hasNext()) {
+			E element = iterator.next();
+			boolean predicateResult = predicate.apply(element);
+			if ( ! predicateResult) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -4388,9 +4412,10 @@ public class Util {
 	 * Iterates over a random subset of another iterator's range,
 	 * by selecting whether each element in it belong to the subset or not
 	 * with 0.5 probability.
-	 * @param iterator
-	 * @param random
-	 * @return
+	 * @param iterator iterator
+	 * @param random random generator
+	 * @param <T> the type
+	 * @return a random sub-set
 	 */
 	public static <T> Iterator<T> pickSubSet(Iterator<T> iterator, Random random) {
 		return new EZIterator<T>() {
@@ -4412,9 +4437,10 @@ public class Util {
 	 * If the list contains unique elements, then so will the returned list,
 	 * but elements may be repeated if they appear more than once in the original list.
 	 * Naturally, k needs to be no greater than the list's size, or an error will be thrown.
-	 * @param list
-	 * @param k
-	 * @param random
+	 * @param list list
+	 * @param k number of elements to pick
+	 * @param random random generator
+	 * @param <T> type of elements
 	 * @return a list of elements at k unique positions in the given list
 	 */
 	public static <T> ArrayList<T> pickKElementsWithoutReplacement(ArrayList<T> list, int k, Random random) {
@@ -4445,9 +4471,11 @@ public class Util {
 	 * If the list contains unique elements, then so will the returned list,
 	 * but elements may be repeated if they appear more than once in the original list.
 	 * Naturally, k needs to be no greater than the list's size, or an error will be thrown.
-	 * @param list
-	 * @param k
-	 * @param random
+	 * @param list the list of elements
+	 * @param k number of elements to pick
+	 * @param requirement requirement
+	 * @param random random generator
+	 * @param <T> type of elements
 	 * @return a list of elements at k unique positions in the given list
 	 */
 	public static <T> ArrayList<T> pickKElementsWithoutReplacement(ArrayList<T> list, int k, Predicate<T> requirement, Random random) {
@@ -4567,8 +4595,9 @@ public class Util {
 
 	/**
 	 * Stores the elements from an iterable of iterables in an array list of array lists.
-	 * @param iterableOfIterables
-	 * @return
+	 * @param iterableOfIterables iterable of iterables
+	 * @return array of arrays
+	 * @param <T> type
 	 */
 	public static <T> ArrayList<ArrayList<T>> storeIterableOfIterablesInArrayListOfArrayLists(Iterable<Iterable<T>> iterableOfIterables) {
 		ArrayList<ArrayList<T>> result;
@@ -4582,5 +4611,39 @@ public class Util {
 		}
 		return result;
 	}
-	
+
+	/**
+	 * Put given value in a list indexed by key, creating a new linked list if the map still does not contain the key.
+	 * @param mapToLists map to lists
+	 * @param key a key
+	 * @param value a value
+	 * @param <K> key type
+	 * @param <V> value type
+	 */
+	public static <K,V> void putInListValue(Map<K, List<V>> mapToLists, K key, V value) {
+		List<V> list;
+		if (mapToLists.containsKey(key)) {
+			list = mapToLists.get(key);
+		}
+		else {
+			list = new LinkedList<V>();
+			mapToLists.put(key, list);
+		}
+		list.add(value);
+	}
+
+	/**
+	 * Allocates an array list of given size filled with given value.
+	 * @param value a value
+	 * @param size size of list
+	 * @param <T> type of elements
+	 * @return an array list of given size with all elements equal to given value
+	 */
+	public static <T> ArrayList<T> arrayListFilledWith(T value, int size) {
+		ArrayList<T> result = new ArrayList<>(size);
+		for (int i = 0; i != size; i++) {
+			result.add(value);
+		}
+		return result;
+	}
 }

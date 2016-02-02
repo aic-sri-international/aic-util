@@ -44,8 +44,8 @@ import com.google.common.base.Function;
  * A decision tree factory.
  * @author braz
  *
- * @param <V>
- * @param <L>
+ * @param <V> type of data items
+ * @param <L> labels
  */
 @Beta
 public interface DecisionTreeFactory<V,L> {

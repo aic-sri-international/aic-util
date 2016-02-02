@@ -50,8 +50,8 @@ import com.sri.ai.util.ml.decisiontree.api.SplitAnalyzer;
  * 
  * @author braz
  *
- * @param <V>
- * @param <L>
+ * @param <V> type of data items
+ * @param <L> labels
  */
 @Beta
 public class DefaultDecisionTreeLearner<V,L> implements DecisionTreeLearner<V,L> {

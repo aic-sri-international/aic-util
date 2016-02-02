@@ -44,9 +44,8 @@ import com.google.common.base.Function;
  * A decision tree from feature vectors of type V, with features of type F, and labels of type L.
  * @author braz
  *
- * @param <V>
- * @param <F>
- * @param <L>
+ * @param <V> type of data items
+ * @param <L> labels
  */
 @Beta
 public interface DecisionTree<V,L> extends Function<V,L> {

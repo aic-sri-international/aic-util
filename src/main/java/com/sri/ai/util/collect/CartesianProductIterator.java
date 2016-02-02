@@ -63,7 +63,7 @@ public class CartesianProductIterator<E> extends EZIterator<ArrayList<E>> {
 	
 	/**
 	 * Constructs a Cartesian product iterator given a sequence of iterator makers (one per dimension).
-	 * @param iteratorMakers
+	 * @param iteratorMakers iterator makers
 	 */
 	@SafeVarargs
 	public CartesianProductIterator(NullaryFunction<Iterator<E>>... iteratorMakers) {

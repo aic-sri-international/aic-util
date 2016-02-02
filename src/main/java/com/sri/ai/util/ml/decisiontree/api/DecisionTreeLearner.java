@@ -46,8 +46,8 @@ import com.sri.ai.util.ml.api.DataSet;
  * 
  * @author braz
  *
- * @param <V>
- * @param <L>
+ * @param <V> type of data items
+ * @param <L> labels
  */
 @Beta
 public interface DecisionTreeLearner<V,L> extends Function<DataSet<V>, DecisionTree<V,L>> {

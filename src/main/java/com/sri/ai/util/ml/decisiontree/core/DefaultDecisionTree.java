@@ -46,9 +46,8 @@ import com.sri.ai.util.ml.decisiontree.api.DecisionTree;
  * 
  * @author braz
  *
- * @param <V>
- * @param <F>
- * @param <L>
+ * @param <V> type of data items
+ * @param <L> labels
  */
 @Beta
 public class DefaultDecisionTree<V,L> implements DecisionTree<V,L> {

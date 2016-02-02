@@ -3,7 +3,7 @@ package com.sri.ai.util.ml.decisiontree.api;
 import com.google.common.base.Function;
 import com.sri.ai.util.ml.api.DataSet;
 
-public interface SplitAnalysis<V, L> {
+public interface SplitAnalysis<V,L> {
 
 	public abstract boolean isSplit();
 

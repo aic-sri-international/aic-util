@@ -117,7 +117,7 @@ public class OrderedPairsOfIntegersIterator extends EZIterator<PairOf<Integer>> 
 
 	/**
 	 * If there is a next pair, move to it and returns true. Otherwise, returns false.
-	 * @return
+	 * @return whether it was possible to increment to a next pair.
 	 */
 	public boolean increment() {
 		recordWhetherHadPreviousAndItWasLastOfRowBeforeUpdatingIAndJ();
@@ -138,7 +138,7 @@ public class OrderedPairsOfIntegersIterator extends EZIterator<PairOf<Integer>> 
 	 * Iterate, if needed, until next element is at beginning of row
 	 * (that is, with a position (i, i + 1) for some i),
 	 * or return false if that is not possible.
-	 * @return
+	 * @return whether it succeeded
 	 */
 	public boolean makeSureToBeAtRowBeginning() {
 		recordWhetherHadPreviousAndItWasLastOfRowBeforeUpdatingIAndJ();
@@ -167,7 +167,7 @@ public class OrderedPairsOfIntegersIterator extends EZIterator<PairOf<Integer>> 
 
 	/**
 	 * Returns whether there is a next element and it is at the beginning of a row.
-	 * @return
+	 * @return has next and it is at row beginning
 	 */
 	public boolean hasNextAndItIsAtRowBeginning() {
 		if (hasNext()) {
