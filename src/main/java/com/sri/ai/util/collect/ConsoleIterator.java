@@ -59,7 +59,7 @@ public class ConsoleIterator implements Iterator<String> {
 	private BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
 
 	private String prompt = "> ";
-	private Collection<String> enders = list("end", "bye", "good bye", "goodbye", "quit", "exit", "hasta la vista, baby", "adios", "hasta luego", "arrivederci", "auf wiedersehen", "ciao", "a bien tot", "adeus", "tchau");
+	private Collection<String> enders = list("end", "bye", "good bye", "goodbye", "quit", "exit", "hasta la vista, baby", "adios", "hasta luego", "arrivederci", "auf wiedersehen", "ciao", "a bien tot", "adieu", "au revoir", "adeus", "tchau");
 	private String answer;
 
 	public ConsoleIterator() {
