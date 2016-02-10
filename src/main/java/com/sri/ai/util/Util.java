@@ -4431,17 +4431,17 @@ public class Util {
 	}
 
 	/**
-	 * Returns an array list with k elements out of the given list, without replacement.
-	 * This means that the returned list contains the elements of k unique positions
+	 * Returns an array list with <code>k</code> elements out of the given list, without replacement.
+	 * This means that the returned list contains the elements of <code>k</code> unique positions
 	 * in the original list.
 	 * If the list contains unique elements, then so will the returned list,
 	 * but elements may be repeated if they appear more than once in the original list.
-	 * Naturally, k needs to be no greater than the list's size, or an error will be thrown.
+	 * Naturally, <code>k</code> needs to be no greater than the list's size, or an assertion error will be thrown.
 	 * @param list list
 	 * @param k number of elements to pick
 	 * @param random random generator
 	 * @param <T> type of elements
-	 * @return a list of elements at k unique positions in the given list
+	 * @return a list of elements at <code>k</code> unique positions in the given list
 	 */
 	public static <T> ArrayList<T> pickKElementsWithoutReplacement(ArrayList<T> list, int k, Random random) {
 		ArrayList<T> result;
@@ -4465,29 +4465,30 @@ public class Util {
 	}
 	
 	/**
-	 * Returns an array list with k elements out of the given list satisfying a given predicate, without replacement.
-	 * This means that the returned list contains the elements of k unique positions
+	 * Returns an array list with up to <code>k</code> elements out of the given list
+	 * satisfying a given predicate, without replacement.
+	 * This means that the returned list contains the elements of <code>k</code> unique positions
 	 * in the original list.
 	 * If the list contains unique elements, then so will the returned list,
 	 * but elements may be repeated if they appear more than once in the original list.
-	 * Naturally, k needs to be no greater than the list's size, or an error will be thrown.
+	 * The number of picked elements is the maximum of <code>k</code>
+	 * and the number of positions in the input list whose elements satisfy the predicate.
 	 * @param list the list of elements
 	 * @param k number of elements to pick
 	 * @param requirement requirement
 	 * @param random random generator
 	 * @param <T> type of elements
-	 * @return a list of elements at k unique positions in the given list
+	 * @return a list of up to <code>k</code> elements at unique positions in the given list (picked without replacement).
 	 */
-	public static <T> ArrayList<T> pickKElementsWithoutReplacement(ArrayList<T> list, int k, Predicate<T> requirement, Random random) {
+	public static <T> ArrayList<T> pickUpToKElementsWithoutReplacement(ArrayList<T> list, int k, Predicate<T> requirement, Random random) {
 		ArrayList<T> result;
-		myAssert(() -> k < list.size(), () -> "pickKElementsWithoutReplacement received k = " + k + " greater than list size " + list.size());
 		Set<Integer> alreadyPicked = set();
 		result = new ArrayList<T>(k);
 		for (int i = 0; i != k; i++) {
 			int j;
 			do {
 				if (alreadyPicked.size() == list.size()) {
-					throw new Error("pickKElementsWithoutReplacement: only " + result.size() + " elements in " + list + " satisfy given requirement, but " + k + " elements have been requested.");
+					return result;
 				}
 				do {
 					j = random.nextInt(list.size());
@@ -4497,6 +4498,34 @@ public class Util {
 			result.add(list.get(j));
 		}
 		return result;
+	}
+	
+	/**
+	 * Stores, in a given array list, up to <code>k</code> elements out of the input list 
+	 * satisfying a given predicate, without replacement.
+	 * The number of elements collected is the maximum of <code>k</code>
+	 * and the number of positions in the input list whose elements satisfy the predicate.
+	 * @param list the list of elements
+	 * @param k number of elements to pick
+	 * @param requirement requirement
+	 * @param random random generator
+	 * @param <T> type of elements
+	 */
+	public static <T> void pickUpToKElementsWithoutReplacement(ArrayList<T> list, int k, Predicate<T> requirement, Random random, ArrayList<T> destination) {
+		Set<Integer> alreadyPicked = set();
+		for (int i = 0; i != k; i++) {
+			int j;
+			do {
+				if (alreadyPicked.size() == list.size()) {
+					return;
+				}
+				do {
+					j = random.nextInt(list.size());
+				} while (alreadyPicked.contains(j));
+				alreadyPicked.add(j);
+			} while (!requirement.apply(list.get(j)));
+			destination.add(list.get(j));
+		}
 	}
 	
 	/**
