@@ -37,6 +37,8 @@
  */
 package com.sri.ai.util.collect;
 
+import static com.sri.ai.util.Util.map;
+
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -63,6 +65,37 @@ public class StackedHashMap<K, V> extends AbstractStackedMap<K, V> {
 
 	public StackedHashMap(Map<K, V> top, Map<K, V> base) {
 		super(top, base);
+	}
+
+	/**
+	 * Convenience for {@link #StackedHashMap(Map)}.
+	 * @param base the base map
+	 * @return a stacked map with the base and an empty top map
+	 */
+	public static <K, V> StackedHashMap<K, V> stackedHashMap(Map<K, V> base) {
+		return new StackedHashMap<K, V>(base);
+	}
+
+	/**
+	 * Convenience for {@link #StackedHashMap(Map, Map)}.
+	 * @param top the top map
+	 * @param base the base map
+	 * @return a stacked map with the given top and base maps
+	 */
+	public static <K, V> StackedHashMap<K, V> stackedHashMap(Map<K, V> top, Map<K, V> base) {
+		return new StackedHashMap<K, V>(top, base);
+	}
+
+
+	/**
+	 * Convenience for making a stacked map with the given key and value.
+	 * @param key the key
+	 * @param value the value
+	 * @param base the base map
+	 * @return a stacked map with the a top map with the given key and value, and given base map.
+	 */
+	public static <K, V> StackedHashMap<K, V> stackedHashMap(K key, V value, Map<K, V> base) {
+		return new StackedHashMap<K, V>(map(key, value), base);
 	}
 
 	@Override
