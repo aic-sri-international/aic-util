@@ -35,26 +35,23 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.sri.ai.util.collect;
+package com.sri.ai.util.console;
 
 import static com.sri.ai.util.Util.list;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Collection;
-import java.util.Iterator;
 
 import com.google.common.annotations.Beta;
 
 /**
- * An iterator ranging over lines entered on the console. Properties prompt and
- * ender can be set, defining which prompt appears, and which strings ends the
- * iterator.
+ * A default/simple implementation of the ConsoleIterator interface.
  * 
  * @author braz
  */
 @Beta
-public class ConsoleIterator implements Iterator<String> {
+public class DefaultConsoleIterator implements ConsoleIterator {
 
 	private BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
 
@@ -62,10 +59,10 @@ public class ConsoleIterator implements Iterator<String> {
 	private Collection<String> enders = list("end", "bye", "good bye", "goodbye", "quit", "exit", "hasta la vista, baby", "adios", "hasta luego", "arrivederci", "auf wiedersehen", "ciao", "a bien tot", "adieu", "au revoir", "adeus", "tchau");
 	private String answer;
 
-	public ConsoleIterator() {
+	public DefaultConsoleIterator() {
 	}
 
-	public ConsoleIterator(String prompt, Collection<String> enders) {
+	public DefaultConsoleIterator(String prompt, Collection<String> enders) {
 		this.prompt = prompt;
 		this.enders = enders;
 	}
@@ -91,39 +88,27 @@ public class ConsoleIterator implements Iterator<String> {
 		return answer;
 	}
 
-	/** 
-	 * @return {@link #next()} cast to a String. 
-	 */
-	public String nextString() {
-		return answer;
-	}
-
-	/**
-	 * Gives access to current string without iterating.
-	 * 
-	 * @return the current string without iterating.
-	 */
+	@Override
 	public String currentString() {
 		return answer;
 	}
 
 	@Override
-	public void remove() throws UnsupportedOperationException {
-		throw new UnsupportedOperationException();
-	}
-
 	public String getPrompt() {
 		return prompt;
 	}
 
+	@Override
 	public void setPrompt(String prompt) {
 		this.prompt = prompt;
 	}
 
+	@Override
 	public Collection<String> getEnders() {
 		return enders;
 	}
 
+	@Override
 	public void setEnders(Collection<String> enders) {
 		this.enders = enders;
 	}
