@@ -37,6 +37,7 @@
  */
 package com.sri.ai.util.console;
 
+import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -56,6 +57,10 @@ public interface ConsoleIterator extends Iterator<String> {
 	default void remove() throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
+	
+	PrintWriter getOutputWriter();
+	
+	PrintWriter getErrorWriter();
 	
 	/**
 	 * Gives access to current string without iterating.

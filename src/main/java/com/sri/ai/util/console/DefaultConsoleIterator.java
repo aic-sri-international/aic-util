@@ -40,7 +40,9 @@ package com.sri.ai.util.console;
 import static com.sri.ai.util.Util.list;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.Collection;
 
 import com.google.common.annotations.Beta;
@@ -53,7 +55,9 @@ import com.google.common.annotations.Beta;
 @Beta
 public class DefaultConsoleIterator implements ConsoleIterator {
 
-	private BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
+	private BufferedReader console   = new BufferedReader(new InputStreamReader(System.in));
+	private PrintWriter    outWriter = new PrintWriter(System.out, true);
+	private PrintWriter    errWriter = new PrintWriter(System.err, true);
 
 	private String prompt = "> ";
 	private Collection<String> enders = list("end", "bye", "good bye", "goodbye", "quit", "exit", "hasta la vista, baby", "adios", "hasta luego", "arrivederci", "auf wiedersehen", "ciao", "a bien tot", "adieu", "au revoir", "adeus", "tchau");
@@ -66,19 +70,30 @@ public class DefaultConsoleIterator implements ConsoleIterator {
 		this.prompt = prompt;
 		this.enders = enders;
 	}
+	
+	@Override
+	public PrintWriter getOutputWriter() {
+		return outWriter;
+	}
+	
+	@Override
+	public PrintWriter getErrorWriter() {
+		return errWriter;
+	}
 
 	@Override
 	public boolean hasNext() {
+		getOutputWriter().print(prompt);
+		getOutputWriter().flush();
 		try {
-			System.out.print(prompt);
 			String reply = console.readLine();
 			if (enders.contains(reply)) {
 				return false;
 			}
 			answer = reply;
 		}
-		catch (java.io.IOException e) {
-			System.err.println(e);
+		catch (IOException ioe) {
+			
 		}
 		return true;
 	}
