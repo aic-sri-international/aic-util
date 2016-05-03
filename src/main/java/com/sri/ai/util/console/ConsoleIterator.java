@@ -38,8 +38,11 @@
 package com.sri.ai.util.console;
 
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import com.google.common.annotations.Beta;
 
@@ -52,6 +55,24 @@ import com.google.common.annotations.Beta;
  */
 @Beta
 public interface ConsoleIterator extends Iterator<String> {
+	
+	List<String> DEFAULT_ENDERS = Collections.unmodifiableList(Arrays.asList(
+		    "end", 
+		    "bye", 
+		    "good bye", 
+		    "goodbye", 
+		    "quit", "exit", 
+		    "hasta la vista, baby", 
+		    "adios", 
+		    "hasta luego", 
+		    "arrivederci", 
+		    "auf wiedersehen", 
+		    "ciao", 
+		    "a bien tot", 
+		    "adieu", 
+		    "au revoir", 
+		    "adeus", 
+		    "tchau"));
 
 	@Override
 	default void remove() throws UnsupportedOperationException {

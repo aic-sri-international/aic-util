@@ -37,8 +37,6 @@
  */
 package com.sri.ai.util.console;
 
-import static com.sri.ai.util.Util.list;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -59,11 +57,12 @@ public class DefaultConsoleIterator implements ConsoleIterator {
 	private PrintWriter    outWriter = new PrintWriter(System.out, true);
 	private PrintWriter    errWriter = new PrintWriter(System.err, true);
 
-	private String prompt = "> ";
-	private Collection<String> enders = list("end", "bye", "good bye", "goodbye", "quit", "exit", "hasta la vista, baby", "adios", "hasta luego", "arrivederci", "auf wiedersehen", "ciao", "a bien tot", "adieu", "au revoir", "adeus", "tchau");
+	private String prompt;
+	private Collection<String> enders;
 	private String answer;
 
 	public DefaultConsoleIterator() {
+		this("> ", DEFAULT_ENDERS);
 	}
 
 	public DefaultConsoleIterator(String prompt, Collection<String> enders) {
