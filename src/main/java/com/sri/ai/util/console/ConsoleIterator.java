@@ -56,6 +56,7 @@ import com.google.common.annotations.Beta;
 @Beta
 public interface ConsoleIterator extends Iterator<String> {
 	
+	String DEFAULT_PROMPT = "> ";
 	List<String> DEFAULT_ENDERS = Collections.unmodifiableList(Arrays.asList(
 		    "end", 
 		    "bye", 

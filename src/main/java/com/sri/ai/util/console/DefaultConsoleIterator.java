@@ -62,7 +62,7 @@ public class DefaultConsoleIterator implements ConsoleIterator {
 	private String answer;
 
 	public DefaultConsoleIterator() {
-		this("> ", DEFAULT_ENDERS);
+		this(DEFAULT_PROMPT, DEFAULT_ENDERS);
 	}
 
 	public DefaultConsoleIterator(String prompt, Collection<String> enders) {
