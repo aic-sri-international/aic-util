@@ -330,7 +330,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	//
 	/**
 	 * Numerator. Numerator may be negative. Numerator may be zero, in which
-	 * case m_q must be one. [Conditions are put in place by normalize().]
+	 * case denominator must be one. [Conditions are put in place by normalize().]
 	 */
 	private BigInteger numerator;
 	/**
@@ -853,6 +853,14 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 
 	// END - Constructors
 	//
+	
+	public BigInteger getNumerator() {
+		return numerator;
+	}
+	
+	public BigInteger getDenominator() {
+		return denominator;
+	}
 	
 	/**
 	 * Set the toStringDot() rounding mode to be used.
