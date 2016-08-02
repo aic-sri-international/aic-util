@@ -4449,7 +4449,7 @@ public class Util {
 			result = list;
 		}
 		else {
-			myAssert(() -> k < list.size(), () -> "pickKElementsWithoutReplacement received k = " + k + " greater than list size " + list.size());
+			myAssert(() -> k < list.size(), () -> "pickKElementsWithoutReplacement received k = " + k + " greater than list size " + list.size() + ". List is " + list);
 			Set<Integer> alreadyPicked = set();
 			result = new ArrayList<T>(k);
 			for (int i = 0; i != k; i++) {
