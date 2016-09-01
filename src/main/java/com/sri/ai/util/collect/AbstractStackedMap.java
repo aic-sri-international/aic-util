@@ -37,6 +37,7 @@
  */
 package com.sri.ai.util.collect;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -58,7 +59,9 @@ import com.google.common.annotations.Beta;
  *          the type of the values.
  */
 @Beta
-public abstract class AbstractStackedMap<K, V> implements StackedMap<K, V> {
+public abstract class AbstractStackedMap<K, V> implements StackedMap<K, V>, Serializable {
+	private static final long serialVersionUID = 1L;
+
 	/** Top map. */
 	protected Map<K, V> top = null;
 
