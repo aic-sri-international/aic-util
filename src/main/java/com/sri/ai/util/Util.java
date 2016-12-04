@@ -815,6 +815,23 @@ public class Util {
 	}
 
 	/**
+	 * Adds all elements of iterator's range to a new array list.
+	 * 
+	 * @param i
+	 *            the iterator whose range is to be added to the list.
+	 * @return the list.
+	 * @param <T>
+	 *            the type of the elements given.
+	 */
+	public static <T> ArrayList<T> addAllToArrayList(Iterator<T> i) {
+		ArrayList<T> result = new ArrayList<T>();
+		while (i.hasNext()) {
+			result.add(i.next());
+		}
+		return result;
+	}
+
+	/**
 	 * Adds all elements of iterator's range to a new linked hash set.
 	 * 
 	 * @param i
