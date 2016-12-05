@@ -1439,19 +1439,21 @@ public class Util {
 	}
 
 	/**
-	 * Stores results of applying a function to an set's elements in a new,
-	 * empty hash set and returns it.
+	 * Stores results of applying a function to the values of a map in a new,
+	 * empty linked hash map and returns it.
 	 * 
-	 * @param set
-	 *            the set to map from.
+	 * @param map
+	 *            the map whose values to apply to function on.
 	 * @param function
 	 *            the function to apply to each element in the set.
 	 * @return the results of applying the given function to the elements of the
 	 *         given set.
-	 * @param <F>
-	 *            the type of the elements in the Set.
-	 * @param <T>
-	 *            the type of the result from applying the given function.
+	 * @param <K>
+	 *            the type of the keys in the maps.
+	 * @param <V1>
+	 *            the type of the values in the input map.
+	 * @param <V2>
+	 *            the type of the values in the output map.
 	 */
 	public static <K, V1, V2> LinkedHashMap<K, V2>
 	applyFunctionToValuesOf(
@@ -4575,6 +4577,7 @@ public class Util {
 	 * @param k number of elements to pick
 	 * @param requirement requirement
 	 * @param random random generator
+	 * @param destination the array list to store the results
 	 * @param <T> type of elements
 	 */
 	public static <T> void pickUpToKElementsWithoutReplacement(ArrayList<T> list, int k, Predicate<T> requirement, Random random, ArrayList<T> destination) {
@@ -4660,6 +4663,8 @@ public class Util {
 	 * Returns a map mapping keys to lists containing all the values to which those
 	 * keys map in all maps given as arguments.
 	 * @param maps the maps whose values we want to union
+	 * @param <K> the key type
+	 * @param <V> the value type
 	 * @return a a map mapping keys to lists containing all the values to which those
 	 * keys map in all maps given as arguments.
 	 */
@@ -4678,6 +4683,8 @@ public class Util {
 	 * Returns a map mapping keys to lists containing all the values to which those
 	 * keys map in all maps given as arguments.
 	 * @param maps the iterator over maps whose values we want to union
+	 * @param <K> the key type
+	 * @param <V> the value type
 	 * @return a a map mapping keys to lists containing all the values to which those
 	 * keys map in all maps given as arguments.
 	 */

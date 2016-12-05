@@ -55,6 +55,8 @@ import com.google.common.annotations.Beta;
  */
 @Beta
 public class StackedHashMap<K, V> extends AbstractStackedMap<K, V> {
+	private static final long serialVersionUID = 1L;
+
 	public StackedHashMap() {
 		super();
 	}
@@ -70,6 +72,8 @@ public class StackedHashMap<K, V> extends AbstractStackedMap<K, V> {
 	/**
 	 * Convenience for {@link #StackedHashMap(Map)}.
 	 * @param base the base map
+	 * @param <K> the key type
+	 * @param <V> the value type
 	 * @return a stacked map with the base and an empty top map
 	 */
 	public static <K, V> StackedHashMap<K, V> stackedHashMap(Map<K, V> base) {
@@ -80,6 +84,8 @@ public class StackedHashMap<K, V> extends AbstractStackedMap<K, V> {
 	 * Convenience for {@link #StackedHashMap(Map, Map)}.
 	 * @param top the top map
 	 * @param base the base map
+	 * @param <K> the key type
+	 * @param <V> the value type
 	 * @return a stacked map with the given top and base maps
 	 */
 	public static <K, V> StackedHashMap<K, V> stackedHashMap(Map<K, V> top, Map<K, V> base) {
@@ -92,6 +98,8 @@ public class StackedHashMap<K, V> extends AbstractStackedMap<K, V> {
 	 * @param key the key
 	 * @param value the value
 	 * @param base the base map
+	 * @param <K> the key type
+	 * @param <V> the value type
 	 * @return a stacked map with the a top map with the given key and value, and given base map.
 	 */
 	public static <K, V> StackedHashMap<K, V> stackedHashMap(K key, V value, Map<K, V> base) {
