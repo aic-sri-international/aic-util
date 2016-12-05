@@ -870,6 +870,28 @@ public class Util {
 		return result;
 	}
 
+	/**
+	 * @param map
+	 *            the map to look up a value using the given key.
+	 * @param key
+	 *            the key to look up the given map with.
+	 * @param defaultMaker
+	 *            a function to make a default object from.
+	 * @return value indexed by given key in map, or a default value made by the default maker.
+	 * @param <K>
+	 *            the type of the Map's key.
+	 * @param <V>
+	 *            the type of the Map's value.
+	 */
+	public static <K, V> V getOrMakeAndPut(Map<K, V> map, K key, NullaryFunction<V> defaultMaker) {
+		V result = map.get(key);
+		if (result == null) {
+			result = defaultMaker.apply();
+			map.put(key, result);
+		}
+		return result;
+	}
+
 	@SuppressWarnings("unchecked")
 	public static <K, V> V getValuePossiblyCreatingIt(Map<K, V> map, K key,
 			Class<?> newValueClass) {
@@ -1414,6 +1436,33 @@ public class Util {
 		}
 
 		return change? possibleResult : set;
+	}
+
+	/**
+	 * Stores results of applying a function to an set's elements in a new,
+	 * empty hash set and returns it.
+	 * 
+	 * @param set
+	 *            the set to map from.
+	 * @param function
+	 *            the function to apply to each element in the set.
+	 * @return the results of applying the given function to the elements of the
+	 *         given set.
+	 * @param <F>
+	 *            the type of the elements in the Set.
+	 * @param <T>
+	 *            the type of the result from applying the given function.
+	 */
+	public static <K, V1, V2> LinkedHashMap<K, V2>
+	applyFunctionToValuesOf(
+			Map<? extends K, ? extends V1> map,
+			Function<V1, V2> function) {
+
+		LinkedHashMap<K, V2> result = map();
+		for (Map.Entry<? extends K, ? extends V1> entry : map.entrySet()) {
+			result.put(entry.getKey(), function.apply(entry.getValue()));
+		}
+		return result;
 	}
 
 	/**
@@ -4607,6 +4656,42 @@ public class Util {
 		return map;
 	}
 
+	/**
+	 * Returns a map mapping keys to lists containing all the values to which those
+	 * keys map in all maps given as arguments.
+	 * @param maps the maps whose values we want to union
+	 * @return a a map mapping keys to lists containing all the values to which those
+	 * keys map in all maps given as arguments.
+	 */
+	public static <K,V> Map<K, LinkedList<V>> unionOfValues(Collection<Map<? extends K, ? extends V>> maps) {
+		Map<K, LinkedList<V>> result = map();
+		for (Map<? extends K, ? extends V> map : maps) {
+			for (Map.Entry<? extends K, ? extends V> entry : map.entrySet()) {
+				LinkedList<V> listOfValues = Util.getOrMakeAndPut(result, entry.getKey(), () -> new LinkedList<V>());
+				listOfValues.add(entry.getValue());
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Returns a map mapping keys to lists containing all the values to which those
+	 * keys map in all maps given as arguments.
+	 * @param maps the iterator over maps whose values we want to union
+	 * @return a a map mapping keys to lists containing all the values to which those
+	 * keys map in all maps given as arguments.
+	 */
+	public static <K,V> Map<K, LinkedList<V>> mapWithValuesEqualToListOfValuesOfTheseMapsUnderSameKey(Iterator<Map<? extends K, ? extends V>> maps) {
+		Map<K, LinkedList<V>> result = map();
+		for (Map<? extends K, ? extends V> map : in(maps)) {
+			for (Map.Entry<? extends K, ? extends V> entry : map.entrySet()) {
+				LinkedList<V> listOfValues = Util.getOrMakeAndPut(result, entry.getKey(), () -> new LinkedList<V>());
+				listOfValues.add(entry.getValue());
+			}
+		}
+		return result;
+	}
+	
 	/**
 	 * Creates an array list of size n, filled with a given value.
 	 * @param n the size of the array
