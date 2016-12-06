@@ -491,7 +491,7 @@ public class Util {
 	 *            the type of the elements in the list.
 	 */
 	@SafeVarargs
-	public static <T> List<T> list(T... elements) {
+	public static <T> LinkedList<T> list(T... elements) {
 		return new LinkedList<T>(Arrays.asList(elements));
 	}
 
@@ -533,7 +533,7 @@ public class Util {
 		return result;
 	}
 
-	public static <T> Set<T> set(T... elements) {
+	public static <T> LinkedHashSet<T> set(T... elements) {
 		return new LinkedHashSet<T>(Arrays.asList(elements));
 	}
 
@@ -619,13 +619,13 @@ public class Util {
 	 *            the type of the Map's value.
 	 */
 	@SuppressWarnings("unchecked")
-	public static <K, V> void addToCollectionValuePossiblyCreatingIt(
-			Map<K, Collection<V>> mapToCollections, K key, V element,
+	public static <K, V, C extends Collection<V>> void addToCollectionValuePossiblyCreatingIt(
+			Map<K, C> mapToCollections, K key, V element,
 			Class newCollectionClass) {
-		Collection<V> c = mapToCollections.get(key);
+		C c = mapToCollections.get(key);
 		if (c == null) {
 			try {
-				c = (Collection<V>) newCollectionClass.newInstance();
+				c = (C) newCollectionClass.newInstance();
 				mapToCollections.put(key, c);
 			} catch (InstantiationException e) {
 				e.printStackTrace();
