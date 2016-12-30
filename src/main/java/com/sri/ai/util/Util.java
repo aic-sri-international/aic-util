@@ -4784,4 +4784,27 @@ public class Util {
 		}
 		return result;
 	}
+
+	/**
+	 * If there is more than one element in iterator's range and they are all equal to the first one,
+	 * returns the first one;
+	 * otherwise, returns null.
+	 * @param elements
+	 * @return
+	 */
+	public static <T> T ifAllTheSameOrNull(Iterator<T> elements) {
+		if (elements.hasNext()) {
+			T candidate = elements.next();
+			while (elements.hasNext()) {
+				T next = elements.next();
+				if (! next.equals(candidate)) {
+					return null;
+				}
+			}
+			return candidate;
+		}
+		else {
+			return null;
+		}
+	}
 }
