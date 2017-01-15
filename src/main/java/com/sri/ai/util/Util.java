@@ -1893,6 +1893,32 @@ public class Util {
 		return sumArbitraryPrecision(numbers.iterator());
 	}
 
+	/**
+	 * Computer the maximum in the range of a {@link Rational} iterator,
+	 * throwing an error if the range is empty.
+	 * @param numbersIt
+	 * @return
+	 */
+	public static Rational maxArbitraryPrecision(Iterator<Rational> numbersIt) {
+		if (numbersIt.hasNext()) {
+			Rational result = numbersIt.next();
+			while (numbersIt.hasNext()) {
+				Rational number = (Rational) numbersIt.next();
+				if (number.compareTo(result) > 0) {
+					result = number;
+				}
+			}
+			return result;
+		}
+		else {
+			throw new Error("Iterator may not have empty range for Util.maxArbitraryPrecision(Iteator<Rational>)");
+		}
+	}
+
+	public static Rational maxArbitraryPrecision(Collection<Rational> numbers) {
+		return maxArbitraryPrecision(numbers.iterator());
+	}
+
 	public static Number product(Iterator<Number> numbersIt) {
 		double product = 1;
 		while (numbersIt.hasNext()) {
