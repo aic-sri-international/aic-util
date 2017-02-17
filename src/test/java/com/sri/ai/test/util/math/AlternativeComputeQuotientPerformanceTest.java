@@ -26,7 +26,7 @@ public class AlternativeComputeQuotientPerformanceTest {
 				                                    new Rational(-99), new Rational(-999), new Rational(-9999), new Rational(-99999), new Rational(-999999)};
 		Rational[] expectedValues = new Rational[] {new Rational(990000), new Rational(90000), new Rational(9000), new Rational(900), new Rational(90),
                 									new Rational(9), new Rational(1), new Rational(0), new Rational(-1), new Rational(-9),
-                									new Rational(-90), new Rational(-900), new Rational(-9000), new Rational(-90000), new Rational(-990000)};;
+                									new Rational(-90), new Rational(-900), new Rational(-9000), new Rational(-90000), new Rational(-990000)};
         for (int i = 0; i < inputValues.length; i++) {
         	Assert.assertEquals(expectedValues[i], zeroLeastSignificant(inputValues[i]));
         }
