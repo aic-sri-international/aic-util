@@ -70,6 +70,15 @@ public class AICUtilConfiguration extends Configuration {
 	//
 	public static final String  KEY_RECORD_CACHE_STATISTICS                                               = "aic.util.cache.record.statistics";
 	public static final Boolean DEFAULT_VALUE_RECORD_CACHE_STATISTICS                                     = Boolean.FALSE;
+	//
+	public static final String  KEY_RAIONAL_APPROXIMATION_ENABLED                                         = "aic.util.rational.approximation.enabled";
+	public static final Boolean DEFAULT_VALUE_RAIONAL_APPROXIMATION_ENABLED                               = Boolean.FALSE;
+	//
+	public static final String  KEY_RAIONAL_APPROXIMATION_ACTIVE_AFTER_N_BITS                             = "aic.util.rational.approximation.active.after.n.bits";
+	public static final Integer DEFAULT_VALUE_APPROXIMATION_ACTIVE_AFTER_N_BITS                           = new Integer(256); // NOTE: best to use multiple of 32 (as BigInteger uses int arrays for their internal representation, which are used by Rational)
+	//
+	public static final String  KEY_RAIONAL_APPROXIMATION_ZERO_K_BITS                                     = "aic.util.rational.approximation.zero.k.bits";
+	public static final Integer DEFAULT_VALUE_APPROXIMATION_ZERO_K_BITS                                   = new Integer(32); // NOTE: best to use multiple of 32, must be < active_after_n_bits value
 	
 	public static String getTestConfigurationScriptSettings() {
 		String result = getString(KEY_TEST_CONFIGURATION_SCRIPT_SETTINGS, DEFAULT_TEST_CONFIGURATION_SCRIPT_SETTINGS);
@@ -108,6 +117,24 @@ public class AICUtilConfiguration extends Configuration {
 	
 	public static boolean isRecordCacheStatistics() {
 		boolean result = getBoolean(KEY_RECORD_CACHE_STATISTICS, DEFAULT_VALUE_RECORD_CACHE_STATISTICS);
+		
+		return result;
+	}
+	
+	public static boolean isRationalApproximationEnabled() {
+		boolean result = getBoolean(KEY_RAIONAL_APPROXIMATION_ENABLED, DEFAULT_VALUE_RAIONAL_APPROXIMATION_ENABLED);
+		
+		return result;
+	}
+	
+	public static int getRationalApproximationActiveAfterNBits() {
+		int result = getInt(KEY_RAIONAL_APPROXIMATION_ACTIVE_AFTER_N_BITS, DEFAULT_VALUE_APPROXIMATION_ACTIVE_AFTER_N_BITS);
+		
+		return result;
+	}
+	
+	public static int getRationalApproximationZeroKBits() {
+		int result = getInt(KEY_RAIONAL_APPROXIMATION_ZERO_K_BITS, DEFAULT_VALUE_APPROXIMATION_ZERO_K_BITS);
 		
 		return result;
 	}

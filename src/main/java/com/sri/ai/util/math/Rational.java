@@ -59,6 +59,7 @@ package com.sri.ai.util.math;
 import java.math.BigInteger;
 
 import com.google.common.annotations.Beta;
+import com.sri.ai.util.AICUtilConfiguration;
 
 /**
  * Rational implements dynamically sized arbitrary precision immutable rational
@@ -325,6 +326,12 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * 15.
 	 */
 	private final static int QUAD_FLOAT_EXPONENT_SIZE = 15;
+	
+	//
+	// Approximation settings
+	private static boolean APPROXIMATION_ENABLED             = AICUtilConfiguration.isRationalApproximationEnabled();
+	private static int     APPROXIMATION_ACTIVE_AFTER_N_BITS = AICUtilConfiguration.getRationalApproximationActiveAfterNBits();
+	private static int     APPROXIMATION_ZERO_K_BITS         = AICUtilConfiguration.getRationalApproximationZeroKBits();
 
 	//
 	//
@@ -2627,10 +2634,22 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	public Rational clone() throws CloneNotSupportedException {
 		return (Rational) super.clone();
 	}
+	
+	public static void resetApproximationConfigurationFromAICUtilConfiguration() {
+		resetApproximationConfiguration(AICUtilConfiguration.isRationalApproximationEnabled(),
+										AICUtilConfiguration.getRationalApproximationActiveAfterNBits(),
+										AICUtilConfiguration.getRationalApproximationZeroKBits());
+	}
+	
+	public static void resetApproximationConfiguration(boolean enabled, int activeAfterNBits, int zeroKBits) {
+		APPROXIMATION_ENABLED             = enabled;
+		APPROXIMATION_ACTIVE_AFTER_N_BITS = activeAfterNBits;
+		APPROXIMATION_ZERO_K_BITS         = zeroKBits;
+	}
 
 	//
 	// PRIVATE METHODS
-	//
+	//	
 
 	/**
 	 * Normalize Rational. Denominator will be positive, numerator and
@@ -2677,6 +2696,26 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 			denominator = BIG_INTEGER_ZERO;
 			return;
 		}
+		
+		// Approximation
+		if (APPROXIMATION_ENABLED) {
+			if (denominatorSignum < 0) {
+				numerator = numerator.negate();
+				denominator = denominator.negate();
+				numeratorSignum = -numeratorSignum;
+				denominatorSignum = -denominatorSignum;
+			}
+			int dNumerator   = numerator.bitLength();
+			int dDenominator = denominator.bitLength();
+			
+			if (dNumerator > APPROXIMATION_ACTIVE_AFTER_N_BITS || dDenominator > APPROXIMATION_ACTIVE_AFTER_N_BITS) {
+				int d = Math.min(dNumerator, dDenominator);
+				if (d > 0) {
+					numerator   = approximate(numerator, dNumerator, d);
+					denominator = approximate(denominator, dDenominator, d);
+				}
+			}
+		}
 
 		// optimization
 		// check the frequent case of denominator==1, for speed.
@@ -2696,7 +2735,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 			denominator = bigIntegerValueOf(denominator);
 			return;
 		}
-
+		
 		// setup torn apart for speed
 		BigInteger numeratorApart = numerator;
 		BigInteger denominatorApart = denominator;
@@ -2750,6 +2789,23 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 		}
 
 		normalizeFrom(that.numerator, that.denominator);
+	}
+	
+	private static BigInteger approximate(BigInteger bi, int bitLength, int d) {
+		BigInteger result;
+		
+		if (d > APPROXIMATION_ZERO_K_BITS) {
+			result = bi.shiftRight(APPROXIMATION_ZERO_K_BITS);
+		}
+		else if (bitLength <= APPROXIMATION_ZERO_K_BITS) {
+			result = bi.shiftRight(d-1);
+		}
+		else {
+			result = bi.shiftRight(APPROXIMATION_ZERO_K_BITS);
+			result = result.shiftLeft(APPROXIMATION_ZERO_K_BITS-d+1);
+		}
+				
+		return result;
 	}
 
 	/**
