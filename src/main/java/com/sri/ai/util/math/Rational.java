@@ -468,12 +468,16 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 *            the rational's denominator (quotient)
 	 */
 	public Rational(BigInteger numerator, BigInteger denominator) {
+		this(numerator, denominator, true);
+	}
+	
+	private Rational(BigInteger numerator, BigInteger denominator, boolean isGCDComputationRequired) {		
 		// note: check for denominator==null done later
 		if (denominator != null && bigIntegerIsZero(denominator)) {
 			throw new NumberFormatException("Denominator zero");
 		}
 
-		normalizeFrom(numerator, denominator);
+		normalizeFrom(numerator, denominator, isGCDComputationRequired);
 	}
 
 	/**
@@ -1511,10 +1515,154 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 		// note: the calculated numerator/denominator are not denormalized in
 		// the sense of having common factors, but numerator might be negative
 		// (and become denominator below)
-
+// TODO - the isGCDComputationRequired flag may need to be set to false when
+//        we add support for approximate integers.
 		return new Rational((negate ? denominator : numerator),
-				(negate ? numerator : denominator));
+				(negate ? numerator : denominator), false);
 	}
+	
+	public Rational pow(Rational exponent) {
+		Rational result;
+		if (exponent.isInteger()) {
+			result = pow(exponent.bigIntegerValue());			
+		}
+		else {
+			// Fractional Case (i.e. nth root)			
+			result = powFractionalExponent(exponent);
+		}
+		
+		return result;
+	}
+	
+	public Rational pow(BigInteger exponent) {
+		Rational result;
+		if (isMagnitudeWithinLangInteger(exponent)) {
+			// Supported by pow(int)
+			result = pow(exponent.intValueExact());
+		}
+		else  {
+			// Magnitude exponent > Integer.MAX_VALUE
+			result = powLargeIntegerExponent(exponent);
+		}
+		
+		return result;
+	}
+	
+	// NOTE:
+	// m = Integer.MAX_VALUE 
+	// e = Exponent
+	// b = Base (i.e. this)
+	// if | e | > m :
+	//    (b^(m*e.signum))^(|e / m|) * b^(e % m)
+	private Rational powLargeIntegerExponent(BigInteger exponent) {
+		BigInteger[] exponentQuotientAndRemainder = exponent.divideAndRemainder(BIG_INT_INTEGER_POS_MAX_VALUE);		
+		// b^(m*e.signum)
+		Rational quotientBase;
+		if (exponent.signum() > 0) {
+			quotientBase = pow(RATIONAL_INTEGER_POS_MAX_VALUE);
+		}
+		else {
+			quotientBase = pow(RATIONAL_INTEGER_NEG_MAX_VALUE);
+		}		
+		// (b^(m*e.signum))^(|e mod m|)
+		Rational commonFactorsPow = quotientBase.pow(exponentQuotientAndRemainder[0].abs());
+		
+		// b^(e % m)
+		Rational basePowExpRemainder = pow(exponentQuotientAndRemainder[1]);
+		
+		// (b^(m*e.signum))^(|e / m|) * b^(e % m)
+		Rational result = commonFactorsPow.multiply(basePowExpRemainder);
+		
+		return result;
+	}
+	
+	// NOTE:
+	// b = Base (i.e. this)
+	// n = Numerator
+	// d = Denominator
+	// b^(n/d) = (b^n)^(1/v) = root(v, b^u)
+	private Rational powFractionalExponent(Rational exponent) {
+		Rational result;
+		// For simplicity always work with a positive exponent
+		if (exponent.isNegative()) {
+			Rational reciprocal = invert();
+			result = reciprocal.pow(exponent.negate());
+		}
+		else {
+			// Exponent is positive
+			// b^(u/v) = (b^u)^(1/v)
+			// b^u
+			Rational basePowNumerator = pow(exponent.getNumerator());
+			// root(v, b^u)
+			result = nthRoot(exponent.getDenominator(), basePowNumerator);			
+		}
+		return result;
+	}
+	
+	private static final BigInteger BIG_INT_INTEGER_POS_MAX_VALUE  = BigInteger.valueOf(Integer.MAX_VALUE);
+	private static final BigInteger BIG_INT_INTEGER_NEG_MAX_VALUE  = BigInteger.valueOf(-Integer.MAX_VALUE);
+	private static final Rational   RATIONAL_INTEGER_POS_MAX_VALUE = new Rational(BIG_INT_INTEGER_POS_MAX_VALUE);
+	private static final Rational   RATIONAL_INTEGER_NEG_MAX_VALUE = new Rational(BIG_INT_INTEGER_NEG_MAX_VALUE);
+	private static final Rational   RATIONAL_E                     = new Rational(Math.E);
+	private static final Rational   RATIONAL_LOG_2                 = new Rational(Math.log(2.0));
+	private static boolean isMagnitudeWithinLangInteger(BigInteger bigInteger) {
+		boolean result = bigInteger.compareTo(BIG_INT_INTEGER_POS_MAX_VALUE) <= 0 && bigInteger.compareTo(BIG_INT_INTEGER_NEG_MAX_VALUE) >= 0;
+		return result;
+	}
+	
+	
+	// NOTE: Initially, for simplicity we are going to compute the root in log space
+	// and leverage existing supporting routines as opposed to implementing the algorithm 
+	// from scratch, e.g: https://en.wikipedia.org/wiki/Nth_root_algorithm
+	private Rational nthRoot(BigInteger n, Rational b) {
+// TODO - log(b) of a negative b is not supported but you can compute roots of negative numbers	
+// i.e. if n is odd, no solution for even n, see: https://en.wikipedia.org/wiki/Exponentiation#Rational_exponents
+		// root(n, b) = exp(log(root(n, b))) = exp(log(b)/n)
+		Rational logB           = log(b);
+		Rational logBDividedByN = logB.divide(new Rational(n));
+// TODO - loss of precision here!		
+		Rational result         = RATIONAL_E.pow(logBDividedByN.bigIntegerValue());
+				
+		return result;
+	}
+	
+	private Rational log(Rational b) {
+		Rational result;
+		if (b.isInteger()) {
+			result = log(b.bigIntegerValue());
+		}
+		else {
+			// log(x/y) = log(x) - log(y)
+			Rational logNumerator   = log(b.getNumerator());
+			Rational logDenominator = log(b.getDenominator()); 
+			result = logNumerator.subtract(logDenominator);
+		}
+		
+		return result;
+	}
+	
+	
+	// log(a)=log(a/2^k)+k*log(2)
+	// see: http://stackoverflow.com/questions/6827516/logarithm-for-biginteger
+	private Rational log(BigInteger b) {
+		if (b.signum() == -1) {			
+			throw new UnsupportedOperationException("Cannot compute the log for a negative number: "+b);
+		}
+		
+		int k = b.bitLength() - 1022;
+		if (k > 0) {
+			b = b.shiftRight(k);
+		}
+		double log = Math.log(b.doubleValue());
+		Rational result = new Rational(log);
+		if (k > 0) {
+			Rational kTimesLog2 = RATIONAL_LOG_2.multiply(k); 
+			result = result.add(kTimesLog2);
+		}
+		
+		return result;
+	}
+	
 
 	/**
 	 * Calculate the remainder of this Rational and another Rational and return
@@ -1670,7 +1818,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 		// note: the calculated numerator/denominator are not denormalized,
 		// implicit normalize() would not be needed.
 
-		return new Rational(numerator.negate(), denominator);
+		return new Rational(numerator.negate(), denominator, false);
 	}
 
 	/**
@@ -1697,7 +1845,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 		// note: the calculated numerator/denominator are not denormalized,
 		// implicit normalize() would not be needed.
 
-		return new Rational(numerator.negate(), denominator);
+		return new Rational(numerator.negate(), denominator, false);
 	}
 
 	/**
@@ -1717,7 +1865,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 		// the sense of having common factors, but numerator might be negative
 		// (and become denominator below)
 
-		return new Rational(denominator, numerator);
+		return new Rational(denominator, numerator, false);
 	}
 
 	/**
@@ -2656,7 +2804,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * denominator will have no common divisor. BigIntegers -1, 0, 1 will be set
 	 * to constants for later comparison speed.
 	 */
-	private void normalize() {
+	private void normalize(boolean isGCDComputationRequired) {
 		// note: don't call anything that depends on a normalized this.
 		// i.e.: don't call most (or all) of the Rational methods.
 
@@ -2756,13 +2904,15 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 				numeratorApart = numerator.negate();
 			}
 		}
-
-		final BigInteger gcd = numeratorApart.gcd(denominatorApart);
-
-		// test: optimization (body: not)
-		if (!bigIntegerIsOne(gcd)) {
-			numerator = numerator.divide(gcd);
-			denominator = denominator.divide(gcd);
+		
+		if (isGCDComputationRequired) {
+			final BigInteger gcd = numeratorApart.gcd(denominatorApart);
+	
+			// test: optimization (body: not)
+			if (!bigIntegerIsOne(gcd)) {
+				numerator = numerator.divide(gcd);
+				denominator = denominator.divide(gcd);
+			}
 		}
 
 		// for [later] speed, and normalization generally
@@ -2774,10 +2924,15 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Normalize Rational. [Convenience method to normalize(void).]
 	 */
 	private void normalizeFrom(BigInteger numerator, BigInteger denominator) {
+		normalizeFrom(numerator, denominator, true);
+	}
+		
+
+	private void normalizeFrom(BigInteger numerator, BigInteger denominator, boolean isGCDComputationRequired) {
 		this.numerator = numerator;
 		this.denominator = denominator;
 
-		normalize();
+		normalize(isGCDComputationRequired);
 	}
 
 	/**
