@@ -57,6 +57,7 @@
 package com.sri.ai.util.math;
 
 import java.math.BigInteger;
+import java.math.RoundingMode;
 
 import com.google.common.annotations.Beta;
 import com.sri.ai.util.AICUtilConfiguration;
@@ -329,9 +330,14 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	
 	//
 	// Approximation settings
-	private static boolean APPROXIMATION_ENABLED             = AICUtilConfiguration.isRationalApproximationEnabled();
-	private static int     APPROXIMATION_ACTIVE_AFTER_N_BITS = AICUtilConfiguration.getRationalApproximationActiveAfterNBits();
-	private static int     APPROXIMATION_ZERO_K_BITS         = AICUtilConfiguration.getRationalApproximationZeroKBits();
+// TODO - use approximation settings	
+	private static boolean       APPROXIMATION_ENABLED;
+	private static int           APPROXIMATION_PRECISION;
+	private static RoundingMode  APPROXIMATION_ROUNDING_MODE;
+	static {
+		// Assign the defaults up front.
+		Rational.resetApproximationConfigurationFromAICUtilConfiguration();
+	}
 
 	//
 	//
@@ -1554,6 +1560,11 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	// b = Base (i.e. this)
 	// if | e | > m :
 	//    (b^(m*e.signum))^(|e / m|) * b^(e % m)
+// TODO - this logic will not work until we are using Approximate BigIntegers.	
+//        e.g. 3^Integer.MAX_VALUE appears to take very long time in BigInteger.pow()
+//        even switching to BigDecimal.pow(e, MatchContext) to compute approximately
+//        will not as  you will still need to convert the final answer back to 
+//        BigInteger form, which will take huge amounts of memory.
 	private Rational powLargeIntegerExponent(BigInteger exponent) {
 		BigInteger[] exponentQuotientAndRemainder = exponent.divideAndRemainder(BIG_INT_INTEGER_POS_MAX_VALUE);		
 		// b^(m*e.signum)
@@ -2785,14 +2796,14 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	
 	public static void resetApproximationConfigurationFromAICUtilConfiguration() {
 		resetApproximationConfiguration(AICUtilConfiguration.isRationalApproximationEnabled(),
-										AICUtilConfiguration.getRationalApproximationActiveAfterNBits(),
-										AICUtilConfiguration.getRationalApproximationZeroKBits());
+										AICUtilConfiguration.getRationalApproximationPrecision(),
+										AICUtilConfiguration.getRationalApproximationRoundingMode());
 	}
 	
-	public static void resetApproximationConfiguration(boolean enabled, int activeAfterNBits, int zeroKBits) {
-		APPROXIMATION_ENABLED             = enabled;
-		APPROXIMATION_ACTIVE_AFTER_N_BITS = activeAfterNBits;
-		APPROXIMATION_ZERO_K_BITS         = zeroKBits;
+	public static void resetApproximationConfiguration(boolean enabled, int precision, RoundingMode roundingMode) {
+		APPROXIMATION_ENABLED       = enabled;
+		APPROXIMATION_PRECISION     = precision;
+		APPROXIMATION_ROUNDING_MODE = roundingMode;
 	}
 
 	//
@@ -2843,26 +2854,6 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 			// [for speed]
 			denominator = BIG_INTEGER_ZERO;
 			return;
-		}
-		
-		// Approximation
-		if (APPROXIMATION_ENABLED) {
-			if (denominatorSignum < 0) {
-				numerator = numerator.negate();
-				denominator = denominator.negate();
-				numeratorSignum = -numeratorSignum;
-				denominatorSignum = -denominatorSignum;
-			}
-			int dNumerator   = numerator.bitLength();
-			int dDenominator = denominator.bitLength();
-			
-			if (dNumerator > APPROXIMATION_ACTIVE_AFTER_N_BITS || dDenominator > APPROXIMATION_ACTIVE_AFTER_N_BITS) {
-				int d = Math.min(dNumerator, dDenominator);
-				if (d > 0) {
-					numerator   = approximate(numerator, dNumerator, d);
-					denominator = approximate(denominator, dDenominator, d);
-				}
-			}
 		}
 
 		// optimization
@@ -2944,23 +2935,6 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 		}
 
 		normalizeFrom(that.numerator, that.denominator);
-	}
-	
-	private static BigInteger approximate(BigInteger bi, int bitLength, int d) {
-		BigInteger result;
-		
-		if (d > APPROXIMATION_ZERO_K_BITS) {
-			result = bi.shiftRight(APPROXIMATION_ZERO_K_BITS);
-		}
-		else if (bitLength <= APPROXIMATION_ZERO_K_BITS) {
-			result = bi.shiftRight(d-1);
-		}
-		else {
-			result = bi.shiftRight(APPROXIMATION_ZERO_K_BITS);
-			result = result.shiftLeft(APPROXIMATION_ZERO_K_BITS-d+1);
-		}
-				
-		return result;
 	}
 
 	/**

@@ -37,6 +37,8 @@
  */
 package com.sri.ai.util;
 
+import java.math.RoundingMode;
+
 import com.google.common.annotations.Beta;
 import com.sri.ai.util.cache.CacheMap;
 
@@ -73,12 +75,12 @@ public class AICUtilConfiguration extends Configuration {
 	//
 	public static final String  KEY_RAIONAL_APPROXIMATION_ENABLED                                         = "aic.util.rational.approximation.enabled";
 	public static final Boolean DEFAULT_VALUE_RAIONAL_APPROXIMATION_ENABLED                               = Boolean.FALSE;
-	//
-	public static final String  KEY_RAIONAL_APPROXIMATION_ACTIVE_AFTER_N_BITS                             = "aic.util.rational.approximation.active.after.n.bits";
-	public static final Integer DEFAULT_VALUE_APPROXIMATION_ACTIVE_AFTER_N_BITS                           = new Integer(256); // NOTE: best to use multiple of 32 (as BigInteger uses int arrays for their internal representation, which are used by Rational)
-	//
-	public static final String  KEY_RAIONAL_APPROXIMATION_ZERO_K_BITS                                     = "aic.util.rational.approximation.zero.k.bits";
-	public static final Integer DEFAULT_VALUE_APPROXIMATION_ZERO_K_BITS                                   = new Integer(32); // NOTE: best to use multiple of 32, must be < active_after_n_bits value
+	// Note: Intended to work the same as java.math.MathContext.precision, must be positive, 0 is equivalent to unlimited precision.     
+	public static final String  KEY_RAIONAL_APPROXIMATION_PRECISION                                       = "aic.util.rational.approximation.precision";
+	public static final Integer DEFAULT_VALUE_RATIONAL_APPROXIMATION_PRECISION                            = new Integer(72); // 72 approx.= binary256, see: https://en.wikipedia.org/wiki/IEEE_floating_point#Basic_and_interchange_formats
+	// Note: Indended to work the same as java.math.MathContext.roundingMode 
+	public static final String  KEY_RAIONAL_APPROXIMATION_ROUNDING_MODE                                   = "aic.util.rational.approximation.rounding.mode";
+	public static final RoundingMode DEFAULT_VALUE_RATIONAL_APPROXIMATION_ROUNDING_MODE                   = RoundingMode.HALF_UP; // Note: Same as MathContext.DEFAULT_ROUNDINGMODE
 	
 	public static String getTestConfigurationScriptSettings() {
 		String result = getString(KEY_TEST_CONFIGURATION_SCRIPT_SETTINGS, DEFAULT_TEST_CONFIGURATION_SCRIPT_SETTINGS);
@@ -127,14 +129,14 @@ public class AICUtilConfiguration extends Configuration {
 		return result;
 	}
 	
-	public static int getRationalApproximationActiveAfterNBits() {
-		int result = getInt(KEY_RAIONAL_APPROXIMATION_ACTIVE_AFTER_N_BITS, DEFAULT_VALUE_APPROXIMATION_ACTIVE_AFTER_N_BITS);
+	public static int getRationalApproximationPrecision() {
+		int result = getInt(KEY_RAIONAL_APPROXIMATION_PRECISION, DEFAULT_VALUE_RATIONAL_APPROXIMATION_PRECISION);
 		
 		return result;
 	}
 	
-	public static int getRationalApproximationZeroKBits() {
-		int result = getInt(KEY_RAIONAL_APPROXIMATION_ZERO_K_BITS, DEFAULT_VALUE_APPROXIMATION_ZERO_K_BITS);
+	public static RoundingMode getRationalApproximationRoundingMode() {
+		RoundingMode result = RoundingMode.valueOf(getString(KEY_RAIONAL_APPROXIMATION_ROUNDING_MODE, DEFAULT_VALUE_RATIONAL_APPROXIMATION_ROUNDING_MODE.name()));
 		
 		return result;
 	}
