@@ -56,7 +56,6 @@
 */
 package com.sri.ai.util.math;
 
-import java.math.BigInteger;
 import java.math.RoundingMode;
 
 import com.google.common.annotations.Beta;
@@ -196,78 +195,85 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Constant internally used, for convenience and speed. Used as zero
 	 * numerator. Used for fast checks.
 	 */
-	private final static BigInteger BIG_INTEGER_ZERO = BigInteger.valueOf(0);
+// TODO - need to re-assign when approximate settings change	
+	private final static BigIntegerNumber BIG_INTEGER_ZERO = BigIntegerNumberFactory.valueOf(0);
 
 	/**
 	 * Constant internally used, for convenience and speed. Used as neutral
 	 * denominator. Used for fast checks.
 	 */
-	private final static BigInteger BIG_INTEGER_ONE = BigInteger.valueOf(1);
+// TODO - need to re-assign when approximate settings change		
+	private final static BigIntegerNumber BIG_INTEGER_ONE = BigIntegerNumberFactory.valueOf(1);
 
 	/**
 	 * Constant internally used, for convenience and speed. Used for fast
 	 * checks.
 	 */
-	private final static BigInteger BIG_INTEGER_MINUS_ONE = BigInteger
-			.valueOf(-1);
+// TODO - need to re-assign when approximate settings change		
+	private final static BigIntegerNumber BIG_INTEGER_MINUS_ONE = BigIntegerNumberFactory.valueOf(-1);
 
 	/**
 	 * Constant internally used, for convenience and speed. Used in rounding
 	 * zero numerator. _Not_ used for checks.
 	 */
-	private final static BigInteger BIG_INTEGER_TWO = BigInteger.valueOf(2);
+// TODO - need to re-assign when approximate settings change		
+	private final static BigIntegerNumber BIG_INTEGER_TWO = BigIntegerNumberFactory.valueOf(2);
 
 	/**
 	 * Constant internally used, for convenience and speed. _Not_ used for
 	 * checks.
 	 */
-	private final static BigInteger BIG_INTEGER_MINUS_TWO = BigInteger
-			.valueOf(-2);
+// TODO - need to re-assign when approximate settings change		
+	private final static BigIntegerNumber BIG_INTEGER_MINUS_TWO = BigIntegerNumberFactory.valueOf(-2);
 
 	/**
 	 * Constant internally used, for convenience and speed. Corresponds to
 	 * DEFAULT_RADIX, used in reading, scaling and printing. _Not_ used for
 	 * checks.
 	 */
-	private final static BigInteger BIG_INTEGER_TEN = BigInteger.valueOf(10);
+// TODO - need to re-assign when approximate settings change		
+	private final static BigIntegerNumber BIG_INTEGER_TEN = BigIntegerNumberFactory.valueOf(10);
 
 	/**
 	 * Constant internally used, for convenience and speed. Used in reading,
 	 * scaling and printing. _Not_ used for checks.
 	 */
-	private final static BigInteger BIG_INTEGER_SIXTEEN = BigInteger
-			.valueOf(16);
+// TODO - need to re-assign when approximate settings change		
+	private final static BigIntegerNumber BIG_INTEGER_SIXTEEN = BigIntegerNumberFactory.valueOf(16);
 
 	/**
 	 * The constant two to the power of 64 (18446744073709551616). Used is
 	 * slicing larger [than double size] IEEE 754 values.
 	 */
-	private final static BigInteger BIG_INTEGER_TWO_POWER_64 = BigInteger
-			.valueOf(2).pow(64);
+// TODO - need to re-assign when approximate settings change	
+	private final static BigIntegerNumber BIG_INTEGER_TWO_POWER_64 = BigIntegerNumberFactory.valueOf(2).pow(64);
 
 	// some more constants, often used as radixes/bases
 
 	/**
 	 * The constant two (2).
 	 */
+// TODO - need to re-assign when approximate settings change	
 	private final static Rational TWO = new Rational(2);
 
 	/**
 	 * The constant ten (10).
 	 */
+// TODO - need to re-assign when approximate settings change	
 	private final static Rational TEN = new Rational(10);
 
 	/**
 	 * The constant sixteen (16).
 	 */
+// TODO - need to re-assign when approximate settings change	
 	private final static Rational SIXTEEN = new Rational(16);
 
 	/**
 	 * The constant two to the power of 64 (18446744073709551616). Used is
 	 * slicing larger [than double size] IEEE 754 values.
 	 */
-	private final static Rational TWO_POWER_64 = new Rational(
-			BIG_INTEGER_TWO_POWER_64);
+// TODO - need to re-assign when approximate settings change	
+	private final static Rational TWO_POWER_64 = new Rational(BIG_INTEGER_TWO_POWER_64);
 
 	/**
 	 * Constant internally used, for speed.
@@ -275,12 +281,13 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	// calculated via Rational((float)(StrictMath.log(10)/StrictMath.log(2)))
 	// note: don't use float/double operations in this code though (except for
 	// test())
-	private final static Rational LOGARITHM_TEN_GUESS = new Rational(1741647,
-			524288);
+// TODO - need to re-assign when approximate settings change	
+	private final static Rational LOGARITHM_TEN_GUESS = new Rational(1741647, 524288);
 
 	/**
 	 * Constant internally used, for speed.
 	 */
+// TODO - need to re-assign when approximate settings change	
 	private final static Rational LOGARITHM_SIXTEEN = new Rational(4);
 
 	/**
@@ -345,12 +352,12 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Numerator. Numerator may be negative. Numerator may be zero, in which
 	 * case denominator must be one. [Conditions are put in place by normalize().]
 	 */
-	private BigInteger numerator;
+	private BigIntegerNumber numerator;
 	/**
 	 * Denominator (quotient). Denominator is never negative and never zero.
 	 * [Conditions are put in place by normalize().]
 	 */
-	private BigInteger denominator;
+	private BigIntegerNumber denominator;
 	// optimization, as instances are immmutable only
 	// calculate once when needed
 	private int hashCode = 0;
@@ -370,22 +377,25 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * The constant zero (0).
 	 */
 	// [Constant name: see class BigInteger.]
+// TODO - need to re-assign when approximate settings change (or handle these special cases separately as this is public)	
 	public final static Rational ZERO = new Rational(0);
 
 	/**
 	 * The constant one (1).
 	 */
 	// [Name: see class BigInteger.]
+// TODO - need to re-assign when approximate settings change (or handle these special cases separately as this is public)	
 	public final static Rational ONE = new Rational(1);
 
 	/**
 	 * The constant minus-one (-1).
 	 */
+// TODO - need to re-assign when approximate settings change (or handle these special cases separately as this is public)	
 	public final static Rational MINUS_ONE = new Rational(-1);
 
 	/**
 	 * Rounding mode to round away from zero.
-	 */
+	 */	
 	public final static int ROUND_UP = 0;
 
 	/**
@@ -473,11 +483,11 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * @param denominator
 	 *            the rational's denominator (quotient)
 	 */
-	public Rational(BigInteger numerator, BigInteger denominator) {
+	public Rational(BigIntegerNumber numerator, BigIntegerNumber denominator) {
 		this(numerator, denominator, true);
 	}
 	
-	private Rational(BigInteger numerator, BigInteger denominator, boolean isGCDComputationRequired) {		
+	private Rational(BigIntegerNumber numerator, BigIntegerNumber denominator, boolean isGCDComputationRequired) {		
 		// note: check for denominator==null done later
 		if (denominator != null && bigIntegerIsZero(denominator)) {
 			throw new NumberFormatException("Denominator zero");
@@ -493,7 +503,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * @param numerator
 	 *            the rational's numerator.
 	 */
-	public Rational(BigInteger numerator) {
+	public Rational(BigIntegerNumber numerator) {
 		this(numerator, BIG_INTEGER_ONE);
 	}
 
@@ -738,15 +748,15 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 			strIntegerPart = "0";
 		}
 
-		BigInteger numerator = bigIntegerValueOf(strIntegerPart, radix);
-		BigInteger denominator;
+		BigIntegerNumber numerator = bigIntegerValueOf(strIntegerPart, radix);
+		BigIntegerNumber denominator;
 
 		// includes the cases "x." and "."
 		if (!strFractionPart.equals("")) {
 			// check for signs
 			checkFractionFormat(strFractionPart);
 
-			final BigInteger fraction = bigIntegerValueOf(strFractionPart,
+			final BigIntegerNumber fraction = bigIntegerValueOf(strFractionPart,
 					radix);
 			final int scale = strFractionPart.length();
 			denominator = bigIntegerPower(bigIntegerValueOf(radix), scale);
@@ -801,7 +811,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * @param radix
 	 *            the radix the rational is meant to be in.
 	 */
-	public Rational(BigInteger unscaledValue, int scale, int radix) {
+	public Rational(BigIntegerNumber unscaledValue, int scale, int radix) {
 		if (unscaledValue == null) {
 			throw new NumberFormatException("null");
 		}
@@ -812,7 +822,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 		}
 
 		checkRadix(radix);
-		final BigInteger scaleValue = bigIntegerPower(bigIntegerValueOf(radix),
+		final BigIntegerNumber scaleValue = bigIntegerPower(bigIntegerValueOf(radix),
 				scale);
 
 		normalizeFrom((negate ? bigIntegerMultiply(unscaledValue, scaleValue)
@@ -828,7 +838,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * @param scale
 	 *            the scale to be associated with the unscaledValue
 	 */
-	public Rational(BigInteger unscaledValue, int scale) {
+	public Rational(BigIntegerNumber unscaledValue, int scale) {
 		this(unscaledValue, scale, DEFAULT_RADIX);
 	}
 
@@ -871,11 +881,11 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	// END - Constructors
 	//
 	
-	public BigInteger getNumerator() {
+	public BigIntegerNumber getNumerator() {
 		return numerator;
 	}
 	
-	public BigInteger getDenominator() {
+	public BigIntegerNumber getDenominator() {
 		return denominator;
 	}
 	
@@ -1514,9 +1524,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 			exponent = -exponent;
 		}
 
-		final BigInteger numerator = bigIntegerPower(this.numerator, exponent);
-		final BigInteger denominator = bigIntegerPower(this.denominator,
-				exponent);
+		final BigIntegerNumber numerator   = bigIntegerPower(this.numerator, exponent);
+		final BigIntegerNumber denominator = bigIntegerPower(this.denominator, exponent);
 
 		// note: the calculated numerator/denominator are not denormalized in
 		// the sense of having common factors, but numerator might be negative
@@ -1540,7 +1549,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 		return result;
 	}
 	
-	public Rational pow(BigInteger exponent) {
+	public Rational pow(BigIntegerNumber exponent) {
 		Rational result;
 		if (isMagnitudeWithinLangInteger(exponent)) {
 			// Supported by pow(int)
@@ -1565,8 +1574,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 //        even switching to BigDecimal.pow(e, MatchContext) to compute approximately
 //        will not as  you will still need to convert the final answer back to 
 //        BigInteger form, which will take huge amounts of memory.
-	private Rational powLargeIntegerExponent(BigInteger exponent) {
-		BigInteger[] exponentQuotientAndRemainder = exponent.divideAndRemainder(BIG_INT_INTEGER_POS_MAX_VALUE);		
+	private Rational powLargeIntegerExponent(BigIntegerNumber exponent) {
+		BigIntegerNumber[] exponentQuotientAndRemainder = exponent.divideAndRemainder(BIG_INT_INTEGER_POS_MAX_VALUE);		
 		// b^(m*e.signum)
 		Rational quotientBase;
 		if (exponent.signum() > 0) {
@@ -1610,13 +1619,14 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 		return result;
 	}
 	
-	private static final BigInteger BIG_INT_INTEGER_POS_MAX_VALUE  = BigInteger.valueOf(Integer.MAX_VALUE);
-	private static final BigInteger BIG_INT_INTEGER_NEG_MAX_VALUE  = BigInteger.valueOf(-Integer.MAX_VALUE);
+	private static final BigIntegerNumber BIG_INT_INTEGER_POS_MAX_VALUE  = BigIntegerNumberFactory.valueOf(Integer.MAX_VALUE);
+	private static final BigIntegerNumber BIG_INT_INTEGER_NEG_MAX_VALUE  = BigIntegerNumberFactory.valueOf(-Integer.MAX_VALUE);
+	//
 	private static final Rational   RATIONAL_INTEGER_POS_MAX_VALUE = new Rational(BIG_INT_INTEGER_POS_MAX_VALUE);
 	private static final Rational   RATIONAL_INTEGER_NEG_MAX_VALUE = new Rational(BIG_INT_INTEGER_NEG_MAX_VALUE);
 	private static final Rational   RATIONAL_E                     = new Rational(Math.E);
 	private static final Rational   RATIONAL_LOG_2                 = new Rational(Math.log(2.0));
-	private static boolean isMagnitudeWithinLangInteger(BigInteger bigInteger) {
+	private static boolean isMagnitudeWithinLangInteger(BigIntegerNumber bigInteger) {
 		boolean result = bigInteger.compareTo(BIG_INT_INTEGER_POS_MAX_VALUE) <= 0 && bigInteger.compareTo(BIG_INT_INTEGER_NEG_MAX_VALUE) >= 0;
 		return result;
 	}
@@ -1625,7 +1635,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	// NOTE: Initially, for simplicity we are going to compute the root in log space
 	// and leverage existing supporting routines as opposed to implementing the algorithm 
 	// from scratch, e.g: https://en.wikipedia.org/wiki/Nth_root_algorithm
-	private Rational nthRoot(BigInteger n, Rational b) {
+	private Rational nthRoot(BigIntegerNumber n, Rational b) {
 // TODO - log(b) of a negative b is not supported but you can compute roots of negative numbers	
 // i.e. if n is odd, no solution for even n, see: https://en.wikipedia.org/wiki/Exponentiation#Rational_exponents
 		// root(n, b) = exp(log(root(n, b))) = exp(log(b)/n)
@@ -1655,7 +1665,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	
 	// log(a)=log(a/2^k)+k*log(2)
 	// see: http://stackoverflow.com/questions/6827516/logarithm-for-biginteger
-	private Rational log(BigInteger b) {
+	private Rational log(BigIntegerNumber b) {
 		if (b.signum() == -1) {			
 			throw new UnsupportedOperationException("Cannot compute the log for a negative number: "+b);
 		}
@@ -2016,7 +2026,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * @return a negative integer, zero, or a positive integer as this object is
 	 *         less than, equal to, or greater than the specified object.
 	 */
-	public int compareTo(BigInteger that) {
+	public int compareTo(BigIntegerNumber that) {
 		return compareTo(valueOf(that));
 	}
 
@@ -2068,8 +2078,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 			return compareTo(((Long) object).longValue());
 		}
 
-		if (object instanceof BigInteger) {
-			return compareTo((BigInteger) object);
+		if (object instanceof BigIntegerNumber) {
+			return compareTo((BigIntegerNumber) object);
 		}
 
 		// now assuming that it's either 'instanceof Rational'
@@ -2085,7 +2095,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * @return a BigInteger representation of this rational, with possible rounding.
 	 */
 	// @PrecisionLoss
-	public BigInteger bigIntegerValue() {
+	public BigIntegerNumber bigIntegerValue() {
 		// [rounding step, possible loss of precision step]
 		return round().numerator;
 	}
@@ -2365,7 +2375,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 *        the value to be converted to a rational.
 	 * @return a rational representation of the given value.
 	 */
-	public static Rational valueOf(BigInteger value) {
+	public static Rational valueOf(BigIntegerNumber value) {
 		return new Rational(value);
 	}
 
@@ -2876,8 +2886,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 		}
 		
 		// setup torn apart for speed
-		BigInteger numeratorApart = numerator;
-		BigInteger denominatorApart = denominator;
+		BigIntegerNumber numeratorApart = numerator;
+		BigIntegerNumber denominatorApart = denominator;
 
 		if (denominatorSignum < 0) {
 			numerator = numerator.negate();
@@ -2897,7 +2907,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 		}
 		
 		if (isGCDComputationRequired) {
-			final BigInteger gcd = numeratorApart.gcd(denominatorApart);
+			final BigIntegerNumber gcd = numeratorApart.gcd(denominatorApart);
 	
 			// test: optimization (body: not)
 			if (!bigIntegerIsOne(gcd)) {
@@ -2914,12 +2924,12 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	/**
 	 * Normalize Rational. [Convenience method to normalize(void).]
 	 */
-	private void normalizeFrom(BigInteger numerator, BigInteger denominator) {
+	private void normalizeFrom(BigIntegerNumber numerator, BigIntegerNumber denominator) {
 		normalizeFrom(numerator, denominator, true);
 	}
 		
 
-	private void normalizeFrom(BigInteger numerator, BigInteger denominator, boolean isGCDComputationRequired) {
+	private void normalizeFrom(BigIntegerNumber numerator, BigIntegerNumber denominator, boolean isGCDComputationRequired) {
 		this.numerator = numerator;
 		this.denominator = denominator;
 
@@ -3044,7 +3054,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	/**
 	 * Proxy to BigInteger.valueOf(). Speeds up comparisons by using constants.
 	 */
-	private static BigInteger bigIntegerValueOf(long number) {
+	private static BigIntegerNumber bigIntegerValueOf(long number) {
 		// return the internal constants used for checks if possible.
 
 		// optimization
@@ -3071,14 +3081,14 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 			}
 		}
 
-		return BigInteger.valueOf(number);
+		return BigIntegerNumberFactory.valueOf(number);
 	}
 
 	/**
 	 * Convert BigInteger to its constant if possible. Speeds up later
 	 * comparisons by using constants.
 	 */
-	private static BigInteger bigIntegerValueOf(BigInteger number) {
+	private static BigIntegerNumber bigIntegerValueOf(BigIntegerNumber number) {
 		// note: these tests are quite expensive,
 		// so they should be minimized to a reasonable amount.
 
@@ -3132,7 +3142,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	/**
 	 * Proxy to (new BigInteger()). Speeds up comparisons by using constants.
 	 */
-	private static BigInteger bigIntegerValueOf(String strNumber, int radix) {
+	private static BigIntegerNumber bigIntegerValueOf(String strNumber, int radix) {
 		// note: mind the radix.
 		// however, 0/1/-1 are not a problem.
 
@@ -3196,13 +3206,13 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 		// of 10 and 16 in the code above
 
 		// use the constants if possible
-		return bigIntegerValueOf(new BigInteger(strNumber, radix));
+		return bigIntegerValueOf(BigIntegerNumberFactory.valueOf(strNumber, radix));
 	}
 
 	/**
 	 * Proxy to BigInteger.equals(). For speed.
 	 */
-	private static boolean bigIntegerEquals(BigInteger n, BigInteger m) {
+	private static boolean bigIntegerEquals(BigIntegerNumber n, BigIntegerNumber m) {
 		// optimization first test is for speed.
 		if (n == m) {
 			return true;
@@ -3214,7 +3224,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	/**
 	 * Zero (0) value predicate. [For convenience and speed.]
 	 */
-	private static boolean bigIntegerIsZero(BigInteger n) {
+	private static boolean bigIntegerIsZero(BigIntegerNumber n) {
 		// optimization first test is for speed.
 		if (n == BIG_INTEGER_ZERO) {
 			return true;
@@ -3227,7 +3237,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	/**
 	 * One (1) value predicate. [For convenience and speed.]
 	 */
-	private static boolean bigIntegerIsOne(BigInteger n) {
+	private static boolean bigIntegerIsOne(BigIntegerNumber n) {
 		// optimization first test is for speed.
 		if (n == BIG_INTEGER_ONE) {
 			return true;
@@ -3239,7 +3249,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	/**
 	 * Minus-one (-1) value predicate. [For convenience and speed.]
 	 */
-	private static boolean bigIntegerIsMinusOne(BigInteger n) {
+	private static boolean bigIntegerIsMinusOne(BigIntegerNumber n) {
 		// optimization
 		// first test is for speed.
 		if (n == BIG_INTEGER_MINUS_ONE) {
@@ -3252,7 +3262,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	/**
 	 * Negative value predicate.
 	 */
-	private static boolean bigIntegerIsNegative(BigInteger n) {
+	private static boolean bigIntegerIsNegative(BigIntegerNumber n) {
 		return (n.signum() < 0);
 	}
 
@@ -3262,7 +3272,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * For speed. The more common cases of integers (denominator == 1) are
 	 * optimized.
 	 */
-	private static BigInteger bigIntegerMultiply(BigInteger n, BigInteger m) {
+	private static BigIntegerNumber bigIntegerMultiply(BigIntegerNumber n, BigIntegerNumber m) {
 		// optimization: one or both operands are zero.
 		if (bigIntegerIsZero(n) || bigIntegerIsZero(m)) {
 			return BIG_INTEGER_ZERO;
@@ -3302,7 +3312,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	/**
 	 * Proxy to BigInteger.pow(). For speed.
 	 */
-	private static BigInteger bigIntegerPower(BigInteger n, int exponent) {
+	private static BigIntegerNumber bigIntegerPower(BigIntegerNumber n, int exponent) {
 		// generally expecting exponent>=0
 		// (there's nor much use in inverting in the integer domain)
 		// the checks for exponent<0 below are done all the same
@@ -3344,7 +3354,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Binary logarithm rounded towards floor (towards negative infinity).
 	 */
 	// @PrecisionLoss
-	private static int bigIntegerLogarithm2(BigInteger n) {
+	private static int bigIntegerLogarithm2(BigIntegerNumber n) {
 		if (bigIntegerIsZero(n)) {
 			// [typically not reached, due to [private] usage pattern]
 			throw new ArithmeticException("logarithm of zero");
@@ -3361,7 +3371,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 			exponent = 0;
 		}
 
-		BigInteger p = BIG_INTEGER_TWO.pow(exponent + 1);
+		BigIntegerNumber p = BIG_INTEGER_TWO.pow(exponent + 1);
 		while (n.compareTo(p) >= 0) {
 			// typically not reached
 			p = p.multiply(BIG_INTEGER_TWO);
@@ -3381,7 +3391,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	/**
 	 * Proxy to BigInteger.toString(int radix).
 	 */
-	private static String stringValueOf(BigInteger n, int radix) {
+	private static String stringValueOf(BigIntegerNumber n, int radix) {
 		return n.toString(radix);
 	}
 
@@ -3545,7 +3555,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 		}
 
 		// [rounding step, possible loss of precision step]
-		BigInteger mantissa = value.bigIntegerValue();
+		BigIntegerNumber mantissa = value.bigIntegerValue();
 		// adjust after [unfortunate] mantissa rounding
 		if (upper.compareTo(mantissa) <= 0) {
 			mantissa = mantissa.divide(BIG_INTEGER_TWO);
@@ -3557,7 +3567,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 
 		int fractionSize1 = fractionSize;
 		while (fractionSize1 >= 64) {
-			final BigInteger[] divrem = mantissa
+			final BigIntegerNumber[] divrem = mantissa
 					.divideAndRemainder(BIG_INTEGER_TWO_POWER_64);
 			// [according to BigInteger javadoc] this takes the least
 			// significant 64 bits;
@@ -3987,11 +3997,11 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * Possible loss of precision.
 	 */
 	// @PrecisionLoss
-	private BigInteger roundToBigInteger(int roundMode) {
+	private BigIntegerNumber roundToBigInteger(int roundMode) {
 		// note: remainder and its duplicate are calculated for all cases.
 
-		BigInteger numerator = this.numerator;
-		final BigInteger denominator = this.denominator;
+		BigIntegerNumber numerator = this.numerator;
+		final BigIntegerNumber denominator = this.denominator;
 
 		final int signum = numerator.signum();
 
@@ -4009,9 +4019,9 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 			numerator = numerator.negate();
 		}
 
-		final BigInteger[] divrem = numerator.divideAndRemainder(denominator);
-		BigInteger dv = divrem[0];
-		final BigInteger r = divrem[1];
+		final BigIntegerNumber[] divrem = numerator.divideAndRemainder(denominator);
+		BigIntegerNumber dv = divrem[0];
+		final BigIntegerNumber r = divrem[1];
 
 		// return if we don't need to round, independent of rounding mode
 		if (bigIntegerIsZero(r)) {
@@ -4108,5 +4118,23 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 
 		// [rounding step, possible loss of precision step]
 		return dv;
+	}
+}
+
+class BigIntegerNumberFactory {
+	public static BigIntegerNumber valueOf(long l) {
+		BigIntegerNumber result;
+// TODO - handle approximate case		
+		result = new BigIntegerNumberExact(l);
+		
+		return result;
+	}
+	
+	public static BigIntegerNumber valueOf(String strNumber, int radix) {
+		BigIntegerNumber result;
+// TODO - handle approximate case		
+		result = new BigIntegerNumberExact(strNumber, radix);
+				
+		return result;
 	}
 }
