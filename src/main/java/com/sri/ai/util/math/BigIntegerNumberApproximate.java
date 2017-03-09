@@ -165,16 +165,13 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 	}
 	
 	@Override
-	public BigIntegerNumber gcd(BigIntegerNumber val) {
+	public BigIntegerNumber gcd(BigIntegerNumber otherVal) {
 		BigDecimal thisValue  = this.value;
-		BigDecimal otherValue = approx(val);
+		BigDecimal otherValue = approx(otherVal);
 		
-		BigInteger gcd = thisValue.unscaledValue().gcd(otherValue.unscaledValue());
-	
-		// Scales will be <= 0 as we are representing big integers (i.e. -scale used).
-		BigDecimal scaledGCD = new BigDecimal(gcd, Math.max(thisValue.scale(), otherValue.scale()), mathContext);
+		BigDecimal gcd = gcd(thisValue, otherValue);
 		
-		BigIntegerNumber result = new BigIntegerNumberApproximate(scaledGCD, mathContext);
+		BigIntegerNumber result = new BigIntegerNumberApproximate(gcd, mathContext);
 		
 		return result;
 	}
@@ -246,6 +243,68 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 		else {
 			result = value.toBigIntegerExact().toString(radix);
 		}
+		return result;
+	}
+	
+	private BigDecimal gcd(BigDecimal a, BigDecimal b) {			
+		BigDecimal result = null;
+		int cmp = a.compareTo(b);
+		if (cmp == 0) {
+			result = a; // i.e. they are the same, pick either one
+		}
+		else if (cmp == -1) {
+			if (b.remainder(a).signum() == 0) {
+				result = a;
+			}
+		}
+		else { // cmp == 1
+			if (a.remainder(b).signum() == 0) {
+				result = b;
+			}
+		}
+		
+		if (result == null) {
+			BigInteger gcd = a.unscaledValue().gcd(b.unscaledValue());
+		
+			// Scales will be <= 0 as we are representing big integers (i.e. -scale used).
+			int gcdScale = Math.max(a.scale(), b.scale());
+			BigDecimal scaledGCD = new BigDecimal(gcd, gcdScale, mathContext);
+			
+			if (!BigDecimal.ONE.equals(scaledGCD)) {			
+				BigDecimal factoredAValue = adjustPrecision(a.divide(scaledGCD, mathContext));
+				BigDecimal factoredBValue = adjustPrecision(b.divide(scaledGCD, mathContext));
+			
+				BigDecimal factoredGCD = gcd(factoredAValue, factoredBValue);
+		
+				result = scaledGCD.multiply(factoredGCD, mathContext);
+			}
+			else {
+				result = scaledGCD;
+			}
+		}
+		
+		return result;
+	}
+	
+	// Because BigDecimal states:
+	// "an exactly representable quotient may be represented in fewer than {@code precision} 
+	//  digits by removing trailing zeros and decreasing the scale."
+	// We need to adjust the precision and scale appropriately in this case, particular,
+	// under GCD computation conditions where we make assumptions about the un-scaled value
+	// being used.
+	private BigDecimal adjustPrecision(BigDecimal bd) {
+		BigDecimal result = bd;
+		
+		int diffPrecision = mathContext.getPrecision() - bd.precision();
+		int bdScale       = bd.scale();
+		if (diffPrecision > 0 && bdScale < 0) {
+			int adjustedScale = bdScale + diffPrecision;
+			if (adjustedScale > 0) {
+				adjustedScale = 0;
+			}
+			result = bd.setScale(adjustedScale);
+		}
+
 		return result;
 	}
 }

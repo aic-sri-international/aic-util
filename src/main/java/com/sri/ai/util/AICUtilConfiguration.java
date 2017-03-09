@@ -75,10 +75,12 @@ public class AICUtilConfiguration extends Configuration {
 	//
 	public static final String  KEY_RAIONAL_APPROXIMATION_ENABLED                                         = "aic.util.rational.approximation.enabled";
 	public static final Boolean DEFAULT_VALUE_RAIONAL_APPROXIMATION_ENABLED                               = Boolean.FALSE;
+	// Note: These following two values are not necessarily dependent on rational approximation being enabled as there may be
+	// cases (e.g. log computations) where approximation is required irrespective of wanting to maintain exactness or not.
 	// Note: Intended to work the same as java.math.MathContext.precision, must be positive, 0 is equivalent to unlimited precision.     
 	public static final String  KEY_RAIONAL_APPROXIMATION_PRECISION                                       = "aic.util.rational.approximation.precision";
 	public static final Integer DEFAULT_VALUE_RATIONAL_APPROXIMATION_PRECISION                            = new Integer(72); // 72 approx.= binary256, see: https://en.wikipedia.org/wiki/IEEE_floating_point#Basic_and_interchange_formats
-	// Note: Indended to work the same as java.math.MathContext.roundingMode 
+	// Note: Intended to work the same as java.math.MathContext.roundingMode 
 	public static final String  KEY_RAIONAL_APPROXIMATION_ROUNDING_MODE                                   = "aic.util.rational.approximation.rounding.mode";
 	public static final RoundingMode DEFAULT_VALUE_RATIONAL_APPROXIMATION_ROUNDING_MODE                   = RoundingMode.HALF_UP; // Note: Same as MathContext.DEFAULT_ROUNDINGMODE
 	
