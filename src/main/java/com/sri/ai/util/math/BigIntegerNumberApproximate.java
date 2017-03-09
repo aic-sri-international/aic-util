@@ -248,38 +248,44 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 	
 	private BigDecimal gcd(BigDecimal a, BigDecimal b) {			
 		BigDecimal result = null;
-		int cmp = a.compareTo(b);
-		if (cmp == 0) {
-			result = a; // i.e. they are the same, pick either one
-		}
-		else if (cmp == -1) {
-			if (b.remainder(a).signum() == 0) {
-				result = a;
-			}
-		}
-		else { // cmp == 1
-			if (a.remainder(b).signum() == 0) {
-				result = b;
-			}
-		}
 		
-		if (result == null) {
-			BigInteger gcd = a.unscaledValue().gcd(b.unscaledValue());
-		
-			// Scales will be <= 0 as we are representing big integers (i.e. -scale used).
-			int gcdScale = Math.max(a.scale(), b.scale());
-			BigDecimal scaledGCD = new BigDecimal(gcd, gcdScale, mathContext);
+		if (a.signum() == 0 || b.signum() == 0) {
+			result = BigDecimal.ZERO;
+		}
+		else {
+			int cmp = a.compareTo(b);
+			if (cmp == 0) {
+				result = a; // i.e. they are the same, pick either one
+			}
+			else if (cmp == -1) {
+				if (b.remainder(a).signum() == 0) {
+					result = a;
+				}
+			}
+			else { // cmp == 1
+				if (a.remainder(b).signum() == 0) {
+					result = b;
+				}
+			}
 			
-			if (!BigDecimal.ONE.equals(scaledGCD)) {			
-				BigDecimal factoredAValue = adjustPrecision(a.divide(scaledGCD, mathContext));
-				BigDecimal factoredBValue = adjustPrecision(b.divide(scaledGCD, mathContext));
+			if (result == null) {
+				BigInteger gcd = a.unscaledValue().gcd(b.unscaledValue());
 			
-				BigDecimal factoredGCD = gcd(factoredAValue, factoredBValue);
-		
-				result = scaledGCD.multiply(factoredGCD, mathContext);
-			}
-			else {
-				result = scaledGCD;
+				// Scales will be <= 0 as we are representing big integers (i.e. -scale used).
+				int gcdScale = Math.max(a.scale(), b.scale());
+				BigDecimal scaledGCD = new BigDecimal(gcd, gcdScale, mathContext);
+				
+				if (!BigDecimal.ONE.equals(scaledGCD)) {			
+					BigDecimal factoredAValue = adjustPrecision(a.divide(scaledGCD, mathContext));
+					BigDecimal factoredBValue = adjustPrecision(b.divide(scaledGCD, mathContext));
+				
+					BigDecimal factoredGCD = gcd(factoredAValue, factoredBValue);
+			
+					result = scaledGCD.multiply(factoredGCD, mathContext);
+				}
+				else {
+					result = scaledGCD;
+				}
 			}
 		}
 		

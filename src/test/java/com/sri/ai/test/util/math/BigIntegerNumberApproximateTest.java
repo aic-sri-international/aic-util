@@ -23,9 +23,18 @@ public class BigIntegerNumberApproximateTest {
 	@Test
 	public void testGCD() {
 		
-		gcd(18,150);
-		
 		long[][] tests = new long[][] {
+			// Zero cases
+			{0, 0, 0},
+			{0, 10, 0},
+			
+			// Same Case
+			{13, 13, 13},
+			
+			// One Cases
+			{1, 7, 13},
+			
+			// Other
 			{2, 6, 50},
 			{3, 18, 15},
 			{15, 180, 15},
