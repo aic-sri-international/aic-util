@@ -37,32 +37,38 @@
  */
 package com.sri.ai.util.math;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
 
 /**
- * An implementation of BigIntegerNumber with exact semantics.
+ * An implementation of BigIntegerNumber with approximate semantics.
  * 
  * Intended for use internally by Rational.
  * 
  * @author oreilly
  *
  */
-public class BigIntegerNumberExact extends BigIntegerNumber {
+public class BigIntegerNumberApproximate extends BigIntegerNumber {
 	private static final long serialVersionUID = 1L;
 	
 	//
-	private BigInteger value;
+	private BigDecimal value;
+	private MathContext mathContext;
 	
-	public BigIntegerNumberExact(BigInteger value) {
+	public BigIntegerNumberApproximate(BigDecimal value, MathContext mathContext) {
 		this.value = value;
+		this.mathContext = mathContext;
 	}
 	
-	public BigIntegerNumberExact(long val) {
-		value = BigInteger.valueOf(val);
+	public BigIntegerNumberApproximate(long val, MathContext mathContext) {
+		this.value = new BigDecimal(val, mathContext);
+		this.mathContext = mathContext;
 	}
 	
-	public BigIntegerNumberExact(String strNumber, int radix) {
-		value = new BigInteger(strNumber, radix);
+	public BigIntegerNumberApproximate(String strNumber, int radix, MathContext mathContext) {
+		this.value = new BigDecimal(new BigInteger(strNumber, radix), mathContext);
+		this.mathContext = mathContext;
 	}
 	
 	//
@@ -70,8 +76,8 @@ public class BigIntegerNumberExact extends BigIntegerNumber {
 	@Override
 	public boolean equals(Object o) {
 		boolean result = false;
-		if (o instanceof BigIntegerNumberExact) {
-			result = value.equals(exact((BigIntegerNumber)o));
+		if (o instanceof BigIntegerNumberApproximate) {
+			result = value.equals(approx((BigIntegerNumber)o));
 		}
 		return result;
 	}
@@ -112,7 +118,7 @@ public class BigIntegerNumberExact extends BigIntegerNumber {
 	// Comparable
 	@Override
 	public int compareTo(BigIntegerNumber o) {
-		int result = value.compareTo(exact(o));
+		int result = value.compareTo(approx(o));
 		return result;
 	}
 	
@@ -122,46 +128,54 @@ public class BigIntegerNumberExact extends BigIntegerNumber {
 	public BigIntegerNumber abs() {
 		BigIntegerNumber result = this;
 		if (value.signum() < 0) {
-			result = new BigIntegerNumberExact(value.abs());
+			result = new BigIntegerNumberApproximate(value.abs(), mathContext);
 		}
 		return result;
 	}
 	
 	@Override
 	public BigIntegerNumber add(BigIntegerNumber val) {
-		BigInteger       sum    = value.add(exact(val));
-		BigIntegerNumber result = new BigIntegerNumberExact(sum);
+		BigDecimal       sum    = value.add(approx(val));
+		BigIntegerNumber result = new BigIntegerNumberApproximate(sum, mathContext);
 		return result;
 	}
 	
 	@Override
 	public int bitLength() {
-		int result = value.bitLength();
-		return result;
+// TODO - need to compute.		
+		throw new UnsupportedOperationException("TODO - implement");
 	}
 	
 	@Override
 	public BigIntegerNumber divide(BigIntegerNumber val) {
-		BigInteger       quotient = value.divide(exact(val));
-		BigIntegerNumber result   = new BigIntegerNumberExact(quotient);
+		BigDecimal       quotient = value.divideToIntegralValue(approx(val), mathContext);
+		BigIntegerNumber result   = new BigIntegerNumberApproximate(quotient, mathContext);
 		return result;
 	}
 	
 	@Override
 	public BigIntegerNumber[] divideAndRemainder(BigIntegerNumber val) {
-		BigInteger[] divideAndRemainder = value.divideAndRemainder(exact(val));
+		BigDecimal[] divideAndRemainder = value.divideAndRemainder(approx(val));
 		
 		BigIntegerNumber[] result = new BigIntegerNumber[] {
-			new BigIntegerNumberExact(divideAndRemainder[0]),
-			new BigIntegerNumberExact(divideAndRemainder[1])
+			new BigIntegerNumberApproximate(divideAndRemainder[0], mathContext),
+			new BigIntegerNumberApproximate(divideAndRemainder[1], mathContext)
 		};
 		return result;
 	}
 	
 	@Override
 	public BigIntegerNumber gcd(BigIntegerNumber val) {
-		BigInteger       gcd    = value.gcd(exact(val));		
-		BigIntegerNumber result = new BigIntegerNumberExact(gcd);
+		BigDecimal thisValue  = this.value;
+		BigDecimal otherValue = approx(val);
+		
+		BigInteger gcd = thisValue.unscaledValue().gcd(otherValue.unscaledValue());
+	
+		// Scales will be <= 0 as we are representing big integers (i.e. -scale used).
+		BigDecimal scaledGCD = new BigDecimal(gcd, Math.max(thisValue.scale(), otherValue.scale()), mathContext);
+		
+		BigIntegerNumber result = new BigIntegerNumberApproximate(scaledGCD, mathContext);
+		
 		return result;
 	}
 	
@@ -173,28 +187,28 @@ public class BigIntegerNumberExact extends BigIntegerNumber {
 	
 	@Override
 	public BigIntegerNumber multiply(BigIntegerNumber val) {
-		BigInteger       product = value.multiply(exact(val));
-		BigIntegerNumber result  = new BigIntegerNumberExact(product);
+		BigDecimal       product = value.multiply(approx(val), mathContext);
+		BigIntegerNumber result  = new BigIntegerNumberApproximate(product, mathContext);
 		return result;
 	}
 	
 	@Override
 	public BigIntegerNumber negate() {
-		BigIntegerNumber result = new BigIntegerNumberExact(value.negate());
+		BigIntegerNumber result = new BigIntegerNumberApproximate(value.negate(), mathContext);
 		return result;
 	}
 	
 	@Override
 	public BigIntegerNumber pow(int exponent) {
-		BigInteger       pow    = value.pow(exponent);
-		BigIntegerNumber result = new BigIntegerNumberExact(pow);
+		BigDecimal       pow    = value.pow(exponent, mathContext);
+		BigIntegerNumber result = new BigIntegerNumberApproximate(pow, mathContext);
 		return result;
 	}
 	
 	@Override
 	public BigIntegerNumber remainder(BigIntegerNumber val) {
-		BigInteger       remainder = value.remainder(exact(val));
-		BigIntegerNumber result    = new BigIntegerNumberExact(remainder);
+		BigDecimal       remainder = value.remainder(approx(val), mathContext);
+		BigIntegerNumber result    = new BigIntegerNumberApproximate(remainder, mathContext);
 		return result;
 	}
 	
@@ -206,25 +220,32 @@ public class BigIntegerNumberExact extends BigIntegerNumber {
 	
 	@Override
 	public BigIntegerNumber shiftRight(int n) {
-		BigIntegerNumber result = new BigIntegerNumberExact(value.shiftRight(n));
-		return result;
+// TODO - need to compute as BigDecimal has no gcd method.		
+		throw new UnsupportedOperationException("TODO - implement");	
 	}
 	
 	@Override
 	public BigIntegerNumber subtract(BigIntegerNumber val) {
-		BigInteger       difference = value.subtract(exact(val));
-		BigIntegerNumber result     = new BigIntegerNumberExact(difference);
+		BigDecimal       difference = value.subtract(approx(val), mathContext);
+		BigIntegerNumber result     = new BigIntegerNumberApproximate(difference, mathContext);
+		return result;
+	}
+	
+	private BigDecimal approx(BigIntegerNumber val) {
+		BigDecimal result = ((BigIntegerNumberApproximate) val).value;
 		return result;
 	}
 	
 	@Override
-	public String toString(int radix) {
-		String result = value.toString(radix);
-		return result;
-	}
-	
-	private BigInteger exact(BigIntegerNumber val) {
-		BigInteger result = ((BigIntegerNumberExact) val).value;
+	public String toString(int radix) {	
+		String result;
+// TODO - likely incorrect and super inefficient		
+		if (radix == 10) {
+			result = value.toPlainString();
+		}
+		else {
+			result = value.toBigIntegerExact().toString(radix);
+		}
 		return result;
 	}
 }

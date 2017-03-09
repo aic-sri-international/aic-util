@@ -56,6 +56,7 @@
 */
 package com.sri.ai.util.math;
 
+import java.math.MathContext;
 import java.math.RoundingMode;
 
 import com.google.common.annotations.Beta;
@@ -194,86 +195,74 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	/**
 	 * Constant internally used, for convenience and speed. Used as zero
 	 * numerator. Used for fast checks.
-	 */
-// TODO - need to re-assign when approximate settings change	
-	private final static BigIntegerNumber BIG_INTEGER_ZERO = BigIntegerNumberFactory.valueOf(0);
+	 */	
+	private static BigIntegerNumber BIG_INTEGER_ZERO;
 
 	/**
 	 * Constant internally used, for convenience and speed. Used as neutral
 	 * denominator. Used for fast checks.
-	 */
-// TODO - need to re-assign when approximate settings change		
-	private final static BigIntegerNumber BIG_INTEGER_ONE = BigIntegerNumberFactory.valueOf(1);
+	 */		
+	private static BigIntegerNumber BIG_INTEGER_ONE;
 
 	/**
 	 * Constant internally used, for convenience and speed. Used for fast
 	 * checks.
-	 */
-// TODO - need to re-assign when approximate settings change		
-	private final static BigIntegerNumber BIG_INTEGER_MINUS_ONE = BigIntegerNumberFactory.valueOf(-1);
+	 */		
+	private static BigIntegerNumber BIG_INTEGER_MINUS_ONE;
 
 	/**
 	 * Constant internally used, for convenience and speed. Used in rounding
 	 * zero numerator. _Not_ used for checks.
-	 */
-// TODO - need to re-assign when approximate settings change		
-	private final static BigIntegerNumber BIG_INTEGER_TWO = BigIntegerNumberFactory.valueOf(2);
+	 */		
+	private static BigIntegerNumber BIG_INTEGER_TWO;
 
 	/**
 	 * Constant internally used, for convenience and speed. _Not_ used for
 	 * checks.
-	 */
-// TODO - need to re-assign when approximate settings change		
-	private final static BigIntegerNumber BIG_INTEGER_MINUS_TWO = BigIntegerNumberFactory.valueOf(-2);
+	 */		
+	private static BigIntegerNumber BIG_INTEGER_MINUS_TWO;
 
 	/**
 	 * Constant internally used, for convenience and speed. Corresponds to
 	 * DEFAULT_RADIX, used in reading, scaling and printing. _Not_ used for
 	 * checks.
-	 */
-// TODO - need to re-assign when approximate settings change		
-	private final static BigIntegerNumber BIG_INTEGER_TEN = BigIntegerNumberFactory.valueOf(10);
+	 */		
+	private static BigIntegerNumber BIG_INTEGER_TEN;
 
 	/**
 	 * Constant internally used, for convenience and speed. Used in reading,
 	 * scaling and printing. _Not_ used for checks.
-	 */
-// TODO - need to re-assign when approximate settings change		
-	private final static BigIntegerNumber BIG_INTEGER_SIXTEEN = BigIntegerNumberFactory.valueOf(16);
+	 */		
+	private static BigIntegerNumber BIG_INTEGER_SIXTEEN;
 
 	/**
 	 * The constant two to the power of 64 (18446744073709551616). Used is
 	 * slicing larger [than double size] IEEE 754 values.
 	 */
-// TODO - need to re-assign when approximate settings change	
-	private final static BigIntegerNumber BIG_INTEGER_TWO_POWER_64 = BigIntegerNumberFactory.valueOf(2).pow(64);
+	private static BigIntegerNumber BIG_INTEGER_TWO_POWER_64;
 
 	// some more constants, often used as radixes/bases
 
 	/**
 	 * The constant two (2).
 	 */
-// TODO - need to re-assign when approximate settings change	
-	private final static Rational TWO = new Rational(2);
+	private static Rational TWO;
 
 	/**
 	 * The constant ten (10).
-	 */
-// TODO - need to re-assign when approximate settings change	
-	private final static Rational TEN = new Rational(10);
+	 */	
+	private static Rational TEN;
 
 	/**
 	 * The constant sixteen (16).
-	 */
-// TODO - need to re-assign when approximate settings change	
-	private final static Rational SIXTEEN = new Rational(16);
+	 */	
+	private static Rational SIXTEEN;
 
 	/**
 	 * The constant two to the power of 64 (18446744073709551616). Used is
 	 * slicing larger [than double size] IEEE 754 values.
-	 */
-// TODO - need to re-assign when approximate settings change	
-	private final static Rational TWO_POWER_64 = new Rational(BIG_INTEGER_TWO_POWER_64);
+	 */	
+	private static Rational TWO_POWER_64;
 
 	/**
 	 * Constant internally used, for speed.
@@ -281,14 +270,12 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	// calculated via Rational((float)(StrictMath.log(10)/StrictMath.log(2)))
 	// note: don't use float/double operations in this code though (except for
 	// test())
-// TODO - need to re-assign when approximate settings change	
-	private final static Rational LOGARITHM_TEN_GUESS = new Rational(1741647, 524288);
+	private static Rational LOGARITHM_TEN_GUESS;
 
 	/**
 	 * Constant internally used, for speed.
 	 */
-// TODO - need to re-assign when approximate settings change	
-	private final static Rational LOGARITHM_SIXTEEN = new Rational(4);
+	private static Rational LOGARITHM_SIXTEEN;
 
 	/**
 	 * Number of explicit fraction bits in an IEEE 754 double (binary64) float,
@@ -334,17 +321,6 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * 15.
 	 */
 	private final static int QUAD_FLOAT_EXPONENT_SIZE = 15;
-	
-	//
-	// Approximation settings
-// TODO - use approximation settings	
-	private static boolean       APPROXIMATION_ENABLED;
-	private static int           APPROXIMATION_PRECISION;
-	private static RoundingMode  APPROXIMATION_ROUNDING_MODE;
-	static {
-		// Assign the defaults up front.
-		Rational.resetApproximationConfigurationFromAICUtilConfiguration();
-	}
 
 	//
 	//
@@ -377,21 +353,18 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * The constant zero (0).
 	 */
 	// [Constant name: see class BigInteger.]
-// TODO - need to re-assign when approximate settings change (or handle these special cases separately as this is public)	
-	public final static Rational ZERO = new Rational(0);
+	public static Rational ZERO;
 
 	/**
 	 * The constant one (1).
 	 */
-	// [Name: see class BigInteger.]
-// TODO - need to re-assign when approximate settings change (or handle these special cases separately as this is public)	
-	public final static Rational ONE = new Rational(1);
+	// [Name: see class BigInteger.]	
+	public static Rational ONE;
 
 	/**
 	 * The constant minus-one (-1).
-	 */
-// TODO - need to re-assign when approximate settings change (or handle these special cases separately as this is public)	
-	public final static Rational MINUS_ONE = new Rational(-1);
+	 */	
+	public static Rational MINUS_ONE;
 
 	/**
 	 * Rounding mode to round away from zero.
@@ -465,6 +438,13 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	
 	//
 	private static int _toStringDotRoundingMode = ROUND_HALF_UP;
+	
+	//
+	// Approximation settings
+	static {
+		// Assign the defaults up front.
+		Rational.resetApproximationConfigurationFromAICUtilConfiguration();
+	}
 
 	//
 	// PUBLIC METHODS
@@ -1672,6 +1652,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 		
 		int k = b.bitLength() - 1022;
 		if (k > 0) {
+			// NOTE: we lose precision here
 			b = b.shiftRight(k);
 		}
 		double log = Math.log(b.doubleValue());
@@ -2811,9 +2792,31 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	}
 	
 	public static void resetApproximationConfiguration(boolean enabled, int precision, RoundingMode roundingMode) {
-		APPROXIMATION_ENABLED       = enabled;
-		APPROXIMATION_PRECISION     = precision;
-		APPROXIMATION_ROUNDING_MODE = roundingMode;
+		BigIntegerNumberFactory.resetApproximationConfiguration(enabled, precision, roundingMode);
+		
+		// Private Big Integer Numbers
+		BIG_INTEGER_ZERO         = BigIntegerNumberFactory.valueOf(0);
+		BIG_INTEGER_ONE          = BigIntegerNumberFactory.valueOf(1);
+		BIG_INTEGER_MINUS_ONE    = BigIntegerNumberFactory.valueOf(-1);
+        BIG_INTEGER_TWO          = BigIntegerNumberFactory.valueOf(2);
+        BIG_INTEGER_MINUS_TWO    = BigIntegerNumberFactory.valueOf(-2);
+        BIG_INTEGER_TEN          = BigIntegerNumberFactory.valueOf(10);
+        BIG_INTEGER_SIXTEEN      = BigIntegerNumberFactory.valueOf(16);
+        BIG_INTEGER_TWO_POWER_64 = BigIntegerNumberFactory.valueOf(2).pow(64);
+        
+        // Private Rationals
+        TWO                 = new Rational(2);
+        TEN                 = new Rational(10);
+        SIXTEEN             = new Rational(16);
+        TWO_POWER_64        = new Rational(BIG_INTEGER_TWO_POWER_64);
+        LOGARITHM_TEN_GUESS = new Rational(1741647, 524288);
+        LOGARITHM_SIXTEEN   = new Rational(4);
+        
+        // Public Rationals
+// TODO - need to re-assign when approximate settings change (or handle these special cases separately as this is public)	
+    	ZERO      = new Rational(0);
+    	ONE       = new Rational(1);
+    	MINUS_ONE = new Rational(-1);        
 	}
 
 	//
@@ -4122,18 +4125,38 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 }
 
 class BigIntegerNumberFactory {
+	private static boolean     APPROXIMATION_ENABLED;
+	private static MathContext APPROXIMATION_MATH_CONTEXT;
+	
+	public static void resetApproximationConfiguration(boolean enabled, int precision, RoundingMode roundingMode) {
+		APPROXIMATION_ENABLED = enabled;		
+		if (enabled) {
+			APPROXIMATION_MATH_CONTEXT = new MathContext(precision, roundingMode);
+		}
+	}
+		
 	public static BigIntegerNumber valueOf(long l) {
 		BigIntegerNumber result;
-// TODO - handle approximate case		
-		result = new BigIntegerNumberExact(l);
+
+		if (APPROXIMATION_ENABLED) {
+			result = new BigIntegerNumberApproximate(l, APPROXIMATION_MATH_CONTEXT);
+		}
+		else {
+			result = new BigIntegerNumberExact(l);
+		}
 		
 		return result;
 	}
 	
 	public static BigIntegerNumber valueOf(String strNumber, int radix) {
 		BigIntegerNumber result;
-// TODO - handle approximate case		
-		result = new BigIntegerNumberExact(strNumber, radix);
+	
+		if (APPROXIMATION_ENABLED) {
+			result = new BigIntegerNumberApproximate(strNumber, radix, APPROXIMATION_MATH_CONTEXT);
+		}
+		else {
+			result = new BigIntegerNumberExact(strNumber, radix);
+		}
 				
 		return result;
 	}
