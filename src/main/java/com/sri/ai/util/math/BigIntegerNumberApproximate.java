@@ -156,12 +156,12 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 			// Note: computing this way. i.e.: floor(log2(n)) + 1 
 			// see : http://www.exploringbinary.com/number-of-bits-in-a-decimal-integer/
 			// avoids the 'this+1'.		
-			double log2_value = log2BigDecimal(approxDoubleValue(value.unscaledValue()), value);				
+			double log2_value = log2BigDecimal(approxUnscaledDoubleValue(value), value);				
 			
 			result = (int) Math.floor(log2_value) + 1;
 		}
 		else { // Negative case conforms to BigInteger.bitLength() computation method.			
-			double log2_value = log2BigDecimal(approxDoubleValue(value.unscaledValue())*-1, value);			
+			double log2_value = log2BigDecimal(approxUnscaledDoubleValue(value)*-1, value);			
 			result = (int) Math.ceil(log2_value);
 		}
 		
@@ -348,9 +348,15 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 		return result;
 	}
 	
-	private static double approxDoubleValue(BigInteger value) {
-// TODO - call to doubleValue() will not work for larger precision cases
-		double result = value.doubleValue();
+	private static double approxUnscaledDoubleValue(BigDecimal value) {
+		double result;
+		if (value.precision() > 307) {
+			// Note: loss of information here
+			result = new BigDecimal(value.unscaledValue(), value.scale(), new MathContext(307)).unscaledValue().doubleValue();
+		}
+		else {
+			result = value.unscaledValue().doubleValue();
+		}
 		return result;
 	}
 }

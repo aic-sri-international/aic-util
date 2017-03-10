@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -93,6 +94,19 @@ public class BigIntegerNumberApproximateTest {
 			}
 		}
 	} 
+	
+	@Test
+	public void testBitLengthLargePrecision() {
+		// i.e. > The # digits representable by Double.MAX_VALUE is 1.7976931348623157e+308
+		for (int precision = 300; precision <= 400; precision++) {
+			String strNumber = StringUtils.repeat("9", precision); // i.e. > than
+			MathContext mathContext = new MathContext(precision, RoundingMode.HALF_UP);
+			BigDecimal                  bd = new BigDecimal(strNumber, mathContext);
+			BigIntegerNumberApproximate ba = new BigIntegerNumberApproximate(strNumber, 10, mathContext);
+			Assert.assertTrue("bd.bitLength() >= ba.bitLength(), precision="+precision, bd.toBigIntegerExact().bitLength() >= ba.bitLength());				
+			Assert.assertTrue("bd.bitLength() >= ba.bitLength(), precision="+precision, bd.toBigIntegerExact().negate().bitLength() >= ba.negate().bitLength());
+		}
+	}
 	
 	private long gcd(long a, long b, MathContext mathContext) {
 		BigIntegerNumberApproximate aApprox = new BigIntegerNumberApproximate(a, mathContext);
