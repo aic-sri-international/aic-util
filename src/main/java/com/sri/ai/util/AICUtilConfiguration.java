@@ -37,6 +37,7 @@
  */
 package com.sri.ai.util;
 
+import java.math.MathContext;
 import java.math.RoundingMode;
 
 import com.google.common.annotations.Beta;
@@ -79,10 +80,10 @@ public class AICUtilConfiguration extends Configuration {
 	// cases (e.g. log computations) where approximation is required irrespective of wanting to maintain exactness or not.
 	// Note: Intended to work the same as java.math.MathContext.precision, must be positive, 0 is equivalent to unlimited precision.     
 	public static final String  KEY_RAIONAL_APPROXIMATION_PRECISION                                       = "aic.util.rational.approximation.precision";
-	public static final Integer DEFAULT_VALUE_RATIONAL_APPROXIMATION_PRECISION                            = new Integer(72); // 72 approx.= binary256, see: https://en.wikipedia.org/wiki/IEEE_floating_point#Basic_and_interchange_formats
+	public static final Integer DEFAULT_VALUE_RATIONAL_APPROXIMATION_PRECISION                            = MathContext.DECIMAL64.getPrecision();
 	// Note: Intended to work the same as java.math.MathContext.roundingMode 
 	public static final String  KEY_RAIONAL_APPROXIMATION_ROUNDING_MODE                                   = "aic.util.rational.approximation.rounding.mode";
-	public static final RoundingMode DEFAULT_VALUE_RATIONAL_APPROXIMATION_ROUNDING_MODE                   = RoundingMode.HALF_UP; // Note: Same as MathContext.DEFAULT_ROUNDINGMODE
+	public static final RoundingMode DEFAULT_VALUE_RATIONAL_APPROXIMATION_ROUNDING_MODE                   = MathContext.DECIMAL64.getRoundingMode(); 
 	
 	public static String getTestConfigurationScriptSettings() {
 		String result = getString(KEY_TEST_CONFIGURATION_SCRIPT_SETTINGS, DEFAULT_TEST_CONFIGURATION_SCRIPT_SETTINGS);

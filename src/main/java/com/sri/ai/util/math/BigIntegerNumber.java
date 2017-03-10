@@ -52,7 +52,7 @@ public abstract class BigIntegerNumber extends Number implements Comparable<BigI
 	
 	public abstract BigIntegerNumber abs();
 	public abstract BigIntegerNumber add(BigIntegerNumber val);
-	public abstract int bitLength(); // TODO - see if we can avoid need for.
+	public abstract int bitLength();
 	public abstract BigIntegerNumber divide(BigIntegerNumber val);	
 	public abstract BigIntegerNumber[] divideAndRemainder(BigIntegerNumber val);
 	public abstract BigIntegerNumber gcd(BigIntegerNumber val);
