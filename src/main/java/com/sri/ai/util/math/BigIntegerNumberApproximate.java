@@ -169,7 +169,7 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 		BigDecimal thisValue  = this.value;
 		BigDecimal otherValue = approx(otherVal);
 		
-		BigDecimal gcd = gcd(thisValue, otherValue);
+		BigDecimal gcd = gcd(thisValue, otherValue, mathContext);
 		
 		BigIntegerNumber result = new BigIntegerNumberApproximate(gcd, mathContext);
 		
@@ -246,71 +246,66 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 		return result;
 	}
 	
-	private BigDecimal gcd(BigDecimal a, BigDecimal b) {			
+	private BigDecimal gcd(BigDecimal a, BigDecimal b, MathContext mathContext) {			
 		BigDecimal result = null;
 		
-		if (a.signum() == 0 || b.signum() == 0) {
-			result = BigDecimal.ZERO;
+		if (a.signum() == 0) {
+			result = b.abs();
+		}
+		else if (b.signum() == 0) {
+			result = a.abs();
+		}
+		else if (a.compareTo(b) == 0) {
+			result = a; // i.e. they are the same, pick either one
 		}
 		else {
-			int cmp = a.compareTo(b);
-			if (cmp == 0) {
-				result = a; // i.e. they are the same, pick either one
-			}
-			else if (cmp == -1) {
-				if (b.remainder(a).signum() == 0) {
-					result = a;
-				}
-			}
-			else { // cmp == 1
-				if (a.remainder(b).signum() == 0) {
-					result = b;
-				}
-			}
+			// Handle cases where, the precision digits do
+			// not have a common factor, e.g.:
+			// gcd(25, 190), with precision = 2.
+			// Note: both need to be incremented if possible to
+			// handle cases like:
+			// gcd(260, 190)
+			a = incScaleIfPossible(a);
+			b = incScaleIfPossible(b);
 			
-			if (result == null) {
-				BigInteger gcd = a.unscaledValue().gcd(b.unscaledValue());
-			
-				// Scales will be <= 0 as we are representing big integers (i.e. -scale used).
-				int gcdScale = Math.max(a.scale(), b.scale());
-				BigDecimal scaledGCD = new BigDecimal(gcd, gcdScale, mathContext);
-				
-				if (!BigDecimal.ONE.equals(scaledGCD)) {			
-					BigDecimal factoredAValue = adjustPrecision(a.divide(scaledGCD, mathContext));
-					BigDecimal factoredBValue = adjustPrecision(b.divide(scaledGCD, mathContext));
-				
-					BigDecimal factoredGCD = gcd(factoredAValue, factoredBValue);
-			
-					result = scaledGCD.multiply(factoredGCD, mathContext);
+			BigInteger aUnscaled = a.unscaledValue();
+			BigInteger bUnscaled = b.unscaledValue();
+			BigInteger gcd = aUnscaled.gcd(bUnscaled);
+		
+			// Scales will be <= 0 as we are representing big integers (i.e. -scale used).
+			int gcdScale = Math.max(a.scale(), b.scale());
+			BigDecimal scaledGCD = new BigDecimal(gcd, gcdScale, mathContext);
+			if (!BigDecimal.ONE.equals(scaledGCD)) {
+				// Note: On recursive factored gcd call we need to increase the precision by 1 so that we don't loose information,
+				// e.g.: precision = 2, gcd(6,2300). It will find 2 but 2300/2 = 1150, which is 3 digits of precision, and if
+				// that is rounded you end up getting another gcd != 1.
+				MathContext mathContextPlusOnePrecision;
+				if (mathContext.getPrecision() == 0) {
+					// i.e. 0 indicates infinite precision
+					mathContextPlusOnePrecision = mathContext;
 				}
 				else {
-					result = scaledGCD;
+					mathContextPlusOnePrecision = new MathContext(mathContext.getPrecision()+1, mathContext.getRoundingMode());
 				}
+				BigDecimal factoredAValue = a.divide(scaledGCD, mathContextPlusOnePrecision);
+				BigDecimal factoredBValue = b.divide(scaledGCD, mathContextPlusOnePrecision);
+			
+				BigDecimal factoredGCD = gcd(factoredAValue, factoredBValue, mathContextPlusOnePrecision);
+							
+				scaledGCD = scaledGCD.multiply(factoredGCD, mathContext);
 			}
+			
+			result = scaledGCD;
 		}
 		
 		return result;
 	}
 	
-	// Because BigDecimal states:
-	// "an exactly representable quotient may be represented in fewer than {@code precision} 
-	//  digits by removing trailing zeros and decreasing the scale."
-	// We need to adjust the precision and scale appropriately in this case, particular,
-	// under GCD computation conditions where we make assumptions about the un-scaled value
-	// being used.
-	private BigDecimal adjustPrecision(BigDecimal bd) {
+	private BigDecimal incScaleIfPossible(BigDecimal bd) {
 		BigDecimal result = bd;
-		
-		int diffPrecision = mathContext.getPrecision() - bd.precision();
-		int bdScale       = bd.scale();
-		if (diffPrecision > 0 && bdScale < 0) {
-			int adjustedScale = bdScale + diffPrecision;
-			if (adjustedScale > 0) {
-				adjustedScale = 0;
-			}
-			result = bd.setScale(adjustedScale);
+		if (bd.scale() < 0) {
+			result = bd.setScale(bd.scale()+1);
 		}
-
 		return result;
 	}
 }
