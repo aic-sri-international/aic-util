@@ -1599,9 +1599,11 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 		return result;
 	}
 	
+
 	private static final BigIntegerNumber BIG_INT_INTEGER_POS_MAX_VALUE  = BigIntegerNumberFactory.valueOf(Integer.MAX_VALUE);
 	private static final BigIntegerNumber BIG_INT_INTEGER_NEG_MAX_VALUE  = BigIntegerNumberFactory.valueOf(-Integer.MAX_VALUE);
 	//
+// TODO - need to reassign these if switch approximation on/off.		
 	private static final Rational   RATIONAL_INTEGER_POS_MAX_VALUE = new Rational(BIG_INT_INTEGER_POS_MAX_VALUE);
 	private static final Rational   RATIONAL_INTEGER_NEG_MAX_VALUE = new Rational(BIG_INT_INTEGER_NEG_MAX_VALUE);
 	private static final Rational   RATIONAL_E                     = new Rational(Math.E);

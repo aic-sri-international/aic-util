@@ -51,7 +51,10 @@ import java.math.MathContext;
  */
 public class BigIntegerNumberApproximate extends BigIntegerNumber {
 	private static final long serialVersionUID = 1L;
-	
+	//
+	// NOTE: loge = is used to indicate natural logarithm, i.e. log base e.
+	private static final double LOGE_2  = Math.log(2);
+	private static final double LOG2_10 = log2(10);
 	//
 	private BigDecimal value;
 	private MathContext mathContext;
@@ -142,8 +145,27 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 	
 	@Override
 	public int bitLength() {
-// TODO - need to compute.		
-		throw new UnsupportedOperationException("TODO - implement");
+		// NOTE BigInteger.bitLength() is computed as: 
+		// ceil(log2(this < 0 ? -this : this+1))
+		
+		int result;
+		if (value.signum() == 0) {
+			result = 0;
+		}
+		else if (value.signum() > 0) {	
+			// Note: computing this way. i.e.: floor(log2(n)) + 1 
+			// see : http://www.exploringbinary.com/number-of-bits-in-a-decimal-integer/
+			// avoids the 'this+1'.		
+			double log2_value = log2BigDecimal(approxDoubleValue(value.unscaledValue()), value);				
+			
+			result = (int) Math.floor(log2_value) + 1;
+		}
+		else { // Negative case conforms to BigInteger.bitLength() computation method.			
+			double log2_value = log2BigDecimal(approxDoubleValue(value.unscaledValue())*-1, value);			
+			result = (int) Math.ceil(log2_value);
+		}
+		
+		return result;
 	}
 	
 	@Override
@@ -306,6 +328,29 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 		if (bd.scale() < 0) {
 			result = bd.setScale(bd.scale()+1);
 		}
+		return result;
+	}
+	
+	// To convert to log2 using loge:
+	// log2(value) = loge(value)/loge(2)
+	private static double log2(double value) {
+		double result = Math.log(value) / LOGE_2;
+		return result;
+	}
+	
+	// To compute log2 of BigDecimal:
+	// value = unscaled*10^(-scale)
+	// log2(value) = log2(unscaled*10^(-scale)) = log2(unscaled) + (-scale)*log2(10)
+	private static double log2BigDecimal(double approxUnscaledValueOfBigDecimal, BigDecimal bigDecimalValue) {
+		double log2_unscaled = log2(approxUnscaledValueOfBigDecimal);				
+		double result        = log2_unscaled+((-bigDecimalValue.scale())*LOG2_10);	
+		
+		return result;
+	}
+	
+	private static double approxDoubleValue(BigInteger value) {
+// TODO - call to doubleValue() will not work for larger precision cases
+		double result = value.doubleValue();
 		return result;
 	}
 }

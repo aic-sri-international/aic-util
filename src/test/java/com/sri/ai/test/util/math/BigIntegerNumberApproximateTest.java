@@ -80,6 +80,20 @@ public class BigIntegerNumberApproximateTest {
 		}
 	}
 	
+	@Test 
+	public void testBitLengthExhaustive() {
+		int exhaustiveTill = 65536; // i.e. 2^16
+		for (int precision = 0; precision <= 5; precision++) {
+			MathContext mathContext = new MathContext(precision, RoundingMode.HALF_UP);
+			for (int i = 0; i < exhaustiveTill; i++) {
+				BigDecimal                  bd = new BigDecimal(i, mathContext);
+				BigIntegerNumberApproximate ba = new BigIntegerNumberApproximate(i, mathContext);
+				Assert.assertEquals(i+".bitLength(), precision="+precision, bd.toBigIntegerExact().bitLength(), ba.bitLength());				
+				Assert.assertEquals((-i)+".bitLength(), precision="+precision, bd.toBigIntegerExact().negate().bitLength(), ba.negate().bitLength());
+			}
+		}
+	} 
+	
 	private long gcd(long a, long b, MathContext mathContext) {
 		BigIntegerNumberApproximate aApprox = new BigIntegerNumberApproximate(a, mathContext);
 		BigIntegerNumberApproximate bApprox = new BigIntegerNumberApproximate(b, mathContext);
