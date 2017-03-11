@@ -56,6 +56,7 @@
 */
 package com.sri.ai.util.math;
 
+import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 
@@ -1606,8 +1607,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 // TODO - need to reassign these if switch approximation on/off.		
 	private static final Rational   RATIONAL_INTEGER_POS_MAX_VALUE = new Rational(BIG_INT_INTEGER_POS_MAX_VALUE);
 	private static final Rational   RATIONAL_INTEGER_NEG_MAX_VALUE = new Rational(BIG_INT_INTEGER_NEG_MAX_VALUE);
-	private static final Rational   RATIONAL_E                     = new Rational(Math.E);
-	private static final Rational   RATIONAL_LOG_2                 = new Rational(Math.log(2.0));
+	private static final Rational   RATIONAL_E                     = new Rational(Math.E);	
 	private static boolean isMagnitudeWithinLangInteger(BigIntegerNumber bigInteger) {
 		boolean result = bigInteger.compareTo(BIG_INT_INTEGER_POS_MAX_VALUE) <= 0 && bigInteger.compareTo(BIG_INT_INTEGER_NEG_MAX_VALUE) >= 0;
 		return result;
@@ -1644,25 +1644,12 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 		return result;
 	}
 	
-	
-	// log(a)=log(a/2^k)+k*log(2)
-	// see: http://stackoverflow.com/questions/6827516/logarithm-for-biginteger
-	private Rational log(BigIntegerNumber b) {
-		if (b.signum() == -1) {			
-			throw new UnsupportedOperationException("Cannot compute the log for a negative number: "+b);
-		}
 		
-		int k = b.bitLength() - 1022;
-		if (k > 0) {
-			// NOTE: we lose precision here
-			b = b.shiftRight(k);
-		}
-		double log = Math.log(b.doubleValue());
-		Rational result = new Rational(log);
-		if (k > 0) {
-			Rational kTimesLog2 = RATIONAL_LOG_2.multiply(k); 
-			result = result.add(kTimesLog2);
-		}
+	private Rational log(BigIntegerNumber b) {
+		
+		BigDecimal log = b.log(BigIntegerNumberFactory.APPROXIMATION_MATH_CONTEXT);
+		
+		Rational result = BigIntegerNumberFactory.rationalValueOf(log);
 		
 		return result;
 	}
@@ -4127,14 +4114,12 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 }
 
 class BigIntegerNumberFactory {
-	private static boolean     APPROXIMATION_ENABLED;
-	private static MathContext APPROXIMATION_MATH_CONTEXT;
+	static boolean     APPROXIMATION_ENABLED;
+	static MathContext APPROXIMATION_MATH_CONTEXT;
 	
 	public static void resetApproximationConfiguration(boolean enabled, int precision, RoundingMode roundingMode) {
 		APPROXIMATION_ENABLED = enabled;		
-		if (enabled) {
-			APPROXIMATION_MATH_CONTEXT = new MathContext(precision, roundingMode);
-		}
+		APPROXIMATION_MATH_CONTEXT = new MathContext(precision, roundingMode);
 	}
 		
 	public static BigIntegerNumber valueOf(long l) {
@@ -4160,6 +4145,27 @@ class BigIntegerNumberFactory {
 			result = new BigIntegerNumberExact(strNumber, radix);
 		}
 				
+		return result;
+	}
+	
+	public static Rational rationalValueOf(BigDecimal bigDecimal) {
+		Rational result;
+		
+		if (APPROXIMATION_ENABLED) {
+			result = new Rational(new BigIntegerNumberApproximate(bigDecimal, APPROXIMATION_MATH_CONTEXT));
+		}
+		else {
+			if (bigDecimal.scale() <= 0) {
+				result = new Rational(new BigIntegerNumberExact(bigDecimal.toBigIntegerExact()));
+			}
+			else {
+				BigIntegerNumberExact numerator   = new BigIntegerNumberExact(bigDecimal.scaleByPowerOfTen(bigDecimal.scale()).toBigIntegerExact());
+				BigIntegerNumberExact denominator = new BigIntegerNumberExact(BigDecimal.ONE.scaleByPowerOfTen(bigDecimal.scale()).toBigIntegerExact());
+				
+				result = new Rational(numerator, denominator);
+			}
+		}
+		
 		return result;
 	}
 }

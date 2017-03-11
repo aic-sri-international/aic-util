@@ -37,6 +37,9 @@
  */
 package com.sri.ai.util.math;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+
 /**
  * An alternative base class to java.math.BigInteger that doesn't commit
  * to the representation being exact (i.e. BigInteger) or approximate
@@ -62,7 +65,7 @@ public abstract class BigIntegerNumber extends Number implements Comparable<BigI
 	public abstract BigIntegerNumber pow(int exponent);
 	public abstract BigIntegerNumber remainder(BigIntegerNumber val);
 	public abstract int signum();
-	public abstract BigIntegerNumber shiftRight(int n); // TODO - replace with log method
+	public abstract BigDecimal log(MathContext logMathContext);
 	public abstract BigIntegerNumber subtract(BigIntegerNumber val);
 	public abstract String toString(int radix);
 }

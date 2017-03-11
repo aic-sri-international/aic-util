@@ -37,7 +37,9 @@
  */
 package com.sri.ai.util.math;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
 
 /**
  * An implementation of BigIntegerNumber with exact semantics.
@@ -49,7 +51,8 @@ import java.math.BigInteger;
  */
 public class BigIntegerNumberExact extends BigIntegerNumber {
 	private static final long serialVersionUID = 1L;
-	
+	//
+	private static final BigDecimal LOG_2 = new BigDecimal(Math.log(2.0));	
 	//
 	private BigInteger value;
 	
@@ -205,8 +208,27 @@ public class BigIntegerNumberExact extends BigIntegerNumber {
 	}
 	
 	@Override
-	public BigIntegerNumber shiftRight(int n) {
-		BigIntegerNumber result = new BigIntegerNumberExact(value.shiftRight(n));
+	public BigDecimal log(MathContext logMathContext) {
+		// log(a)=log(a/2^k)+k*log(2)
+		// see: http://stackoverflow.com/questions/6827516/logarithm-for-biginteger
+		
+		BigInteger b = value;
+		if (b.signum() == -1) {			
+			throw new UnsupportedOperationException("Cannot compute the log for a negative number: "+b);
+		}
+		
+		int k = b.bitLength() - 1022;
+		if (k > 0) {
+			// NOTE: we lose precision here
+			b = b.shiftRight(k);
+		}
+		double log = Math.log(b.doubleValue());
+		BigDecimal result = new BigDecimal(log, logMathContext);
+		if (k > 0) {
+			BigDecimal kTimesLog2 = LOG_2.multiply(BigDecimal.valueOf(k), logMathContext); 
+			result = result.add(kTimesLog2, logMathContext);
+		}
+		
 		return result;
 	}
 	

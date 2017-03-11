@@ -59,6 +59,13 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 	private BigDecimal value;
 	private MathContext mathContext;
 	
+	public static void main(String[] args) {
+		// experiemnts
+		BigDecimal a = new BigDecimal(2.891790293717215E+222);
+		BigDecimal b = new BigDecimal(2);
+		a.divide(b, MathContext.DECIMAL64);
+	}
+	
 	public BigIntegerNumberApproximate(BigDecimal value, MathContext mathContext) {
 		this.value = value;
 		this.mathContext = mathContext;
@@ -152,7 +159,7 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 		if (value.signum() == 0) {
 			result = 0;
 		}
-		else if (value.signum() > 0) {	
+		else if (value.signum() > 0) {			
 			// Note: computing this way. i.e.: floor(log2(n)) + 1 
 			// see : http://www.exploringbinary.com/number-of-bits-in-a-decimal-integer/
 			// avoids the 'this+1'.		
@@ -169,8 +176,11 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 	}
 	
 	@Override
-	public BigIntegerNumber divide(BigIntegerNumber val) {
-		BigDecimal       quotient = value.divideToIntegralValue(approx(val), mathContext);
+	public BigIntegerNumber divide(BigIntegerNumber val) {	
+		BigDecimal       quotient = value.divideToIntegralValue(approx(val));
+		if (quotient.precision() > mathContext.getPrecision()) {
+			quotient = new BigDecimal(quotient.unscaledValue(), quotient.scale(), mathContext);
+		}
 		BigIntegerNumber result   = new BigIntegerNumberApproximate(quotient, mathContext);
 		return result;
 	}
@@ -238,7 +248,7 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 	}
 	
 	@Override
-	public BigIntegerNumber shiftRight(int n) {
+	public BigDecimal log(MathContext logMathContext) {
 // TODO - need to compute as BigDecimal has no gcd method.		
 		throw new UnsupportedOperationException("TODO - implement");	
 	}
@@ -251,7 +261,7 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 	}
 	
 	private BigDecimal approx(BigIntegerNumber val) {
-		BigDecimal result = ((BigIntegerNumberApproximate) val).value;
+		BigDecimal result = ((BigIntegerNumberApproximate) val).value;		
 		return result;
 	}
 	
@@ -347,7 +357,7 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 		
 		return result;
 	}
-	
+
 	private static double approxUnscaledDoubleValue(BigDecimal value) {
 		double result;
 		if (value.precision() > 307) {
