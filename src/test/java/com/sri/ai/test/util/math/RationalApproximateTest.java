@@ -1,30 +1,51 @@
 package com.sri.ai.test.util.math;
 
-import java.math.RoundingMode;
+import java.math.MathContext;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import com.sri.ai.util.math.Rational;
 
 public class RationalApproximateTest {		
+	
+	@Before
+	public void setUp() {
+		Rational.resetApproximationConfiguration(true, MathContext.DECIMAL128.getPrecision(), MathContext.DECIMAL128.getRoundingMode());
+	}
+	
 	@After
 	public void tearDown() {
 		Rational.resetApproximationConfigurationFromAICUtilConfiguration();
 	}
 	
-	@Ignore("TODO - currently experimental")
+	@Test(expected=ArithmeticException.class)
+	public void testPowOverflow() {
+		// Results that would end up with a scaling component > Integer.MAX_VALUE (2147483647)
+		// are currently not supported by the approximation logic (i.e. limitation of 
+		// the internally used BigDecimal).
+		new Rational(3).pow(new Rational(5000000000L));
+		// ^ should be approx:
+		// 3.96562995550248277772152567382684267430164154838 × 10^2385606273                                                       
+	}
+	
 	@Test
-	public void testPowLargeIntegerExponent() {
-// NOTE: Currently 3^Integer.MAX_VALUE appears to take very long time in BigInteger.pow()		
-		Rational exponent = new Rational(10000000000L);
-		System.out.println("exponent="+exponent);
-		Rational base = new Rational("3");
-		System.out.println("base="+base);
-		Rational result = base.pow(exponent);
-		System.out.println("b^e="+result);
+	public void testPowLargeRationalIntegerExponent() {	
+		Rational pow; 
+		pow = new Rational(3).pow(new Rational(Integer.MAX_VALUE));
+		Assert.assertEquals("14.01511460528495155992833521026788E+1024610091", pow.getNumerator().toString());
+		pow = new Rational(3).pow(new Rational(4000000000L));
+		Assert.assertEquals("756.2227687355548530201943986629279E+1908485016", pow.getNumerator().toString());
+	}
+	
+	@Ignore("TODO - currently fails due to inner limitation on int exponent size by big decimal (need to refactor).")
+	@Test
+	public void testPowLargeIntExponent() {	
+		Rational pow = new Rational(3).pow(Integer.MAX_VALUE);
+		Assert.assertEquals("14.01511460528495155992833521026788E+1024610091", pow.getNumerator().toString());
 	}
 	
 	@Ignore("TODO - currently experimental")
@@ -51,50 +72,5 @@ public class RationalApproximateTest {
 		System.out.println("geometricMean^10000="+geometricMeanPow10000);
 		Rational backToGeometricMean = geometricMeanPow10000.pow(new Rational(1, 10000));
 		System.out.println("backToGeometricMean="+backToGeometricMean);
-	}
-	
-	@Ignore("TODO - implement based on Rational using approximate big integers internally.")
-	@Test
-	public void testNumerator127_p5_half_up() {
-		Rational.resetApproximationConfiguration(true, 5, RoundingMode.HALF_UP);
-
-		// 01111111(127:7)/01111111(127:7) = 1
-	    // ---->
-	    // 00001111( 15:4)/00001111( 15:4) = 1
-		Assert.assertEquals("1", new Rational(127, 127).toString());	
-	    // 01111111(127:7)/01111110(126:7) = 1
-	    // ---->
-	    // 00001111( 15:4)/00001111( 15:4) = 1
-		Assert.assertEquals("1", new Rational(127, 126).toString());
-	    // 01111111(127:7)/01110111(119:7) = 1
-	    // ---->
-	    // 00001111( 15:4)/00001110( 14:4) = 1
-		Assert.assertEquals("15/14", new Rational(127, 119).toString());
-		// 01111111(127:7)/01010011( 83:7) = 1
-	    // ---->
-	    // 00001111( 15:4)/00001010( 10:4) = 1
-		Assert.assertEquals("3/2", new Rational(127, 83).toString());
-		
-		// 01111111(127:7)/00001111(15:4) = 8
-	    // ---->
-	    // 00001111( 15:4)/00000001( 1:1) = 15
-		Assert.assertEquals("15", new Rational(127, 15).toString());
-		// 01111111(127:7)/00000111(7:3) = 18
-	    // ---->
-	    // 00011110( 30:5)/00000001(1:1) = 30
-		Assert.assertEquals("30", new Rational(127, 7).toString());
-		// 01111111(127:7)/00000001(1:1) = 127
-	    // ---->
-	    // 01111000(120:7)/00000001(1:1) = 120
-		Assert.assertEquals("120", new Rational(127, 1).toString());
-		
-	    // 01111111(127:7)/11111111(-1:0) = -127
-	    // ---->
-	    // 10000000(-128:7)/00000001(1:1) = -128
-		Assert.assertEquals("-128", new Rational(127, -1).toString());
-	    // 01111111(127:7)/11111110(-2:1) = -63
-	    // ---->
-	    // 11000000(-64:6)/00000001(1:1) = -64
-		Assert.assertEquals("-64", new Rational(127, -2).toString());
 	}
 }

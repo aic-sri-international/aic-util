@@ -322,6 +322,15 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 * 15.
 	 */
 	private final static int QUAD_FLOAT_EXPONENT_SIZE = 15;
+	
+	//
+	// log() related constants
+	private static BigIntegerNumber BIGINT_EXPONENT_POS_MAX_VALUE;
+	private static BigIntegerNumber BIGINT_EXPONENT_NEG_MAX_VALUE;
+	//		
+	private static Rational RATIONAL_EXPONENT_POS_MAX_VALUE;
+	private static Rational RATIONAL_EXPONENT_NEG_MAX_VALUE;
+	private static Rational RATIONAL_E;
 
 	//
 	//
@@ -1556,14 +1565,14 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 //        will not as  you will still need to convert the final answer back to 
 //        BigInteger form, which will take huge amounts of memory.
 	private Rational powLargeIntegerExponent(BigIntegerNumber exponent) {
-		BigIntegerNumber[] exponentQuotientAndRemainder = exponent.divideAndRemainder(BIG_INT_INTEGER_POS_MAX_VALUE);		
+		BigIntegerNumber[] exponentQuotientAndRemainder = exponent.divideAndRemainder(BIGINT_EXPONENT_POS_MAX_VALUE);		
 		// b^(m*e.signum)
 		Rational quotientBase;
 		if (exponent.signum() > 0) {
-			quotientBase = pow(RATIONAL_INTEGER_POS_MAX_VALUE);
+			quotientBase = pow(RATIONAL_EXPONENT_POS_MAX_VALUE);
 		}
 		else {
-			quotientBase = pow(RATIONAL_INTEGER_NEG_MAX_VALUE);
+			quotientBase = pow(RATIONAL_EXPONENT_NEG_MAX_VALUE);
 		}		
 		// (b^(m*e.signum))^(|e mod m|)
 		Rational commonFactorsPow = quotientBase.pow(exponentQuotientAndRemainder[0].abs());
@@ -1599,17 +1608,9 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 		}
 		return result;
 	}
-	
-
-	private static final BigIntegerNumber BIG_INT_INTEGER_POS_MAX_VALUE  = BigIntegerNumberFactory.valueOf(Integer.MAX_VALUE);
-	private static final BigIntegerNumber BIG_INT_INTEGER_NEG_MAX_VALUE  = BigIntegerNumberFactory.valueOf(-Integer.MAX_VALUE);
-	//
-// TODO - need to reassign these if switch approximation on/off.		
-	private static final Rational   RATIONAL_INTEGER_POS_MAX_VALUE = new Rational(BIG_INT_INTEGER_POS_MAX_VALUE);
-	private static final Rational   RATIONAL_INTEGER_NEG_MAX_VALUE = new Rational(BIG_INT_INTEGER_NEG_MAX_VALUE);
-	private static final Rational   RATIONAL_E                     = new Rational(Math.E);	
+		
 	private static boolean isMagnitudeWithinLangInteger(BigIntegerNumber bigInteger) {
-		boolean result = bigInteger.compareTo(BIG_INT_INTEGER_POS_MAX_VALUE) <= 0 && bigInteger.compareTo(BIG_INT_INTEGER_NEG_MAX_VALUE) >= 0;
+		boolean result = bigInteger.compareTo(BIGINT_EXPONENT_POS_MAX_VALUE) <= 0 && bigInteger.compareTo(BIGINT_EXPONENT_NEG_MAX_VALUE) >= 0;
 		return result;
 	}
 	
@@ -2800,6 +2801,14 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
         TWO_POWER_64        = new Rational(BIG_INTEGER_TWO_POWER_64);
         LOGARITHM_TEN_GUESS = new Rational(1741647, 524288);
         LOGARITHM_SIXTEEN   = new Rational(4);
+        
+        // Private log() related constants
+    	BIGINT_EXPONENT_POS_MAX_VALUE = BigIntegerNumberFactory.valueOf(999999999); // NOTE: both based on BigDecimal restrictions on pow(int) argument.
+    	BIGINT_EXPONENT_NEG_MAX_VALUE = BigIntegerNumberFactory.valueOf(-999999999);
+    	//		
+    	RATIONAL_EXPONENT_POS_MAX_VALUE = new Rational(BIGINT_EXPONENT_POS_MAX_VALUE);
+    	RATIONAL_EXPONENT_NEG_MAX_VALUE = new Rational(BIGINT_EXPONENT_NEG_MAX_VALUE);
+    	RATIONAL_E                      = new Rational(""+Math.E);
         
         // Public Rationals
 // TODO - need to re-assign when approximate settings change (or handle these special cases separately as this is public)	

@@ -98,6 +98,12 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 		return result;
 	}
 	
+	@Override
+	public String toString() {
+		String result = value.toEngineeringString();
+		return result;
+	}
+	
 	//
 	// Number
 	@Override
