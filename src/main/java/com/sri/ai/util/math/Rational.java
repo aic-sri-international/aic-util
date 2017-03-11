@@ -1520,10 +1520,10 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 		// note: the calculated numerator/denominator are not denormalized in
 		// the sense of having common factors, but numerator might be negative
 		// (and become denominator below)
-// TODO - the isGCDComputationRequired flag may need to be set to false when
-//        we add support for approximate integers.
+
+		boolean isGCDComputationRequired = BigIntegerNumberFactory.APPROXIMATION_ENABLED;
 		return new Rational((negate ? denominator : numerator),
-				(negate ? numerator : denominator), false);
+				(negate ? numerator : denominator), isGCDComputationRequired);
 	}
 	
 	public Rational pow(Rational exponent) {

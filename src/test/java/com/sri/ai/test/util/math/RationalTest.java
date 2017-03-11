@@ -56,8 +56,18 @@
 */
 package com.sri.ai.test.util.math;
 
+import java.math.MathContext;
+import java.util.Arrays;
+import java.util.Collection;
+
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
 
 import com.sri.ai.util.math.Rational;
 
@@ -66,7 +76,30 @@ import com.sri.ai.util.math.Rational;
  * @author oreilly
  *
  */
+@RunWith(Parameterized.class)
 public class RationalTest {
+// TODO - add non pow(int) tests for normal sized numbers
+	
+	@Parameters(name = "{index}: approx = {0}")
+	public static Collection<Object[]> implementations() {
+		return Arrays.asList(new Object[][] { { Boolean.FALSE }, { Boolean.TRUE } });				
+	}
+	
+	@Parameter
+	public Boolean approximate;
+	
+	@Before
+	public void setUp() {
+		if (approximate) {			
+			// NOTE: this level of precision required to pass the contained tests.
+			Rational.resetApproximationConfiguration(true, MathContext.DECIMAL128.getPrecision()+1, MathContext.DECIMAL128.getRoundingMode());
+		}
+	}
+
+	@After
+	public void tearDown() {
+		Rational.resetApproximationConfigurationFromAICUtilConfiguration();
+	}
 
 	@Test
 	public void testDefaultRadix() {

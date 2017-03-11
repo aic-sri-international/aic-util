@@ -54,6 +54,7 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 	//
 	// NOTE: loge = is used to indicate natural logarithm, i.e. log base e.
 	private static final double LOGE_2  = Math.log(2);
+	private static final double LOGE_10 = Math.log(10);
 	private static final double LOG2_10 = log2(10);
 	//
 	private BigDecimal value;
@@ -255,8 +256,15 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 	
 	@Override
 	public BigDecimal log(MathContext logMathContext) {
-// TODO - need to compute as BigDecimal has no gcd method.		
-		throw new UnsupportedOperationException("TODO - implement");	
+		if (value.signum() == -1) {			
+			throw new UnsupportedOperationException("Cannot compute the log for a negative number: "+value.toEngineeringString());
+		}
+
+		double log = logeBigDecimal(approxUnscaledDoubleValue(value), value);
+		
+		BigDecimal result = new BigDecimal(log, logMathContext);
+		
+		return result;
 	}
 	
 	@Override
@@ -351,6 +359,16 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 	// log2(value) = loge(value)/loge(2)
 	private static double log2(double value) {
 		double result = Math.log(value) / LOGE_2;
+		return result;
+	}
+	
+	// To compute loge of BigDecimal:
+	// value = unscaled*10^(-scale)
+	// loge(value) = loge(unscaled*10^(-scale)) = loge(unscaled) + (-scale)*loge(10)
+	private static double logeBigDecimal(double approxUnscaledValueOfBigDecimal, BigDecimal bigDecimalValue) {
+		double loge_unscaled = Math.log(approxUnscaledValueOfBigDecimal);				
+		double result        = loge_unscaled+((-bigDecimalValue.scale())*LOGE_10);	
+		
 		return result;
 	}
 	
