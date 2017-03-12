@@ -77,8 +77,7 @@ import com.sri.ai.util.math.Rational;
  *
  */
 @RunWith(Parameterized.class)
-public class RationalTest {
-// TODO - add non pow(int) tests for normal sized numbers
+public class RationalTest {	
 	
 	@Parameters(name = "{index}: approx = {0}")
 	public static Collection<Object[]> implementations() {
@@ -936,7 +935,7 @@ public class RationalTest {
 	}
 	
 	@Test
-	public void testPow() {
+	public void testPowIntExponent() {
 		Assert.assertTrue((new Rational(3, 5)).pow(7).toString().equals("2187/78125"));
 		Assert.assertTrue((new Rational(-3, 5)).pow(7).toString().equals("-2187/78125"));
 		Assert.assertTrue((new Rational(3, 5)).pow(-7).toString().equals("78125/2187"));
@@ -976,6 +975,99 @@ public class RationalTest {
 		Assert.assertTrue(Rational.MINUS_ONE.pow(-2).equals(Rational.ONE));
 		Assert.assertTrue(Rational.MINUS_ONE.pow(-3).equals(Rational.MINUS_ONE));
 		Assert.assertTrue(Rational.MINUS_ONE.pow(-4).equals(Rational.ONE));
+	}
+	
+	@Test
+	public void testPowIntRationalNumberExponent() {
+		Assert.assertTrue((new Rational(3, 5)).pow(new Rational(7)).toString().equals("2187/78125"));
+		Assert.assertTrue((new Rational(-3, 5)).pow(new Rational(7)).toString().equals("-2187/78125"));
+		Assert.assertTrue((new Rational(3, 5)).pow(new Rational(-7)).toString().equals("78125/2187"));
+		Assert.assertTrue((new Rational(-3, 5)).pow(new Rational(-7)).toString().equals("-78125/2187"));
+		Assert.assertTrue((new Rational(3, 5)).pow(new Rational(6)).toString().equals("729/15625"));
+		Assert.assertTrue((new Rational(-3, 5)).pow(new Rational(6)).toString().equals("729/15625"));
+		Assert.assertTrue((new Rational(3, 5)).pow(new Rational(0)).toString().equals("1"));
+		Assert.assertTrue((new Rational(-3, 5)).pow(new Rational(0)).toString().equals("1"));
+		Assert.assertTrue((new Rational(0)).pow(new Rational(1)).toString().equals("0"));
+		Assert.assertTrue((new Rational(1)).pow(new Rational(0)).toString().equals("1"));
+
+		Assert.assertTrue((new Rational(3, 5)).pow(new Rational(0)).equals(Rational.ONE));
+		Assert.assertTrue((new Rational(3, 5)).pow(new Rational(1)).equals(new Rational(3, 5)));
+		Assert.assertTrue((new Rational(3, 5)).pow(new Rational(-1)).equals((new Rational(3, 5)).invert()));
+		Assert.assertTrue((new Rational(2)).pow(new Rational(2)).equals(new Rational(4)));
+
+		// special cases
+		Assert.assertTrue(Rational.ZERO.pow(new Rational(1)).equals(Rational.ZERO));
+		Assert.assertTrue(Rational.ZERO.pow(new Rational(2)).equals(Rational.ZERO));
+		Assert.assertTrue(Rational.ZERO.pow(new Rational(3)).equals(Rational.ZERO));
+		Assert.assertTrue(Rational.ZERO.pow(new Rational(4)).equals(Rational.ZERO));
+		Assert.assertTrue(Rational.ONE.pow(new Rational(0)).equals(Rational.ONE));
+		Assert.assertTrue(Rational.ONE.pow(new Rational(1)).equals(Rational.ONE));
+		Assert.assertTrue(Rational.ONE.pow(new Rational(2)).equals(Rational.ONE));
+		Assert.assertTrue(Rational.ONE.pow(new Rational(3)).equals(Rational.ONE));
+		Assert.assertTrue(Rational.ONE.pow(new Rational(4)).equals(Rational.ONE));
+		Assert.assertTrue(Rational.ONE.pow(new Rational(-1)).equals(Rational.ONE));
+		Assert.assertTrue(Rational.ONE.pow(new Rational(-2)).equals(Rational.ONE));
+		Assert.assertTrue(Rational.ONE.pow(new Rational(-3)).equals(Rational.ONE));
+		Assert.assertTrue(Rational.ONE.pow(new Rational(-4)).equals(Rational.ONE));
+		Assert.assertTrue(Rational.MINUS_ONE.pow(new Rational(0)).equals(Rational.ONE));
+		Assert.assertTrue(Rational.MINUS_ONE.pow(new Rational(1)).equals(Rational.MINUS_ONE));
+		Assert.assertTrue(Rational.MINUS_ONE.pow(new Rational(2)).equals(Rational.ONE));
+		Assert.assertTrue(Rational.MINUS_ONE.pow(new Rational(3)).equals(Rational.MINUS_ONE));
+		Assert.assertTrue(Rational.MINUS_ONE.pow(new Rational(4)).equals(Rational.ONE));
+		Assert.assertTrue(Rational.MINUS_ONE.pow(new Rational(-1)).equals(Rational.MINUS_ONE));
+		Assert.assertTrue(Rational.MINUS_ONE.pow(new Rational(-2)).equals(Rational.ONE));
+		Assert.assertTrue(Rational.MINUS_ONE.pow(new Rational(-3)).equals(Rational.MINUS_ONE));
+		Assert.assertTrue(Rational.MINUS_ONE.pow(new Rational(-4)).equals(Rational.ONE));
+	}
+	
+	@Test
+	public void testPowFractionalRationalNumberExponent() {
+		double delta = 0.000000000001;
+		Assert.assertEquals("64^(1/2)", Math.pow(64.0, 1.0/2.0), (new Rational(64)).pow(new Rational(1, 2)).doubleValue(), delta);
+		Assert.assertEquals("64^(1/3)", Math.pow(64.0, 1.0/3.0), (new Rational(64)).pow(new Rational(1, 3)).doubleValue(), delta);
+	}
+	
+	@Test
+	public void testPowBigIntegerNumberExponent() {
+		Assert.assertTrue((new Rational(3, 5)).pow(new Rational(7).bigIntegerValue()).toString().equals("2187/78125"));
+		Assert.assertTrue((new Rational(-3, 5)).pow(new Rational(7).bigIntegerValue()).toString().equals("-2187/78125"));
+		Assert.assertTrue((new Rational(3, 5)).pow(new Rational(-7).bigIntegerValue()).toString().equals("78125/2187"));
+		Assert.assertTrue((new Rational(-3, 5)).pow(new Rational(-7).bigIntegerValue()).toString().equals("-78125/2187"));
+		Assert.assertTrue((new Rational(3, 5)).pow(new Rational(6).bigIntegerValue()).toString().equals("729/15625"));
+		Assert.assertTrue((new Rational(-3, 5)).pow(new Rational(6).bigIntegerValue()).toString().equals("729/15625"));
+		Assert.assertTrue((new Rational(3, 5)).pow(new Rational(0).bigIntegerValue()).toString().equals("1"));
+		Assert.assertTrue((new Rational(-3, 5)).pow(new Rational(0).bigIntegerValue()).toString().equals("1"));
+		Assert.assertTrue((new Rational(0)).pow(new Rational(1).bigIntegerValue()).toString().equals("0"));
+		Assert.assertTrue((new Rational(1)).pow(new Rational(0).bigIntegerValue()).toString().equals("1"));
+
+		Assert.assertTrue((new Rational(3, 5)).pow(new Rational(0).bigIntegerValue()).equals(Rational.ONE));
+		Assert.assertTrue((new Rational(3, 5)).pow(new Rational(1).bigIntegerValue()).equals(new Rational(3, 5)));
+		Assert.assertTrue((new Rational(3, 5)).pow(new Rational(-1).bigIntegerValue()).equals((new Rational(3, 5)).invert()));
+		Assert.assertTrue((new Rational(2)).pow(new Rational(2).bigIntegerValue()).equals(new Rational(4)));
+
+		// special cases
+		Assert.assertTrue(Rational.ZERO.pow(new Rational(1).bigIntegerValue()).equals(Rational.ZERO));
+		Assert.assertTrue(Rational.ZERO.pow(new Rational(2).bigIntegerValue()).equals(Rational.ZERO));
+		Assert.assertTrue(Rational.ZERO.pow(new Rational(3).bigIntegerValue()).equals(Rational.ZERO));
+		Assert.assertTrue(Rational.ZERO.pow(new Rational(4).bigIntegerValue()).equals(Rational.ZERO));
+		Assert.assertTrue(Rational.ONE.pow(new Rational(0).bigIntegerValue()).equals(Rational.ONE));
+		Assert.assertTrue(Rational.ONE.pow(new Rational(1).bigIntegerValue()).equals(Rational.ONE));
+		Assert.assertTrue(Rational.ONE.pow(new Rational(2).bigIntegerValue()).equals(Rational.ONE));
+		Assert.assertTrue(Rational.ONE.pow(new Rational(3).bigIntegerValue()).equals(Rational.ONE));
+		Assert.assertTrue(Rational.ONE.pow(new Rational(4).bigIntegerValue()).equals(Rational.ONE));
+		Assert.assertTrue(Rational.ONE.pow(new Rational(-1).bigIntegerValue()).equals(Rational.ONE));
+		Assert.assertTrue(Rational.ONE.pow(new Rational(-2).bigIntegerValue()).equals(Rational.ONE));
+		Assert.assertTrue(Rational.ONE.pow(new Rational(-3).bigIntegerValue()).equals(Rational.ONE));
+		Assert.assertTrue(Rational.ONE.pow(new Rational(-4).bigIntegerValue()).equals(Rational.ONE));
+		Assert.assertTrue(Rational.MINUS_ONE.pow(new Rational(0).bigIntegerValue()).equals(Rational.ONE));
+		Assert.assertTrue(Rational.MINUS_ONE.pow(new Rational(1).bigIntegerValue()).equals(Rational.MINUS_ONE));
+		Assert.assertTrue(Rational.MINUS_ONE.pow(new Rational(2).bigIntegerValue()).equals(Rational.ONE));
+		Assert.assertTrue(Rational.MINUS_ONE.pow(new Rational(3).bigIntegerValue()).equals(Rational.MINUS_ONE));
+		Assert.assertTrue(Rational.MINUS_ONE.pow(new Rational(4).bigIntegerValue()).equals(Rational.ONE));
+		Assert.assertTrue(Rational.MINUS_ONE.pow(new Rational(-1).bigIntegerValue()).equals(Rational.MINUS_ONE));
+		Assert.assertTrue(Rational.MINUS_ONE.pow(new Rational(-2).bigIntegerValue()).equals(Rational.ONE));
+		Assert.assertTrue(Rational.MINUS_ONE.pow(new Rational(-3).bigIntegerValue()).equals(Rational.MINUS_ONE));
+		Assert.assertTrue(Rational.MINUS_ONE.pow(new Rational(-4).bigIntegerValue()).equals(Rational.ONE));
 	}
 	
 	@Test(expected = ArithmeticException.class)

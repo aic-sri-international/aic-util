@@ -330,8 +330,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	//		
 	private static Rational RATIONAL_EXPONENT_POS_MAX_VALUE;
 	private static Rational RATIONAL_EXPONENT_NEG_MAX_VALUE;
-	private static Rational RATIONAL_E;
-
+	private static Rational RATIONAL_LOG_DOUBLE_MAX_VALUE;
+	private static Rational RATIONAL_DOUBLE_MAX_VALUE;
 	//
 	//
 	/**
@@ -1624,8 +1624,28 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 		// root(n, b) = exp(log(root(n, b))) = exp(log(b)/n)
 		Rational logB           = log(b);
 		Rational logBDividedByN = logB.divide(new Rational(n));
-// TODO - loss of precision here!		
-		Rational result         = RATIONAL_E.pow(logBDividedByN.bigIntegerValue());
+		
+		Rational result;
+		// log(Double.MAX_VALUE) = 709.782712893384
+		if (logBDividedByN.compareTo(RATIONAL_LOG_DOUBLE_MAX_VALUE) <= 0) {
+			// The result will be <= Double.MAX_VALUE so we can use Math.pow() directly.
+			double pow = Math.pow(Math.E, logBDividedByN.doubleValue());
+			result = new Rational(pow);
+		}
+		else {
+			// if logBDividedByN > log(Double.MAX_VALUE): 
+			//    // We will exceed Double.MAX_VALUE in our result so break it down as:
+			//    Double.MAX_VALUE^(logBDividedByN / Math.log(Double.MAX_VALUE)) * e^(logBDividedByN % Math.log(Double.MAX_VALUE))			
+			Rational quotient = logBDividedByN.divide(RATIONAL_DOUBLE_MAX_VALUE);
+			Rational[] quotientIntegerAndFractionalPart = quotient.integerAndFractionalPart();
+
+			Rational doubleMaxValuePowIntQuotient = RATIONAL_DOUBLE_MAX_VALUE.pow(quotientIntegerAndFractionalPart[0].bigIntegerValue());
+			//
+			double moduloExponent     = Double.MAX_VALUE * quotientIntegerAndFractionalPart[0].doubleValue();
+			double ePowModuloExponent = Math.pow(Math.E, moduloExponent);
+			
+			result = doubleMaxValuePowIntQuotient.multiply(new Rational(ePowModuloExponent));
+		}
 				
 		return result;
 	}
@@ -2808,7 +2828,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
     	//		
     	RATIONAL_EXPONENT_POS_MAX_VALUE = new Rational(BIGINT_EXPONENT_POS_MAX_VALUE);
     	RATIONAL_EXPONENT_NEG_MAX_VALUE = new Rational(BIGINT_EXPONENT_NEG_MAX_VALUE);
-    	RATIONAL_E                      = new Rational(""+Math.E);
+    	RATIONAL_LOG_DOUBLE_MAX_VALUE   = new Rational(""+Math.log(Double.MAX_VALUE));
+    	RATIONAL_DOUBLE_MAX_VALUE       = new Rational(""+Double.MAX_VALUE);
         
         // Public Rationals
 // TODO - need to re-assign when approximate settings change (or handle these special cases separately as this is public)	

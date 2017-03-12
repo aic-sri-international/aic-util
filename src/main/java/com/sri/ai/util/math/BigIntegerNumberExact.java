@@ -85,6 +85,12 @@ public class BigIntegerNumberExact extends BigIntegerNumber {
 		return result;
 	}
 	
+	@Override
+	public String toString() {
+		String result = value.toString();
+		return result;
+	}
+	
 	//
 	// Number
 	@Override

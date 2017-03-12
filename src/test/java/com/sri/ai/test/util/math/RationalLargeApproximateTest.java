@@ -10,7 +10,9 @@ import org.junit.Test;
 
 import com.sri.ai.util.math.Rational;
 
-public class RationalApproximateTest {	
+// NOTE: The #s used here are so large that the exact representation of Rational takes a long time to compute.
+// We only plan to work with these kinds of large #s when Rational is in approximation mode.
+public class RationalLargeApproximateTest {	
 
 	@Before
 	public void setUp() {
@@ -59,7 +61,7 @@ public class RationalApproximateTest {
 		System.out.println("geometricMean="+geometricMean.toStringExponent(47));
 		Rational geometricMeanPow4000 = geometricMean.pow(4000);
 		System.out.println("3");
-		System.out.println("geometricMean^4000="+geometricMeanPow4000);
+		System.out.println("geometricMean^4000="+geometricMeanPow4000.toStringExponent(47));
 		Rational backToGeometricMean = geometricMeanPow4000.pow(new Rational(1, 4000));
 		System.out.println("4");
 		System.out.println("backToGeometricMean="+backToGeometricMean.toStringExponent(47));
