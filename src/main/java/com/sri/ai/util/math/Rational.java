@@ -1559,11 +1559,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	// b = Base (i.e. this)
 	// if | e | > m :
 	//    (b^(m*e.signum))^(|e / m|) * b^(e % m)
-// TODO - this logic will not work until we are using Approximate BigIntegers.	
-//        e.g. 3^Integer.MAX_VALUE appears to take very long time in BigInteger.pow()
-//        even switching to BigDecimal.pow(e, MatchContext) to compute approximately
-//        will not as  you will still need to convert the final answer back to 
-//        BigInteger form, which will take huge amounts of memory.
+	//
+	// NOTE: this logic will take an extremely long time to execute if running in exact mode (intended for approximate use only).
 	private Rational powLargeIntegerExponent(BigIntegerNumber exponent) {
 		BigIntegerNumber[] exponentQuotientAndRemainder = exponent.divideAndRemainder(BIGINT_EXPONENT_POS_MAX_VALUE);		
 		// b^(m*e.signum)

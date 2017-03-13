@@ -1,6 +1,6 @@
 package com.sri.ai.test.util.math;
 
-import java.math.MathContext;
+import java.math.RoundingMode;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -8,15 +8,19 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.sri.ai.util.AICUtilConfiguration;
 import com.sri.ai.util.math.Rational;
 
 // NOTE: The #s used here are so large that the exact representation of Rational takes a long time to compute.
 // We only plan to work with these kinds of large #s when Rational is in approximation mode.
 public class RationalLargeApproximateTest {	
 
+	private static final int          PRECISION     = AICUtilConfiguration.getRationalApproximationPrecision();
+	private static final RoundingMode ROUNDING_MODE = AICUtilConfiguration.getRationalApproximationRoundingMode();
+	
 	@Before
 	public void setUp() {
-		Rational.resetApproximationConfiguration(true, MathContext.DECIMAL128.getPrecision(), MathContext.DECIMAL128.getRoundingMode());
+		Rational.resetApproximationConfiguration(true, PRECISION, ROUNDING_MODE);
 	}
 	
 	@After
@@ -43,6 +47,7 @@ public class RationalLargeApproximateTest {
 		Assert.assertEquals("756.2227687355548530201943986629279E+1908485016", pow.getNumerator().toString());
 	}
 	
+// TODO	
 	@Ignore("TODO - currently fails due to inner limitation on int exponent size by big decimal (need to refactor).")
 	@Test
 	public void testPowLargeIntExponent() {	
@@ -50,20 +55,33 @@ public class RationalLargeApproximateTest {
 		Assert.assertEquals("14.01511460528495155992833521026788E+1024610091", pow.getNumerator().toString());
 	}
 	
-	@Ignore("TODO - currently experimental")
 	@Test
-	public void testGeometricMeanV1() {
-		Rational product = new Rational(3).pow(new Rational(4000));
-		System.out.println("1");
-		System.out.println("product="+product.getNumerator().toString());
-		Rational geometricMean = product.pow(new Rational(1, 4000));
-		System.out.println("2");
-		System.out.println("geometricMean="+geometricMean.toStringExponent(47));
-		Rational geometricMeanPow4000 = geometricMean.pow(4000);
-		System.out.println("3");
-		System.out.println("geometricMean^4000="+geometricMeanPow4000.toStringExponent(47));
-		Rational backToGeometricMean = geometricMeanPow4000.pow(new Rational(1, 4000));
-		System.out.println("4");
-		System.out.println("backToGeometricMean="+backToGeometricMean.toStringExponent(47));
+	public void testGeometricMean() {
+		int [] exponents = new int[] {4000, 10000, 12345};
+		for (int i = 0; i < exponents.length; i++) {
+			int exponent = exponents[i];
+			Rational product = new Rational(3).pow(new Rational(exponent));
+			Rational geometricMean = product.pow(new Rational(1, exponent));
+			Rational geometricMeanBackToProduct = geometricMean.pow(new Rational(exponent));
+			Rational backAgainToGeometricMean = geometricMeanBackToProduct.pow(new Rational(1, exponent));
+			
+//			System.out.println("exponent="+exponent+", precision="+PRECISION);
+//			System.out.println("product                     ="+product);
+//			System.out.println("product                    n="+product.getNumerator().toString());
+//			System.out.println("product                    d="+product.getDenominator().toString());
+//			System.out.println("geometricMeanBackToProduct  ="+geometricMeanBackToProduct);
+//			System.out.println("geometricMeanBackToProduct n="+geometricMeanBackToProduct.getNumerator().toString());
+//			System.out.println("geometricMeanBackToProduct d="+geometricMeanBackToProduct.getDenominator().toString());
+//			System.out.println("geometricMean               ="+geometricMean);
+//			System.out.println("backAgainToGeometricMean    ="+backAgainToGeometricMean);
+			
+			Assert.assertEquals("product^"+exponent+", precision="+PRECISION, toString(product), toString(geometricMeanBackToProduct));
+			Assert.assertEquals("geometricMean^"+exponent+", precision="+PRECISION, toString(geometricMean), toString(backAgainToGeometricMean));
+		}
+	}
+	
+	private String toString(Rational rational) {
+		String result = rational.toStringExponent(PRECISION);
+		return result;
 	}
 }

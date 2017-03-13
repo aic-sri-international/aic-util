@@ -281,8 +281,7 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 	
 	@Override
 	public String toString(int radix) {	
-		String result;
-// TODO - likely incorrect and super inefficient		
+		String result;	
 		if (radix == 10) {
 			result = value.toPlainString();
 		}
