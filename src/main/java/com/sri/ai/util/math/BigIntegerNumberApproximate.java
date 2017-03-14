@@ -90,7 +90,7 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 	@Override
 	public boolean equals(Object o) {
 		boolean result = false;
-		if (o instanceof BigIntegerNumberApproximate) {
+		if (o instanceof BigIntegerNumber) {
 			result = value.equals(approx((BigIntegerNumber)o));
 		}
 		return result;
@@ -313,11 +313,6 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 		return result;
 	}
 	
-	private BigDecimal approx(BigIntegerNumber val) {
-		BigDecimal result = ((BigIntegerNumberApproximate) val).value;		
-		return result;
-	}
-	
 	@Override
 	public String toString(int radix) {	
 		String result;	
@@ -326,6 +321,22 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 		}
 		else {
 			result = value.toBigIntegerExact().toString(radix);
+		}
+		return result;
+	}
+	
+	BigIntegerNumberExact toBigIntegerNumberExact() {
+		BigIntegerNumberExact result = new BigIntegerNumberExact(value.toBigIntegerExact());
+		return result;
+	}
+	
+	private BigDecimal approx(BigIntegerNumber val) {
+		BigDecimal result;
+		if (val instanceof BigIntegerNumberApproximate) {
+			result = ((BigIntegerNumberApproximate) val).value;
+		}
+		else {
+			result = ((BigIntegerNumberExact)val).toBigIntegerNumberApproximate(mathContext).value;
 		}
 		return result;
 	}

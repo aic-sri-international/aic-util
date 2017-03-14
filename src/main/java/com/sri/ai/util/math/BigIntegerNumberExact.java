@@ -73,7 +73,7 @@ public class BigIntegerNumberExact extends BigIntegerNumber {
 	@Override
 	public boolean equals(Object o) {
 		boolean result = false;
-		if (o instanceof BigIntegerNumberExact) {
+		if (o instanceof BigIntegerNumber) {
 			result = value.equals(exact((BigIntegerNumber)o));
 		}
 		return result;
@@ -251,8 +251,19 @@ public class BigIntegerNumberExact extends BigIntegerNumber {
 		return result;
 	}
 	
+	BigIntegerNumberApproximate toBigIntegerNumberApproximate(MathContext mathContext) {
+		BigIntegerNumberApproximate result = new BigIntegerNumberApproximate(new BigDecimal(value, mathContext), mathContext);
+		return result;
+	}
+	
 	private BigInteger exact(BigIntegerNumber val) {
-		BigInteger result = ((BigIntegerNumberExact) val).value;
+		BigInteger result;
+		if (val instanceof BigIntegerNumberExact) {
+			result = ((BigIntegerNumberExact) val).value;
+		}
+		else {
+			result = ((BigIntegerNumberApproximate)val).toBigIntegerNumberExact().value;
+		}
 		return result;
 	}
 }

@@ -2843,8 +2843,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
     	RATIONAL_LOG_DOUBLE_MAX_VALUE             = new Rational(""+Math.log(Double.MAX_VALUE));
     	RATIONAL_DOUBLE_MAX_VALUE                 = new Rational(""+Double.MAX_VALUE);
         
-        // Public Rationals
-// TODO - need to re-assign when approximate settings change (or handle these special cases separately as this is public)	
+        // Public Rationals	
     	ZERO      = new Rational(0);
     	ONE       = new Rational(1);
     	MINUS_ONE = new Rational(-1);        

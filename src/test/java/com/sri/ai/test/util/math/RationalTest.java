@@ -99,6 +99,27 @@ public class RationalTest {
 	public void tearDown() {
 		Rational.resetApproximationConfigurationFromAICUtilConfiguration();
 	}
+	
+	@Test
+	public void testApproxAndExactInteroperate() {
+		Rational.resetApproximationConfiguration(false, MathContext.DECIMAL128.getPrecision()+1, MathContext.DECIMAL128.getRoundingMode());
+		Rational eZero             = new Rational(0);
+		Rational eOne              = new Rational(1);
+		Rational eMinusOne         = new Rational(-1);
+		Rational eSevenThirteenths = new Rational(7, 13);		
+		Rational.resetApproximationConfiguration(true, MathContext.DECIMAL128.getPrecision()+1, MathContext.DECIMAL128.getRoundingMode());		
+		Rational aZero             = new Rational(0);
+		Rational aOne              = new Rational(1);
+		Rational aMinusOne         = new Rational(-1);
+		Rational aSevenThirteenths = new Rational(7, 13);	
+		
+		Assert.assertEquals(eZero, aZero);
+		Assert.assertEquals(eOne, aOne);
+		Assert.assertEquals(eMinusOne, aMinusOne);
+		Assert.assertEquals(eSevenThirteenths, aSevenThirteenths);
+		
+		Assert.assertEquals(new Rational(7*7, 13*13), eSevenThirteenths.multiply(aSevenThirteenths));
+	}
 
 	@Test
 	public void testDefaultRadix() {
