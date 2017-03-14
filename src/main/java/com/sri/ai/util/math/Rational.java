@@ -325,14 +325,13 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	
 	//
 	// log() related constants
-	private static int POS_MAX_SMALL_INT_EXPONENT_VALUE =  Integer.MAX_VALUE;
-	private static int NEG_MAX_SMALL_INT_EXPONENT_VALUE = -Integer.MIN_VALUE;
+	private static int POS_MAX_SMALL_INT_EXPONENT_VALUE =  (Integer.MAX_VALUE-1); // NOTE: we subtract 1, so the 'negate' logic in pow does not overflow
+	private static int NEG_MAX_SMALL_INT_EXPONENT_VALUE = -(Integer.MIN_VALUE-1);
 	//
 	private static BigIntegerNumber BIGINT_POS_MAX_SMALL_INT_EXPONENT_VALUE;
 	private static BigIntegerNumber BIGINT_NEG_MAX_SMALL_INT_EXPONENT_VALUE;
 	//		
 	private static Rational RATIONAL_POS_MAX_SMALL_INT_EXPONENT_VALUE;
-	private static Rational RATIONAL_NEG_MAX_SMALL_INT_EXPONENT_VALUE;
 	private static Rational RATIONAL_LOG_DOUBLE_MAX_VALUE;
 	private static Rational RATIONAL_DOUBLE_MAX_VALUE;
 	//
@@ -1567,32 +1566,34 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 				(negate ? numerator : denominator), isGCDComputationRequired);
 	}
 	
-	// NOTE:
-	// m = Max positive exponent value allowed. 
-	// e = Exponent
-	// b = Base (i.e. this)
-	// if | e | > m :
-	//    (b^(m*e.signum))^(|e / m|) * b^(e % m)
-	//
 	// NOTE: this logic will take an extremely long time to execute if running in exact mode (intended for approximate use only).
 	private Rational powLargeIntegerExponent(BigIntegerNumber exponent) {
-		BigIntegerNumber[] exponentQuotientAndRemainder = exponent.divideAndRemainder(BIGINT_POS_MAX_SMALL_INT_EXPONENT_VALUE);		
-		// b^(m*e.signum)
-		Rational quotientBase;
-		if (exponent.signum() > 0) {
-			quotientBase = pow(RATIONAL_POS_MAX_SMALL_INT_EXPONENT_VALUE);
+		Rational result;
+		
+		if (exponent.signum() < 0) {
+			// (n/m)^-e = (m/n)^e
+			result = invert().powLargeIntegerExponent(exponent.abs());
 		}
 		else {
-			quotientBase = pow(RATIONAL_NEG_MAX_SMALL_INT_EXPONENT_VALUE);
-		}		
-		// (b^(m*e.signum))^(|e mod m|)
-		Rational commonFactorsPow = quotientBase.pow(exponentQuotientAndRemainder[0].abs());
-		
-		// b^(e % m)
-		Rational basePowExpRemainder = pow(exponentQuotientAndRemainder[1]);
-		
-		// (b^(m*e.signum))^(|e / m|) * b^(e % m)
-		Rational result = commonFactorsPow.multiply(basePowExpRemainder);
+			// NOTE:
+			// m = Max positive exponent value allowed. 
+			// e = Exponent (is positive in this case)
+			// b = Base (i.e. this)
+			// if e > m :
+			//    (b^m)^(e / m) * b^(e % m)
+			BigIntegerNumber[] exponentQuotientAndRemainder = exponent.divideAndRemainder(BIGINT_POS_MAX_SMALL_INT_EXPONENT_VALUE);		
+			// b^m
+			Rational quotientBase = pow(RATIONAL_POS_MAX_SMALL_INT_EXPONENT_VALUE);
+				
+			// (b^m)^(e / m)
+			Rational commonFactorsPow = quotientBase.pow(exponentQuotientAndRemainder[0].abs());
+			
+			// b^(e % m)
+			Rational basePowExpRemainder = pow(exponentQuotientAndRemainder[1]);
+			
+			// (b^m)^(e / m) * b^(e % m)
+			result = commonFactorsPow.multiply(basePowExpRemainder);
+		}
 		
 		return result;
 	}
@@ -1601,7 +1602,7 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	// b = Base (i.e. this)
 	// n = Numerator
 	// d = Denominator
-	// b^(n/d) = (b^n)^(1/v) = root(v, b^u)
+	// b^(n/d) = (b^n)^(1/d) = root(d, b^n)
 	private Rational powFractionalExponent(Rational exponent) {
 		Rational result;
 		// For simplicity always work with a positive exponent
@@ -1611,10 +1612,11 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 		}
 		else {
 			// Exponent is positive
-			// b^(u/v) = (b^u)^(1/v)
-			// b^u
+			// b^(n/d) = (b^n)^(1/d)
+			
+			// b^n
 			Rational basePowNumerator = pow(exponent.getNumerator());
-			// root(v, b^u)
+			// root(d, b^n)
 			result = nthRoot(exponent.getDenominator(), basePowNumerator);			
 		}
 		return result;
@@ -2838,7 +2840,6 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
     	BIGINT_NEG_MAX_SMALL_INT_EXPONENT_VALUE = BigIntegerNumberFactory.valueOf(NEG_MAX_SMALL_INT_EXPONENT_VALUE);
     	//		
     	RATIONAL_POS_MAX_SMALL_INT_EXPONENT_VALUE = new Rational(BIGINT_POS_MAX_SMALL_INT_EXPONENT_VALUE);
-    	RATIONAL_NEG_MAX_SMALL_INT_EXPONENT_VALUE = new Rational(BIGINT_NEG_MAX_SMALL_INT_EXPONENT_VALUE);
     	RATIONAL_LOG_DOUBLE_MAX_VALUE             = new Rational(""+Math.log(Double.MAX_VALUE));
     	RATIONAL_DOUBLE_MAX_VALUE                 = new Rational(""+Double.MAX_VALUE);
         

@@ -57,9 +57,8 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 	private static final double LOGE_10 = Math.log(10);
 	private static final double LOG2_10 = log2(10);
 	//
-	// NOTE: both based on BigDecimal restrictions on pow(int) argument. 
-	private static int POS_MAX_SMALL_INT_EXPONENT_VALUE =  999999999;
-	private static int NEG_MAX_SMALL_INT_EXPONENT_VALUE = -999999999;
+	// NOTE: Based on BigDecimal restrictions on pow(int) argument. 
+	private static int MAX_INT_EXPONENT_VALUE =  999999999;
 	//
 	private BigDecimal value;
 	private MathContext mathContext;
@@ -240,8 +239,12 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 	
 	@Override
 	public BigIntegerNumber pow(int exponent) {
+		if (exponent < 0) {
+			// We are simulating a big integer, not a big decimal
+			throw new ArithmeticException("Negative exponent");
+		}
 		BigIntegerNumber result;
-		if (exponent > POS_MAX_SMALL_INT_EXPONENT_VALUE || exponent < NEG_MAX_SMALL_INT_EXPONENT_VALUE) {
+		if (exponent > MAX_INT_EXPONENT_VALUE) {
 			result = powLargeIntExponent(exponent);
 		}
 		else {
@@ -252,29 +255,24 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 	}
 	
 	// Is a value outside the range BigDecimal.pow allows, so we have break it apart as follows:
-	// (b^(m*e.signum))^(|e / m|) * b^(e % m)
+	// (b^m)^(e / m) * b^(e % m)
 	// NOTE:
 	// m = Max positive exponent value allowed. 
-	// e = Exponent
+	// e = Exponent (is positive)
 	// b = Base (i.e. this)
 	private BigIntegerNumber powLargeIntExponent(int exponent) {
-		int exponentQuotient  = exponent / POS_MAX_SMALL_INT_EXPONENT_VALUE;
-		int exponentRemainder = exponent % POS_MAX_SMALL_INT_EXPONENT_VALUE;
-		// b^(m*e.signum)
-		BigDecimal quotientBase;
-		if (signum() > 0) {
-			quotientBase = value.pow(POS_MAX_SMALL_INT_EXPONENT_VALUE, mathContext);
-		}
-		else {
-			quotientBase = value.pow(NEG_MAX_SMALL_INT_EXPONENT_VALUE, mathContext);
-		}		
-		// (b^(m*e.signum))^(|e mod m|)
+		int exponentQuotient  = exponent / MAX_INT_EXPONENT_VALUE;
+		int exponentRemainder = exponent % MAX_INT_EXPONENT_VALUE;
+		// b^m
+		BigDecimal quotientBase = value.pow(MAX_INT_EXPONENT_VALUE, mathContext);
+				
+		// (b^m)^(e / m)
 		BigDecimal commonFactorsPow = quotientBase.pow(Math.abs(exponentQuotient), mathContext);
 		
 		// b^(e % m)
 		BigDecimal basePowExpRemainder = value.pow(exponentRemainder, mathContext);
 		
-		// (b^(m*e.signum))^(|e / m|) * b^(e % m)
+		// (b^m)^(e / m) * b^(e % m)
 		BigDecimal pow = commonFactorsPow.multiply(basePowExpRemainder, mathContext);
 		
 		BigIntegerNumber result = new BigIntegerNumberApproximate(pow, mathContext);				

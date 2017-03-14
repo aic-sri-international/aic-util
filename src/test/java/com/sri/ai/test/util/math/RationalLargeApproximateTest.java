@@ -5,7 +5,6 @@ import java.math.RoundingMode;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.sri.ai.util.AICUtilConfiguration;
@@ -44,18 +43,16 @@ public class RationalLargeApproximateTest {
 		pow = new Rational(3).pow(new Rational(Integer.MAX_VALUE));
 		Assert.assertEquals("14.01511460528495155992833521026788E+1024610091", toString(pow));
 		pow = new Rational(3).pow(new Rational(4000000000L));
-		Assert.assertEquals("756.2227687355548530201943986629278E+1908485016", toString(pow));
+		Assert.assertEquals("756.2227687355548530201943986629280E+1908485016", toString(pow));
 	}
 	
-// TODO - fix pow(new Rational(-4000000000L))
-	@Ignore
 	@Test
 	public void testPowLargeNegativeRationalIntegerExponent() {	
 		Rational pow; 
 		pow = new Rational(3).pow(new Rational(-Integer.MAX_VALUE));
 		Assert.assertEquals("1/14.01511460528495155992833521026788E+1024610091", toString(pow));
 		pow = new Rational(3).pow(new Rational(-4000000000L));
-		Assert.assertEquals("1/756.2227687355548530201943986629278E+1908485016", toString(pow));
+		Assert.assertEquals("1/756.2227687355548530201943986629280E+1908485016", toString(pow));
 	}
 	
 	@Test
