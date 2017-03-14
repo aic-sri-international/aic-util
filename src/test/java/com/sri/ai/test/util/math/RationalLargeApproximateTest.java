@@ -39,20 +39,35 @@ public class RationalLargeApproximateTest {
 	}
 	
 	@Test
-	public void testPowLargeRationalIntegerExponent() {	
+	public void testPowLargePositiveRationalIntegerExponent() {	
 		Rational pow; 
 		pow = new Rational(3).pow(new Rational(Integer.MAX_VALUE));
-		Assert.assertEquals("14.01511460528495155992833521026788E+1024610091", pow.getNumerator().toString());
+		Assert.assertEquals("14.01511460528495155992833521026788E+1024610091", toString(pow));
 		pow = new Rational(3).pow(new Rational(4000000000L));
-		Assert.assertEquals("756.2227687355548530201943986629279E+1908485016", pow.getNumerator().toString());
+		Assert.assertEquals("756.2227687355548530201943986629278E+1908485016", toString(pow));
 	}
 	
-// TODO	
-	@Ignore("TODO - currently fails due to inner limitation on int exponent size by big decimal (need to refactor).")
+// TODO - fix pow(new Rational(-4000000000L))
+	@Ignore
 	@Test
-	public void testPowLargeIntExponent() {	
+	public void testPowLargeNegativeRationalIntegerExponent() {	
+		Rational pow; 
+		pow = new Rational(3).pow(new Rational(-Integer.MAX_VALUE));
+		Assert.assertEquals("1/14.01511460528495155992833521026788E+1024610091", toString(pow));
+		pow = new Rational(3).pow(new Rational(-4000000000L));
+		Assert.assertEquals("1/756.2227687355548530201943986629278E+1908485016", toString(pow));
+	}
+	
+	@Test
+	public void testPowLargePositiveIntExponent() {	
 		Rational pow = new Rational(3).pow(Integer.MAX_VALUE);
-		Assert.assertEquals("14.01511460528495155992833521026788E+1024610091", pow.getNumerator().toString());
+		Assert.assertEquals("14.01511460528495155992833521026788E+1024610091", toString(pow));
+	}
+	
+	@Test
+	public void testPowLargeNegativeIntExponent() {
+		Rational pow = new Rational(3).pow(-Integer.MAX_VALUE);
+		Assert.assertEquals("1/14.01511460528495155992833521026788E+1024610091", toString(pow));
 	}
 	
 	@Test
@@ -81,7 +96,13 @@ public class RationalLargeApproximateTest {
 	}
 	
 	private String toString(Rational rational) {
-		String result = rational.toStringExponent(PRECISION);
+		String result;		
+		if (rational.isInteger()) {
+			result = rational.getNumerator().toString();
+		}
+		else {
+			result = rational.getNumerator().toString()+"/"+rational.getDenominator().toString();
+		}
 		return result;
 	}
 }

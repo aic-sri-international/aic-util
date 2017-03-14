@@ -325,11 +325,14 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	
 	//
 	// log() related constants
-	private static BigIntegerNumber BIGINT_EXPONENT_POS_MAX_VALUE;
-	private static BigIntegerNumber BIGINT_EXPONENT_NEG_MAX_VALUE;
+	private static int POS_MAX_SMALL_INT_EXPONENT_VALUE =  Integer.MAX_VALUE;
+	private static int NEG_MAX_SMALL_INT_EXPONENT_VALUE = -Integer.MIN_VALUE;
+	//
+	private static BigIntegerNumber BIGINT_POS_MAX_SMALL_INT_EXPONENT_VALUE;
+	private static BigIntegerNumber BIGINT_NEG_MAX_SMALL_INT_EXPONENT_VALUE;
 	//		
-	private static Rational RATIONAL_EXPONENT_POS_MAX_VALUE;
-	private static Rational RATIONAL_EXPONENT_NEG_MAX_VALUE;
+	private static Rational RATIONAL_POS_MAX_SMALL_INT_EXPONENT_VALUE;
+	private static Rational RATIONAL_NEG_MAX_SMALL_INT_EXPONENT_VALUE;
 	private static Rational RATIONAL_LOG_DOUBLE_MAX_VALUE;
 	private static Rational RATIONAL_DOUBLE_MAX_VALUE;
 	//
@@ -1476,6 +1479,44 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	 */
 	// [Name: see classes Math, BigInteger.]
 	public Rational pow(int exponent) {
+		Rational result;
+		if (exponent > POS_MAX_SMALL_INT_EXPONENT_VALUE || exponent < NEG_MAX_SMALL_INT_EXPONENT_VALUE) {
+			result = powLargeIntegerExponent(BigIntegerNumberFactory.valueOf(exponent));
+		}
+		else {
+			result = powSmallIntExponent(exponent);
+		}
+		return result;
+	}
+	
+	public Rational pow(Rational exponent) {
+		Rational result;
+		if (exponent.isInteger()) {
+			result = pow(exponent.bigIntegerValue());			
+		}
+		else {
+			// Fractional Case (i.e. nth root)			
+			result = powFractionalExponent(exponent);
+		}
+		
+		return result;
+	}
+	
+	public Rational pow(BigIntegerNumber exponent) {
+		Rational result;
+		if (isMagnitudeWithinSmallIntExponent(exponent)) {
+			// Supported by pow(int)
+			result = powSmallIntExponent(exponent.intValueExact());
+		}
+		else  {
+			// Magnitude exponent > Integer.MAX_VALUE
+			result = powLargeIntegerExponent(exponent);
+		}
+		
+		return result;
+	}
+	
+	private Rational powSmallIntExponent(int exponent) {
 		final boolean zero = isZero();
 
 		if (zero) {
@@ -1526,35 +1567,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 				(negate ? numerator : denominator), isGCDComputationRequired);
 	}
 	
-	public Rational pow(Rational exponent) {
-		Rational result;
-		if (exponent.isInteger()) {
-			result = pow(exponent.bigIntegerValue());			
-		}
-		else {
-			// Fractional Case (i.e. nth root)			
-			result = powFractionalExponent(exponent);
-		}
-		
-		return result;
-	}
-	
-	public Rational pow(BigIntegerNumber exponent) {
-		Rational result;
-		if (isMagnitudeWithinLangInteger(exponent)) {
-			// Supported by pow(int)
-			result = pow(exponent.intValueExact());
-		}
-		else  {
-			// Magnitude exponent > Integer.MAX_VALUE
-			result = powLargeIntegerExponent(exponent);
-		}
-		
-		return result;
-	}
-	
 	// NOTE:
-	// m = Integer.MAX_VALUE 
+	// m = Max positive exponent value allowed. 
 	// e = Exponent
 	// b = Base (i.e. this)
 	// if | e | > m :
@@ -1562,14 +1576,14 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 	//
 	// NOTE: this logic will take an extremely long time to execute if running in exact mode (intended for approximate use only).
 	private Rational powLargeIntegerExponent(BigIntegerNumber exponent) {
-		BigIntegerNumber[] exponentQuotientAndRemainder = exponent.divideAndRemainder(BIGINT_EXPONENT_POS_MAX_VALUE);		
+		BigIntegerNumber[] exponentQuotientAndRemainder = exponent.divideAndRemainder(BIGINT_POS_MAX_SMALL_INT_EXPONENT_VALUE);		
 		// b^(m*e.signum)
 		Rational quotientBase;
 		if (exponent.signum() > 0) {
-			quotientBase = pow(RATIONAL_EXPONENT_POS_MAX_VALUE);
+			quotientBase = pow(RATIONAL_POS_MAX_SMALL_INT_EXPONENT_VALUE);
 		}
 		else {
-			quotientBase = pow(RATIONAL_EXPONENT_NEG_MAX_VALUE);
+			quotientBase = pow(RATIONAL_NEG_MAX_SMALL_INT_EXPONENT_VALUE);
 		}		
 		// (b^(m*e.signum))^(|e mod m|)
 		Rational commonFactorsPow = quotientBase.pow(exponentQuotientAndRemainder[0].abs());
@@ -1606,8 +1620,8 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 		return result;
 	}
 		
-	private static boolean isMagnitudeWithinLangInteger(BigIntegerNumber bigInteger) {
-		boolean result = bigInteger.compareTo(BIGINT_EXPONENT_POS_MAX_VALUE) <= 0 && bigInteger.compareTo(BIGINT_EXPONENT_NEG_MAX_VALUE) >= 0;
+	private static boolean isMagnitudeWithinSmallIntExponent(BigIntegerNumber bigInteger) {
+		boolean result = bigInteger.compareTo(BIGINT_POS_MAX_SMALL_INT_EXPONENT_VALUE) <= 0 && bigInteger.compareTo(BIGINT_NEG_MAX_SMALL_INT_EXPONENT_VALUE) >= 0;
 		return result;
 	}
 	
@@ -2820,13 +2834,13 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
         LOGARITHM_SIXTEEN   = new Rational(4);
         
         // Private log() related constants
-    	BIGINT_EXPONENT_POS_MAX_VALUE = BigIntegerNumberFactory.valueOf(999999999); // NOTE: both based on BigDecimal restrictions on pow(int) argument.
-    	BIGINT_EXPONENT_NEG_MAX_VALUE = BigIntegerNumberFactory.valueOf(-999999999);
+    	BIGINT_POS_MAX_SMALL_INT_EXPONENT_VALUE = BigIntegerNumberFactory.valueOf(POS_MAX_SMALL_INT_EXPONENT_VALUE); 
+    	BIGINT_NEG_MAX_SMALL_INT_EXPONENT_VALUE = BigIntegerNumberFactory.valueOf(NEG_MAX_SMALL_INT_EXPONENT_VALUE);
     	//		
-    	RATIONAL_EXPONENT_POS_MAX_VALUE = new Rational(BIGINT_EXPONENT_POS_MAX_VALUE);
-    	RATIONAL_EXPONENT_NEG_MAX_VALUE = new Rational(BIGINT_EXPONENT_NEG_MAX_VALUE);
-    	RATIONAL_LOG_DOUBLE_MAX_VALUE   = new Rational(""+Math.log(Double.MAX_VALUE));
-    	RATIONAL_DOUBLE_MAX_VALUE       = new Rational(""+Double.MAX_VALUE);
+    	RATIONAL_POS_MAX_SMALL_INT_EXPONENT_VALUE = new Rational(BIGINT_POS_MAX_SMALL_INT_EXPONENT_VALUE);
+    	RATIONAL_NEG_MAX_SMALL_INT_EXPONENT_VALUE = new Rational(BIGINT_NEG_MAX_SMALL_INT_EXPONENT_VALUE);
+    	RATIONAL_LOG_DOUBLE_MAX_VALUE             = new Rational(""+Math.log(Double.MAX_VALUE));
+    	RATIONAL_DOUBLE_MAX_VALUE                 = new Rational(""+Double.MAX_VALUE);
         
         // Public Rationals
 // TODO - need to re-assign when approximate settings change (or handle these special cases separately as this is public)	
