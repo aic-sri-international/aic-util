@@ -57,6 +57,7 @@
 package com.sri.ai.test.util.math;
 
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -89,9 +90,15 @@ public class RationalTest {
 	
 	@Before
 	public void setUp() {
+		// NOTE: this level of precision required to pass the contained tests.
+		int          precision    = MathContext.DECIMAL128.getPrecision()+1;
+		RoundingMode roundingMode = MathContext.DECIMAL128.getRoundingMode();
 		if (approximate) {			
-			// NOTE: this level of precision required to pass the contained tests.
-			Rational.resetApproximationConfiguration(true, MathContext.DECIMAL128.getPrecision()+1, MathContext.DECIMAL128.getRoundingMode());
+			
+			Rational.resetApproximationConfiguration(true, precision, roundingMode);
+		}
+		else {
+			Rational.resetApproximationConfiguration(false, precision, roundingMode);
 		}
 	}
 

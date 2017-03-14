@@ -75,7 +75,7 @@ public class AICUtilConfiguration extends Configuration {
 	public static final Boolean DEFAULT_VALUE_RECORD_CACHE_STATISTICS                                     = Boolean.FALSE;
 	//
 	public static final String  KEY_RAIONAL_APPROXIMATION_ENABLED                                         = "aic.util.rational.approximation.enabled";
-	public static final Boolean DEFAULT_VALUE_RAIONAL_APPROXIMATION_ENABLED                               = Boolean.FALSE;
+	public static final Boolean DEFAULT_VALUE_RAIONAL_APPROXIMATION_ENABLED                               = Boolean.TRUE;
 	// Note: These following two values are not necessarily dependent on rational approximation being enabled as there may be
 	// cases (e.g. log computations) where approximation is required irrespective of wanting to maintain exactness or not.
 	// Note: Intended to work the same as java.math.MathContext.precision, must be positive, 0 is equivalent to unlimited precision.     
