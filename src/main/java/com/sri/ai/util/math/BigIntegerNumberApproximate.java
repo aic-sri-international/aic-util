@@ -181,7 +181,8 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 	
 	@Override
 	public BigIntegerNumber divide(BigIntegerNumber val) {	
-		BigDecimal quotient = value.divide(approx(val), new MathContext(mathContext.getPrecision(), RoundingMode.DOWN));
+		BigDecimal divisor  = approx(val);
+		BigDecimal quotient = value.divide(divisor, new MathContext(mathContext.getPrecision(), RoundingMode.DOWN));
 		if (quotient.scale() > 0) {
 			quotient = quotient.setScale(0, RoundingMode.DOWN);
 		}
@@ -190,13 +191,18 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 	}
 	
 	@Override
-	public BigIntegerNumber[] divideAndRemainder(BigIntegerNumber val) {
-// TODO - fix		
-		BigDecimal[] divideAndRemainder = value.divideAndRemainder(approx(val));
-		
+	public BigIntegerNumber[] divideAndRemainder(BigIntegerNumber val) {	
+		BigDecimal divisor = approx(val);		
+	
+		BigDecimal quotient = value.divide(divisor, new MathContext(mathContext.getPrecision(), RoundingMode.DOWN));
+		if (quotient.scale() > 0) {
+			quotient = quotient.setScale(0, RoundingMode.DOWN);
+		}
+		BigDecimal remainder = value.subtract(quotient.multiply(divisor, mathContext), mathContext);
+
 		BigIntegerNumber[] result = new BigIntegerNumber[] {
-			new BigIntegerNumberApproximate(divideAndRemainder[0], mathContext),
-			new BigIntegerNumberApproximate(divideAndRemainder[1], mathContext)
+			new BigIntegerNumberApproximate(quotient, mathContext),
+			new BigIntegerNumberApproximate(remainder, mathContext)
 		};
 		return result;
 	}
@@ -277,9 +283,7 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 	
 	@Override
 	public BigIntegerNumber remainder(BigIntegerNumber val) {
-// TODO - fix		
-		BigDecimal       remainder = value.remainder(approx(val), mathContext);
-		BigIntegerNumber result    = new BigIntegerNumberApproximate(remainder, mathContext);
+		BigIntegerNumber result = divideAndRemainder(val)[1];
 		return result;
 	}
 	

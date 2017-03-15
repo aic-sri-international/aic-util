@@ -100,8 +100,11 @@ public class BigIntegerNumberApproximateTest {
 		int exhaustiveTill = 1024; // i.e. 2^10
 		for (int precision = 1; precision <= 4; precision++) {
 			MathContext mathContext = new MathContext(precision, RoundingMode.HALF_UP);
-			for (int i = 0; i < exhaustiveTill; i++) {				
-				for (int j = 1; j < exhaustiveTill; j++) {
+			for (int i = -exhaustiveTill; i < exhaustiveTill; i++) {				
+				for (int j = -exhaustiveTill; j < exhaustiveTill; j++) {
+					if (j == 0) {
+						continue;
+					}
 					BigDecimal bdI = new BigDecimal(i, mathContext);
 					BigDecimal bdJ = new BigDecimal(j, mathContext);
 					BigIntegerNumberApproximate baI = new BigIntegerNumberApproximate(i, mathContext);
@@ -115,6 +118,31 @@ public class BigIntegerNumberApproximateTest {
 				}				
 			}
 		}
+	}
+	
+	@Test
+	public void testDivideAndRemainderExhaustive() {
+		int exhaustiveTill = 1024; // i.e. 2^10
+		for (int precision = 1; precision <= 4; precision++) {
+			MathContext mathContext = new MathContext(precision, RoundingMode.HALF_UP);
+			for (int i = -exhaustiveTill; i < exhaustiveTill; i++) {				
+				for (int j = -exhaustiveTill; j < exhaustiveTill; j++) {
+					if (j == 0) {
+						continue;
+					}
+					BigIntegerNumberApproximate baI = new BigIntegerNumberApproximate(i, mathContext);
+					BigIntegerNumberApproximate baJ = new BigIntegerNumberApproximate(j, mathContext);
+					
+					BigIntegerNumber[] baQR = baI.divideAndRemainder(baJ);
+					Assert.assertEquals(i+" div/rem "+j+", precision = "+precision,
+							baI, baQR[0].multiply(baJ).add(baQR[1]));
+					// Check remainder method here as well
+					BigIntegerNumber remainder = baI.remainder(baJ);
+					Assert.assertEquals(i+" rem "+j+", precision = "+precision,
+							baQR[1], remainder);
+				}				
+			}
+		}	
 	}
 	
 	@Test
