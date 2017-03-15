@@ -96,6 +96,28 @@ public class BigIntegerNumberApproximateTest {
 	} 
 	
 	@Test
+	public void testDivideExhaustive() {
+		int exhaustiveTill = 1024; // i.e. 2^10
+		for (int precision = 1; precision <= 4; precision++) {
+			MathContext mathContext = new MathContext(precision, RoundingMode.HALF_UP);
+			for (int i = 0; i < exhaustiveTill; i++) {				
+				for (int j = 1; j < exhaustiveTill; j++) {
+					BigDecimal bdI = new BigDecimal(i, mathContext);
+					BigDecimal bdJ = new BigDecimal(j, mathContext);
+					BigIntegerNumberApproximate baI = new BigIntegerNumberApproximate(i, mathContext);
+					BigIntegerNumberApproximate baJ = new BigIntegerNumberApproximate(j, mathContext);
+					
+					BigDecimal bdQ       = new BigDecimal(bdI.divideToIntegralValue(bdJ).toBigInteger(), new MathContext(precision, RoundingMode.DOWN));
+					BigIntegerNumber baQ = baI.divide(baJ);
+					//System.out.println(i+"/"+j+", precision ="+precision);
+					Assert.assertEquals(i+"/"+j+", precision = "+precision, 
+							bdQ.intValueExact(), baQ.intValueExact());
+				}				
+			}
+		}
+	}
+	
+	@Test
 	public void testBitLengthLargePrecision() {
 		// i.e. > The # digits representable by Double.MAX_VALUE is 1.7976931348623157e+308
 		for (int precision = 300; precision <= 400; precision++) {

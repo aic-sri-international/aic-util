@@ -40,6 +40,7 @@ package com.sri.ai.util.math;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
+import java.math.RoundingMode;
 
 /**
  * An implementation of BigIntegerNumber with approximate semantics.
@@ -62,13 +63,6 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 	//
 	private BigDecimal value;
 	private MathContext mathContext;
-	
-	public static void main(String[] args) {
-		// experiemnts
-		BigDecimal a = new BigDecimal(2.891790293717215E+222);
-		BigDecimal b = new BigDecimal(2);
-		a.divide(b, MathContext.DECIMAL64);
-	}
 	
 	public BigIntegerNumberApproximate(BigDecimal value, MathContext mathContext) {
 		this.value = value;
@@ -155,7 +149,7 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 	
 	@Override
 	public BigIntegerNumber add(BigIntegerNumber val) {
-		BigDecimal       sum    = value.add(approx(val));
+		BigDecimal       sum    = value.add(approx(val), mathContext);
 		BigIntegerNumber result = new BigIntegerNumberApproximate(sum, mathContext);
 		return result;
 	}
@@ -175,7 +169,7 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 			// avoids the 'this+1'.		
 			double log2_value = log2BigDecimal(approxUnscaledDoubleValue(value), value);				
 			
-			result = (int) Math.floor(log2_value) + 1;
+			result = Math.addExact((int) Math.floor(log2_value), 1);
 		}
 		else { // Negative case conforms to BigInteger.bitLength() computation method.			
 			double log2_value = log2BigDecimal(approxUnscaledDoubleValue(value)*-1, value);			
@@ -187,16 +181,17 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 	
 	@Override
 	public BigIntegerNumber divide(BigIntegerNumber val) {	
-		BigDecimal       quotient = value.divideToIntegralValue(approx(val));
-		if (quotient.precision() > mathContext.getPrecision()) {
-			quotient = new BigDecimal(quotient.unscaledValue(), quotient.scale(), mathContext);
+		BigDecimal quotient = value.divide(approx(val), new MathContext(mathContext.getPrecision(), RoundingMode.DOWN));
+		if (quotient.scale() > 0) {
+			quotient = quotient.setScale(0, RoundingMode.DOWN);
 		}
-		BigIntegerNumber result   = new BigIntegerNumberApproximate(quotient, mathContext);
+		BigIntegerNumber result = new BigIntegerNumberApproximate(quotient, mathContext);
 		return result;
 	}
 	
 	@Override
 	public BigIntegerNumber[] divideAndRemainder(BigIntegerNumber val) {
+// TODO - fix		
 		BigDecimal[] divideAndRemainder = value.divideAndRemainder(approx(val));
 		
 		BigIntegerNumber[] result = new BigIntegerNumber[] {
@@ -282,6 +277,7 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 	
 	@Override
 	public BigIntegerNumber remainder(BigIntegerNumber val) {
+// TODO - fix		
 		BigDecimal       remainder = value.remainder(approx(val), mathContext);
 		BigIntegerNumber result    = new BigIntegerNumberApproximate(remainder, mathContext);
 		return result;
