@@ -27,6 +27,13 @@ public class RationalLargeApproximateTest {
 		Rational.resetApproximationConfigurationFromAICUtilConfiguration();
 	}
 	
+	//@Test
+	public void testBitLengthDependencies() {
+		Rational r = new Rational(2).pow(Integer.MAX_VALUE).multiply(2);
+		System.out.println(r.getNumerator().toString());
+		System.out.println("doubleValue="+r.doubleValue());
+	}
+	
 	@Test(expected=ArithmeticException.class)
 	public void testPowOverflow() {
 		// Results that would end up with a scaling component > Integer.MAX_VALUE (2147483647)
@@ -41,30 +48,30 @@ public class RationalLargeApproximateTest {
 	public void testPowLargePositiveRationalIntegerExponent() {	
 		Rational pow; 
 		pow = new Rational(3).pow(new Rational(Integer.MAX_VALUE));
-		Assert.assertEquals("14.01511460528495155992833521026788E+1024610091", toString(pow));
+		Assert.assertEquals("1.401511460528495155992833521026788E+1024610092", toString(pow));
 		pow = new Rational(3).pow(new Rational(4000000000L));
-		Assert.assertEquals("756.2227687355548530201943986629280E+1908485016", toString(pow));
+		Assert.assertEquals("7.562227687355548530201943986629280E+1908485018", toString(pow));
 	}
 	
 	@Test
 	public void testPowLargeNegativeRationalIntegerExponent() {	
 		Rational pow; 
 		pow = new Rational(3).pow(new Rational(-Integer.MAX_VALUE));
-		Assert.assertEquals("1/14.01511460528495155992833521026788E+1024610091", toString(pow));
+		Assert.assertEquals("1/1.401511460528495155992833521026788E+1024610092", toString(pow));
 		pow = new Rational(3).pow(new Rational(-4000000000L));
-		Assert.assertEquals("1/756.2227687355548530201943986629280E+1908485016", toString(pow));
+		Assert.assertEquals("1/7.562227687355548530201943986629280E+1908485018", toString(pow));
 	}
 	
 	@Test
 	public void testPowLargePositiveIntExponent() {	
 		Rational pow = new Rational(3).pow(Integer.MAX_VALUE);
-		Assert.assertEquals("14.01511460528495155992833521026788E+1024610091", toString(pow));
+		Assert.assertEquals("1.401511460528495155992833521026788E+1024610092", toString(pow));
 	}
 	
 	@Test
 	public void testPowLargeNegativeIntExponent() {
 		Rational pow = new Rational(3).pow(-Integer.MAX_VALUE);
-		Assert.assertEquals("1/14.01511460528495155992833521026788E+1024610091", toString(pow));
+		Assert.assertEquals("1/1.401511460528495155992833521026788E+1024610092", toString(pow));
 	}
 	
 	@Test

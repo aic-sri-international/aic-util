@@ -104,7 +104,7 @@ public class BigIntegerNumberApproximate extends BigIntegerNumber {
 	
 	@Override
 	public String toString() {
-		String result = value.toEngineeringString();
+		String result = value.toString();
 		return result;
 	}
 	
