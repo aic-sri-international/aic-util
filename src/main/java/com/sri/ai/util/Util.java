@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, SRI International
+* Copyright (c) 2013, SRI International
  * All rights reserved.
  * Licensed under the The BSD 3-Clause License;
  * you may not use this file except in compliance with the License.
@@ -4832,5 +4832,10 @@ public class Util {
 		else {
 			return null;
 		}
+	}
+	
+	/** Shorthand for <code>System.out.println</code>. */
+	public static <T> void println(T object) {
+		System.out.println(object);
 	}
 }
