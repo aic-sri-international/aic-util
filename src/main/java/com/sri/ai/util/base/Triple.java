@@ -60,6 +60,10 @@ public class Triple<T1, T2, T3> {
 		return new Triple<T1, T2, T3>(first, second, third);
 	}
 
+	public static <T1, T2, T3> Triple<T1, T2, T3> triple(T1 first, T2 second, T3 third) {
+		return new Triple<T1, T2, T3>(first, second, third);
+	}
+
 	@Override
 	public int hashCode() {
 		// Subtract different primes to ensure re-orderings do not generate the same hash codes.
