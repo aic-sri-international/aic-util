@@ -93,16 +93,6 @@ public class CartesianProductIterator<E> extends EZIterator<ArrayList<E>> {
 		onNext = true;
 	}
 	
-	/**
-	 * A cartesian product for the collections in a collection.
-	 * @param collectionOfCollection
-	 */
-	public 
-	<CollectionType extends Collection<E>, CollectionOfCollectionType extends Collection<CollectionType>>
-	CartesianProductIterator(CollectionOfCollectionType collectionOfCollection) {
-		this(mapIntoList(collectionOfCollection, c -> () -> c.iterator()));
-	}
-	
 	@Override
 	protected ArrayList<E> calculateNext() {
 		boolean iterated = false;
