@@ -37,8 +37,11 @@
  */
 package com.sri.ai.util.collect;
 
+import static com.sri.ai.util.Util.mapIntoList;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -88,6 +91,16 @@ public class CartesianProductIterator<E> extends EZIterator<ArrayList<E>> {
 			}
 		}
 		onNext = true;
+	}
+	
+	/**
+	 * A cartesian product for the collections in a collection.
+	 * @param collectionOfCollection
+	 */
+	public 
+	<CollectionType extends Collection<E>, CollectionOfCollectionType extends Collection<CollectionType>>
+	CartesianProductIterator(CollectionOfCollectionType collectionOfCollection) {
+		this(mapIntoList(collectionOfCollection, c -> () -> c.iterator()));
 	}
 	
 	@Override
