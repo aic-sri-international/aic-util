@@ -37,11 +37,8 @@
  */
 package com.sri.ai.util.collect;
 
-import static com.sri.ai.util.Util.mapIntoList;
-
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
