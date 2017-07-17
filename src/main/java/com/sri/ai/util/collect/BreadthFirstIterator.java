@@ -79,7 +79,7 @@ public class BreadthFirstIterator<T> extends EZIteratorWithNull<T> {
 
 			// if there was no sub-iterator with next element in this round,
 			// check if round yielded anything, or if whole iterator is over
-			if (subIteratorWhichHasNext != null){
+			if (subIteratorWhichHasNext != null) {
 				// found iterator with next element, return next element
 				return subIteratorWhichHasNext.next();
 			}

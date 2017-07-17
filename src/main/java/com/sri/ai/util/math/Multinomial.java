@@ -58,7 +58,7 @@ import com.google.common.primitives.Ints;
  *
  * <pre>
  * Multinomial m = new Multinomial(10,2);
- * while(m.hasNext()) {
+ * while (m.hasNext()) {
  *     m.next();
  *     int class1Size = m.getClassSize(1);
  *     (...)

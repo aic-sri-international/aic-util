@@ -112,7 +112,7 @@ public class BigIntegerNumberApproximateTest {
 					
 					BigDecimal bdQ       = new BigDecimal(bdI.divideToIntegralValue(bdJ).toBigInteger(), new MathContext(precision, RoundingMode.DOWN));
 					BigIntegerNumber baQ = baI.divide(baJ);
-					//System.out.println(i+"/"+j+", precision ="+precision);
+					// System.out.println(i+"/"+j+", precision ="+precision);
 					Assert.assertEquals(i+"/"+j+", precision = "+precision, 
 							bdQ.intValueExact(), baQ.intValueExact());
 				}				

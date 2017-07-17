@@ -307,12 +307,12 @@ public class BranchAndMerge {
 		}
 
 		if (executeConcurrent) {
-//System.out.println("BranchAndMerge Concurrent "+_sharedExecutorActiveWorkerThreads+" of "+_sharedExecutorNumberWorkerThreads + " for " + tasks.size() + " tasks at " + System.currentTimeMillis());
+// System.out.println("BranchAndMerge Concurrent "+_sharedExecutorActiveWorkerThreads+" of "+_sharedExecutorNumberWorkerThreads + " for " + tasks.size() + " tasks at " + System.currentTimeMillis());
 			result = executeConcurrent(tasks, cancelOutstandingOnSuccess,
 					cancelOutstandingOnFailure, transformResults);
 		} 
 		else {
-//System.out.println("BranchAndMerge Sequential "+_sharedExecutorActiveWorkerThreads+" of "+_sharedExecutorNumberWorkerThreads + " for " + tasks.size() + " tasks at " + System.currentTimeMillis());
+// System.out.println("BranchAndMerge Sequential "+_sharedExecutorActiveWorkerThreads+" of "+_sharedExecutorNumberWorkerThreads + " for " + tasks.size() + " tasks at " + System.currentTimeMillis());
 			result = executeSequential(tasks, cancelOutstandingOnSuccess,
 					cancelOutstandingOnFailure, transformResults);
 		}

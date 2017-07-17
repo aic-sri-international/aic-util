@@ -122,7 +122,7 @@ public class CopyOnWriteCollection<E, B extends Collection<E>> implements Collec
 	}
 
 	@Override
-	public Object[] toArray() { //no need to copy since Collection.toArray returns a freshly instantiated array.
+	public Object[] toArray() { // no need to copy since Collection.toArray returns a freshly instantiated array.
 		return baseCollection.toArray();
 	}
 

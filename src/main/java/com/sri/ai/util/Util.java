@@ -1321,7 +1321,7 @@ public class Util {
 		@SuppressWarnings("unchecked")
 		T[] result = (T[]) Array.newInstance(clazz, collection.size());
 		int i = 0;
-		for(F element : collection) {
+		for (F element : collection) {
 			result[i++] = function.apply(element);
 		}
 
@@ -1349,7 +1349,7 @@ public class Util {
 		@SuppressWarnings("unchecked")
 		T[] result = (T[]) new Object[collection.size()];
 		int i = 0;
-		for(F element : collection) {
+		for (F element : collection) {
 			result[i++] = function.apply(element);
 		}
 

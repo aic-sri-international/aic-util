@@ -62,7 +62,7 @@ public class HashMapTreeTest {
 		RandomAccessTree.GetResult result;
 		
 		i = new StringIterator("abobora");
-		//System.out.println(Util.join("", i));
+		// System.out.println(Util.join("", i));
 
 		i = new StringIterator("");
 		result = tree.get(i);
@@ -71,7 +71,7 @@ public class HashMapTreeTest {
 
 		i = new StringIterator("abobora");
 		newNodes = tree.put(i);
-		//System.out.println(tree);
+		// System.out.println(tree);
 		assertEquals(true, newNodes);
 
 		i = new StringIterator("abobora");
@@ -88,7 +88,7 @@ public class HashMapTreeTest {
 
 		i = new StringIterator("abacate");
 		newNodes = tree.put(i);
-		//System.out.println(tree);
+		// System.out.println(tree);
 		assertEquals(false, newNodes);
 
 		i = new StringIterator("abobo");

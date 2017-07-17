@@ -147,7 +147,7 @@ public class GUIConsoleIterator extends Application implements ConsoleIterator {
 				Thread.currentThread().wait(10);
 			}
 			catch (Throwable t) {
-				//t.printStackTrace();
+				// t.printStackTrace();
 			}
 		}
 	}

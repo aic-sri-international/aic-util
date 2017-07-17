@@ -283,7 +283,7 @@ public class Experiment {
 			Iterator rangeIterator = dataSeriesDimension.getRange().apply();
 			Iterator<List<String>> directiveIterator = dataSeriesSpec.directivesList.iterator();
 			int sliceIndex = 0;
-			while(rangeIterator.hasNext()) {
+			while (rangeIterator.hasNext()) {
 				rangeIterator.next();
 				if ( ! directiveIterator.hasNext()) {
 					throw new Error("DataSeriesSpec on '" + dataSeriesSpec.getName() + "' does not have enough directives (it needs one per value of '" + dataSeriesSpec.getName() + "')");
