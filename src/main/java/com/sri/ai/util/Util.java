@@ -533,11 +533,11 @@ public class Util {
 		return result;
 	}
 
+	@SafeVarargs
 	public static <T> LinkedHashSet<T> set(T... elements) {
 		return new LinkedHashSet<T>(Arrays.asList(elements));
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <T> List<T> singletonListIfNotNullOrEmptyListIfNull(T element) {
 		if (element == null) {
 			return new LinkedList<T>();
@@ -617,6 +617,8 @@ public class Util {
 	 *            the type of the Map's key.
 	 * @param <V>
 	 *            the type of the Map's value.
+	 * @param <C>
+	 *            the type of the Collection.
 	 */
 	@SuppressWarnings("unchecked")
 	public static <K, V, C extends Collection<V>> void addToCollectionValuePossiblyCreatingIt(
@@ -892,9 +894,31 @@ public class Util {
 		return result;
 	}
 
+	/**
+	 * Gets value mapped to key in given map or a default value if absent.
+	 * @param map the map
+	 * @param key the key
+	 * @param defaultValue the default value
+	 * @param <K> the type of the Map's key.
+	 * @param <V> the type of the Map's value.
+	 * @return the value associated with the key or, if absent, the default value.
+	 */
+	public static <K, V> V getValueOrDefault(Map<K, V> map, K key, V defaultValue) {
+		V result = map.containsKey(key)? map.get(key) : defaultValue;
+		return result;
+	}
+
+	/**
+	 * Gets a value or creates one if non-existent.
+	 * @param map the map
+	 * @param key the key
+	 * @param newValueClass the class of new values (default constructor is used)
+	 * @param <K> the type of the Map's key.
+	 * @param <V> the type of the Map's value.
+	 * @return the existing or created value.
+	 */
 	@SuppressWarnings("unchecked")
-	public static <K, V> V getValuePossiblyCreatingIt(Map<K, V> map, K key,
-			Class<?> newValueClass) {
+	public static <K, V> V getValuePossiblyCreatingIt(Map<K, V> map, K key, Class<?> newValueClass) {
 		V value = map.get(key);
 		if (value == null) {
 			try {
@@ -911,8 +935,16 @@ public class Util {
 		return value;
 	}
 
-	public static <K, V> V getValuePossiblyCreatingIt(Map<K, V> map, K key,
-			Function<K, V> makerFromKey) {
+	/**
+	 * Gets the value of a key or makes a new one with given function on key.
+	 * @param map the map
+	 * @param key the key
+	 * @param makerFromKey the function making a new value from key
+	 * @param <K> the type of the Map's key.
+	 * @param <V> the type of the Map's value.
+	 * @return the existing or new value.
+	 */
+	public static <K, V> V getValuePossiblyCreatingIt(Map<K, V> map, K key, Function<K, V> makerFromKey) {
 		V value = map.get(key);
 		if (value == null) {
 			value = makerFromKey.apply(key);
@@ -1456,7 +1488,7 @@ public class Util {
 	 *            the type of the values in the output map.
 	 */
 	public static <K, V1, V2> LinkedHashMap<K, V2>
-	applyFunctionToValuesOf(
+	applyFunctionToValuesOfMap(
 			Map<? extends K, ? extends V1> map,
 			Function<V1, V2> function) {
 
@@ -1855,7 +1887,7 @@ public class Util {
 		return new Double(number);
 	}
 
-	public static Number sum(Iterator<Number> numbersIt) {
+	public static <T extends Number> Number sum(Iterator<T> numbersIt) {
 		double sum = 0;
 		while (numbersIt.hasNext()) {
 			sum += numbersIt.next().doubleValue();
@@ -1863,7 +1895,7 @@ public class Util {
 		return numberInJustNeededType(sum);
 	}
 
-	public static Number sum(Collection<Number> numbers) {
+	public static <T extends Number> Number sum(Collection<T> numbers) {
 		return sum(numbers.iterator());
 	}
 
@@ -1896,8 +1928,8 @@ public class Util {
 	/**
 	 * Computer the maximum in the range of a {@link Rational} iterator,
 	 * throwing an error if the range is empty.
-	 * @param numbersIt
-	 * @return
+	 * @param numbersIt iterator over numbers
+	 * @return the max value
 	 */
 	public static Rational maxArbitraryPrecision(Iterator<Rational> numbersIt) {
 		if (numbersIt.hasNext()) {
@@ -2402,7 +2434,14 @@ public class Util {
 	 *            the type of the collections elements.
 	 */
 	public static <E> boolean thereExists(Collection<E> collection, Predicate<E> predicate) {
-		boolean result = collection.stream().anyMatch(predicate::apply);
+		boolean result = false;
+		for (E element : collection) {
+			boolean elementResult = predicate.apply(element);
+			if (elementResult) {
+				result = true;
+				break;
+			}
+		}
 		return result;
 	}
 
@@ -4706,6 +4745,98 @@ public class Util {
 	}
 	
 	/**
+	 * Accumulates the values for each key using an accumulator function,
+	 * returning an empty map if no maps are provided, the first map (the instance itself)
+	 * if it is equal to the result, or a new map with the accumulated values otherwise.
+	 * @param maps the maps iterator
+	 * @param accumulate the accumulating function
+	 * @param <K> the type of the Map's key.
+	 * @param <V> the type of the Map's value.
+	 * @return the map with accumulated values
+	 */
+	public static <K,V> Map<K,V> accumulateMapValues(Iterable<Map<K,V>> maps, BinaryFunction<V, V, V> accumulate) {
+		return accumulateMapValues(maps.iterator(), accumulate);
+	}
+	
+	/**
+	 * Accumulates the values for each key using an accumulator function,
+	 * returning an empty map if no maps are provided, the first map (the instance itself)
+	 * if it is equal to the result, or a new map with the accumulated values otherwise.
+	 * @param mapsIterator the maps iterator
+	 * @param accumulate the accumulating function
+	 * @param <K> the type of the Map's key.
+	 * @param <V> the type of the Map's value.
+	 * @return the map with accumulated values
+	 */
+	public static <K,V> Map<K,V> accumulateMapValues(Iterator<Map<K,V>> mapsIterator, BinaryFunction<V, V, V> accumulate) {
+		Map<K,V> accumulator;
+		if (mapsIterator.hasNext()) {
+			Map<K, V> firstMap = mapsIterator.next();
+			accumulator = firstMap;
+			boolean accumulatorIsFirstMap = true;
+			Pair<Map<K,V>,Boolean> accumulatorAndAccumulatorIsFirstMap =
+					accumulateAllRemainingMaps(accumulator, accumulatorIsFirstMap, mapsIterator, accumulate);
+			accumulator = accumulatorAndAccumulatorIsFirstMap.first;
+			accumulatorIsFirstMap = accumulatorAndAccumulatorIsFirstMap.second;
+		}		
+		else {
+			accumulator = new LinkedHashMap<>();
+		}
+		return accumulator;
+	}
+
+	private static 
+	<K,V> 
+	Pair<Map<K,V>, Boolean> 
+	accumulateAllRemainingMaps(
+			Map<K,V> accumulator,
+			boolean accumulatorIsFirstMap, 
+			Iterator<Map<K,V>> mapsIterator, 
+			BinaryFunction<V,V,V> accumulate) {
+
+		while (mapsIterator.hasNext()) {
+			Map<K,V> nextMap = mapsIterator.next();
+			Pair<Map<K,V>,Boolean> accumulatorAndAccumulatorIsFirstMap =
+					accumulateAllEntries(accumulator, accumulatorIsFirstMap, nextMap, accumulate);
+			accumulator = accumulatorAndAccumulatorIsFirstMap.first;
+			accumulatorIsFirstMap = accumulatorAndAccumulatorIsFirstMap.second;
+		}
+		return Pair.pair(accumulator, accumulatorIsFirstMap);
+	}
+	
+	private static 
+	<K,V> 
+	Pair<Map<K,V>, Boolean> 
+	accumulateAllEntries(
+			Map<K,V> accumulator,
+			boolean accumulatorIsFirstMap, 
+			Map<K,V> nextMap, 
+			BinaryFunction<V,V,V> accumulate) {
+		
+		for (Map.Entry<K,V> entry : nextMap.entrySet()) {
+			K key   = entry.getKey();
+			V value = entry.getValue();
+			V accumulatedValue;
+			if (accumulator.containsKey(key)) {
+				V previousAccumulatedValue = accumulator.get(key);
+				accumulatedValue = accumulate.apply(value, previousAccumulatedValue);
+			}
+			else {
+				accumulatedValue = value;
+			}
+			if (accumulatorIsFirstMap) {
+				// We need to modify the accumulator but we cannot modify original maps,
+				// so make a copy
+				accumulator = new LinkedHashMap<K,V>(accumulator);
+				accumulatorIsFirstMap = false;
+			}
+			accumulator.put(key, accumulatedValue);
+		}
+		
+		return Pair.pair(accumulator, accumulatorIsFirstMap);
+	}
+	
+	/**
 	 * Returns a map mapping keys to lists containing all the values to which those
 	 * keys map in all maps given as arguments.
 	 * @param maps the iterator over maps whose values we want to union
@@ -4714,7 +4845,7 @@ public class Util {
 	 * @return a a map mapping keys to lists containing all the values to which those
 	 * keys map in all maps given as arguments.
 	 */
-	public static <K,V> Map<K, LinkedList<V>> mapWithValuesEqualToListOfValuesOfTheseMapsUnderSameKey(Iterator<Map<? extends K, ? extends V>> maps) {
+	public static <K,V> Map<K, LinkedList<V>> combineMapsIntoNewMapGroupingValuesUnderTheSameKey(Iterator<Map<? extends K, ? extends V>> maps) {
 		Map<K, LinkedList<V>> result = map();
 		for (Map<? extends K, ? extends V> map : in(maps)) {
 			for (Map.Entry<? extends K, ? extends V> entry : map.entrySet()) {
@@ -4816,7 +4947,8 @@ public class Util {
 	 * returns the first one;
 	 * otherwise, returns null.
 	 * @param elements
-	 * @return
+	 * @param <T> type of elements
+	 * @return the first element if all elements are equal, or null.
 	 */
 	public static <T> T ifAllTheSameOrNull(Iterator<T> elements) {
 		if (elements.hasNext()) {
@@ -4834,7 +4966,10 @@ public class Util {
 		}
 	}
 	
-	/** Shorthand for <code>System.out.println</code>. */
+	/**
+	 * Shorthand for <code>System.out.println</code>.
+	 * @param object the object to be printed.
+	 */
 	public static <T> void println(T object) {
 		System.out.println(object);
 	}
