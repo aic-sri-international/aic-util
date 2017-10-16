@@ -4366,6 +4366,34 @@ public class Util {
 // Commented out because it can have unsuspected performance impact even when testing is turned off.	
 
 	/**
+	 * Requires a test to be true, or throws a {@link IllegalArgumentException} with message provided by nullary function.
+	 * @param test
+	 *        result of the test
+	 * @param message
+	 *        message to display if test failed.
+	 */
+	public static void requires(boolean test, NullaryFunction<String> message) {
+		if ( ! test) {
+			throw new IllegalArgumentException(message.apply());
+		}
+	}
+
+	/**
+	 * Similar to {@link #requires(boolean, NullaryFunction)}, but takes nullary functions
+	 * for the test and the error message.
+	 * 
+	 * @param test
+	 *        result of the test
+	 * @param message
+	 *        message to display if test failed.
+	 */
+	public static void requires(NullaryFunction<Boolean> test, NullaryFunction<String> message) {
+		if (! test.apply()) {
+			throw new IllegalArgumentException(message.apply());
+		}
+	}
+
+	/**
 	 * Returns the entryIndex-th entry in a {@link LinkedHashMap},
 	 * assuming there is such entry (throws an exception otherwise).
 	 * @param map
