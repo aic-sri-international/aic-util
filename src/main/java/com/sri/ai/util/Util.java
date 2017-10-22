@@ -5001,4 +5001,18 @@ public class Util {
 	public static <T> void println(T object) {
 		System.out.println(object);
 	}
+
+	@SuppressWarnings("unchecked")
+	/**
+	 * Get class object for given class name or throws an IllegalArgumentException.
+	 * @param className the class name
+	 * @return
+	 */
+	public static Class<?> getClassOrIllegalArgumentException(String className) {
+		try {
+			return Class.forName(className);
+		} catch (Throwable throwable) {
+			throw new IllegalArgumentException(throwable);
+		}
+	}
 }
