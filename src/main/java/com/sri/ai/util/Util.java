@@ -5002,7 +5002,6 @@ public class Util {
 		System.out.println(object);
 	}
 
-	@SuppressWarnings("unchecked")
 	/**
 	 * Get class object for given class name or throws an IllegalArgumentException.
 	 * @param className the class name
@@ -5014,5 +5013,31 @@ public class Util {
 		} catch (Throwable throwable) {
 			throw new IllegalArgumentException(throwable);
 		}
+	}
+
+	/**
+	 * Computes a 0h0min0.000sec string for a number of milliseconds.
+	 * @param milliseconds the total number of milliseconds.
+	 * @return the string in 0h0min0.000sec format.
+	 */
+	public static String toHoursMinutesAndSecondsString(long milliseconds) {
+		long hours = 0L, minutes = 0L, seconds = 0L, remainingMilliseconds = 0L;
+		long remainingDuration = milliseconds;
+		
+		if (remainingDuration != 0) {
+			hours    = remainingDuration / 3600000;
+			remainingDuration = remainingDuration % 3600000; 
+		}
+		if (remainingDuration != 0) {
+			minutes  = remainingDuration / 60000;
+			remainingDuration = remainingDuration % 60000;
+		}
+		if (remainingDuration != 0) {
+			seconds  = remainingDuration / 1000;
+			remainingDuration = remainingDuration % 1000;
+		}
+		remainingMilliseconds = remainingDuration;
+		
+		return hours + "h" + minutes + "m" + seconds + "." + remainingMilliseconds + "s";
 	}
 }
