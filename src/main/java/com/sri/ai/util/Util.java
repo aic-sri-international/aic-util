@@ -50,6 +50,7 @@ import java.io.PrintStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.lang.reflect.Array;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -2660,6 +2661,18 @@ public class Util {
 		return result;
 	}
 
+	@SafeVarargs
+	public static <T> T getFirstNonNullResultOrNull(NullaryFunction<T>... thunks) {
+		T result = null;
+		for (int i = 0; i != thunks.length; i++) {
+			result = thunks[i].apply();
+			if (result != null) {
+				break;
+			}
+		}
+		return result;
+	}
+
 	public static <E> E findFirst(Collection<? extends E> c, Predicate<E> p) {
 		return getFirstSatisfyingPredicateOrNull(c.iterator(), p);
 	}
@@ -5058,5 +5071,15 @@ public class Util {
 		remainingMilliseconds = remainingDuration;
 		
 		return hours + "h" + minutes + "m" + seconds + "." + remainingMilliseconds + "s";
+	}
+
+	public static String getFileContent(File file) {
+		try {
+			String fileContents = Files.readAllLines(file.toPath()).stream().collect(Collectors.joining("\n"));
+			return fileContents;
+		}
+		catch (IOException ioe) {
+			throw new RuntimeException(ioe);
+		}
 	}
 }
