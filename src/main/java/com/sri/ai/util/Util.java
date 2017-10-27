@@ -2480,6 +2480,25 @@ public class Util {
 	}
 
 	/**
+	 * Adds all elements of two collections to a new ArrayList.
+	 * 
+	 * @param c1
+	 *            the first collection to add elements from.
+	 * @param c2
+	 *            the second collection to add elements from.
+	 * @return a LinkedList containing the elements from both input collections.
+	 * @param <E>
+	 *            the type of the collections elements.
+	 */
+
+	public static <E> ArrayList<E> unionArrayList(Collection<E> c1, Collection<E> c2) {
+		ArrayList<E> result = new ArrayList<E>();
+		result.addAll(c1);
+		result.addAll(c2);
+		return result;
+	}
+
+	/**
 	 * Adds all elements of given collections to a new LinkedList.
 	 * 
 	 * @param collections
