@@ -5082,4 +5082,46 @@ public class Util {
 			throw new RuntimeException(ioe);
 		}
 	}
+
+	/**
+	 * Makes a map with given keys mapping to the same given value.
+	 * @param keys the keys
+	 * @param value the value
+	 * @param <K> the key type
+	 * @param <V> the value type
+	 * @return the map.
+	 */
+	public static <K, V> Map<K, V> mapWithTheseKeysMappedTo(Collection<? extends K> keys, V value) {
+		Map<K, V> result = new LinkedHashMap<>();
+		for (K key : keys) {
+			result.put(key, value);
+		}
+		return result;
+	}
+
+	/**
+	 * Increments the integer value associated with given key.
+	 * @param map the map
+	 * @param key the key
+	 * @param <K> the key type
+	 */
+	public static <K> void incrementValue(Map<K, Integer> map, K key) {
+		Integer valueObject = map.get(key);
+		int value = valueObject == null? 0 : valueObject.intValue();
+		map.put(key, value + 1);
+	}
+	
+	/**
+	 * Measures how long it takes to execute thunk.
+	 * @param thunk
+	 * @return a pair with the thunk's result and how long it took to execute in milliseconds.
+	 */
+	public static <T> Pair<T, Long> time(NullaryFunction<T> thunk) {
+		long start = System.currentTimeMillis();
+		T thunkResult = thunk.apply();
+		long end = System.currentTimeMillis();
+		long time = end - start;
+		Pair<T, Long> result = Pair.pair(thunkResult, time);
+		return result;
+	}
 }
