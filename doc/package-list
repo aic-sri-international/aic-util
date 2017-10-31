@@ -1,3 +1,10 @@
+com.sri.ai.test.util
+com.sri.ai.test.util.cache
+com.sri.ai.test.util.collect
+com.sri.ai.test.util.concurrent
+com.sri.ai.test.util.functionalsequence
+com.sri.ai.test.util.math
+com.sri.ai.test.util.rangeoperation
 com.sri.ai.util
 com.sri.ai.util.base
 com.sri.ai.util.cache
