@@ -37,6 +37,7 @@
  */
 package com.sri.ai.util.collect;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -85,6 +86,18 @@ public class FunctionIterator<F, T> extends EZIteratorWithNull<T> {
 		return new FunctionIterator<F, T>(function, base);
 	}
 
+	public static <F, T> FunctionIterator<F, T> make(Function<F, T> function, Iterable<F> base) {
+		return new FunctionIterator<F, T>(function, base.iterator());
+	}
+
+	public static <F, T> FunctionIterator<F, T> make(Function<F, T> function, Collection<F> base) {
+		return new FunctionIterator<F, T>(function, base);
+	}
+
+	public static <F, T> FunctionIterator<F, T> make(Function<F, T> function, F[] base) {
+		return new FunctionIterator<F, T>(function, Arrays.asList(base));
+	}
+
 	public static <F, T> FunctionIterator<F, T> make(Iterator<F> base, Function<F, T> function) {
 		return new FunctionIterator<F, T>(function, base);
 	}
@@ -97,16 +110,24 @@ public class FunctionIterator<F, T> extends EZIteratorWithNull<T> {
 		return new FunctionIterator<F, T>(function, base);
 	}
 
-	public static <F, T> FunctionIterator<F, T> make(Function<F, T> function, Iterable<F> base) {
-		return new FunctionIterator<F, T>(function, base.iterator());
-	}
-
-	public static <F, T> FunctionIterator<F, T> make(Function<F, T> function, Collection<F> base) {
-		return new FunctionIterator<F, T>(function, base);
+	public static <F, T> FunctionIterator<F, T> make(F[] base, Function<F, T> function) {
+		return new FunctionIterator<F, T>(function, Arrays.asList(base));
 	}
 
 	public static <F, T> FunctionIterator<F, T> functionIterator(Function<F, T> function, Iterator<F> base) {
 		return new FunctionIterator<F, T>(function, base);
+	}
+
+	public static <F, T> FunctionIterator<F, T> functionIterator(Function<F, T> function, Iterable<F> base) {
+		return new FunctionIterator<F, T>(function, base.iterator());
+	}
+
+	public static <F, T> FunctionIterator<F, T> functionIterator(Function<F, T> function, Collection<F> base) {
+		return new FunctionIterator<F, T>(function, base);
+	}
+
+	public static <F, T> FunctionIterator<F, T> functionIterator(Function<F, T> function, F[] base) {
+		return new FunctionIterator<F, T>(function, Arrays.asList(base));
 	}
 
 	public static <F, T> FunctionIterator<F, T> functionIterator(Iterator<F> base, Function<F, T> function) {
@@ -121,12 +142,8 @@ public class FunctionIterator<F, T> extends EZIteratorWithNull<T> {
 		return new FunctionIterator<F, T>(function, base);
 	}
 
-	public static <F, T> FunctionIterator<F, T> functionIterator(Function<F, T> function, Iterable<F> base) {
-		return new FunctionIterator<F, T>(function, base.iterator());
-	}
-
-	public static <F, T> FunctionIterator<F, T> functionIterator(Function<F, T> function, Collection<F> base) {
-		return new FunctionIterator<F, T>(function, base);
+	public static <F, T> FunctionIterator<F, T> functionIterator(F[] base, Function<F, T> function) {
+		return new FunctionIterator<F, T>(function, Arrays.asList(base));
 	}
 
 	@Override
