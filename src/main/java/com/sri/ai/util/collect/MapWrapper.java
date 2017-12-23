@@ -74,4 +74,19 @@ public class MapWrapper<K, V> implements Map<K,V> {
 	public Collection<V> values() {
 		return map.values();
 	}
+	
+	@Override
+	public boolean equals(Object another) {
+		return map.equals(another);
+	}
+	
+	@Override
+	public int hashCode() {
+		return map.hashCode();
+	}
+	
+	@Override
+	public String toString() {
+		return map.toString();
+	}
 }
