@@ -506,6 +506,7 @@ public class Util {
 	 * @param <T>
 	 *            the type of elements the iterator will range over.
 	 */
+	@SafeVarargs
 	public static <T> Iterator<T> iterator(T... elements) {
 		return Arrays.asList(elements).iterator();
 	}
@@ -2572,6 +2573,7 @@ public class Util {
 	 * @param <E>
 	 *            the type of the collections elements.
 	 */
+	@SafeVarargs
 	public static <E> List<E> addAllToANewList(Collection<E>... collections) {
 		LinkedList<E> result = new LinkedList<E>();
 		for (Collection<E> c : collections) {
