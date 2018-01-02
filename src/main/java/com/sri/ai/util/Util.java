@@ -1287,7 +1287,7 @@ public class Util {
 	 *            the second collection.
 	 * @param function
 	 *            the function to be applied to the pair of values from the given collections.
-	 * @param result a list to which we add the results from the function applications on the
+	 * @return a list to which we add the results from the function applications on the
 	 * 		   the pairs of values from the collections.
 	 * @param <F1>
 	 *            the type of the first collection arguments.
@@ -5068,7 +5068,7 @@ public class Util {
 	 * If there is more than one element in iterator's range and they are all equal to the first one,
 	 * returns the first one;
 	 * otherwise, returns null.
-	 * @param elements
+	 * @param elements the elements
 	 * @param <T> type of elements
 	 * @return the first element if all elements are equal, or null.
 	 */
@@ -5091,6 +5091,7 @@ public class Util {
 	/**
 	 * Shorthand for <code>System.out.println</code>.
 	 * @param object the object to be printed.
+	 * @param <T> the type
 	 */
 	public static <T> void println(T object) {
 		System.out.println(object);
@@ -5099,7 +5100,7 @@ public class Util {
 	/**
 	 * Get class object for given class name or throws an IllegalArgumentException.
 	 * @param className the class name
-	 * @return
+	 * @return the class object
 	 */
 	public static Class<?> getClassOrIllegalArgumentException(String className) {
 		try {
@@ -5175,8 +5176,9 @@ public class Util {
 	
 	/**
 	 * Measures how long it takes to execute thunk.
-	 * @param thunk
+	 * @param thunk a function without arguments returning a value
 	 * @return a pair with the thunk's result and how long it took to execute in milliseconds.
+	 * @param <T> the function return type
 	 */
 	public static <T> Pair<T, Long> time(NullaryFunction<T> thunk) {
 		long start = System.currentTimeMillis();
