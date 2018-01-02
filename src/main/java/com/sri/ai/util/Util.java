@@ -63,6 +63,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -1174,7 +1175,7 @@ public class Util {
 	 *            the result type of the function applied to the iterator's
 	 *            range.
 	 */
-	protected static <F, T> void mapIntoList(Iterator<? extends F> iterator, Function<F, T> function, List<T> result) {
+	public static <F, T> void mapIntoList(Iterator<? extends F> iterator, Function<F, T> function, List<T> result) {
 		while (iterator.hasNext()) {
 			F nextElement = iterator.next();
 			result.add(function.apply(nextElement));
@@ -1241,6 +1242,67 @@ public class Util {
 	public static <F, T> List<T> mapIntoList(
 			Collection<? extends F> collection, Function<F, T> function) {
 		return mapIntoList(collection.iterator(), function);
+	}
+
+	/**
+	 * Stores results of applying a binary function to the values of two iterators iterated in parallel.
+	 * 
+	 * @param iterator1
+	 *            the first iterator's whose range a function is to be applied to.
+	 * @param iterator2
+	 *            the second iterator's whose range a function is to be applied to.
+	 * @param function
+	 *            the function to be applied to the pair of values from the given iterators's ranges.
+	 * @param result a list to which we add the results from the function applications on the
+	 * 		   the pairs of values from the iterators.
+	 * @param <F1>
+	 *            the type of the first iterator's arguments.
+	 * @param <F2>
+	 *            the type of the second iterator's arguments.
+	 * @param <T>
+	 *            the result type of the function applied to the iterators's elements.
+	 */
+	public static <F1, F2, T> void mapIntoList(
+			Iterator<? extends F1> iterator1, 
+			Iterator<? extends F2> iterator2, 
+			BinaryFunction<F1, F2, T> function, List<T> result) {
+		try {
+			while (iterator1.hasNext() || iterator2.hasNext()) {
+				F1 nextElement1 = iterator1.next();
+				F2 nextElement2 = iterator2.next();
+				result.add(function.apply(nextElement1, nextElement2));
+			}
+		}
+		catch (NoSuchElementException e) {
+			throw new Error("Util.mapIntoList requires iterators to have ranges of same size");
+		}
+	}
+
+	/**
+	 * Stores results of applying a binary function to the values of two collections iterated in parallel.
+	 * 
+	 * @param collection1
+	 *            the first collection.
+	 * @param collection2
+	 *            the second collection.
+	 * @param function
+	 *            the function to be applied to the pair of values from the given collections.
+	 * @param result a list to which we add the results from the function applications on the
+	 * 		   the pairs of values from the collections.
+	 * @param <F1>
+	 *            the type of the first collection arguments.
+	 * @param <F2>
+	 *            the type of the second collection arguments.
+	 * @param <T>
+	 *            the result type of the function applied to the collections' values.
+	 */
+	public static <F1, F2, T> List<T> mapIntoList(
+			Collection<? extends F1> collection1, 
+			Collection<? extends F2> collection2, 
+			BinaryFunction<F1, F2, T> function) {
+		List<T> result = list();
+		mapIntoList(collection1.iterator(), collection2.iterator(), function, result);
+		return result;
 	}
 
 	/**
