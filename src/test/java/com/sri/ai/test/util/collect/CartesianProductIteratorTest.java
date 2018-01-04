@@ -53,7 +53,6 @@ import com.sri.ai.util.collect.CartesianProductIterator;
 
 public class CartesianProductIteratorTest {
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void test() {
 		ArrayList<NullaryFunction<Iterator<String>>> iteratorMakers;

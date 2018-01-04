@@ -54,7 +54,6 @@ import com.sri.ai.util.collect.SubsetsOfKIterator;
 @Beta
 public class SubsetsOfKIteratorTest {
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void test() {
 		ArrayList<String> array;

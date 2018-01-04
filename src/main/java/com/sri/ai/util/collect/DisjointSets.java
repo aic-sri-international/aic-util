@@ -106,6 +106,7 @@ public class DisjointSets<E> {
 	 *            a collection of elements, each of which will be assigned to
 	 *            their own disjoint set via makeSet().
 	 */
+	@SafeVarargs
 	public DisjointSets(E... elements) {
 		for (E element : elements) {
 			makeSet(element);

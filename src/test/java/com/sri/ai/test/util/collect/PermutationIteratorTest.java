@@ -54,7 +54,6 @@ import com.sri.ai.util.collect.PermutationIterator;
 @Beta
 public class PermutationIteratorTest {
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void test() {
 		ArrayList<String> array;

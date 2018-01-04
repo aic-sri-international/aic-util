@@ -54,6 +54,8 @@ import com.google.common.annotations.Beta;
 @Beta
 public class StackedTreeMap<K, V> extends AbstractStackedMap<K, V> {
 
+	private static final long serialVersionUID = 1L;
+
 	public StackedTreeMap() {
 		super();
 	}

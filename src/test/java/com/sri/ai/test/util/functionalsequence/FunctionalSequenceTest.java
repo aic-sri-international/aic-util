@@ -53,7 +53,6 @@ public class FunctionalSequenceTest {
 
 	public static class AllMonarchs extends AbstractFunctionalSequence<String, String> {
 
-		@SuppressWarnings("unchecked")
 		private List<Iterator<String>> arguments =
 				Util.list(
 						Util.iterator("Henry III", "Henry IV", "Henry V"),
@@ -99,7 +98,6 @@ public class FunctionalSequenceTest {
 	}
 	
 	public static class AllMonarchsWithNoMonarchs extends AllMonarchs {
-		@SuppressWarnings("unchecked")
 		private List<Iterator<String>> arguments =
 				Util.list(
 						Util.<String>iterator(),
@@ -119,7 +117,6 @@ public class FunctionalSequenceTest {
 			return null;
 		}
 
-		@SuppressWarnings("unchecked")
 		private List<Iterator<String>> arguments =
 				Util.list(
 						Util.<String>iterator(),
@@ -134,7 +131,6 @@ public class FunctionalSequenceTest {
 	}
 	
 	public static class AllMonarchsWithOnlyOneDinasty extends AllMonarchs {
-		@SuppressWarnings("unchecked")
 		private List<Iterator<String>> arguments =
 				Util.list(
 						Util.iterator("Henry III", "Henry IV", "Henry V"),

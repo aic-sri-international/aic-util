@@ -59,6 +59,7 @@ public class LexicographicComparator<T> implements Comparator<T> {
 		this.comparators = comparators;
 	}
 
+	@SafeVarargs
 	public LexicographicComparator(Comparator<T>... comparators) {
 		this.comparators = Arrays.asList(comparators);
 	}

@@ -47,7 +47,6 @@ import com.sri.ai.util.rangeoperation.core.AbstractAggregateOperator;
 @Beta
 public class Concatenate<T> extends AbstractAggregateOperator<T, List<T>> {
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initialize() {
 		result = Util.list();

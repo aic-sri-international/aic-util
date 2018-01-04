@@ -54,7 +54,6 @@ import com.sri.ai.util.collect.SubKTuplesIterator;
 @Beta
 public class SubKTuplesIteratorTest {
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void test() {
 		ArrayList<String> array;

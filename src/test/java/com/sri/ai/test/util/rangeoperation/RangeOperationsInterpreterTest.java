@@ -29,7 +29,6 @@ public class RangeOperationsInterpreterTest {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void test() {
 		Object expected;

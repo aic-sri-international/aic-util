@@ -105,7 +105,6 @@ public class Gnuplot {
 	}
 
 	// A test.
-	@SuppressWarnings("unchecked")
 	public static void main(String[] args) {
 		plot(
 				Util.list( // precommands

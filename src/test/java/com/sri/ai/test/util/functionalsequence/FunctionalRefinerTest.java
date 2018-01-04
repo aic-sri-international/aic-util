@@ -68,7 +68,6 @@ public class FunctionalRefinerTest {
 			super("Pre-monarchy state");
 		}
 
-		@SuppressWarnings("unchecked")
 		private List<IteratorRefiner<String>> arguments =
 		Util.list(
 				argument("Henry III", "Henry IV", "Henry V"),
@@ -105,7 +104,6 @@ public class FunctionalRefinerTest {
 	}
 	
 	public static class AllMonarchsWithNoMonarchs extends AllMonarchs {
-		@SuppressWarnings("unchecked")
 		private List<IteratorRefiner<String>> arguments =
 				Util.list(
 						argument("none"),
@@ -120,7 +118,6 @@ public class FunctionalRefinerTest {
 	}
 	
 	public static class AllMonarchsWithOnlyOneDinasty extends AllMonarchs {
-		@SuppressWarnings("unchecked")
 		private List<IteratorRefiner<String>> arguments =
 				Util.list(
 						argument("Henry III", "Henry IV", "Henry V"),
