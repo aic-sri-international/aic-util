@@ -43,6 +43,7 @@ import java.util.Iterator;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.Function;
+import com.sri.ai.util.Util;
 
 /**
  * Iterator ranging over the results of an unary function applied to the
@@ -51,7 +52,7 @@ import com.google.common.base.Function;
  * @author braz
  */
 @Beta
-public class FunctionIterator<F, T> extends EZIteratorWithNull<T> {
+public class FunctionIterator<F, T> implements LazyIterator<T> {
 
 	private Iterator<F> base;
 	private Function<F, T> function;
@@ -147,11 +148,29 @@ public class FunctionIterator<F, T> extends EZIteratorWithNull<T> {
 	}
 
 	@Override
-	protected T calculateNext() {
-		if (base.hasNext()) {
-			return function.apply(base.next());
-		}
-		endOfRange();
-		return null;
+	public boolean hasNext() {
+		boolean result = base.hasNext();
+		return result;
+	}
+	
+	private boolean baseCurrentIsInitialized = false;
+	private F baseCurrent;
+	
+	public void goToNextWithoutComputingCurrent() {
+		baseCurrent = base.next();
+		baseCurrentIsInitialized = true;
+	}
+
+	public T computeCurrent() {
+		Util.myAssert(baseCurrentIsInitialized, () -> "No current element defined for iterator.");
+		T result = function.apply(baseCurrent);
+		return result;
+	}
+	
+	@Override
+	public T next() {
+		goToNextWithoutComputingCurrent();
+		T result = computeCurrent();
+		return result;
 	}
 }

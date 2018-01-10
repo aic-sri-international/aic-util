@@ -63,7 +63,6 @@ public class NonDeterministicIterator<E> extends EZIterator<E> {
 
 	private Stack<Iterator<NullaryFunction<LazyTree<E>>>> stack;
 	
-	@SuppressWarnings("unchecked")
 	public NonDeterministicIterator(NullaryFunction<LazyTree<E>> root) {
 		stack = new Stack<>();
 		stack.push(iterator(root));
