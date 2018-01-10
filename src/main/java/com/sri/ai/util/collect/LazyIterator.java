@@ -42,6 +42,27 @@ import java.util.Iterator;
 import com.google.common.annotations.Beta;
 
 /**
+ * A lazy iterator that has the capacity to iterate over its range but only compute the actual values when required.
+ * 
+ * The motivating application for this interface was a sampling iterator.
+ * While we would like the sampling iterator to be able to provide a sample at any point
+ * just like a regular iterator,
+ * it is also desirable to let it run for thousands of iteration without examining its values.
+ * In some cases, generating the actual sampled value is more expensive than simply
+ * iterating the internal variables for sampling without actually generating the value.
+ * This interface allows us to run many iterations without having to generate the value
+ * at each iteration, leading to significant performance improvement.
+ *
+ * Regular iterators do no provide this option as an interface because iteration is always accomplished by {@link Iterator#next()},
+ * which must also return the value.
+ * Therefore, this interface adds the method {@link #goToNextWithoutComputingCurrent()} for this purpose.
+ * Then {@link #computeCurrent()} computes the current element when needed.
+ * 
+ * Note that, while elements are not being computed, they of course cannot be used for deciding whether to keep iterator,
+ * or for deciding when to compute the element at some point.
+ * For lazy iterators, these decisions will typically be based simply on the number of iterators, or
+ * whether we have reached the end of the iterator's range.
+ * The last option can be easily achieved with {@link computeFinalValue()}.
  * 
  * @author braz
  */
@@ -50,5 +71,13 @@ public interface LazyIterator<E> extends Iterator<E> {
 
 	void goToNextWithoutComputingCurrent();
 
-	public E computeCurrent();
+	E computeCurrent();
+	
+	default E computeFinalValue() {
+		while (hasNext()) {
+			goToNextWithoutComputingCurrent();
+		}
+		E result = computeCurrent();
+		return result;
+	}
 }
