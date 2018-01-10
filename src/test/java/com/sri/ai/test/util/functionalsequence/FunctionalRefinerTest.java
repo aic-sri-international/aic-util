@@ -53,7 +53,10 @@ import com.sri.ai.util.functionalsequence.RefinerIterator;
 
 public class FunctionalRefinerTest {
 
-	/** Returns the received arguments in an iterator refiner. */
+	/** 
+	 * Returns the received arguments in an iterator refiner. 
+	 * @param elements the elements
+	 */
 	public static IteratorRefiner<String> argument(String... elements) {
 		return new IteratorRefiner<String>(Arrays.asList(elements).iterator());
 	}
