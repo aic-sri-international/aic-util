@@ -166,11 +166,4 @@ public class FunctionIterator<F, T> implements LazyIterator<T> {
 		T result = function.apply(baseCurrent);
 		return result;
 	}
-	
-	@Override
-	public T next() {
-		goToNextWithoutComputingCurrent();
-		T result = computeCurrent();
-		return result;
-	}
 }

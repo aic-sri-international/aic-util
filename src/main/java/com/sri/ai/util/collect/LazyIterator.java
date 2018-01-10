@@ -67,17 +67,31 @@ import com.google.common.annotations.Beta;
  * @author braz
  */
 @Beta
-public interface LazyIterator<E> extends Iterator<E> {
+public interface LazyIterator<T> extends Iterator<T> {
 
 	void goToNextWithoutComputingCurrent();
 
-	E computeCurrent();
+	T computeCurrent();
 	
-	default E computeFinalValue() {
+	default T computeFinalValue() {
 		while (hasNext()) {
 			goToNextWithoutComputingCurrent();
 		}
-		E result = computeCurrent();
+		T result = computeCurrent();
+		return result;
+	}
+	
+	
+	@Override
+	/**
+	 * Default implementation of {@link #next()} invokes
+	 * {@link #goToNextWithoutComputingCurrent()} and then returning the result of
+	 * {@link #computeCurrent()}, thus concentrating iteration in
+	 * {@link #goToNextWithoutComputingCurrent()} alone and avoiding code duplication.
+	 */
+	default T next() {
+		goToNextWithoutComputingCurrent();
+		T result = computeCurrent();
 		return result;
 	}
 }
