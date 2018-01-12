@@ -5190,4 +5190,21 @@ public class Util {
 		Pair<T, Long> result = Pair.pair(thunkResult, time);
 		return result;
 	}
+
+	/**
+	 * Returns given value if not null, or use nullary function to make a default value otherwise.
+	 * @param value
+	 * @param defaultMaker
+	 * @return
+	 */
+	public static <T> T valueOrMakeDefaultIfNull(T value, NullaryFunction<T> defaultMaker) {
+		T result;
+		if (value == null) {
+			result = defaultMaker.apply();
+		}
+		else {
+			result = value;
+		}
+		return result;
+	}
 }
