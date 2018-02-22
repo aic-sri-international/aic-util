@@ -5099,6 +5099,10 @@ public class Util {
 		System.out.println(object);
 	}
 
+	public static void println() {
+		System.out.println();
+	}
+
 	/**
 	 * Get class object for given class name or throws an IllegalArgumentException.
 	 * @param className the class name
