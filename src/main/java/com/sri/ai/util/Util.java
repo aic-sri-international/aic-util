@@ -5197,10 +5197,10 @@ public class Util {
 
 	/**
 	 * Returns given value if not null, or use nullary function to make a default value otherwise.
-	 * @param value
+	 * @param value the value
 	 * @param defaultMaker
 	 * @param <T> the type
-	 * @return
+	 * @return the value or a freshly made default
 	 */
 	public static <T> T valueOrMakeDefaultIfNull(T value, NullaryFunction<T> defaultMaker) {
 		T result;
@@ -5215,8 +5215,8 @@ public class Util {
 	
 	/**
 	 * Copies list without the element at a given position.
-	 * @param list
-	 * @param i
+	 * @param list the list
+	 * @param i the index
 	 * @param <T> the type
 	 * @return the copy without the i-th original element.
 	 */

@@ -45,12 +45,12 @@ import javafx.beans.binding.ObjectBinding;
 import javafx.beans.value.ObservableValue;
 
 /**
- * A convenience {@link ObjectBinding<T>} that takes a list of {@link ObservableValue<T>}s,
+ * A convenience {@link ObjectBinding} that takes a list of {@link ObservableValue}s,
  * binds them, and makes them available for extending classes.
  * 
  * @author braz
  *
- * @param <T>
+ * @param <T> the type of values
  */
 public abstract class ObjectBindingWithObservableValuesList<T> extends ObjectBinding<T> {
 
