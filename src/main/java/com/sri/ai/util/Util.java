@@ -5199,6 +5199,7 @@ public class Util {
 	 * Returns given value if not null, or use nullary function to make a default value otherwise.
 	 * @param value
 	 * @param defaultMaker
+	 * @param <T> the type
 	 * @return
 	 */
 	public static <T> T valueOrMakeDefaultIfNull(T value, NullaryFunction<T> defaultMaker) {
@@ -5208,6 +5209,24 @@ public class Util {
 		}
 		else {
 			result = value;
+		}
+		return result;
+	}
+	
+	/**
+	 * Copies list without the element at a given position.
+	 * @param list
+	 * @param i
+	 * @param <T> the type
+	 * @return the copy without the i-th original element.
+	 */
+	public static <T> LinkedList<T> listWithoutElementAt(List<T> list, int i) {
+		LinkedList<T> result = list();
+		ListIterator<T> iterator = list.listIterator();
+		for (int j = 0; j != list.size(); j++) {
+			if (j != i) {
+				result.add(iterator.next());
+			}
 		}
 		return result;
 	}
