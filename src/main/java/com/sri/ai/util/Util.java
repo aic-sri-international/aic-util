@@ -5220,9 +5220,9 @@ public class Util {
 	 * @param <T> the type
 	 * @return the copy without the i-th original element.
 	 */
-	public static <T> LinkedList<T> listWithoutElementAt(List<T> list, int i) {
+	public static <T> LinkedList<T> listWithoutElementAt(List<? extends T> list, int i) {
 		LinkedList<T> result = list();
-		ListIterator<T> iterator = list.listIterator();
+		ListIterator<? extends T> iterator = list.listIterator();
 		for (int j = 0; j != list.size(); j++) {
 			if (j != i) {
 				result.add(iterator.next());
