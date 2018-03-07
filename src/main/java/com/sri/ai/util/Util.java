@@ -4996,6 +4996,21 @@ public class Util {
 	}
 
 	/**
+	 * Creates an array list of size n, filled with the results of a given {@link NullaryFunction}.
+	 * @param n the size of the array
+	 * @param function the nullary function
+	 * @param <T> the type of value
+	 * @return an array list of size n, filled with a given value.
+	 */
+	public static <T> ArrayList<T> fill(int n, NullaryFunction<T> function) {
+		ArrayList<T> result = new ArrayList<T>(n);
+		for (int i = 0; i != n; i++) {
+			result.add(function.apply());
+		}
+		return result;
+	}
+
+	/**
 	 * Given an array list and a list of integers, returns an array list with the indexed elements in the indices order.
 	 * @param array the array from which to extract sub array.
 	 * @param indices the array of indices
@@ -5229,5 +5244,35 @@ public class Util {
 			}
 		}
 		return result;
+	}
+
+	/**
+	 * Returns <code>identity</code> if iterator is empty
+	 * or <code>function(iterator.next(), accumulate(iterator, function identity))</code> otherwise.
+	 * This function is also known as <code>fold</code> in functional programming.
+	 * @param iterator
+	 * @param function
+	 * @param initial
+	 * @param <T> the type
+	 * @return
+	 */
+	public static <T> T accumulate(Iterator<T> iterator, BinaryFunction<T, T, T> function, T initial) {
+		T result = initial;
+		for (T element : in(iterator)) {
+			result = function.apply(result, element);
+		}
+		return result;
+	}
+
+	/**
+	 * Equivalent to <code>accumulate(collection.iterator(), function, identity))</code>.
+	 * @param iterator
+	 * @param function
+	 * @param initial
+	 * @param <T> the type
+	 * @return
+	 */
+	public static <T> T accumulate(Collection<T> collection, BinaryFunction<T, T, T> function, T initial) {
+		return accumulate(collection.iterator(), function, initial);
 	}
 }
