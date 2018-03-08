@@ -38,62 +38,23 @@
 package com.sri.ai.util.collect;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
-import com.google.common.annotations.Beta;
-import com.sri.ai.util.Util;
 import com.sri.ai.util.base.Pair;
 
-/**
- * Represents a many-to-many relation with amortized constant-time search for
- * the tuples of a given element.
- * 
- * @author braz
- */
-@Beta
-public class ManyToManyRelation<A,B> {
-	private Map<A, Collection<B>> fromAToItsBs = new LinkedHashMap<A, Collection<B>>();
-	private Map<B, Collection<A>> fromBToItsAs = new LinkedHashMap<B, Collection<A>>();
-	
-	public ManyToManyRelation() {
-	}
+public interface ManyToManyRelation<A, B> {
 
-	public void add(A a, B b) {
-		Util.addToCollectionValuePossiblyCreatingIt(fromAToItsBs, a, b, HashSet.class);
-		Util.addToCollectionValuePossiblyCreatingIt(fromBToItsAs, b, a, HashSet.class);
-	}
-	
-	public void remove(A a, B b) {
-		removeThisAFromAsOfThisB(a, b);
-		removeThisBFromBsOfThisA(a, b);
-	}
-	
+	public void add(A a, B b);
+
+	public void remove(A a, B b);
+
 	/**
 	 * Remove all tuples with <code>a</code> as first dimension.
 	 * 
 	 * @param a
 	 *            the item used in the removal logic.
 	 */
-	public void removeA(A a) {
-		Collection<B> bsOfThisA = fromAToItsBs.get(a);
-		
-		if (bsOfThisA == null) { // a is not present
-			return;
-		}
-		
-		fromAToItsBs.remove(a); // we remove a from the list of As, but first we saved its Bs, which need to be updated as well.
-		
-		// Now we notify them.
-		for (B b : bsOfThisA) {
-			removeThisAFromAsOfThisB(a, b);
-		}
-	}
+	public void removeA(A a);
 
 	/**
 	 * Remove all tuples with elements in collection <code>as</code> as first
@@ -102,12 +63,8 @@ public class ManyToManyRelation<A,B> {
 	 * @param as
 	 *            the items used in the removal logic.
 	 */
-	public void removeAllAs(Collection<A> as) {
-		for (A a : as) {
-			removeA(a);
-		}
-	}
-	
+	public void removeAllAs(Collection<A> as);
+
 	/**
 	 * Indicates whether an element <code>a</code> is present in the first
 	 * dimension.
@@ -116,9 +73,7 @@ public class ManyToManyRelation<A,B> {
 	 *            the item to test if its in the first dimension.
 	 * @return true if the given argument is in the first dimension.
 	 */
-	public boolean containsA(A a) {
-		return fromAToItsBs.containsKey(a);
-	}
+	public boolean containsA(A a);
 
 	/**
 	 * Remove all tuples with <code>b</code> as second dimension.
@@ -126,20 +81,7 @@ public class ManyToManyRelation<A,B> {
 	 * @param b
 	 *            the argument to match on.
 	 */
-	public void removeB(B b) {
-		Collection<A> asOfThisB = fromBToItsAs.get(b);
-
-		if (asOfThisB == null) { // b is not present
-			return;
-		}
-
-		fromBToItsAs.remove(b); // we remove b from the list of Bs, but first we saved its As, which need to be updated as well.
-		
-		// Now we notify them.
-		for (A a : asOfThisB) {
-			removeThisBFromBsOfThisA(a, b);
-		}
-	}
+	public void removeB(B b);
 
 	/**
 	 * Remove all tuples with elements in collection <code>bs</code> as second
@@ -148,33 +90,20 @@ public class ManyToManyRelation<A,B> {
 	 * @param bs
 	 *            the arguments to match on.
 	 */
-	public void removeAllBs(Collection<B> bs) {
-		for (B b : bs) {
-			removeB(b);
-		}
-	}
-	
+	public void removeAllBs(Collection<B> bs);
+
 	/**
 	 * @param b
 	 *        element to test for containment.
 	 * @return true if element <code>b</code> is present in the second dimension. 
 	 */
-	public boolean containsB(B b) {
-		return fromBToItsAs.containsKey(b);
-	}
+	public boolean containsB(B b);
 
-	public void clear() {
-		fromAToItsBs.clear();
-		fromBToItsAs.clear();
-	}
-	
-	public Collection<A> getAs() {
-		return new LinkedHashSet<A>(fromAToItsBs.keySet());
-	}
+	public void clear();
 
-	public Collection<B> getBs() {
-		return new LinkedHashSet<B>(fromBToItsAs.keySet());
-	}
+	public Collection<A> getAs();
+
+	public Collection<B> getBs();
 
 	/**
 	 * @param a
@@ -182,61 +111,19 @@ public class ManyToManyRelation<A,B> {
 	 * @return collection of second-dimension elements relating to
 	 *         <code>a</code>.
 	 */
-	public Collection<B> getBsOfA(A a) {
-		Collection<B> bsOfThisA = fromAToItsBs.get(a);
-		if (bsOfThisA == null) {
-			return new LinkedHashSet<B>();
-		}
-		return new LinkedHashSet<B>(bsOfThisA);
-	}
-	
+	public Collection<B> getBsOfA(A a);
+
 	/**
 	 * @param b
 	 *         the element to relate to. 
- 	 * @return collection of first-dimension elements relating to <code>b</code>. 
- 	 */
-	public Collection<A> getAsOfB(B b) {
-		Collection<A> asOfThisB = fromBToItsAs.get(b);
-		if (asOfThisB == null) {
-			return new LinkedHashSet<A>();
-		}
-		return new LinkedHashSet<A>(fromBToItsAs.get(b));
-	}
-	
-	private void removeThisAFromAsOfThisB(A a, B b) {
-		Collection<A> asOfThisB = fromBToItsAs.get(b);
-		if (asOfThisB == null) {
-			return;
-		}
-		asOfThisB.remove(a);
-		if (asOfThisB.isEmpty()) { // this B is not in the relation anymore, so we remove it from the list of Bs.
-			fromBToItsAs.remove(b);
-		}
-	}
+	 * @return collection of first-dimension elements relating to <code>b</code>. 
+	 */
+	public Collection<A> getAsOfB(B b);
 
-	private void removeThisBFromBsOfThisA(A a, B b) {
-		Collection<B> bsOfThisA = fromAToItsBs.get(a);
-		if (bsOfThisA == null) {
-			return;
-		}
-		bsOfThisA.remove(b);
-
-		if (bsOfThisA.isEmpty()) { // this A is not in the relation anymore, so we remove it from the list of As.
-			fromAToItsBs.remove(a);
-		}
-	}
-	
 	/**
 	 * @return an iterator over the pairs in this relationship; the iterator is
 	 *         <i>not</i> supported by the underlying relationship storage.
 	 */
-	public Iterator<Pair<A,B>> iterator() {
-		List<Pair<A,B>> list = new LinkedList<Pair<A,B>>();
-		for (A a : getAs()) {
-			for (B b : getBsOfA(a)) {
-				list.add(new Pair<A,B>(a, b));
-			}
-		}
-		return list.iterator();
-	}
+	public Iterator<Pair<A, B>> iterator();
+
 }

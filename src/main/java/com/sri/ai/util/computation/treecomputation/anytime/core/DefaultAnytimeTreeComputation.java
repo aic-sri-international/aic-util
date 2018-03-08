@@ -52,7 +52,7 @@ import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
 /**
  * @author braz
  *
- * @param <T>
+ * @param <T> the type of the values being approximated
  */
 public class DefaultAnytimeTreeComputation<T> extends AbstractAnytimeTreeComputation<T> {
 	

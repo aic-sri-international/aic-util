@@ -58,7 +58,7 @@ import com.sri.ai.util.computation.anytime.api.Approximation;
  * 
  * @author braz
  *
- * @param <T>
+ * @param <T> the type of the values being approximated
  */
 public interface ApproximationScheme<T>{
 

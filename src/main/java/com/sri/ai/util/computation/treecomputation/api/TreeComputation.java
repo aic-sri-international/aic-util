@@ -55,7 +55,7 @@ import com.sri.ai.util.base.NullaryFunction;
  * 
  * @author braz
  *
- * @param <T>
+ * @param <T> the type of the values being computed
  */
 public interface TreeComputation<T> extends NullaryFunction<T> {
 

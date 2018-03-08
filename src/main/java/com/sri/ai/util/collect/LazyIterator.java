@@ -62,7 +62,7 @@ import com.google.common.annotations.Beta;
  * or for deciding when to compute the element at some point.
  * For lazy iterators, these decisions will typically be based simply on the number of iterators, or
  * whether we have reached the end of the iterator's range.
- * The last option can be easily achieved with {@link computeFinalValue()}.
+ * The last option can be easily achieved with {@link #computeFinalValue()}.
  * 
  * @author braz
  */

@@ -86,7 +86,7 @@ import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
  *
  * @author braz
  *
- * @param <T>
+ * @param <T> the type of the values being approximated
  */
 public abstract class AbstractAnytimeTreeComputation<T> implements AnytimeTreeComputation<T> {
 	
@@ -106,14 +106,6 @@ public abstract class AbstractAnytimeTreeComputation<T> implements AnytimeTreeCo
 		this.currentApproximation = approximationScheme.totalIgnorance();
 	}
 	
-	public TreeComputation<T> getBase() {
-		return base;
-	}
-
-	public Approximation<T> getCurrentApproximation() {
-		return currentApproximation;
-	}
-
 	@Override
 	public ArrayList<Anytime<T>> getSubs() {
 		ArrayList<Anytime<T>> result = mapIntoArrayList(base.getSubs(), this::makeAnytimeVersion);
@@ -140,5 +132,13 @@ public abstract class AbstractAnytimeTreeComputation<T> implements AnytimeTreeCo
 	public Approximation<T> function(List<Approximation<T>> subsApproximations) {
 		Approximation<T> approximation = approximationScheme.apply(base::function, subsApproximations);
 		return approximation;
+	}
+
+	public TreeComputation<T> getBase() {
+		return base;
+	}
+
+	public Approximation<T> getCurrentApproximation() {
+		return currentApproximation;
 	}
 }

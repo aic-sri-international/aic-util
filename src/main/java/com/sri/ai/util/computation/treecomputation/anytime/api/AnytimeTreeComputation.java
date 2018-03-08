@@ -47,7 +47,7 @@ import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
  * 
  * @author braz
  *
- * @param <T>
+ * @param <T> the type of the values being approximated
  */
 public interface AnytimeTreeComputation<T> extends Anytime<T>, TreeComputation<Approximation<T>> {
 

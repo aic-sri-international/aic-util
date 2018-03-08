@@ -60,7 +60,7 @@ import com.sri.ai.util.livesets.core.lazy.memoryless.Union;
  * 
  * @author braz
  *
- * @param <T>
+ * @param <T> the type of the values contained in the sets.
  */
 public interface LiveSet<T> {
 	

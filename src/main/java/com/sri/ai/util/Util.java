@@ -5213,7 +5213,7 @@ public class Util {
 	/**
 	 * Returns given value if not null, or use nullary function to make a default value otherwise.
 	 * @param value the value
-	 * @param defaultMaker
+	 * @param defaultMaker the default maker
 	 * @param <T> the type
 	 * @return the value or a freshly made default
 	 */
@@ -5250,11 +5250,12 @@ public class Util {
 	 * Returns <code>identity</code> if iterator is empty
 	 * or <code>function(iterator.next(), accumulate(iterator, function identity))</code> otherwise.
 	 * This function is also known as <code>fold</code> in functional programming.
-	 * @param iterator
-	 * @param function
-	 * @param initial
+	 * @param iterator the iterator
+	 * @param function the function
+	 * @param initial the initial value
 	 * @param <T> the type
-	 * @return
+	 * @return <code>identity</code> if iterator is empty
+	 * or <code>function(iterator.next(), accumulate(iterator, function identity))</code> otherwise.
 	 */
 	public static <T> T accumulate(Iterator<T> iterator, BinaryFunction<T, T, T> function, T initial) {
 		T result = initial;
@@ -5266,11 +5267,11 @@ public class Util {
 
 	/**
 	 * Equivalent to <code>accumulate(collection.iterator(), function, identity))</code>.
-	 * @param iterator
-	 * @param function
-	 * @param initial
+	 * @param collection the collection
+	 * @param function the function
+	 * @param initial the initial value
 	 * @param <T> the type
-	 * @return
+	 * @return <code>accumulate(collection.iterator(), function, identity))</code>
 	 */
 	public static <T> T accumulate(Collection<T> collection, BinaryFunction<T, T, T> function, T initial) {
 		return accumulate(collection.iterator(), function, initial);

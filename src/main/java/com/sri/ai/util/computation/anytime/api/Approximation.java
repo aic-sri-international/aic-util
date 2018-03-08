@@ -41,7 +41,7 @@ package com.sri.ai.util.computation.anytime.api;
 /**
  * @author braz
  *
- * @param <T>
+ * @param <T> the type of values being approximated
  */
 public interface Approximation<T> {
 	
