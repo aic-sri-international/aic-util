@@ -103,7 +103,7 @@ public abstract class AbstractAnytimeTreeComputation<T> implements AnytimeTreeCo
 		this.base = base;
 		this.approximationScheme = approximationScheme;
 		this.subs = null;
-		this.currentApproximation = approximationScheme.totalIgnorance();
+		this.currentApproximation = approximationScheme.totalIgnorance(null);// TODO : put an argument inside the function
 	}
 	
 	@Override

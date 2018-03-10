@@ -37,6 +37,9 @@
  */
 package com.sri.ai.util.computation.anytime.api;
 
+import java.util.List;
+
+import com.google.common.base.Function;
 
 /**
  * @author braz

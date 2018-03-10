@@ -62,7 +62,7 @@ import com.sri.ai.util.computation.anytime.api.Approximation;
  */
 public interface ApproximationScheme<T>{
 
-	Approximation<T> totalIgnorance();
+	Approximation<T> totalIgnorance(List<T> components);
 	
-	Approximation<T> apply(Function<List<T>, T> function, List<Approximation<T>> argumentApproximations);
+	Approximation<T> apply(Function<List<T>, T> function, List<? extends Approximation<T>> argumentApproximations);
 }
