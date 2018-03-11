@@ -41,8 +41,8 @@ package com.sri.ai.util.either;
  * A Java version of Haskell's <code>Either</code> sum algebraic data type.
  * @author braz
  *
- * @param <L>
- * @param <R>
+ * @param <L> the left type
+ * @param <R> the right type
  */
 public class Either<L,R> {
 

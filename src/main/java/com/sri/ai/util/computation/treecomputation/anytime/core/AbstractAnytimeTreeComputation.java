@@ -62,7 +62,7 @@ import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
  * <p>
  * Initially, the value of the anytime root computation is
  * the approximation provided by the approximation scheme's
- * {@link ApproximationScheme#totalIgnorance()} method.
+ * <code>totalIgnorance</code> method.
  * <p>
  * Then, in order to create the next approximation,
  * this class creates sub-anytime approximations
