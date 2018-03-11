@@ -35,37 +35,47 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.sri.ai.util.computation.treecomputation.api;
-
-import static com.sri.ai.util.Util.mapIntoList;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import com.sri.ai.util.base.NullaryFunction;
+package com.sri.ai.util.either;
 
 /**
- * An interface for a tree-based computation.
- * A tree-based computation consists of a function applied to the results
- * of a list of sub-computations (which are typically tree-based computations themselves).
- * <p>
- * Implementations must provide a method that provides the sub-computations,
- * and the function to be applied to them.
- * The result of the tree computation is the result returned by the function.
- * 
+ * A Java version of Haskell's <code>Either</code> sum algebraic data type.
  * @author braz
  *
- * @param <T> the type of the values being computed
+ * @param <L>
+ * @param <R>
  */
-public interface TreeComputation<T> extends NullaryFunction<T> {
+public class Either<L,R> {
 
-	ArrayList<? extends NullaryFunction<T>> getSubs();
-
-	T function(List<T> subsValues);
-
-	default T apply() {
-		List<T> subResults = mapIntoList(getSubs(), NullaryFunction::apply);
-		T result = function(subResults);
-		return result;
+	private L left;
+	private R right;
+	
+	public boolean isLeft() {
+		return left != null;
 	}
+	
+	public boolean isRight() {
+		return right != null;
+	}
+	
+	public L left() {
+		return left;
+	}
+	
+	public R right() {
+		return right;
+	}
+	
+	public static <L,R> Either<L,R> left(L left) {
+		return new Either<L,R>(left, null);
+	}
+	
+	public static <L,R> Either<L,R> right(R right) {
+		return new Either<L,R>(null, right);
+	}
+
+	private Either(L left, R right) {
+		this.left = left;
+		this.right = right;
+	}
+
 }

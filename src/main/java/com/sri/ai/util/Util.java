@@ -5239,8 +5239,9 @@ public class Util {
 		LinkedList<T> result = list();
 		ListIterator<? extends T> iterator = list.listIterator();
 		for (int j = 0; j != list.size(); j++) {
+			T jThElement = iterator.next();
 			if (j != i) {
-				result.add(iterator.next());
+				result.add(jThElement);
 			}
 		}
 		return result;
