@@ -66,10 +66,7 @@ public interface LiveSet<T> {
 	
 	boolean contains(T element);
 	
-	default boolean thereIsAnElementSatisfying(Predicate<T> predicate) {
-		// TODO: implement
-		return true;
-	}
+	boolean thereIsAnElementSatisfying(Predicate<T> predicate);
 	
 	default LiveSet<T> complement() {
 		return Complement.complement(this);

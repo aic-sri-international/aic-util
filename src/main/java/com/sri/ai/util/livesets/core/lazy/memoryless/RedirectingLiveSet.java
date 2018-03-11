@@ -41,6 +41,7 @@ import static com.sri.ai.util.livesets.core.lazy.memoryless.ExtensionalLiveSet.l
 
 import java.util.List;
 
+import com.google.common.base.Predicate;
 import com.sri.ai.util.livesets.api.LiveSet;
 
 
@@ -67,5 +68,11 @@ public class RedirectingLiveSet<T> implements LiveSet<T> {
 	
 	public static <T> RedirectingLiveSet<T> redirectingTo(LiveSet<T> liveSet) {
 		return new RedirectingLiveSet<T>(liveSet); 
+	}
+
+	@Override
+	public boolean thereIsAnElementSatisfying(Predicate<T> predicate) {
+		boolean result = liveSet.thereIsAnElementSatisfying(predicate);
+		return result;
 	}
 }

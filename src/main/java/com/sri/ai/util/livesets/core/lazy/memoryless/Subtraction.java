@@ -37,6 +37,7 @@
  */
 package com.sri.ai.util.livesets.core.lazy.memoryless;
 
+import com.google.common.base.Predicate;
 import com.sri.ai.util.livesets.api.LiveSet;
 
 public class Subtraction<T> implements LiveSet<T> {
@@ -59,5 +60,10 @@ public class Subtraction<T> implements LiveSet<T> {
 	
 	public static <T> LiveSet<T> minus(LiveSet<T> liveSet1, LiveSet<T> liveSet2) {
 		return new Subtraction<>(liveSet1, liveSet2); 
+	}
+
+	@Override
+	public boolean thereIsAnElementSatisfying(Predicate<T> predicate) {
+		throw new Error(Subtraction.class + ".thereIsAnElementSatisfying not implemented yet");
 	}
 }

@@ -43,6 +43,7 @@ import static com.sri.ai.util.Util.thereExists;
 
 import java.util.List;
 
+import com.google.common.base.Predicate;
 import com.sri.ai.util.livesets.api.LiveSet;
 
 
@@ -71,5 +72,11 @@ public class Union<T> implements LiveSet<T> {
 	
 	public static <T> LiveSet<T> union(LiveSet<T> liveSet1, LiveSet<T> liveSet2) {
 		return new Union<>(list(liveSet1, liveSet2)); 
+	}
+
+	@Override
+	public boolean thereIsAnElementSatisfying(Predicate<T> predicate) {
+		boolean result = thereExists(liveSets, l -> l.thereIsAnElementSatisfying(predicate));
+		return result;
 	}
 }

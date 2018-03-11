@@ -38,9 +38,11 @@
 package com.sri.ai.util.livesets.core.lazy.memoryless;
 
 import static com.sri.ai.util.Util.list;
+import static com.sri.ai.util.Util.thereExists;
 
 import java.util.Collection;
 
+import com.google.common.base.Predicate;
 import com.sri.ai.util.livesets.api.LiveSet;
 
 public class ExtensionalLiveSet<T> implements LiveSet<T> {
@@ -62,5 +64,11 @@ public class ExtensionalLiveSet<T> implements LiveSet<T> {
 	
 	public static <T> ExtensionalLiveSet<T> liveSet(T element) {
 		return new ExtensionalLiveSet<>(list(element));
+	}
+
+	@Override
+	public boolean thereIsAnElementSatisfying(Predicate<T> predicate) {
+		boolean result = thereExists(elements, predicate);
+		return result;
 	}
 }
