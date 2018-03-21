@@ -65,7 +65,7 @@ public class DefaultAnytimeTreeComputation<T> extends AbstractAnytimeTreeComputa
 		Constructor<?> constructor = getClass().getConstructors()[0];
 		try {
 			@SuppressWarnings("unchecked")
-			AnytimeTreeComputation<T> result = (AnytimeTreeComputation<T>) constructor.newInstance(sub);
+			AnytimeTreeComputation<T> result = (AnytimeTreeComputation<T>) constructor.newInstance(sub, getApproximationScheme());
 			return result;
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			throw new Error(e);

@@ -1323,17 +1323,12 @@ public class Util {
 	 *            elements.
 	 */
 	public static <F, T> ArrayList<T> mapIntoArrayList(
-			Collection<? extends F> collection, Function<F, T> function) {
+			Collection<? extends F> collection, Function<? super F, T> function) {
 
-		ArrayList<T> result = collection
-				.stream()
-				.map(function::apply)
-				.collect(toArrayList(collection.size()));
-
-//		ArrayList<T> result = new ArrayList<T>(collection.size());
-//		for (F element : collection) {
-//			result.add(function.apply(element));
-//		}
+		ArrayList<T> result = new ArrayList<T>(collection.size());
+		for (F element : collection) {
+			result.add(function.apply(element));
+		}
 
 		return result;
 	}
@@ -5258,7 +5253,7 @@ public class Util {
 	 * @return <code>identity</code> if iterator is empty
 	 * or <code>function(iterator.next(), accumulate(iterator, function identity))</code> otherwise.
 	 */
-	public static <T> T accumulate(Iterator<T> iterator, BinaryFunction<T, T, T> function, T initial) {
+	public static <T> T accumulate(Iterator<? extends T> iterator, BinaryFunction<T, T, T> function, T initial) {
 		T result = initial;
 		for (T element : in(iterator)) {
 			result = function.apply(result, element);
@@ -5274,7 +5269,7 @@ public class Util {
 	 * @param <T> the type
 	 * @return <code>accumulate(collection.iterator(), function, identity))</code>
 	 */
-	public static <T> T accumulate(Collection<T> collection, BinaryFunction<T, T, T> function, T initial) {
+	public static <T> T accumulate(Collection<? extends T> collection, BinaryFunction<T, T, T> function, T initial) {
 		return accumulate(collection.iterator(), function, initial);
 	}
 }

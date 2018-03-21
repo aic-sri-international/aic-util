@@ -41,6 +41,7 @@ import java.util.List;
 
 import com.google.common.base.Function;
 import com.sri.ai.util.computation.anytime.api.Approximation;
+import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
 
 /**
  * An interface for schemes for approximation.
@@ -62,7 +63,7 @@ import com.sri.ai.util.computation.anytime.api.Approximation;
  */
 public interface ApproximationScheme<T>{
 
-	Approximation<T> totalIgnorance(List<T> components);
+	Approximation<T> totalIgnorance(TreeComputation<T> computation);
 	
 	Approximation<T> apply(Function<List<T>, T> function, List<? extends Approximation<T>> argumentApproximations);
 }
