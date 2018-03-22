@@ -35,40 +35,46 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.sri.ai.util.livesets.core.lazy.memoryless;
+package com.sri.ai.util.computation.treecomputation.anytime.core;
 
-import static com.sri.ai.util.Util.list;
-import static com.sri.ai.util.Util.thereExists;
+import java.util.List;
 
-import java.util.Collection;
+import com.sri.ai.util.base.NullaryFunction;
+import com.sri.ai.util.computation.anytime.api.Anytime;
+import com.sri.ai.util.computation.anytime.api.Approximation;
+import com.sri.ai.util.computation.treecomputation.anytime.api.ApproximationScheme;
+import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
 
-import com.google.common.base.Predicate;
-import com.sri.ai.util.livesets.api.LiveSet;
-
-public class ExtensionalLiveSet<T> implements LiveSet<T> {
+/**
+ * An abstract extension of {@link AbstractAnytimeTreeComputation}
+ * that takes an instance of {@link ApproximationScheme}
+ * and uses it to provide an initial approximation (with {@link ApproximationScheme#totalIgnorance(TreeComputation)})
+ * and to calculate of new approximations (with {@link ApproximationScheme#apply(com.google.common.base.Function, List)}).
+ *
+ * @author braz
+ *
+ * @param <T> the type of the values being approximated
+ */
+public abstract class AbstractAnytimeTreeComputationWithApproximationScheme<T> extends AbstractAnytimeTreeComputation<T> {
 	
-	private Collection<? extends T> elements;
+	protected abstract Anytime<T> makeAnytimeVersion(NullaryFunction<T> baseSub);
+
+	protected abstract Anytime<T> pickNextSubWithNext();
+
+	private ApproximationScheme<T> approximationScheme;
 	
-	public ExtensionalLiveSet(Collection<? extends T> elements) {
-		this.elements = elements;
+	public AbstractAnytimeTreeComputationWithApproximationScheme(TreeComputation<T> base, ApproximationScheme<T> approximationScheme) {
+		super(base, approximationScheme.totalIgnorance(base));
+		this.approximationScheme = approximationScheme;
+	}
+
+	public ApproximationScheme<T> getApproximationScheme() {
+		return approximationScheme;
 	}
 	
-	public boolean contains(T element) {
-		boolean result = elements.contains(element);
-		return result;
-	}
-	
-	public static <T> ExtensionalLiveSet<T> liveSet(Collection<? extends T> elements) {
-		return new ExtensionalLiveSet<>(elements);
-	}
-	
-	public static <T> ExtensionalLiveSet<T> liveSet(T element) {
-		return new ExtensionalLiveSet<>(list(element));
-	}
-
 	@Override
-	public boolean thereIsAnElementSatisfying(Predicate<T> predicate) {
-		boolean result = thereExists(elements, predicate);
-		return result;
+	public Approximation<T> function(List<Approximation<T>> subsApproximations) {
+		Approximation<T> approximation = approximationScheme.apply(getBase()::function, subsApproximations);
+		return approximation;
 	}
 }

@@ -63,4 +63,8 @@ public class IsInstanceOf<E> implements Predicate<E> {
 	public boolean apply(E obj) {
 		return clazz.isInstance(obj);
 	}
+	
+	public static <T> IsInstanceOf<T> isInstanceOf(Class<?> clazz) {
+		return new IsInstanceOf<T>(clazz);
+	}
 }

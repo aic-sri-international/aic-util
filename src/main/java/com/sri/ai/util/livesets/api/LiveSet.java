@@ -76,7 +76,7 @@ public interface LiveSet<T> {
 		return Subtraction.minus(this, another);
 	}
 	
-	default LiveSet<T> minus(Collection<T> elements) {
+	default LiveSet<T> minus(Collection<? extends T> elements) {
 		return Subtraction.minus(this, liveSet(elements));
 	}
 	
@@ -84,7 +84,7 @@ public interface LiveSet<T> {
 		return Union.union(this, another);
 	}
 	
-	default LiveSet<T> union(Collection<T> elements) {
+	default LiveSet<T> union(Collection<? extends T> elements) {
 		return Union.union(this, liveSet(elements));
 	}
 	
@@ -92,7 +92,7 @@ public interface LiveSet<T> {
 		return Intersection.intersection(this, another);
 	}
 	
-	default LiveSet<T> intersection(Collection<T> elements) {
+	default LiveSet<T> intersection(Collection<? extends T> elements) {
 		return Intersection.intersection(this, liveSet(elements));
 	}
 }

@@ -1738,7 +1738,7 @@ public class Util {
 	 * @param <E>
 	 *            the type of the elements being collected.
 	 */
-	public static <E> int collect(Iterable<E> iterable,
+	public static <E> int collect(Iterable<? extends E> iterable,
 			Collection<E> satisfyingCondition, Predicate<E> condition,
 			Collection<E> remaining) {
 		final AtomicInteger i = new AtomicInteger(0);
@@ -1773,7 +1773,7 @@ public class Util {
 	 * @param <E>
 	 *            the type of the elements being collected.
 	 */
-	public static <E> Collection<E> collect(Collection<E> collection,
+	public static <E> Collection<E> collect(Collection<? extends E> collection,
 			Collection<E> collected, Predicate<E> predicate) {
 		collection.stream().filter(predicate::apply)
 				.forEach(collected::add);
@@ -1823,7 +1823,7 @@ public class Util {
 	 * @param <T>
 	 *            the type of the elements to collect.
 	 */
-	public static <T> List<T> collectToList(Collection<T> collection,
+	public static <T> List<T> collectToList(Collection<? extends T> collection,
 			Predicate<T> predicate) {
 		return (List<T>) collect(collection, new LinkedList<T>(), predicate);
 	}
@@ -2470,7 +2470,7 @@ public class Util {
 	 * @param <E>
 	 *            the type of the iterators range elements.
 	 */
-	public static <E> boolean thereExists(Iterator<E> iterator, Predicate<E> predicate) {
+	public static <E> boolean thereExists(Iterator<? extends E> iterator, Predicate<E> predicate) {
 		while (iterator.hasNext()) {
 			if (predicate.apply(iterator.next())) {
 				return true;
@@ -2492,7 +2492,7 @@ public class Util {
 	 * @param <E>
 	 *            the type of the collections elements.
 	 */
-	public static <E> boolean thereExists(Collection<E> collection, Predicate<E> predicate) {
+	public static <E> boolean thereExists(Collection<? extends E> collection, Predicate<E> predicate) {
 		boolean result = false;
 		for (E element : collection) {
 			boolean elementResult = predicate.apply(element);
@@ -2751,7 +2751,7 @@ public class Util {
 		return -1;
 	}
 
-	public static <T> Set<T> intersection(Collection<T> c1, Collection<T> c2) {
+	public static <T> Set<T> intersection(Collection<? extends T> c1, Collection<? extends T> c2) {
 		LinkedHashSet<T> result = new LinkedHashSet<T>();
 		for (T element : c1) {
 			if (c2.contains(element)) {
@@ -3041,8 +3041,8 @@ public class Util {
 	 * @param <E>
 	 *            the type of the elements.
 	 */
-	public static <E> Collection<E> setDifference(Collection<E> c1,
-			Collection<E> c2, Collection<E> result) {
+	public static <E> Collection<E> setDifference(Collection<? extends E> c1,
+			Collection<? extends E> c2, Collection<E> result) {
 		c1.stream().filter(e -> !c2.contains(e)).forEach(result::add);
 
 		return result;
@@ -3080,7 +3080,7 @@ public class Util {
 	 * @param <E>
 	 *            the type of the elements.
 	 */
-	public static <E> List<E> subtract(Collection<E> c1, Collection<E> c2) {
+	public static <E> List<E> subtract(Collection<? extends E> c1, Collection<? extends E> c2) {
 		return (List<E>) setDifference(c1, c2, new LinkedList<E>());
 	}
 
@@ -5271,5 +5271,13 @@ public class Util {
 	 */
 	public static <T> T accumulate(Collection<? extends T> collection, BinaryFunction<T, T, T> function, T initial) {
 		return accumulate(collection.iterator(), function, initial);
+	}
+
+	public static <T> Set<T> unionOfCollections(Collection<Collection<? extends T>> collectionsOfCollections) {
+		LinkedHashSet<T> result = set();
+		for (Collection<? extends T> collection : collectionsOfCollections) {
+			result.addAll(collection);
+		}
+		return result;
 	}
 }

@@ -39,39 +39,29 @@ package com.sri.ai.util.computation.treecomputation.anytime.core;
 
 import static com.sri.ai.util.Util.getFirstSatisfyingPredicateOrNull;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
+import java.util.List;
 
-import com.sri.ai.util.base.NullaryFunction;
 import com.sri.ai.util.computation.anytime.api.Anytime;
+import com.sri.ai.util.computation.anytime.api.Approximation;
 import com.sri.ai.util.computation.treecomputation.anytime.api.AnytimeTreeComputation;
-import com.sri.ai.util.computation.treecomputation.anytime.api.ApproximationScheme;
 import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
 
 /**
+ * A {@link AnytimeTreeComputation} with default picking of next sub-anytime-tree-computation of the first one that is not exhausted.
  * @author braz
  *
  * @param <T> the type of the values being approximated
  */
-public class DefaultAnytimeTreeComputation<T> extends AbstractAnytimeTreeComputation<T> {
-	
-	public DefaultAnytimeTreeComputation(TreeComputation<T> base, ApproximationScheme<T> approximationScheme) {
-		super(base, approximationScheme);
-	}
+public abstract class AbstractAnytimeTreeComputationWithDefaultPickingOfSubs<T> extends AbstractAnytimeTreeComputation<T> {
 	
 	@Override
-	protected Anytime<T> makeAnytimeVersion(NullaryFunction<T> sub) {
-		Constructor<?> constructor = getClass().getConstructors()[0];
-		try {
-			@SuppressWarnings("unchecked")
-			AnytimeTreeComputation<T> result = (AnytimeTreeComputation<T>) constructor.newInstance(sub, getApproximationScheme());
-			return result;
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			throw new Error(e);
-		}
-	}
+	public abstract Approximation<T> function(List<Approximation<T>> subsApproximations);
 
+	public AbstractAnytimeTreeComputationWithDefaultPickingOfSubs(TreeComputation<T> base, Approximation<T> initialApproximation) {
+		super(base, initialApproximation);
+	}
+	
 	@Override
 	protected Anytime<T> pickNextSubWithNext() {
 		Anytime<T> result = getFirstSatisfyingPredicateOrNull(getSubs(), Iterator::hasNext);

@@ -35,40 +35,46 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.sri.ai.util.livesets.core.lazy.memoryless;
+package com.sri.ai.util.computation.treecomputation.anytime.core;
 
-import static com.sri.ai.util.Util.list;
-import static com.sri.ai.util.Util.thereExists;
+import static com.sri.ai.util.Util.getFirstSatisfyingPredicateOrNull;
 
-import java.util.Collection;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Iterator;
 
-import com.google.common.base.Predicate;
-import com.sri.ai.util.livesets.api.LiveSet;
+import com.sri.ai.util.base.NullaryFunction;
+import com.sri.ai.util.computation.anytime.api.Anytime;
+import com.sri.ai.util.computation.treecomputation.anytime.api.AnytimeTreeComputation;
+import com.sri.ai.util.computation.treecomputation.anytime.api.ApproximationScheme;
+import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
 
-public class ExtensionalLiveSet<T> implements LiveSet<T> {
+/**
+ * @author braz
+ *
+ * @param <T> the type of the values being approximated
+ */
+public class DefaultAnytimeTreeComputationWithApproximationScheme<T> extends AbstractAnytimeTreeComputationWithApproximationScheme<T> {
 	
-	private Collection<? extends T> elements;
-	
-	public ExtensionalLiveSet(Collection<? extends T> elements) {
-		this.elements = elements;
+	public DefaultAnytimeTreeComputationWithApproximationScheme(TreeComputation<T> base, ApproximationScheme<T> approximationScheme) {
+		super(base, approximationScheme);
 	}
 	
-	public boolean contains(T element) {
-		boolean result = elements.contains(element);
-		return result;
-	}
-	
-	public static <T> ExtensionalLiveSet<T> liveSet(Collection<? extends T> elements) {
-		return new ExtensionalLiveSet<>(elements);
-	}
-	
-	public static <T> ExtensionalLiveSet<T> liveSet(T element) {
-		return new ExtensionalLiveSet<>(list(element));
+	@Override
+	protected Anytime<T> makeAnytimeVersion(NullaryFunction<T> sub) {
+		Constructor<?> constructor = getClass().getConstructors()[0];
+		try {
+			@SuppressWarnings("unchecked")
+			AnytimeTreeComputation<T> result = (AnytimeTreeComputation<T>) constructor.newInstance(sub, getApproximationScheme());
+			return result;
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			throw new Error(e);
+		}
 	}
 
 	@Override
-	public boolean thereIsAnElementSatisfying(Predicate<T> predicate) {
-		boolean result = thereExists(elements, predicate);
+	protected Anytime<T> pickNextSubWithNext() {
+		Anytime<T> result = getFirstSatisfyingPredicateOrNull(getSubs(), Iterator::hasNext);
 		return result;
 	}
 }

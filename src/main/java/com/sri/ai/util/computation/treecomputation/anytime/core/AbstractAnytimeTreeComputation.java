@@ -38,31 +38,27 @@
 package com.sri.ai.util.computation.treecomputation.anytime.core;
 
 import static com.sri.ai.util.Util.mapIntoArrayList;
-import static com.sri.ai.util.Util.myAssert;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.sri.ai.util.base.NullaryFunction;
+import com.sri.ai.util.collect.EZIterator;
 import com.sri.ai.util.computation.anytime.api.Anytime;
 import com.sri.ai.util.computation.anytime.api.Approximation;
 import com.sri.ai.util.computation.treecomputation.anytime.api.AnytimeTreeComputation;
-import com.sri.ai.util.computation.treecomputation.anytime.api.ApproximationScheme;
 import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
 
 /**
  * An abstract implementation of {@link AnytimeTreeComputation}
- * that borrows most functionality based on a given base {@link TreeComputation}
- * and an {@link ApproximationScheme}.
+ * that borrows most functionality based on a given base {@link TreeComputation}.
  * <p>
  * Essentially, this creates an anytime tree computation by
  * lazily expanding, node by node, the base tree computation, and creating
  * anytime versions of them that are used to compute the next approximation
  * to the final root value.
  * <p>
- * Initially, the value of the anytime root computation is
- * the approximation provided by the approximation scheme's
- * <code>totalIgnorance</code> method.
+ * Initially, the value of the anytime root computation is one provided at construction.
  * <p>
  * Then, in order to create the next approximation,
  * this class creates sub-anytime approximations
@@ -71,8 +67,7 @@ import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
  * {@link #makeAnytimeVersion(NullaryFunction)}
  * (which must be implemented by extending classes).
  * The sub-anytime tree computations's approximations
- * are then used by the approximation scheme to compute the new
- * approximation to the root, by also using the base tree computation's function.
+ * are then used by {@link #function(List)} to compute the current approximation.
  * <p>
  * To update an even better next approximation,
  * the class picks the next anytime sub-computation
@@ -81,61 +76,59 @@ import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
  * <p>
  * It then iterates the picked next anytime sub-computation,
  * obtaining a new approximation to the corresponding argument,
- * and delegates the computation of the new approximation
- * of the root anytime tree computation to the approximation scheme.
+ * and delegates again to {@link #function(List)}.
+ * <p>
+ * Extending classes must override {@link #makeAnytimeVersion(NullaryFunction sub)}
+ * to indicate how to make the corresponding anytime version of a sub-tree computation,
+ * {@link #pickNextSubWithNext()} to indicate how the next sub-tree computation
+ * to be iterated is computed,
+ * and {@link #function(List)} to specify how new approximations are computed.
  *
  * @author braz
  *
  * @param <T> the type of the values being approximated
  */
-public abstract class AbstractAnytimeTreeComputation<T> implements AnytimeTreeComputation<T> {
+public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Approximation<T>> implements AnytimeTreeComputation<T> {
 	
 	protected abstract Anytime<T> makeAnytimeVersion(NullaryFunction<T> baseSub);
 
 	protected abstract Anytime<T> pickNextSubWithNext();
 
+	@Override
+	public abstract Approximation<T> function(List<Approximation<T>> subsApproximations);
+
 	private TreeComputation<T> base;
-	private ApproximationScheme<T> approximationScheme;
 	private ArrayList<? extends Anytime<T>> subs;
 	private Approximation<T> currentApproximation;
 	
-	public AbstractAnytimeTreeComputation(TreeComputation<T> base, ApproximationScheme<T> approximationScheme) {
+	public AbstractAnytimeTreeComputation(TreeComputation<T> base, Approximation<T> initialApproximation) {
+		super(true /* next value is already computed and available */);
+		this.next = initialApproximation;
 		this.base = base;
-		this.approximationScheme = approximationScheme;
 		this.subs = null;
-		this.currentApproximation = approximationScheme.totalIgnorance(base);// TODO : put an argument inside the function
-	}
-
-	public ApproximationScheme<T> getApproximationScheme() {
-		return approximationScheme;
-	}
-	
-	@Override
-	public ArrayList<Anytime<T>> getSubs() {
-		ArrayList<Anytime<T>> result = mapIntoArrayList(base.getSubs(), this::makeAnytimeVersion);
-		return result;
+		this.currentApproximation = initialApproximation;
 	}
 
 	@Override
-	public boolean hasNext() {
-		boolean result = pickNextSubWithNext() != null;
-		return result;
+	public ArrayList<? extends Anytime<T>> getSubs() {
+		if (subs == null) {
+			subs = mapIntoArrayList(base.getSubs(), this::makeAnytimeVersion);
+		}
+		return subs;
 	}
-	
+
 	@Override
-	public Approximation<T> next() {
+	public Approximation<T> calculateNext() {
 		Anytime<T> nextSub = pickNextSubWithNext();
-		myAssert(nextSub != null, () -> this.getClass() + ": next invoked when hasNext is false");
-		nextSub.next();
-		List<Approximation<T>> subsApproximations = mapIntoArrayList(subs, Anytime::getCurrentApproximation); 
-		currentApproximation = function(subsApproximations);
-		return currentApproximation;
-	}
-
-	@Override
-	public Approximation<T> function(List<Approximation<T>> subsApproximations) {
-		Approximation<T> approximation = approximationScheme.apply(base::function, subsApproximations);
-		return approximation;
+		if (nextSub == null) {
+			return null;
+		}
+		else {
+			nextSub.next();
+			List<Approximation<T>> subsApproximations = mapIntoArrayList(getSubs(), Anytime::getCurrentApproximation); 
+			currentApproximation = function(subsApproximations);
+			return currentApproximation;
+		}
 	}
 
 	public TreeComputation<T> getBase() {
