@@ -117,7 +117,7 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 		return subs;
 	}
 
-	private void makeSubs() {
+	protected void makeSubs() {
 		subs = mapIntoArrayList(base.getSubs(), this::makeAnytimeVersion);
 	}
 
