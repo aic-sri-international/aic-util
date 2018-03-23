@@ -112,23 +112,57 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 	@Override
 	public ArrayList<? extends Anytime<T>> getSubs() {
 		if (subs == null) {
-			subs = mapIntoArrayList(base.getSubs(), this::makeAnytimeVersion);
+			makeSubs();
 		}
 		return subs;
 	}
 
+	private void makeSubs() {
+		subs = mapIntoArrayList(base.getSubs(), this::makeAnytimeVersion);
+	}
+
 	@Override
 	public Approximation<T> calculateNext() {
-		Anytime<T> nextSub = pickNextSubWithNext();
-		if (nextSub == null) {
-			return null;
+		boolean subsHaveNextApproximation = setSubsToTheirNextApproximationIfAny();
+		Approximation<T> result;
+		if (subsHaveNextApproximation) {
+			result = computeNextApproximationBasedOnSubsApproximations();
 		}
 		else {
-			nextSub.next();
-			List<Approximation<T>> subsApproximations = mapIntoArrayList(getSubs(), Anytime::getCurrentApproximation); 
-			currentApproximation = function(subsApproximations);
-			return currentApproximation;
+			result = null;
 		}
+		return result;
+	}
+
+	private boolean setSubsToTheirNextApproximationIfAny() {
+		boolean subsHaveNextApproximation;
+		if (subs == null) {
+			makeSubs();
+			subsHaveNextApproximation = true;
+		}
+		else {
+			subsHaveNextApproximation = iterateNextSubToNextApproximationIfAny();
+		}
+		return subsHaveNextApproximation;
+	}
+
+	private boolean iterateNextSubToNextApproximationIfAny() {
+		Anytime<T> nextSub = pickNextSubWithNext();
+		boolean subsHaveNextApproximation = (nextSub != null);
+		if (subsHaveNextApproximation) {
+			nextSub.next();
+		}
+		return subsHaveNextApproximation;
+	}
+
+	private Approximation<T> computeNextApproximationBasedOnSubsApproximations() {
+		
+		List<Approximation<T>> subsApproximations = 
+				mapIntoArrayList(getSubs(), Anytime::getCurrentApproximation); 
+		
+		currentApproximation = function(subsApproximations);
+		
+		return currentApproximation;
 	}
 
 	public TreeComputation<T> getBase() {
