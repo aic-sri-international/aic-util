@@ -77,16 +77,16 @@ public abstract class EZIterator<E> implements Iterator<E> {
 	 * A default constructor that assumes {@link next} needs to be computed.
 	 */
 	public EZIterator() {
-		this(false);
+		onNext = false;
 	}
 	
 	/**
-	 * A constructor indicating that the field {@link next} already contains
-	 * the next value to be provided by {@link #next} right at construction.
-	 * @param onNext whether the constructor (of an extending class) already computes a <code>next</code> value. 
+	 * A constructor already providing the first value for the iterator.
+	 * @param next the first value for the iterator. 
 	 */
-	public EZIterator(boolean onNext) {
-		this.onNext = onNext;
+	public EZIterator(E next) {
+		this.onNext = true;
+		this.next = next;
 	}
 	
 	private void ensureBeingOnNext() {
