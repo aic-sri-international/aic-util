@@ -2751,6 +2751,18 @@ public class Util {
 		return -1;
 	}
 
+	public static <E> int getIndexOfLastSatisfyingPredicateOrMinusOne(List<? extends E> c, Predicate<E> p) {
+		ListIterator<? extends E> it = c.listIterator(c.size());
+		while (it.hasPrevious()) {
+			int index = it.previousIndex();
+			E e = it.previous();
+			if (p.apply(e)) {
+				return index;
+			}
+		}
+		return -1;
+	}
+
 	public static <T> Set<T> intersection(Collection<? extends T> c1, Collection<? extends T> c2) {
 		LinkedHashSet<T> result = new LinkedHashSet<T>();
 		for (T element : c1) {

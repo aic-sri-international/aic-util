@@ -123,10 +123,10 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 
 	@Override
 	public Approximation<T> calculateNext() {
-		boolean subsHaveNextApproximation = setSubsToTheirNextApproximationIfAny();
 		Approximation<T> result;
+		boolean subsHaveNextApproximation = setSubsToTheirNextApproximationIfAny();
 		if (subsHaveNextApproximation) {
-			result = computeNextApproximationBasedOnSubsApproximations();
+			result = computeNextApproximationBasedOnSubsNextApproximation();
 		}
 		else {
 			result = null;
@@ -155,7 +155,7 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 		return subsHaveNextApproximation;
 	}
 
-	private Approximation<T> computeNextApproximationBasedOnSubsApproximations() {
+	private Approximation<T> computeNextApproximationBasedOnSubsNextApproximation() {
 		
 		List<Approximation<T>> subsApproximations = 
 				mapIntoArrayList(getSubs(), Anytime::getCurrentApproximation); 

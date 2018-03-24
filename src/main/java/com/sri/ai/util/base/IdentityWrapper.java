@@ -47,14 +47,18 @@ import com.google.common.annotations.Beta;
  * @author braz
  */
 @Beta
-public class IdentityWrapper {
-	private Object object;
+public class IdentityWrapper<T> {
+	private T object;
 	
-	public IdentityWrapper(Object object) {
+	public IdentityWrapper(T object) {
 		this.object = object;
 	}
 
-	public Object getObject() {
+	public static <T> IdentityWrapper<T> identityWrapper(T object) {
+		return new IdentityWrapper<T>(object);
+	}
+	
+	public T getObject() {
 		return object;
 	}
 	
@@ -65,11 +69,19 @@ public class IdentityWrapper {
 	
 	@Override
 	public boolean equals(Object another) {
-		return object == ((IdentityWrapper)another).object;
+		boolean result;
+		try {
+			IdentityWrapper anotherIdentityWrapper = (IdentityWrapper) another;
+			result = object == anotherIdentityWrapper.object;
+		}
+		catch (ClassCastException e) {
+			result = false;
+		}
+		return result;
 	}
 	
 	@Override
 	public String toString() {
-		return System.identityHashCode(object) + ": " + object;
+		return "Identity wrapper for " + object + " with hash code " + System.identityHashCode(object);
 	}
 }
