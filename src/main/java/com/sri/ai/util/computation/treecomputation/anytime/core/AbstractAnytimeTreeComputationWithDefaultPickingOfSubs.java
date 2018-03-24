@@ -63,7 +63,7 @@ public abstract class AbstractAnytimeTreeComputationWithDefaultPickingOfSubs<T> 
 	}
 	
 	@Override
-	protected Anytime<T> pickNextSubWithNext() {
+	protected Anytime<T> pickNextSubToIterate() {
 		Anytime<T> result = getFirstSatisfyingPredicateOrNull(getSubs(), Iterator::hasNext);
 		return result;
 	}

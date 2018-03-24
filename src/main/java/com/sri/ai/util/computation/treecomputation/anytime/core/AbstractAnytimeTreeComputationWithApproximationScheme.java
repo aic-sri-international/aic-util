@@ -59,7 +59,7 @@ public abstract class AbstractAnytimeTreeComputationWithApproximationScheme<T> e
 	
 	protected abstract Anytime<T> makeAnytimeVersion(NullaryFunction<T> baseSub);
 
-	protected abstract Anytime<T> pickNextSubWithNext();
+	protected abstract Anytime<T> pickNextSubToIterate();
 
 	private ApproximationScheme<T> approximationScheme;
 	

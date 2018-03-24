@@ -73,8 +73,13 @@ public class DefaultAnytimeTreeComputationWithApproximationScheme<T> extends Abs
 	}
 
 	@Override
-	protected Anytime<T> pickNextSubWithNext() {
+	protected Anytime<T> pickNextSubToIterate() {
 		Anytime<T> result = getFirstSatisfyingPredicateOrNull(getSubs(), Iterator::hasNext);
 		return result;
+	}
+
+	@Override
+	protected boolean evenOneSubWithTotalIgnoranceRendersApproximationEqualToTotalIgnorance() {
+		return false;
 	}
 }

@@ -71,7 +71,7 @@ import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
  * <p>
  * To update an even better next approximation,
  * the class picks the next anytime sub-computation
- * by using the abstract method {@link #pickNextSubWithNext()},
+ * by using the abstract method {@link #pickNextSubToIterate()},
  * which is also to be specified by extensions.
  * <p>
  * It then iterates the picked next anytime sub-computation,
@@ -80,7 +80,7 @@ import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
  * <p>
  * Extending classes must override {@link #makeAnytimeVersion(NullaryFunction sub)}
  * to indicate how to make the corresponding anytime version of a sub-tree computation,
- * {@link #pickNextSubWithNext()} to indicate how the next sub-tree computation
+ * {@link #pickNextSubToIterate()} to indicate how the next sub-tree computation
  * to be iterated is computed,
  * and {@link #function(List)} to specify how new approximations are computed.
  *
@@ -92,18 +92,20 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 	
 	protected abstract Anytime<T> makeAnytimeVersion(NullaryFunction<T> baseSub);
 
-	protected abstract Anytime<T> pickNextSubWithNext();
+	protected abstract Anytime<T> pickNextSubToIterate();
+
+	protected abstract boolean evenOneSubWithTotalIgnoranceRendersApproximationEqualToTotalIgnorance();
 
 	@Override
 	public abstract Approximation<T> function(List<Approximation<T>> subsApproximations);
 
-	private Approximation<T> initialApproximation;
+	private Approximation<T> totalIgnorance;
 	private TreeComputation<T> base;
 	private ArrayList<? extends Anytime<T>> subs;
 	private Approximation<T> currentApproximation;
 	
-	public AbstractAnytimeTreeComputation(TreeComputation<T> base, Approximation<T> initialApproximation) {
-		this.initialApproximation = initialApproximation;
+	public AbstractAnytimeTreeComputation(TreeComputation<T> base, Approximation<T> totalIgnorance) {
+		this.totalIgnorance = totalIgnorance;
 		this.base = base;
 		this.subs = null;
 		this.currentApproximation = null; // initial approximation is first of iterator's elements, and since it has not been iterated yet, there is no current approximation.
@@ -112,17 +114,25 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 	@Override
 	public ArrayList<? extends Anytime<T>> getSubs() {
 		if (subsHaveNotYetBeenMade()) {
-			makeSubsAndIterateThemToTheirInitialApproximation();
+			makeSubsAndIterateThemToTheirFirstApproximation();
 		}
 		return subs;
 	}
 
-	protected void makeSubsAndIterateThemToTheirInitialApproximation() {
-		subs = mapIntoArrayList(base.getSubs(), this::makeAnytimeVersion);
-		iterateSubsToInitialApproximation();
+	protected void makeSubsAndIterateThemToTheirFirstApproximation() {
+		makeSubs();
+		iterateSubsToFirstApproximation();
 	}
 
-	private void iterateSubsToInitialApproximation() {
+	private void makeSubs() {
+		subs = mapIntoArrayList(base.getSubs(), this::makeAnytimeVersion);
+	}
+
+	private void iterateSubsToFirstApproximation() {
+		iterateAllSubs();
+	}
+
+	private void iterateAllSubs() {
 		for (Anytime<T> sub : subs) {
 			sub.next();
 		}
@@ -133,7 +143,7 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 		Approximation<T> result;
 		
 		if (firstIteration()) {
-			result = initialApproximation;
+			result = totalIgnorance;
 		}
 		else {
 			result = computeNextBasedOnSubs();
@@ -178,9 +188,16 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 	}
 
 	private boolean createSubsAndIterateThemToTheirFirstUsefulApproximationIfAny() {
-		makeSubsAndIterateThemToTheirInitialApproximation();
+		makeSubsAndIterateThemToTheirFirstApproximation();
+		iterateSubsSoTheirApproximationIsUseful();
 		boolean subsIteratedToTheirNextApproximation = true;
 		return subsIteratedToTheirNextApproximation;
+	}
+
+	private void iterateSubsSoTheirApproximationIsUseful() {
+		if (evenOneSubWithTotalIgnoranceRendersApproximationEqualToTotalIgnorance()) {
+			iterateAllSubs();
+		}
 	}
 
 	private boolean subsHaveNotYetBeenMade() {
@@ -189,7 +206,7 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 
 	private boolean iterateAlreadCreatedSubsToTheirNextApproximationIfAny() {
 		boolean subsIteratedToTheirNextApproximation;
-		Anytime<T> nextSub = pickNextSubWithNext();
+		Anytime<T> nextSub = pickNextSubToIterate();
 		boolean foundSubWithNext = (nextSub != null);
 		if (foundSubWithNext) {
 			nextSub.next();
