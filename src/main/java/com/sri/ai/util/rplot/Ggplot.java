@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.rosuda.REngine.REngineException;
-//import org.rosuda.REngine.Rserve.*;
 import org.rosuda.REngine.Rserve.RConnection;
 import org.rosuda.REngine.Rserve.RserveException;
 
