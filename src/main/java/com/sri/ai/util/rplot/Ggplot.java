@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.rosuda.REngine.REngineException;
-import org.rosuda.REngine.RList;
 //import org.rosuda.REngine.Rserve.*;
 import org.rosuda.REngine.Rserve.RConnection;
 import org.rosuda.REngine.Rserve.RserveException;
@@ -15,11 +14,6 @@ import org.rosuda.REngine.Rserve.RserveException;
 /**
  * Requirements: 
  * 		R
- * 		Rserve installed (in R, do: install.packages("Rserve"))
- * 		Include <YOUR_R_HOME>\library\Rserve\java\REngine.jar 
- * 				<YOUR_R_HOME>\library\Rserve\java\REngine.jarand Rserve.jar 
- * 			in the eclipse path. 
- * 			In my case it was "/home/gabriel/R/x86_64-pc-linux-gnu-library/3.4/Rserve/java/"...  
  * 		
  * @author gabriel
  *
