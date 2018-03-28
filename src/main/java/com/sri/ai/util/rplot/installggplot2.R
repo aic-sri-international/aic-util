@@ -4,9 +4,11 @@ print("------------ all done ------------")
 
 install.packages('rattle.data')
 library(rattle.data)
+
+
+
+
 library(ggplot2)
-
-
 
 l0 <- list(c(1,2,3,4,5))
 l1 <- list(c(1,2,3,4,5))
@@ -16,9 +18,11 @@ l3 <- list(c(1,2,3,4,5))
 
 df5 <- data.frame(l0,l1,l2,l3)
 colnames(df5) <- c("l0","l1","l2","l3")
-ggplot(df5,aes(x=l0,y=l1),geom_point())
-
-
+p <- ggplot(df5,aes(x=l0,y=l1)) + geom_point() +  geom_smooth(method="loess")
+p
+dev.new()
+m <- plot(p)
+detach()
 
 library(ggplot2)
 theme_set(theme_bw())  # pre-set the bw theme.
