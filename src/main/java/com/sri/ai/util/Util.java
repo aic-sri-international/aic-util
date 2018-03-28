@@ -1564,36 +1564,36 @@ public class Util {
 	 * 
 	 * @param iterator
 	 *            an iterator over a collection of elements to be tested.
-	 * @param satisfyingCondition1
-	 *            populated with elements that satisfy condition1.
 	 * @param condition1
 	 *            the test to be applied to the iterator's range to be passed in
 	 *            order to add elements to the given satisfyingCondition1
 	 *            collection.
-	 * @param satisfyingCondition2
-	 *            populated with elements that satisfy condition2.
+	 * @param elementsSatisfyingCondition1
+	 *            populated with elements that satisfy condition1.
 	 * @param condition2
 	 *            the test to be applied to the iterator's range to be passed in
 	 *            order to add elements to the given satisfyingCondition2
 	 *            collection.
+	 * @param elementsSatisfyingCondition2
+	 *            populated with elements that satisfy condition2.
 	 * @return false is some element in the given iterator's range does not
 	 *         satisfy both given conditions, true otherwise.
 	 * @param <E>
 	 *            the type of the elements in the given collections.
 	 */
 	public static <E> boolean collectOrReturnFalseIfElementDoesNotFitEither(
-			Iterator<E> iterator, Collection<E> satisfyingCondition1,
-			Predicate<E> condition1, Collection<E> satisfyingCondition2,
-			Predicate<E> condition2) {
+			Iterator<E> iterator, Predicate<E> condition1,
+			Collection<E> elementsSatisfyingCondition1, Predicate<E> condition2,
+			Collection<E> elementsSatisfyingCondition2) {
 		while (iterator.hasNext()) {
 			E object = iterator.next();
 			boolean result1;
 			boolean result2;
 			if (result1 = condition1.apply(object)) {
-				satisfyingCondition1.add(object);
+				elementsSatisfyingCondition1.add(object);
 			}
 			if (result2 = condition2.apply(object)) {
-				satisfyingCondition2.add(object);
+				elementsSatisfyingCondition2.add(object);
 			}
 
 			if (!result1 && !result2) {
@@ -1609,30 +1609,30 @@ public class Util {
 	 * 
 	 * @param collection
 	 *            a collection of elements to be tested.
-	 * @param satisfyingCondition1
-	 *            populated with elements that satisfy condition1.
 	 * @param condition1
 	 *            the test to be applied to the elements of the given collection
 	 *            to be passed in order to add elements to the given
 	 *            satisfyingCondition1 collection.
-	 * @param satisfyingCondition2
-	 *            populated with elements that satisfy condition2.
+	 * @param elementsSatisfyingCondition1
+	 *            populated with elements that satisfy condition1.
 	 * @param condition2
 	 *            the test to be applied to the elements of the given collection
 	 *            to be passed in order to add elements to the given
 	 *            satisfyingCondition2 collection.
+	 * @param elementsSatisfyingCondition2
+	 *            populated with elements that satisfy condition2.
 	 * @return false is some element in the given collection does not satisfy
 	 *         both given conditions, true otherwise.
 	 * @param <E>
 	 *            the type of the elements in the given collections.
 	 */
 	public static <E> boolean collectOrReturnFalseIfElementDoesNotFitEither(
-			Collection<E> collection, Collection<E> satisfyingCondition1,
-			Predicate<E> condition1, Collection<E> satisfyingCondition2,
-			Predicate<E> condition2) {
+			Collection<E> collection, Predicate<E> condition1,
+			Collection<E> elementsSatisfyingCondition1, Predicate<E> condition2,
+			Collection<E> elementsSatisfyingCondition2) {
 		return collectOrReturnFalseIfElementDoesNotFitEither(
-				collection.iterator(), satisfyingCondition1, condition1,
-				satisfyingCondition2, condition2);
+				collection.iterator(), condition1, elementsSatisfyingCondition1,
+				condition2, elementsSatisfyingCondition2);
 	}
 
 	/**
@@ -1649,10 +1649,10 @@ public class Util {
 	 *            the maximum number to be collected.
 	 * @param condition
 	 *            the satisfying condition predicate
-	 * @param satisfyingCondition
+	 * @param elementsSatisfyingCondition
 	 *            those elements from the iterator's range that satisfy the
 	 *            condition.
-	 * @param remaining
+	 * @param remainingElements
 	 *            those elements from the iterator's range that don't satisfy
 	 *            the condition.
 	 * @return the index of the first of the n elements satisfying the
@@ -1662,20 +1662,20 @@ public class Util {
 	 *            the type of the elements from the iterator's range.
 	 */
 	public static <E> int collectFirstN(Iterator<E> iterator, int n,
-			Predicate<E> condition, Collection<E> satisfyingCondition,
-			Collection<E> remaining) {
+			Predicate<E> condition, Collection<E> elementsSatisfyingCondition,
+			Collection<E> remainingElements) {
 		int i = 0;
 		int result = -1;
 		while (iterator.hasNext()) {
 			E object = iterator.next();
 			if (n > 0 && condition.apply(object)) {
-				satisfyingCondition.add(object);
+				elementsSatisfyingCondition.add(object);
 				n--;
 				if (result == -1) {
 					result = i;
 				}
 			} else {
-				remaining.add(object);
+				remainingElements.add(object);
 			}
 			i++;
 		}
@@ -1698,9 +1698,9 @@ public class Util {
 	 *            the maximum number to be collected.
 	 * @param condition
 	 *            the satisfying condition predicate
-	 * @param satisfyingCondition
+	 * @param elementsSatisfyingCondition
 	 *            those elements from the collection that satisfy the condition.
-	 * @param remaining
+	 * @param remainingElements
 	 *            those elements from the collection that don't satisfy the
 	 *            condition.
 	 * @return the index of the first of the n elements satisfying the
@@ -1710,10 +1710,10 @@ public class Util {
 	 *            the type of the elements from the input collection.
 	 */
 	public static <E> int collectFirstN(Collection<E> c, int n,
-			Predicate<E> condition, Collection<E> satisfyingCondition,
-			Collection<E> remaining) {
+			Predicate<E> condition, Collection<E> elementsSatisfyingCondition,
+			Collection<E> remainingElements) {
 		int result = collectFirstN(c.iterator(), n, condition,
-				satisfyingCondition, remaining);
+				elementsSatisfyingCondition, remainingElements);
 		return result;
 	}
 
@@ -1725,12 +1725,12 @@ public class Util {
 	 * 
 	 * @param iterable
 	 *            an iterable over the elements to be tested.
-	 * @param satisfyingCondition
-	 *            elements from the iterable that satisfy the given condition
-	 *            will be added to this collection.
 	 * @param condition
 	 *            the predicate used to test the elements in the given iterable.
-	 * @param remaining
+	 * @param elementsSatisfyingCondition
+	 *            elements from the iterable that satisfy the given condition
+	 *            will be added to this collection.
+	 * @param remainingElements
 	 *            elements from the iterable that do not satisfy the given
 	 *            condition will be added to this collection.
 	 * @return the index of the first element satisfying the condition, -1 if
@@ -1739,18 +1739,18 @@ public class Util {
 	 *            the type of the elements being collected.
 	 */
 	public static <E> int collect(Iterable<? extends E> iterable,
-			Collection<E> satisfyingCondition, Predicate<E> condition,
-			Collection<E> remaining) {
+			Predicate<E> condition, Collection<E> elementsSatisfyingCondition,
+			Collection<E> remainingElements) {
 		final AtomicInteger i = new AtomicInteger(0);
 		final AtomicInteger result = new AtomicInteger(-1);
 		iterable.forEach(e -> {
 			if (condition.apply(e)) {
-				satisfyingCondition.add(e);
+				elementsSatisfyingCondition.add(e);
 				if (result.intValue() == -1) {
 					result.set(i.intValue());
 				}
 			} else {
-				remaining.add(e);
+				remainingElements.add(e);
 			}
 			i.incrementAndGet();
 		});
@@ -1763,18 +1763,18 @@ public class Util {
 	 * 
 	 * @param collection
 	 *            the collection from which elements are to be collected from.
-	 * @param collected
-	 *            elements from the given collection that pass the given
-	 *            predicate test will be added to this collection.
 	 * @param predicate
 	 *            the test to be used to select collect elements from the given
 	 *            collection.
+	 * @param collected
+	 *            elements from the given collection that pass the given
+	 *            predicate test will be added to this collection.
 	 * @return collected.
 	 * @param <E>
 	 *            the type of the elements being collected.
 	 */
 	public static <E> Collection<E> collect(Collection<? extends E> collection,
-			Collection<E> collected, Predicate<E> predicate) {
+			Predicate<E> predicate, Collection<E> collected) {
 		collection.stream().filter(predicate::apply)
 				.forEach(collected::add);
 		return collected;
@@ -1787,18 +1787,18 @@ public class Util {
 	 * @param iterator
 	 *            an iterator over whose range elements are to be collected
 	 *            from.
-	 * @param collected
-	 *            elements from the given iterator's range that pass the given
-	 *            predicate test will be added to this collection.
 	 * @param predicate
 	 *            the test to be used to select iterated elements from the given
 	 *            iterator.
+	 * @param collected
+	 *            elements from the given iterator's range that pass the given
+	 *            predicate test will be added to this collection.
 	 * @return collected.
 	 * @param <E>
 	 *            the type of the elements being collected.
 	 */
 	public static <E> Collection<E> collect(Iterator<E> iterator,
-			Collection<E> collected, Predicate<E> predicate) {
+			Predicate<E> predicate, Collection<E> collected) {
 
 		iterator.forEachRemaining(e -> {
 			if (predicate.apply(e)) {
@@ -1825,7 +1825,7 @@ public class Util {
 	 */
 	public static <T> List<T> collectToList(Collection<? extends T> collection,
 			Predicate<T> predicate) {
-		return (List<T>) collect(collection, new LinkedList<T>(), predicate);
+		return (List<T>) collect(collection, predicate, new LinkedList<T>());
 	}
 
 	/**
@@ -1844,7 +1844,7 @@ public class Util {
 	 */
 	public static <T> List<T> collectToList(Iterator<T> iterator,
 			Predicate<T> predicate) {
-		return (List<T>) collect(iterator, new LinkedList<T>(), predicate);
+		return (List<T>) collect(iterator, predicate, new LinkedList<T>());
 	}
 
 	/**
@@ -1862,7 +1862,7 @@ public class Util {
 	 *            the type of the elements to collect.
 	 */
 	public static <T> ArrayList<T> collectToArrayList(Collection<T> collection, Predicate<T> predicate) {
-		return (ArrayList<T>) collect(collection, new ArrayList<T>(), predicate);
+		return (ArrayList<T>) collect(collection, predicate, new ArrayList<T>());
 	}
 
 	/**
@@ -1880,7 +1880,7 @@ public class Util {
 	 *            the type of the elements to collect.
 	 */
 	public static <T> ArrayList<T> collectToArrayList(Iterator<T> iterator, Predicate<T> predicate) {
-		return (ArrayList<T>) collect(iterator, new ArrayList<T>(), predicate);
+		return (ArrayList<T>) collect(iterator, predicate, new ArrayList<T>());
 	}
 
 	/**
@@ -4328,7 +4328,7 @@ public class Util {
 	public static <T> PairOf<List<T>> collectToLists(List<T> collection, Predicate<T> predicate) {
 		List<T> positive = new LinkedList<T>();
 		List<T> negative = new LinkedList<T>();
-		collect(collection, positive, predicate, negative);
+		collect(collection, predicate, positive, negative);
 		PairOf<List<T>> result = makePairOf(positive, negative);
 		return result;
 	}

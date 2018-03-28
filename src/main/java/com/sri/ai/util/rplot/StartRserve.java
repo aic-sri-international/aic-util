@@ -1,6 +1,6 @@
 package com.sri.ai.util.rplot;
 
-//package org.rosuda.REngine.Rserve;
+/* Copied from githib repository for RServe, where it was originally in package org.rosuda.REngine.Rserve but not distributed in jar files. */
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,12 +9,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import org.rosuda.REngine.Rserve.RConnection;
-
-/**
- * I could not call this class from my class, so I put the file here
- */
-
-
 
 /**
  * helper class that consumes output of a process. In addition, it filters output
@@ -78,6 +72,7 @@ public class StartRserve {
   /**
    * shortcut to
    * <code>launchRserve(cmd, "--no-save --slave", "--no-save --slave", false)</code>
+   * @return the value returned by <code>launchRserve(cmd, "--no-save --slave", "--no-save --slave", false)</code>
    */
   public static boolean launchRserve(String cmd) {
     return launchRserve(cmd, "--no-save --slave", "--no-save --slave", false);
@@ -90,6 +85,7 @@ public class StartRserve {
    * @param cmd command necessary to start R
    * @param rargs arguments are are to be passed to R
    * @param rsrvargs arguments to be passed to Rserve
+   * @param debug whether to debug
    * @return <code>true</code> if Rserve is running or was successfully started,
    * <code>false</code> otherwise.
    */
@@ -110,7 +106,9 @@ public class StartRserve {
       }
       System.out.println("StartRserve: waiting for Rserve to start ... (" + p + ")");
       // we need to fetch the output - some platforms will die if you don't ...
+      @SuppressWarnings("unused")
       StreamHog errorHog = new StreamHog(p.getErrorStream(), false);
+      @SuppressWarnings("unused")
       StreamHog outputHog = new StreamHog(p.getInputStream(), false);
       if (!isWindows) /* on Windows the process will never return, so we cannot wait */ {
         p.waitFor();
@@ -145,7 +143,8 @@ public class StartRserve {
    * start it using the defaults for the platform where it is run on. This
    * method is meant to be set-and-forget and cover most default setups. For
    * special setups you may get more control over R with
-   * <<code>launchRserve</code> instead.
+   * <code>launchRserve</code> instead.
+   * @return whether it succeed.
    */
   public static boolean checkLocalRserve() {
     if (isRserveRunning()) {
@@ -201,6 +200,7 @@ public class StartRserve {
 
   /**
    * just a demo main method which starts Rserve and shuts it down again
+   * @param args the arguments
    */
   public static void main(String[] args) {
     System.out.println("result=" + checkLocalRserve());
