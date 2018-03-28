@@ -68,21 +68,6 @@ public class Ggplot {
 		}
 	}
 
-	private static String parseToOneString(List<String> listOfColNames) {
-		String res = "";
-		
-		boolean first = true;
-		for(String s : listOfColNames) {
-			if(first) {
-				res = s;
-				first = false;
-			}
-			else{
-				res = res + "," + s;
-			}
-		}
-		return res;
-	}
 
 	private static ArrayList<String> createColumnsInR(List<double[]> dfColumns, RConnection c) throws REngineException {
 		int i = 0;
