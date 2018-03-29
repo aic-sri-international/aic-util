@@ -116,7 +116,6 @@ public class Ggplot {
 			RConnection c) throws REngineException, RserveException {
 		
 		ArrayList<String> listOfColIndexes = createColumnsInR(df, c);
-		//c.eval("print(l0)");
 		joinColunsIntoADataFrame(listOfGgplotCmds, df, c, listOfColIndexes);
 	}
 
@@ -171,7 +170,7 @@ public class Ggplot {
 		 df.addColumn("x", Double.class, x);
 		 df.addColumn("y", Double.class, y);
 		 
-		 // preProcessing (no preprocessing in this example)
+		 // preProcessing (no pre processing in this example)
 		 List<String> preProccesninCmds = new ArrayList<>();
 		 
 		 // ggplot parameters : one mandatory parameter is "aes", 
