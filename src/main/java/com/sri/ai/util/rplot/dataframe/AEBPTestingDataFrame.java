@@ -1,17 +1,20 @@
 package com.sri.ai.util.rplot.dataframe;
 
 import static com.sri.ai.util.Util.list;
-
+/**
+ * TODO: this should probably go on praise - test - anytime EBBP
+ * @author gabriel
+ *
+ */
 public class AEBPTestingDataFrame extends ListOfListDataFrame {
 	
-	
 	public AEBPTestingDataFrame() {
-		super(list( "Iteration",	"Number of runs",
-					"Max P(V=True)","Min P(V=True)","Iteration time","Total time", 	
-					"Method used"),
+		super(list( "runNumber",	"Iteration",
+					"MaxP(V=True)", "MinP(V=True)","IterationTime","TotalTime", 	
+					"InferenceMethodUsed","GraphicalModelName"),
 				2, 
 				4, 
-				1);		
+				2);		
 	}
 	
 }

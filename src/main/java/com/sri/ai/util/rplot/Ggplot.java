@@ -11,6 +11,8 @@ import org.rosuda.REngine.Rserve.RConnection;
 import org.rosuda.REngine.Rserve.RserveException;
 
 import com.sri.ai.util.Util;
+import com.sri.ai.util.rplot.dataframe.DataFrame;
+import com.sri.ai.util.rplot.dataframe.ListOfListDataFrame;
 
 /**
  * Requirements: 
@@ -52,10 +54,13 @@ public class Ggplot {
 	 * @param dfColumns			: A list with the columns of the Data Frame
 	 * @param ggplotArgs		: Ggplot (extra arguments) arguments 
 	 */
-	public static void ggplotPlot(List<String> listOfGgplotCmds, 
-			List<String> dfNames,List<double[]> dfColumns,List<String> ggplotArgs) {
+	public static void ggplotPlot(
+			List<String> preProcessingCmds,
+			List<String> listOfGgplotCmds, 
+			DataFrame df,
+			List<String> ggplotArgs) {
 		
-		ggplotPlot(listOfGgplotCmds, dfNames,dfColumns,ggplotArgs,null);
+		ggplotPlot(preProcessingCmds,listOfGgplotCmds, df ,ggplotArgs,null);
 	}
 	
 	/**
@@ -66,24 +71,27 @@ public class Ggplot {
 	 * @param ggplotArgs		: Ggplot (extra arguments) arguments 
 	 * @param fileName 			: file name (HAS TO BE .pdf)
 	 */
-	public static void ggplotPlot(List<String> listOfGgplotCmds, 
-			List<String> dfNames,List<double[]> dfColumns,List<String> ggplotArgs,
+	public static void ggplotPlot(
+			List<String> preProcessingCmds,
+			List<String> listOfGgplotCmds, 
+			DataFrame df,
+			List<String> ggplotArgs,
 			String fileName) {
 		RConnection c = null;
 		try {
 			c = new RConnection();
 			
-			ArrayList<String> listOfColIndexes = createColumnsInR(dfColumns, c);
+			createDataFrameInR(listOfGgplotCmds, df, c);
 			
-			String indexesConcatenated = String.join(", ", listOfColIndexes);
+			//Preprocessing
+			for(String s : preProcessingCmds) {
+				c.eval(s);
+			}
+			
 			String args = String.join(", ",ggplotArgs);
-			String colNames = "'"+ String.join("', '",dfNames) + "'";
 			String ggplotCmds = String.join(" + ",listOfGgplotCmds);
-			
-            c.eval("library(ggplot2)");
-			c.eval("df <- data.frame(" + indexesConcatenated + ")");
-			c.eval("colnames(df) <- c(" + colNames + ")");
 			c.eval("p <- ggplot(df," + args + ") + " + ggplotCmds);
+			
 			if(fileName != null) {
 				c.eval("pdf( \"~/"+fileName+"\" );print(p);dev.off()");
 			}
@@ -104,33 +112,67 @@ public class Ggplot {
 		}
 	}
 
+	private static void createDataFrameInR(List<String> listOfGgplotCmds, DataFrame df,
+			RConnection c) throws REngineException, RserveException {
+		
+		ArrayList<String> listOfColIndexes = createColumnsInR(df, c);
+		//c.eval("print(l0)");
+		joinColunsIntoADataFrame(listOfGgplotCmds, df, c, listOfColIndexes);
+	}
 
-	private static ArrayList<String> createColumnsInR(List<double[]> dfColumns, RConnection c) throws REngineException {
+	private static ArrayList<String> createColumnsInR(DataFrame df, RConnection c) throws REngineException {
 		int i = 0;
 		ArrayList<String> s = new ArrayList<>();
-		for(double[] col : dfColumns) {
-			c.assign("l"+i, col);
-			s.add("l" + i);
+		List<Object[]> cols = df.getColumns();
+		for(Object[] col : cols) {
+			if(col.length != 0) {
+				if(col[0] instanceof Double) { //too messy! TODO compress it into a single command (if possible)
+					double[] castedCol = new double[col.length];
+					for(int j = 0; j<col.length;j++) castedCol[j] = (double)col[j]; 
+					c.assign("l"+ i,castedCol);
+				}
+				else if(col[0] instanceof Integer) {
+					int[] castedCol = new int[col.length];
+					for(int j = 0; j<col.length;j++) castedCol[j] = (int)col[j]; 
+					c.assign("l"+ i, castedCol);
+				}
+				else if(col[0] instanceof String) {
+					String[] castedCol = new String[col.length];
+					for(int j = 0; j<col.length;j++) castedCol[j] = (String)col[j]; 
+					c.assign("l"+ i, castedCol);
+				}
+				s.add("l" + i);
+			}
 			i++;
 		}
 		return s;
 	}
 	
+	private static void joinColunsIntoADataFrame(List<String> listOfGgplotCmds, DataFrame df,
+			RConnection c, ArrayList<String> listOfColIndexes) throws RserveException {
+		String indexesConcatenated = String.join(", ", listOfColIndexes);
+		String colNames = "'"+ String.join("', '",df.getHeader()) + "'";
+		
+		c.eval("library(ggplot2)"); // importing library
+		c.eval("df <- data.frame(" + indexesConcatenated + ")"); //creating a DataFrame in R
+		c.eval("colnames(df) <- c(" + colNames + ")");
+	}
 	//Test code
 	 public static void main(String a[]) {
 		 // Start the server
 		 println(StartRserve.checkLocalRserve());
 		 // Import ggplot library (in R)
 		 ggplotInstall();
-		 // Plot something
 		 
-		 // Make dataFrame : we pass a list of the data-frame columns
-		 double[] x = {1.,2.,3.,4.,5.,6.};
-		 double[] y = {1.9,2.1,3.5,4.8,5.2,6.5};
-		 List<double[]> dfColumns = Util.list(x,y);
+		 // Make dataFrame : 
+		 Object[] x = {1.,2.,3.,4.,5.,6.};
+		 Object[] y = {1.9,2.1,3.5,4.8,5.2,6.5};
+		 DataFrame df = new ListOfListDataFrame(new ArrayList<>() , 0, 0, 0);
+		 df.addColumn("x", Double.class, x);
+		 df.addColumn("y", Double.class, y);
 		 
-		 // We pass the names of the columns (ggplot) plot them automatically
-		 List<String> dfNames = Util.list("x","y");
+		 // preProcessing (no preprocessing in this example)
+		 List<String> preProccesninCmds = new ArrayList<>();
 		 
 		 // ggplot parameters : one mandatory parameter is "aes", 
 		 // which defines the axes (also colors among other things) 
@@ -140,9 +182,9 @@ public class Ggplot {
 		 // by concatenating a list of commands, one plots many graphs
 		 // one over the other.
 		 List<String> ggplotCmds = Util.list("geom_point()","geom_smooth(method='loess')");
-		 ggplotPlot(ggplotCmds, dfNames , dfColumns , ggplotArgs,"test.pdf");
+		 ggplotPlot(preProccesninCmds,ggplotCmds, df, ggplotArgs,"test.pdf");
 		 println("-------------------------");
-		 ggplotPlot(ggplotCmds, dfNames , dfColumns , ggplotArgs);
+		 ggplotPlot(preProccesninCmds,ggplotCmds, df, ggplotArgs);
 		 println("-------------------------");
 		 
 		 // The code above generates the following ggplot code in R:

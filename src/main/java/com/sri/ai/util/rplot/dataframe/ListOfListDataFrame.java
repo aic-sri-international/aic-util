@@ -3,7 +3,10 @@ package com.sri.ai.util.rplot.dataframe;
 import static com.sri.ai.util.Util.println;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import com.sri.ai.util.Util;
 
 
 /**
@@ -32,8 +35,8 @@ public class ListOfListDataFrame implements DataFrame{
 	int nCols;
 	
 	public ListOfListDataFrame(List<String> colNames, 
-			int numberOfDoubleTypedColumns, 
-			int numberOfIntegerTypedColumns,
+			int numberOfIntegerTypedColumns, 
+			int numberOfDoubleTypedColumns,
 			int numberOfStringTypedColumns) {
 		
 		if(colNames.size() != numberOfIntegerTypedColumns + 
@@ -76,20 +79,20 @@ public class ListOfListDataFrame implements DataFrame{
 		Object[] res = new Object[this.nCols];
 		int j = 0;
 		int k = 0;
-		while(j < this.integerCols.size()) {
+		while(k < this.integerCols.size()) {
 			res[j] = this.integerCols.get(k).get(i);
 			j++;
 			k++;
 		}
 		k = 0;
-		while(j < this.doubleCols.size()) {
+		while(k < this.doubleCols.size()) {
 			res[j] = this.doubleCols.get(k).get(i);
 			j++;
 			k++;
 		}
 		k=0;
-		while(j < this.nCols) {
-			res[j] = this.factorCols.get(j).get(i);
+		while(k < this.factorCols.size()) {
+			res[j] = this.factorCols.get(k).get(i);
 			j++;
 			k++;
 		}
@@ -97,28 +100,28 @@ public class ListOfListDataFrame implements DataFrame{
 	}
 
 	@Override
-	public void addRow(Object[] row) {
-		if (row.length != this.nCols) {
+	public void addRow(Object... rowElements) {
+		if (rowElements.length != this.nCols) {
 			//TODO error message
 			return;
 		}
 		int k = 0;
 		int j = 0;
-		while(j < this.integerCols.size()) {
+		while(k < this.integerCols.size()) {
 			ArrayList<Integer> l = this.integerCols.get(k);
-			l.add((Integer) row[j]);
+			l.add((Integer) rowElements[j]);
 			k++;j++;
 		}
 		k = 0;
-		while(j < this.doubleCols.size()) {
+		while(k < this.doubleCols.size()) {
 			ArrayList<Double> l = this.doubleCols.get(k);
-			l.add((Double) row[j]);
+			l.add((Double) rowElements[j]);
 			k++;j++;
 		}
 		k = 0;
-		while(j < this.factorCols.size()) {
+		while(k < this.factorCols.size()) {
 			ArrayList<String> l = this.factorCols.get(k);
-			l.add((String) row[j]);
+			l.add((String) rowElements[j]);
 			k++;j++;
 		}
 		this.nRows ++;
@@ -151,5 +154,70 @@ public class ListOfListDataFrame implements DataFrame{
 		}
 		return null;
 	}
+
+	@Override
+	public int getNumberOfRows() {
+		return this.nRows;
+	}
+
+	@Override
+	public int getNumberOfCols() {
+		return this.nCols;
+	}
+
+	@Override
+	public List<String> getHeader() {
+		return this.colNames;
+	}
+
+	@Override
+	public List<Object[]> getColumns() {
+		List<Object[]> res = new ArrayList<>();
+		for (int i = 0; i < this.nCols; i++) {
+			res.add(getColumn(i));
+		}
+		
+		return res;
+	}
+
+	@Override
+	public void addColumn(String name, Class<?> c, Object... elements) {
+		if(nCols != 0 && elements.length != nRows) {
+			//error message
+			return;
+		}
+		
+		if(nCols == 0) {
+			nRows = elements.length;
+		}
+
+		nCols++;
+		if(c == Integer.class) { // Too messy! TODO: compress...
+			colNames.add(integerCols.size(),name);
+			ArrayList<Integer> l = new ArrayList<>();
+			for (int i = 0; i < elements.length; i++) {
+				l.add((Integer)elements[i]);	
+			}
+			integerCols.add(l);
+		}
+		if(c == Double.class) {
+			colNames.add(doubleCols.size() + integerCols.size() ,name);
+			ArrayList<Double> l = new ArrayList<>();
+			for (int i = 0; i < elements.length; i++) {
+				l.add((Double)elements[i]);
+			}
+			doubleCols.add(l);
+		}
+		if(c == String.class) {
+			colNames.add(doubleCols.size() + integerCols.size() + factorCols.size(),name);
+			ArrayList<String> l = new ArrayList<>();
+			for (int i = 0; i < elements.length; i++) {
+				l.add((String)elements[i]);	
+			}
+			factorCols.add(l);
+		}
+		
+	}
+	
 
 }
