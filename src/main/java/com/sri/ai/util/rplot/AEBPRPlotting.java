@@ -14,7 +14,8 @@ import com.sri.ai.util.rplot.dataframe.DataFrame;
  * @author gabriel
  *
  */
-//TODO Thiscker line; title e essas bobages
+
+
 
 public class AEBPRPlotting {
 	
@@ -34,7 +35,7 @@ public class AEBPRPlotting {
 									  "ymin = Min.P.V.True", 
 									  "ymax = Max.P.V.True",
 									  "colour = GraphicalModelName");
-		List<String> cmds = Util.list("geom_errorbar()");
+		List<String> cmds = Util.list("geom_errorbar(size = 2,width = .04)");//Size sets thickness, width sets the the extremes length
 
 		Ggplot.ggplotPlot(preProcessing, aes, cmds, df,fileName);	
 	}
