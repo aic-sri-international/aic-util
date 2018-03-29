@@ -14,35 +14,52 @@ import com.sri.ai.util.rplot.dataframe.DataFrame;
  * @author gabriel
  *
  */
-
+//TODO Thiscker line; title e essas bobages
 
 public class AEBPRPlotting {
+	
+
 	public static void plottingSizeOfTheInterval(DataFrame df) {
+		plottingSizeOfTheInterval(df,false,null);
+	}
+	public static void plottingSizeOfTheInterval(DataFrame df,boolean printDf,String fileName) {
 		//for each iteration i Mean times at i (multiple runs lead to different times...)
-		List<String> preProcessing = Util.list("df <- aggregate(df,list(df$Iteration,df$GraphicalModelName),FUN = mean)"); 
-		List<String> args = Util.list("aes( x = TotalTime," + 
-											"ymin = Min.P.V.True," + 
-											"ymax = Max.P.V.True," + 
-											"color = GraphicalModelName )");
+		List<String> preProcessing = Util.list("df<- aggregate(. ~ Iteration + GraphicalModelName, data = df, FUN = mean)");
+		
+		if(printDf) {
+			preProcessing.add("View(df)");
+		}
+		
+		List<String> aes = Util.list("x = TotalTime", 
+									  "ymin = Min.P.V.True", 
+									  "ymax = Max.P.V.True",
+									  "colour = GraphicalModelName");
 		List<String> cmds = Util.list("geom_errorbar()");
-		
-		Ggplot.ggplotPlot(preProcessing, cmds, df, args);
-		
+
+		Ggplot.ggplotPlot(preProcessing, aes, cmds, df,fileName);	
 	}
 	
 	public static void main(String[] args) {
 		//Testing print to file:
 		AEBPTestingDataFrame fakeDF = new AEBPTestingDataFrame();
+		//Running AnytimeExactBP
 		fakeDF.addRow(1,1,.4, .8, .1,.1  ,"Anytime Exact BP", "Grid Model");// running the algorithm for the first time
 		fakeDF.addRow(1,2,.5, .7, .2,.3  ,"Anytime Exact BP", "Grid Model");
 		fakeDF.addRow(1,3,.52,.6, .4,.7  ,"Anytime Exact BP", "Grid Model");
 		fakeDF.addRow(1,4,.55,.55,.8,1.5 ,"Anytime Exact BP", "Grid Model");
-		fakeDF.addRow(2,1,.4 ,.8, .1,.1  ,"Anytime Exact BP", "Grid Model");// running the algorithm for the secong time
+		fakeDF.addRow(2,1,.4 ,.8, .1,.1  ,"Anytime Exact BP", "Grid Model");// running the algorithm for the second time
 		fakeDF.addRow(2,2,.5 ,.7, .3,.4  ,"Anytime Exact BP", "Grid Model");
 		fakeDF.addRow(2,3,.52,.6, .3,.7  ,"Anytime Exact BP", "Grid Model");
 		fakeDF.addRow(2,4,.55,.55,.9,1.6 ,"Anytime Exact BP", "Grid Model");
 		
+		//Running another incremental solution (maybe boxes instead of simplexes later on...)
+		fakeDF.addRow(1,1,.3, .84, .11,.11  ,"Anytime Exact BP-V2", "Grid Model");// running the algorithm for the first time
+		fakeDF.addRow(1,2,.45,.75, .21,.32  ,"Anytime Exact BP-V2", "Grid Model");
+		fakeDF.addRow(1,3,.5 ,.64, .41,.73  ,"Anytime Exact BP-V2", "Grid Model");
+		fakeDF.addRow(1,4,.55,.55, .81,1.54 ,"Anytime Exact BP-V2", "Grid Model");
+				
 		fakeDF.printToCsv( System.getProperty("user.home") +"/test.csv");
+		//TODO: come up with a standard folder for dropping those files
 		plottingSizeOfTheInterval(fakeDF);
 	}
 }

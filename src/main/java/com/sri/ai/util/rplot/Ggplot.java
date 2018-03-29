@@ -56,11 +56,11 @@ public class Ggplot {
 	 */
 	public static void ggplotPlot(
 			List<String> preProcessingCmds,
+			List<String> ggplotAesArgs,
 			List<String> listOfGgplotCmds, 
-			DataFrame df,
-			List<String> ggplotArgs) {
+			DataFrame df) {
 		
-		ggplotPlot(preProcessingCmds,listOfGgplotCmds, df ,ggplotArgs,null);
+		ggplotPlot(preProcessingCmds,ggplotAesArgs,listOfGgplotCmds, df ,null);
 	}
 	
 	/**
@@ -73,9 +73,9 @@ public class Ggplot {
 	 */
 	public static void ggplotPlot(
 			List<String> preProcessingCmds,
+			List<String> ggplotAesArgs,
 			List<String> listOfGgplotCmds, 
 			DataFrame df,
-			List<String> ggplotArgs,
 			String fileName) {
 		RConnection c = null;
 		try {
@@ -88,9 +88,9 @@ public class Ggplot {
 				c.eval(s);
 			}
 			
-			String args = String.join(", ",ggplotArgs);
+			String aes = "aes(" + String.join(", ",ggplotAesArgs) + ")";
 			String ggplotCmds = String.join(" + ",listOfGgplotCmds);
-			c.eval("p <- ggplot(df," + args + ") + " + ggplotCmds);
+			c.eval("p <- ggplot(df," + aes + ") + " + ggplotCmds);
 			
 			if(fileName != null) {
 				c.eval("pdf( \"~/"+fileName+"\" );print(p);dev.off()");
@@ -175,15 +175,15 @@ public class Ggplot {
 		 
 		 // ggplot parameters : one mandatory parameter is "aes", 
 		 // which defines the axes (also colors among other things) 
-		 List<String> ggplotArgs = Util.list("aes(x = x, y = y)");
+		 List<String> ggplotAesArgs = Util.list("x = x", "y = y");
 		 
 		 // ggplot commands. those are the actual types of plots.
 		 // by concatenating a list of commands, one plots many graphs
 		 // one over the other.
 		 List<String> ggplotCmds = Util.list("geom_point()","geom_smooth(method='loess')");
-		 ggplotPlot(preProccesninCmds,ggplotCmds, df, ggplotArgs,"test.pdf");
+		 ggplotPlot(preProccesninCmds,ggplotAesArgs,ggplotCmds, df,"test.pdf");
 		 println("-------------------------");
-		 ggplotPlot(preProccesninCmds,ggplotCmds, df, ggplotArgs);
+		 ggplotPlot(preProccesninCmds,ggplotAesArgs,ggplotCmds, df);
 		 println("-------------------------");
 		 
 		 // The code above generates the following ggplot code in R:
