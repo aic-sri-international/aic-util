@@ -1,22 +1,17 @@
 package com.sri.ai.util.rplot.dataframe;
 
-import java.util.List;
+import static com.sri.ai.util.Util.list;
 
-import com.sri.ai.util.Util;
-
-public class AEBPTestingDataFrame {
-	DataFrame df;
+public class AEBPTestingDataFrame extends ListOfListDataFrame {
+	
 	
 	public AEBPTestingDataFrame() {
-		List<String> colNames = Util.list("Iteration","Number of runs",
-				"Max P(V=True)","Min P(V=True)","Iteration time",
-				"Total time", "Method used");
-
-		int nInt = 2;
-		int nDouble = 4;
-		int nString = 1;
-		
-		this.df = new ListOfListDataFrame(colNames, nInt, nDouble, nString);
+		super(list( "Iteration",	"Number of runs",
+					"Max P(V=True)","Min P(V=True)","Iteration time","Total time", 	
+					"Method used"),
+				2, 
+				4, 
+				1);		
 	}
-
+	
 }
