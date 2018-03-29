@@ -19,11 +19,15 @@ import com.sri.ai.util.rplot.dataframe.DataFrame;
 
 public class AEBPRPlotting {
 	
-
 	public static void plottingSizeOfTheInterval(DataFrame df) {
-		plottingSizeOfTheInterval(df,false,null);
+		
 	}
-	public static void plottingSizeOfTheInterval(DataFrame df,boolean printDf,String fileName) {
+	
+
+	public static void plottingTheInterval(DataFrame df) {
+		plottingTheInterval(df,false,null);
+	}
+	public static void plottingTheInterval(DataFrame df,boolean printDf,String fileName) {
 		//for each iteration i Mean times at i (multiple runs lead to different times...)
 		List<String> preProcessing = Util.list("df<- aggregate(. ~ Iteration + GraphicalModelName, data = df, FUN = mean)");
 		
@@ -61,6 +65,8 @@ public class AEBPRPlotting {
 				
 		fakeDF.printToCsv( System.getProperty("user.home") +"/test.csv");
 		//TODO: come up with a standard folder for dropping those files
-		plottingSizeOfTheInterval(fakeDF);
+		plottingTheInterval(fakeDF);
+		
+		
 	}
 }

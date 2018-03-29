@@ -20,6 +20,14 @@ import com.sri.ai.util.Util;
  *        3|      |      |      |      |      |      |      |      |	  |	  	 |	  	|	   |
  *      ...|      |      |      |      |      |      |      |      |	  |	  	 |	  	|	   |
  * 
+ * 
+ * TODO : the code is not modular (at all). Because I was having problems with casting arrays / casting to a generic type
+ * 		  I ended up copying the code for each class of column (int, double, string) 
+ * 		 
+ * 		  Besides solving the cast problem, it would be interesting to reduce the number of "for" loops, possibly using function language tricks	      
+ * 		
+ * 
+ * Possible solution (at least to add column) :Hashmap<Class<?>,ArrayList<?>>, link the class to the right matrix
  * @author gabriel
  *
  */

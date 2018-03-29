@@ -20,6 +20,13 @@ import com.sri.ai.util.rplot.dataframe.ListOfListDataFrame;
  * 		
  * This class allows the creation of ggplot graphs.
  * 
+ * TODO: I could not make the window that pops up be created independently of the connection;
+ * 		 that way, once the connection is done, the window that shows the plot is closed.
+ * 		 Because at the end of the plotting function the connection is closed, normally the plot
+ * 		 would only blink quickly to the user. The (temporary) solution I found was to pausing the 
+ * 		 program to proceed until the user presses "Enter" (System.in.read();).
+ * 		 I wonder if there is a (simple) way to make the plot window to stay regardless of the connection.  
+ * 
  * @author gabriel
  *
  */
@@ -48,11 +55,13 @@ public class Ggplot {
 	}
 
 	/**
-	 * Plot on the screen
-	 * @param listOfGgplotCmds 	: The ggplot commands to be called
-	 * @param dfNames			: The column names of the Data Frame
-	 * @param dfColumns			: A list with the columns of the Data Frame
-	 * @param ggplotArgs		: Ggplot (extra arguments) arguments 
+	 * @param preProcessingCmds : treating the data. Typycally it will be an aggragate 
+	 * (i.e. group_by) operation in a subset of the columns. e.g mean of the results coming from the same iteration
+	 * @param ggplotAesArgs 	: Aestetics is a mandatory of ggplot. It defines axes, colors, witdhts... (ggplotsee documentation) 
+	 * @param listOfGgplotCmds	: ggplot works by adding commands one after the other. by adding a new command, a new
+	 * feature is added. E.g: adding geom_point + geom_smooth + ggtitle + geomvline creates a plot with 
+	 * (1)scatter points, (2) a smooth curve connecting them, (3) a title on top and (4) a vertical line in a point of choice  
+	 * @param df Data frame
 	 */
 	public static void ggplotPlot(
 			List<String> preProcessingCmds,
