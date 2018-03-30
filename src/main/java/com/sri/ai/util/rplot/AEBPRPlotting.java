@@ -1,5 +1,7 @@
 package com.sri.ai.util.rplot;
 
+import static com.sri.ai.util.Util.println;
+
 import java.util.List;
 
 import com.sri.ai.util.Util;
@@ -20,7 +22,22 @@ import com.sri.ai.util.rplot.dataframe.DataFrame;
 public class AEBPRPlotting {
 	
 	public static void plottingSizeOfTheInterval(DataFrame df) {
+		plottingSizeOfTheInterval(df,false,null);
+	}
+	public static void plottingSizeOfTheInterval(DataFrame df,boolean printDf,String fileName) {
+		//for each iteration i Mean times at i (multiple runs lead to different times...)
+		List<String> preProcessing = Util.list("df<- aggregate(. ~ Iteration + GraphicalModelName, data = df, FUN = mean)");
 		
+		if(printDf) {
+			preProcessing.add("View(df)");
+		}
+		
+		List<String> aes = Util.list("x = TotalTime", 
+									  "y = Max.P.V.True - Min.P.V.True",
+									  "colour = GraphicalModelName");
+		List<String> cmds = Util.list("geom_point()","geom_line()");//Size sets thickness, width sets the the extremes length
+
+		Ggplot.ggplotPlot(preProcessing, aes, cmds, df, fileName);	
 	}
 	
 
@@ -65,7 +82,12 @@ public class AEBPRPlotting {
 				
 		fakeDF.printToCsv( System.getProperty("user.home") +"/test.csv");
 		//TODO: come up with a standard folder for dropping those files
+
+
+		println("starting server = " + StartRserve.checkLocalRserve());
 		plottingTheInterval(fakeDF);
+		
+		plottingSizeOfTheInterval(fakeDF);
 		
 		
 	}
