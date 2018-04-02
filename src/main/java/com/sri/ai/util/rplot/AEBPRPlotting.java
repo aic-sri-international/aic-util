@@ -35,7 +35,8 @@ public class AEBPRPlotting {
 		List<String> aes = Util.list("x = TotalTime", 
 									  "y = Max.P.V.True - Min.P.V.True",
 									  "colour = GraphicalModelName");
-		List<String> cmds = Util.list("geom_point()","geom_line()");//Size sets thickness, width sets the the extremes length
+		List<String> cmds = Util.list("geom_point()","geom_line()",
+				"labs(y = 'Distance from maximum and minimum probabilities of being true')");//Size sets thickness, width sets the the extremes length
 
 		Ggplot.ggplotPlot(preProcessing, aes, cmds, df, fileName);	
 	}

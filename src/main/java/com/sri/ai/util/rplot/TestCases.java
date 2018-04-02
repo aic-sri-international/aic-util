@@ -15,12 +15,26 @@ public class TestCases {
 	 * <p>
 	 * If N = 2, the Ising model is simply a squared grid. Below we represent a 3X3 s dimension Ising model
 	 *  <p>
-	 *  sig2  --  sig3  --  sig4<p>
-	 *   |		   |	 	 |  <p>
-	 *  sig-1 --  sig0  --  sig1<p>
-	 *   |		   | 		 |  <p>
-	 *  sig-4 --  sig-3 --  sig-2<p>
 	 *  
+	 *  <table style="width:10%">
+  	 * <tr>
+  	 *      <th>sig2</th><th>--</th><th>sig3 </th><th>--</th><th>sig4</th>
+  	 * </tr>
+  	 * <tr>
+  	 * 		<th>|</th><th>		   </th><th>|</th><th>	 	 </th><th>|</th>  
+  	 * </tr>
+  	 * <tr>
+  	 *   	<th>sig-1</th><th>--</th><th>sig0</th><th>--</th><th>sig1</th>
+  	 * </tr>
+  	 * <tr>
+  	 *   	<th>|</th><th>		   </th><th>|</th><th>	 	 </th><th>|</th>
+  	 * </tr>
+  	 * <tr>
+  	 * 	 	<th>sig-4</th><th>--</th><th>sig-3</th><th>--</th><th>sig-2</th>
+  	 * </tr>
+  	 * </table>
+	 *
+	 *  <p>
 	 * If N = 1, the model is a line (sig1 -- sig2 -- sig3 -- sig4 -- sig5 ...)<p>
 	 * 
 	 * we define <math>\sigma = (\sigma_1,\sigma_2,...,\sigma_n)</math>.<p>
@@ -40,6 +54,8 @@ public class TestCases {
 	 * 
 	 * :<math>\phi(X,Y)= exp(\beta X Y),\phi'(X) = exp(h X) </math>
 	 * 
+	 * If we don't consider the simplification, the network correspond to a markov random field  grid with arbitrary factors   
+	 * 
 	 * -----------------------------------------------------------------------------------<p>
 	 * Important results about the Ising model:<p>
 	 * 
@@ -47,13 +63,49 @@ public class TestCases {
 	 * are equal +1. There exists a <math>\beta_c</math>, such that, 
 	 * <math>P(\sigma_0 = True) > \alpha > 0.5</math> for ARBITRARYLY LARGE number of odes on the lattice   <p>
 	 * 
-	 * - This means that AEBP is going to converge to an interval of size 2*alpha, and then subbenly drop t sero in the frontier;
+	 * - This means that AEBP is going to converge to an interval of size 2*alpha, and then suddenly drops to \ero in the frontier;
 	 * 
-	 * @param dimension
-	 * @param potential
+	 * @param dimension : 
+	 * @param potential : Beta, Inverse temperature
+	 * @param weight: Theta
 	 */
-	public static void isingModel(int dimension, double potential) {
-	//TODO	return a set of Factors
+	public static void isingModel(int dimension, double potential, double weight) {
+		//TODO	return a set of Factors
 	}
 	
+	
+	/**
+	 *  \tilde(P)(\sigma) = \frac{1}{Z} exp(\sum_{i}\theta_i \sigma_i + \sum_{<< i j >>}J_{i,j}\sigma_i\sigma_j),
+	 * <p>
+	 * where \sigma_i \in \{+1,-1\}, J_{i,j},\theta{i} ~ N(0,\beta^2)  
+	 * @param beta
+	 */
+	public static void isingModelGridWithRandomWeigthsAndPotetial(double beta ) {
+		//TODO	return a set of Factors
+	}
+	
+	public static void ALARM() {
+		//TODO	return a set of Factors
+	}
+
+	/**
+	 * Generate a random Promedas
+	 */
+	public static void PROMEDAS() {
+		
+	}
+	
+	/**
+	 * A Bolztmann machine is a ring where there is a pairwise connection between every node and all the others.
+	 * Plus, every node is binary with values 1 and 0.
+	 * 
+	 * This is model is not suitable for an incremental inference, since any result different than Simplex(Q) would demand
+	 * exoloring all the nodes. 
+	 * 
+	 * Instead, as a toy problem, we could test a "Bolztmann machine ring", where each node is only connected to it's neighbors.
+	 * 
+	 */
+	public static void boltzmanMachineRing() {
+		//TODO	return a set of Factors
+	}
 }
