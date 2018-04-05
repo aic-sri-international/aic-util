@@ -24,11 +24,11 @@ public class AEBPRPlotting {
 	public static void plottingSizeOfTheInterval(DataFrame df) {
 		plottingSizeOfTheInterval(df,false,null);
 	}
-	public static void plottingSizeOfTheInterval(DataFrame df,boolean printDf,String fileName) {
+	public static void plottingSizeOfTheInterval(DataFrame df,boolean printDataFrame,String fileName) {
 		//for each iteration i Mean times at i (multiple runs lead to different times...)
 		List<String> preProcessing = Util.list("df<- aggregate(. ~ Iteration + GraphicalModelName, data = df, FUN = mean)");
 		
-		if(printDf) {
+		if(printDataFrame) {
 			preProcessing.add("View(df)");
 		}
 		
@@ -38,6 +38,7 @@ public class AEBPRPlotting {
 		List<String> cmds = Util.list("geom_point()","geom_line()",
 				"labs(y = 'Distance from maximum and minimum probabilities of being true')");//Size sets thickness, width sets the the extremes length
 
+		println("starting server = " + StartRserve.checkLocalRserve());
 		Ggplot.ggplotPlot(preProcessing, aes, cmds, df, fileName);	
 	}
 	
@@ -45,11 +46,11 @@ public class AEBPRPlotting {
 	public static void plottingTheInterval(DataFrame df) {
 		plottingTheInterval(df,false,null);
 	}
-	public static void plottingTheInterval(DataFrame df,boolean printDf,String fileName) {
+	public static void plottingTheInterval(DataFrame df,boolean printDataFrame,String fileName) {
 		//for each iteration i Mean times at i (multiple runs lead to different times...)
 		List<String> preProcessing = Util.list("df<- aggregate(. ~ Iteration + GraphicalModelName, data = df, FUN = mean)");
 		
-		if(printDf) {
+		if(printDataFrame) {
 			preProcessing.add("View(df)");
 		}
 		
@@ -59,6 +60,7 @@ public class AEBPRPlotting {
 									  "colour = GraphicalModelName");
 		List<String> cmds = Util.list("geom_errorbar(size = 2,width = .04)");//Size sets thickness, width sets the the extremes length
 
+		println("starting server = " + StartRserve.checkLocalRserve());
 		Ggplot.ggplotPlot(preProcessing, aes, cmds, df,fileName);	
 	}
 	
@@ -83,9 +85,7 @@ public class AEBPRPlotting {
 				
 		fakeDF.printToCsv( System.getProperty("user.home") +"/test.csv");
 		//TODO: come up with a standard folder for dropping those files
-
-
-		println("starting server = " + StartRserve.checkLocalRserve());
+		
 		plottingTheInterval(fakeDF);
 		
 		plottingSizeOfTheInterval(fakeDF);
