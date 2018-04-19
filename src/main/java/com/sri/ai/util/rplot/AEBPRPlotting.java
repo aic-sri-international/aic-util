@@ -26,7 +26,7 @@ public class AEBPRPlotting {
 	}
 	public static void plottingSizeOfTheInterval(DataFrame df,boolean printDataFrame,String fileName) {
 		//for each iteration i Mean times at i (multiple runs lead to different times...)
-		List<String> preProcessing = Util.list("df<- aggregate(. ~ Iteration + GraphicalModelName, data = df, FUN = mean)");
+		List<String> preProcessing = Util.list("df<- aggregate(. ~ Iteration + InferenceMethodUsed, data = df, FUN = mean)");
 		
 		if(printDataFrame) {
 			preProcessing.add("View(df)");
@@ -34,7 +34,7 @@ public class AEBPRPlotting {
 		
 		List<String> aes = Util.list("x = TotalTime", 
 									  "y = Max.P.V.True - Min.P.V.True",
-									  "colour = GraphicalModelName");
+									  "colour = InferenceMethodUsed");
 		List<String> cmds = Util.list("geom_point()","geom_line()",
 				"labs(y = 'Distance from maximum and minimum probabilities of being true')");//Size sets thickness, width sets the the extremes length
 
@@ -48,7 +48,9 @@ public class AEBPRPlotting {
 	}
 	public static void plottingTheInterval(DataFrame df,boolean printDataFrame,String fileName) {
 		//for each iteration i Mean times at i (multiple runs lead to different times...)
-		List<String> preProcessing = Util.list("df<- aggregate(. ~ Iteration + GraphicalModelName, data = df, FUN = mean)");
+		List<String> preProcessing = Util.list(
+				"title <- df$GraphicalModelName[1]",
+				"df<- aggregate(. ~ Iteration + InferenceMethodUsed, data = df, FUN = mean)");
 		
 		if(printDataFrame) {
 			preProcessing.add("View(df)");
@@ -57,8 +59,8 @@ public class AEBPRPlotting {
 		List<String> aes = Util.list("x = TotalTime", 
 									  "ymin = Min.P.V.True", 
 									  "ymax = Max.P.V.True",
-									  "colour = GraphicalModelName");
-		List<String> cmds = Util.list("geom_errorbar(size = 2,width = .04)");//Size sets thickness, width sets the the extremes length
+									  "colour = InferenceMethodUsed");
+		List<String> cmds = Util.list("geom_errorbar(size = 2,width = .04)","ggtitle(title)");//Size sets thickness, width sets the the extremes length
 
 		println("starting server = " + StartRserve.checkLocalRserve());
 		Ggplot.ggplotPlot(preProcessing, aes, cmds, df,fileName);	
@@ -86,7 +88,7 @@ public class AEBPRPlotting {
 		fakeDF.printToCsv( System.getProperty("user.home") +"/test.csv");
 		//TODO: come up with a standard folder for dropping those files
 		
-		plottingTheInterval(fakeDF);
+		plottingTheInterval(fakeDF,true,null);
 		
 		plottingSizeOfTheInterval(fakeDF);
 		

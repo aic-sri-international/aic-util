@@ -15,7 +15,7 @@ public class AEBPTestingDataFrame extends ListOfListDataFrame {
 	public AEBPTestingDataFrame() {
 		super(list( "runNumber",	"Iteration",
 					"Min.P.V.True", "Max.P.V.True","IterationTime","TotalTime", 	
-					"GraphicalModelName","InferenceMethodUsed"),
+					"InferenceMethodUsed","GraphicalModelName"),
 				2, 
 				4, 
 				2);		

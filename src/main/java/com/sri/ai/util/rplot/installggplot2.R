@@ -22,7 +22,7 @@ p <- ggplot(df5,aes(x=l0,y=l1)) + geom_point() +  geom_smooth(method="loess")
 p
 dev.new()
 m <- plot(p)
-detach()
+
 
 library(ggplot2)
 theme_set(theme_bw())  # pre-set the bw theme.
