@@ -2262,7 +2262,59 @@ public class Util {
 		T result = null;
 		for (T element : c) {
 			Integer value = function.apply(element);
-			if (maximum == null || value.compareTo(maximum) < 0) {
+			if (maximum == null || value.compareTo(maximum) > 0) {
+				maximum = value;
+				result = element;
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Returns the element in a collection whose value for the given function is minimum,
+	 * or null if collection is empty.
+	 * 
+	 * @param c
+	 *            the collection to find an element with a minimum function value.
+	 * @param function
+	 *            the function.
+	 * @return the element with a minimum function value,
+	 *            or null if the collection is empty.
+	 * @param <T>
+	 *            the type of the elements in the collection.
+	 */
+	public static <T> T argminForFloatMapping(Collection<? extends T> c, Function<T, Float> function) {
+		Float minimum = null;
+		T result = null;
+		for (T element : c) {
+			Float value = function.apply(element);
+			if (minimum == null || value.compareTo(minimum) < 0) {
+				minimum = value;
+				result = element;
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Returns the element in a collection whose value for the given function is maximum,
+	 * or null if collection is empty.
+	 * 
+	 * @param c
+	 *            the collection to find an element with a maximum function value.
+	 * @param function
+	 *            the function.
+	 * @return the element with a maximum function value,
+	 *            or null if the collection is empty.
+	 * @param <T>
+	 *            the type of the elements in the collection.
+	 */
+	public static <T> T argmaxForFloatMapping(Collection<? extends T> c, Function<T, Float> function) {
+		Float maximum = null;
+		T result = null;
+		for (T element : c) {
+			Float value = function.apply(element);
+			if (maximum == null || value.compareTo(maximum) > 0) {
 				maximum = value;
 				result = element;
 			}
