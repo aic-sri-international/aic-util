@@ -32,6 +32,8 @@ public interface DataFrame {
 	public List<Object[]> getColumns();
 	public void addColumn(String name,Class<?> c,Object... elements);
 	
+	public void concatenate(DataFrame df);
+	
 	default public void printToCsv(String fileName) {
 		//TODO: add a path, so that it prints in the right place
 		// to do so, we should deal with differenc encodding for windows and linux/mac

@@ -228,4 +228,21 @@ public class ListOfListDataFrame implements DataFrame{
 	}
 	
 
+	@Override
+	public void concatenate(DataFrame df) {
+		if(!(df.getClass().equals(this.getClass()))) {
+			throw new Error();
+		}
+		
+		ListOfListDataFrame lolDf = (ListOfListDataFrame) df;
+		if(!(this.colNames.equals(lolDf.colNames))) {
+			throw new Error();
+		}
+		
+		for (int i = 0; i < df.getNumberOfRows(); i++) {
+			this.addRow(df.getRow(i));
+		}
+	}
+	
+
 }
