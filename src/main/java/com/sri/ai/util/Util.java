@@ -2230,15 +2230,23 @@ public class Util {
 	 *            or null if the collection is empty.
 	 * @param <T>
 	 *            the type of the elements in the collection.
+	 * @param <R>
+	 * 			  the type of the function's result, must be comparable.
 	 */
-	public static <T> T argmin(Collection<? extends T> c, Function<T, Integer> function) {
-		Integer minimum = null;
+	public static <T, R extends Comparable<R>> T argmin(Collection<? extends T> c, Function<T, R> function) {
+		R minimum = null;
 		T result = null;
 		for (T element : c) {
-			Integer value = function.apply(element);
-			if (minimum == null || value.compareTo(minimum) < 0) {
+			R value = function.apply(element);
+			if (minimum == null) {
 				minimum = value;
 				result = element;
+			}
+			else {
+				if (value.compareTo(minimum) < 0) {
+					minimum = value;
+					result = element;
+				}
 			}
 		}
 		return result;
@@ -2256,15 +2264,23 @@ public class Util {
 	 *            or null if the collection is empty.
 	 * @param <T>
 	 *            the type of the elements in the collection.
+	 * @param <R>
+	 * 			  the type of the function's result, must be comparable.
 	 */
-	public static <T> T argmax(Collection<? extends T> c, Function<T, Integer> function) {
-		Integer maximum = null;
+	public static <T, R  extends Comparable<R>> T argmax(Collection<? extends T> c, Function<T, R> function) {
+		R minimum = null;
 		T result = null;
 		for (T element : c) {
-			Integer value = function.apply(element);
-			if (maximum == null || value.compareTo(maximum) < 0) {
-				maximum = value;
+			R value = function.apply(element);
+			if (minimum == null) {
+				minimum = value;
 				result = element;
+			}
+			else {
+				if (value.compareTo(minimum) > 0) {
+					minimum = value;
+					result = element;
+				}
 			}
 		}
 		return result;
