@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.sri.ai.util.Util;
 import com.sri.ai.util.rplot.dataframe.AEBPTestingDataFrame;
-import com.sri.ai.util.rplot.dataframe.DataFrame;
 
 /**
  * 
@@ -21,10 +20,10 @@ import com.sri.ai.util.rplot.dataframe.DataFrame;
 
 public class AEBPRPlotting {
 	
-	public static void plottingSizeOfTheInterval(DataFrame df) {
+	public static void plottingSizeOfTheInterval(AEBPTestingDataFrame df) {
 		plottingSizeOfTheInterval(df,false,null);
 	}
-	public static void plottingSizeOfTheInterval(DataFrame df,boolean printDataFrame,String fileName) {
+	public static void plottingSizeOfTheInterval(AEBPTestingDataFrame df,boolean printDataFrame,String fileName) {
 		//for each iteration i Mean times at i (multiple runs lead to different times...)
 		List<String> preProcessing = Util.list("df<- aggregate(. ~ Iteration + InferenceMethodUsed, data = df, FUN = mean)");
 		
@@ -43,14 +42,17 @@ public class AEBPRPlotting {
 	}
 	
 
-	public static void plottingTheInterval(DataFrame df) {
+	public static void plottingTheInterval(AEBPTestingDataFrame df) {
 		plottingTheInterval(df,false,null);
 	}
-	public static void plottingTheInterval(DataFrame df,boolean printDataFrame,String fileName) {
+	public static void plottingTheInterval(AEBPTestingDataFrame df,boolean printDataFrame,String fileName) {
 		//for each iteration i Mean times at i (multiple runs lead to different times...)
 		List<String> preProcessing = Util.list(
-				"title <- df$GraphicalModelName[1]",
-				"df<- aggregate(. ~ Iteration + InferenceMethodUsed, data = df, FUN = mean)");
+				"title <- df$GraphicalModelName[1]"
+				,"df<- aggregate(. ~ Iteration + InferenceMethodUsed, data = df, FUN = mean)"
+				);
+	
+		Double scale = (Double) df.getRow(df.getNumberOfRows()-1)[5];
 		
 		if(printDataFrame) {
 			preProcessing.add("View(df)");
@@ -60,7 +62,7 @@ public class AEBPRPlotting {
 									  "ymin = Min.P.V.True", 
 									  "ymax = Max.P.V.True",
 									  "colour = InferenceMethodUsed");
-		List<String> cmds = Util.list("geom_errorbar(size = 2,width = .04)","ggtitle(title)");//Size sets thickness, width sets the the extremes length
+		List<String> cmds = Util.list("geom_errorbar(size = " + scale * .5 + ",width = .00)","ggtitle(title)");//Size sets thickness, width sets the the extremes length
 
 		println("starting server = " + StartRserve.checkLocalRserve());
 		Ggplot.ggplotPlot(preProcessing, aes, cmds, df,fileName);	
