@@ -26,7 +26,7 @@ import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
 
 public abstract class AbstractAnytimeTreeComputationWithGradientDescent<T> extends AbstractAnytimeTreeComputation<T> implements GradientDescentAnytime<T> {
 
-	public AbstractAnytimeTreeComputationWithGradientDescent(TreeComputation<T> base, GradientDescentApproximation<T> totalIgnorance) {
+	public AbstractAnytimeTreeComputationWithGradientDescent(TreeComputation<T> base, Approximation<T> totalIgnorance) {
 		super(base, totalIgnorance);
 	}
 
@@ -43,6 +43,6 @@ public abstract class AbstractAnytimeTreeComputationWithGradientDescent<T> exten
 	}
 	
 	@Override
-	public abstract GradientDescentApproximation<T> function(List<Approximation<T>> subsApproximations);
+	public abstract Approximation<T> function(List<Approximation<T>> subsApproximations);
 
 }
