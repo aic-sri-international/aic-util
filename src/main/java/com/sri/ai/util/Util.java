@@ -5314,4 +5314,9 @@ public class Util {
 		result.add(element);
 		return result;
 	}
+
+	public static boolean isNullOrEmptyString(String string) {
+		boolean result = string == null || string.trim().equals("");
+		return result;
+	}
 }
