@@ -1614,10 +1614,15 @@ public class Rational extends Number implements Cloneable, Comparable<Object> {
 			// Exponent is positive
 			// b^(n/d) = (b^n)^(1/d)
 			
-			// b^n
-			Rational basePowNumerator = pow(exponent.getNumerator());
-			// root(d, b^n)
-			result = nthRoot(exponent.getDenominator(), basePowNumerator);			
+			try {
+				// b^n
+				Rational basePowNumerator = pow(exponent.getNumerator());
+				// root(d, b^n)
+				result = nthRoot(exponent.getDenominator(), basePowNumerator);
+			} catch (ArithmeticException e) {
+				double inexactExponent = exponent.doubleValue();
+				result = new Rational(Math.pow(doubleValue(), inexactExponent));
+			}			
 		}
 		return result;
 	}
