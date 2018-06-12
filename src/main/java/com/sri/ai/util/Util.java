@@ -5308,4 +5308,15 @@ public class Util {
 		}
 		return result;
 	}
+
+	public static <T> List<T> makeListAndAdd(Collection<T> collection, T element) {
+		LinkedList<T> result = new LinkedList<>(collection);
+		result.add(element);
+		return result;
+	}
+
+	public static boolean isNullOrEmptyString(String string) {
+		boolean result = string == null || string.trim().equals("");
+		return result;
+	}
 }
