@@ -5319,4 +5319,11 @@ public class Util {
 		boolean result = string == null || string.trim().equals("");
 		return result;
 	}
+	
+	public static <T> LinkedList<T> mergeElementsIntoOneList(T firstElement, List<T> otherElements) {
+		LinkedList<T> allElements = new LinkedList<>();
+		allElements.add(firstElement);
+		allElements.addAll(otherElements);
+		return allElements;
+	}
 }
