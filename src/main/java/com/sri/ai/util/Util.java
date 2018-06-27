@@ -5320,7 +5320,7 @@ public class Util {
 		return result;
 	}
 	
-	public static <T> LinkedList<T> mergeElementsIntoOneList(T firstElement, List<T> otherElements) {
+	public static <T> LinkedList<T> mergeElementsIntoOneList(T firstElement, Collection<T> otherElements) {
 		LinkedList<T> allElements = new LinkedList<>();
 		allElements.add(firstElement);
 		allElements.addAll(otherElements);
