@@ -2797,22 +2797,16 @@ public class Util {
 	 * @param c2
 	 *            the second collection to test.
 	 * @return true if the two collections intersect.
-	 * @param <E1>
-	 *            the type of the elements in the first collection.
-	 * @param <E2>
-	 *            the type of the elements in the second collection.
+	 * @param <T> an upper bound type on the types of elements of both collections.
 	 */
-	public static <E1, E2> boolean intersect(Collection<E1> c1,
-			Collection<E2> c2) {
+	public static <T> boolean intersect(Collection<? extends T> c1,	Collection<? extends T> c2) {
 		boolean result;
 
 		// Optimization: Traverse the smaller list.
 		if (c1.size() < c2.size()) {
-			result = c1.stream().filter(e -> c2.contains(e)).findAny()
-					.isPresent();
+			result = c1.stream().filter(e -> c2.contains(e)).findAny().isPresent();
 		} else {
-			result = c2.stream().filter(e -> c1.contains(e)).findAny()
-					.isPresent();
+			result = c2.stream().filter(e -> c1.contains(e)).findAny().isPresent();
 		}
 
 		return result;
