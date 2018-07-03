@@ -47,6 +47,7 @@ import com.sri.ai.util.collect.EZIterator;
 import com.sri.ai.util.computation.anytime.api.Anytime;
 import com.sri.ai.util.computation.anytime.api.Approximation;
 import com.sri.ai.util.computation.treecomputation.anytime.api.AnytimeTreeComputation;
+import com.sri.ai.util.computation.treecomputation.api.EagerTreeComputationEvaluator;
 import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
 
 /**
@@ -97,6 +98,11 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 	protected abstract boolean evenOneSubWithTotalIgnoranceRendersApproximationEqualToTotalIgnorance();
 
 	@Override
+	public EagerTreeComputationEvaluator<Approximation<T>> getEvaluator() {
+		return this::function;
+	}
+	
+	//@Override
 	public abstract Approximation<T> function(List<Approximation<T>> subsApproximations);
 
 	private Approximation<T> totalIgnorance;

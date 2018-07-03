@@ -37,10 +37,7 @@
  */
 package com.sri.ai.util.computation.treecomputation.api;
 
-import static com.sri.ai.util.Util.mapIntoList;
-
 import java.util.ArrayList;
-import java.util.List;
 
 import com.sri.ai.util.base.NullaryFunction;
 
@@ -61,11 +58,10 @@ public interface TreeComputation<T> extends NullaryFunction<T> {
 
 	ArrayList<? extends NullaryFunction<T>> getSubs();
 
-	T function(List<T> subsValues);
-
+	TreeComputationEvaluator<T> getEvaluator();
+	
 	default T apply() {
-		List<T> subResults = mapIntoList(getSubs(), NullaryFunction::apply);
-		T result = function(subResults);
+		T result = getEvaluator().apply(getSubs());
 		return result;
 	}
 }
