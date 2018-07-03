@@ -7,7 +7,6 @@ import java.util.List;
 
 import com.sri.ai.util.base.NullaryFunction;
 
-@FunctionalInterface
 /**
  * A {@link TreeComputationEvaluator} that is eager, that is, computes all sub-computation's results first
  * and only then passes them to a method {@link #function(List<T> subsValues)} in order to determine its result.
@@ -16,6 +15,7 @@ import com.sri.ai.util.base.NullaryFunction;
  *
  * @param <T>
  */
+@FunctionalInterface
 public interface EagerTreeComputationEvaluator<T> extends TreeComputationEvaluator<T> {
 	
 	T function(List<T> subsValues);

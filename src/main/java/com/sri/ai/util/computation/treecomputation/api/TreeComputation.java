@@ -58,10 +58,10 @@ public interface TreeComputation<T> extends NullaryFunction<T> {
 
 	ArrayList<? extends NullaryFunction<T>> getSubs();
 
-	TreeComputationEvaluator<T> getEvaluator();
+	TreeComputationEvaluator<T> makeNewEvaluator();
 	
 	default T apply() {
-		T result = getEvaluator().apply(getSubs());
+		T result = makeNewEvaluator().apply(getSubs());
 		return result;
 	}
 }

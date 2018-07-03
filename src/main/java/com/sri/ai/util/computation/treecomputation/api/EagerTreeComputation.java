@@ -15,7 +15,7 @@ public interface EagerTreeComputation<T> extends TreeComputation<T> {
 	T function(List<T> subsValues);
 
 	@Override
-	default EagerTreeComputationEvaluator<T> getEvaluator() {
+	default EagerTreeComputationEvaluator<T> makeNewEvaluator() {
 		return this::function;
 	}
 }
