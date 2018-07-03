@@ -39,6 +39,7 @@ package com.sri.ai.util.computation.treecomputation.anytime.api;
 
 import com.sri.ai.util.computation.anytime.api.Anytime;
 import com.sri.ai.util.computation.anytime.api.Approximation;
+import com.sri.ai.util.computation.treecomputation.api.EagerTreeComputation;
 import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
 
 
@@ -49,12 +50,12 @@ import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
  *
  * @param <T> the type of the values being approximated
  */
-public interface AnytimeTreeComputation<T> extends Anytime<T>, TreeComputation<Approximation<T>> {
+public interface AnytimeTreeComputation<T> extends Anytime<T>, EagerTreeComputation<Approximation<T>> {
 
 	default Approximation<T> apply() {
 		// We can perform apply in the {@link Anytime} way, or the {@link TreeComputationTest} way,
 		// so we have to define it here in order to eliminate the ambiguity, or the compiler will complain.
 		// The latter is more efficient since all we want is the final result.
-		return TreeComputation.super.apply();
+		return EagerTreeComputation.super.apply();
 	}
 }

@@ -47,7 +47,6 @@ import com.sri.ai.util.collect.EZIterator;
 import com.sri.ai.util.computation.anytime.api.Anytime;
 import com.sri.ai.util.computation.anytime.api.Approximation;
 import com.sri.ai.util.computation.treecomputation.anytime.api.AnytimeTreeComputation;
-import com.sri.ai.util.computation.treecomputation.api.EagerTreeComputationEvaluator;
 import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
 
 /**
@@ -98,11 +97,6 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 	protected abstract boolean evenOneSubWithTotalIgnoranceRendersApproximationEqualToTotalIgnorance();
 
 	@Override
-	public EagerTreeComputationEvaluator<Approximation<T>> getEvaluator() {
-		return this::function;
-	}
-	
-	//@Override
 	public abstract Approximation<T> function(List<Approximation<T>> subsApproximations);
 
 	private Approximation<T> totalIgnorance;
@@ -225,16 +219,13 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 	}
 
 	private Approximation<T> computeApproximationBasedOnSubsApproximation() {
-		
-		List<Approximation<T>> subsApproximations = getSubsApproximations(); 
-		
-		Approximation<T> result = function(subsApproximations);
-		
+		Approximation<T> result = eval(getSubs());
 		return result;
 	}
 
-	private ArrayList<Approximation<T>> getSubsApproximations() {
-		ArrayList<Approximation<T>> result = mapIntoArrayList(getSubs(), Anytime::getCurrentApproximation);
+	private Approximation<T> eval(ArrayList<? extends Anytime<T>> subs2) {
+		List<Approximation<T>> subsApproximations = mapIntoArrayList(subs2, Anytime::getCurrentApproximation); 
+		Approximation<T> result = function(subsApproximations);
 		return result;
 	}
 

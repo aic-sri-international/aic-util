@@ -47,7 +47,7 @@ import org.junit.Test;
 
 import com.sri.ai.util.Util;
 import com.sri.ai.util.base.NullaryFunction;
-import com.sri.ai.util.computation.treecomputation.core.AbstractEagerTreeComputation;
+import com.sri.ai.util.computation.treecomputation.api.EagerTreeComputation;
 
 /**
  * @author braz
@@ -55,7 +55,7 @@ import com.sri.ai.util.computation.treecomputation.core.AbstractEagerTreeComputa
  */
 public class TreeComputationTest {
 	
-	static class OneTwoTreeComputation extends AbstractEagerTreeComputation<Integer> {
+	static class OneTwoTreeComputation implements EagerTreeComputation<Integer> {
 		
 		private int depth;
 		
