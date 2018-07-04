@@ -64,7 +64,7 @@ public abstract class AbstractLazyTreeComputationEvaluator<T> implements TreeCom
 		reset();
 		registerSubs(subs);
 		NullaryFunction<T> nextSub;
-		if ((nextSub = pickNextSubToBeEvaluated()) != null) {
+		while ((nextSub = pickNextSubToBeEvaluated()) != null) {
 			T nextSubValue = evaluate(nextSub);
 			simplifyFunctionWithValueForSub(nextSub, nextSubValue);
 		}
