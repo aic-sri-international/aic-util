@@ -25,22 +25,22 @@ public class DefaultExplanationTree implements ExplanationTree {
 
 	private String header;
 	private String footer;
-	private List<? extends DefaultExplanationTree> subExplanations;
+	private List<? extends ExplanationTree> subExplanations;
 	private int indentation = DEFAULT_INDENTATION;
 
-	public DefaultExplanationTree(String header, DefaultExplanationTree... subExplanations) {
+	public DefaultExplanationTree(String header, ExplanationTree... subExplanations) {
 		this(header, "", Arrays.asList(subExplanations));
 	}
 	
-	public DefaultExplanationTree(String header, List<? extends DefaultExplanationTree> subExplanations) {
+	public DefaultExplanationTree(String header, List<? extends ExplanationTree> subExplanations) {
 		this(header, "", subExplanations);
 	}
 	
-	public DefaultExplanationTree(String header, String footer, DefaultExplanationTree... subExplanations) {
+	public DefaultExplanationTree(String header, String footer, ExplanationTree... subExplanations) {
 		this(header, footer, Arrays.asList(subExplanations));
 	}
 	
-	public DefaultExplanationTree(String header, String footer, List<? extends DefaultExplanationTree> subExplanations) {
+	public DefaultExplanationTree(String header, String footer, List<? extends ExplanationTree> subExplanations) {
 		super();
 		this.header = header;
 		this.footer = footer;
@@ -53,7 +53,7 @@ public class DefaultExplanationTree implements ExplanationTree {
 	}
 
 	@Override
-	public List<? extends DefaultExplanationTree> getSubExplanations() {
+	public List<? extends ExplanationTree> getSubExplanations() {
 		return Collections.unmodifiableList(subExplanations);
 	}
 	
@@ -74,34 +74,34 @@ public class DefaultExplanationTree implements ExplanationTree {
 
 	@Override
 	public String toString() {
-		return toString("1", 0);
+		return toString(this, "1", 0);
 	}
 
-	public String toString(String prefix, int level) {
+	public static String toString(ExplanationTree explanation, String prefix, int level) {
 		StringBuilder builder = new StringBuilder();
-		appendLineIfNotEmpty(builder, prefix, level, getHeader());
+		appendLineIfNotEmpty(explanation, builder, prefix, level, explanation.getHeader());
 		int index = 1;
-		for (DefaultExplanationTree subExplanation : getSubExplanations()) {
-			builder.append(subExplanation.toString(prefix + "." + index, level + 1));
+		for (ExplanationTree subExplanation : explanation.getSubExplanations()) {
+			builder.append(toString(subExplanation, prefix + "." + index, level + 1));
 			index++;
 		}
-		appendLineIfNotEmpty(builder, prefix, level, getFooter());
+		appendLineIfNotEmpty(explanation, builder, prefix, level, explanation.getFooter());
 		return builder.toString();
 	}
 
-	private void appendLineIfNotEmpty(StringBuilder builder, String prefix, int level, String line) {
+	private static void appendLineIfNotEmpty(ExplanationTree explanation, StringBuilder builder, String prefix, int level, String line) {
 		if (line.length() != 0) {
-			appendLine(builder, prefix, level, line);
+			appendLine(explanation, builder, prefix, level, line);
 		}
 	}
 
-	private StringBuilder appendLine(StringBuilder builder, String prefix, int level, String line) {
-		StringBuilder result = builder.append(makeLine(prefix, level, line));
+	private static StringBuilder appendLine(ExplanationTree explanation, StringBuilder builder, String prefix, int level, String line) {
+		StringBuilder result = builder.append(makeLine(explanation, prefix, level, line));
 		return result;
 	}
 
-	private String makeLine(String prefix, int level, String line) {
-		String result = Strings.repeat(' ', level*getIndentation()) + prefix + " " + line + "\n";
+	private static String makeLine(ExplanationTree explanation, String prefix, int level, String line) {
+		String result = Strings.repeat(' ', level*explanation.getIndentation()) + prefix + " " + line + "\n";
 		return result;
 	}
 	
