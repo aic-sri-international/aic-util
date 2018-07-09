@@ -17,7 +17,7 @@ public class DefaultExplanationTree implements ExplanationTree {
 			new DefaultExplanationTree("This is the first sub-step, which has no sub-sub-steps."),
 			new DefaultExplanationTree("This is the second sub-step, which has no sub-sub-steps.")),
 	new DefaultExplanationTree("This is header of the second step, which has no sub-steps and no footer."),
-	new DefaultExplanationTree("This is the header of first step, which has one sub-step.",
+	new DefaultExplanationTree("This is the header of third step, which has one sub-step.",
 			"This is the footer of first step, which has one sub-step.",
 			new DefaultExplanationTree("This is the only sub-step, which has no sub-sub-steps.")));
 

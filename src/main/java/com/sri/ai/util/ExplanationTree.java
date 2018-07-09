@@ -12,7 +12,7 @@ public interface ExplanationTree {
 
 	String getHeader();
 
-	List<? extends DefaultExplanationTree> getSubExplanations();
+	List<? extends ExplanationTree> getSubExplanations();
 
 	String getFooter();
 
