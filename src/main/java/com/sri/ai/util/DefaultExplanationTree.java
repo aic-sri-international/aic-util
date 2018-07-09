@@ -11,7 +11,7 @@ import joptsimple.internal.Strings;
 public class DefaultExplanationTree implements ExplanationTree {
 
 	public static final ExplanationTree PLACEHOLDER = new DefaultExplanationTree(
-	"This is the header of an explanation consisting of three steps.",
+	"This is the header of an explanation consisting of three steps (this version should not have fractions and hard proc. attachments).",
 	"This is the footer of an explanation consisting of three steps.",
 	new DefaultExplanationTree("This is the header of first step, which has two sub-steps and no footer.",
 			new DefaultExplanationTree("This is the first sub-step, which has no sub-sub-steps."),
