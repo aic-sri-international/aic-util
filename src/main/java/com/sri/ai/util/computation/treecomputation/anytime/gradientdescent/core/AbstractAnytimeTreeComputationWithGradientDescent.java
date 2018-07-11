@@ -2,6 +2,7 @@ package com.sri.ai.util.computation.treecomputation.anytime.gradientdescent.core
 
 import static com.sri.ai.util.Util.argmax;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.sri.ai.util.computation.anytime.api.Anytime;
@@ -38,7 +39,7 @@ public abstract class AbstractAnytimeTreeComputationWithGradientDescent<T> exten
 	}
 	
 	private Anytime<T> getLargestAbsolutePartialDerivativeSub() {
-		Anytime<T> result = argmax(getSubs(), this::getAbsolutePartialDerivativeWithRespectTo);
+		Anytime<T> result = argmax(getSubs(), this::getAbsoluteVolumeVariationWithRespectTo);
 		return result;
 	}
 	
