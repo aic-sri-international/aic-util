@@ -41,6 +41,7 @@ import static com.sri.ai.util.Util.arrayList;
 import static com.sri.ai.util.Util.arrayListFrom;
 import static com.sri.ai.util.Util.iterator;
 import static com.sri.ai.util.Util.join;
+import static com.sri.ai.util.Util.println;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
@@ -65,23 +66,23 @@ public class CartesianProductIteratorTest {
 						() -> iterator("square", "circle")
 						);
 		expected =
-				"[small, red, square]\n" +
-				"[small, red, circle]\n" + 
-				"[small, green, square]\n" + 
-				"[small, green, circle]\n" + 
-				"[small, blue, square]\n" + 
-				"[small, blue, circle]\n" + 
-				"[medium, red, square]\n" + 
-				"[medium, red, circle]\n" + 
-				"[medium, green, square]\n" + 
-				"[medium, green, circle]\n" + 
-				"[medium, blue, square]\n" + 
-				"[medium, blue, circle]\n" + 
-				"[big, red, square]\n" + 
-				"[big, red, circle]\n" + 
-				"[big, green, square]\n" + 
-				"[big, green, circle]\n" + 
-				"[big, blue, square]\n" + 
+				"[small, red, square]; " +
+				"[small, red, circle]; " + 
+				"[small, green, square]; " + 
+				"[small, green, circle]; " + 
+				"[small, blue, square]; " + 
+				"[small, blue, circle]; " + 
+				"[medium, red, square]; " + 
+				"[medium, red, circle]; " + 
+				"[medium, green, square]; " + 
+				"[medium, green, circle]; " + 
+				"[medium, blue, square]; " + 
+				"[medium, blue, circle]; " + 
+				"[big, red, square]; " + 
+				"[big, red, circle]; " + 
+				"[big, green, square]; " + 
+				"[big, green, circle]; " + 
+				"[big, blue, square]; " + 
 				"[big, blue, circle]";
 		runTest(iteratorMakers, expected);
 
@@ -110,8 +111,8 @@ public class CartesianProductIteratorTest {
 						() -> iterator("red", "green", "blue")
 						);
 		expected =
-				"[one-size-fits-all, red]\n" + 
-				"[one-size-fits-all, green]\n" + 
+				"[one-size-fits-all, red]; " + 
+				"[one-size-fits-all, green]; " + 
 				"[one-size-fits-all, blue]";
 		runTest(iteratorMakers, expected);
 
@@ -119,6 +120,12 @@ public class CartesianProductIteratorTest {
 		iteratorMakers =
 				arrayList(() -> iterator("one-size-fits-all"));
 		expected = "[one-size-fits-all]";
+		runTest(iteratorMakers, expected);
+
+		
+		iteratorMakers =
+				arrayList(() -> iterator("0", "1", "2", "3"));
+		expected = "[0]; [1]; [2]; [3]";
 		runTest(iteratorMakers, expected);
 
 		
@@ -134,10 +141,12 @@ public class CartesianProductIteratorTest {
 	protected void runTest(ArrayList<NullaryFunction<Iterator<String>>> iteratorMakers, String expected) {
 		Iterator<ArrayList<String>> iterator;
 		ArrayList<ArrayList<String>> list;
-		String description;
+		String actual;
 		iterator = new CartesianProductIterator<String>(iteratorMakers);
 		list = arrayListFrom(iterator);
-		description = join("\n", list);
-		assertEquals(expected, description);
+		actual = join("; ", list);
+		println("Expected : " + expected);
+		println("Actual   : " + actual);
+		assertEquals(expected, actual);
 	}
 }

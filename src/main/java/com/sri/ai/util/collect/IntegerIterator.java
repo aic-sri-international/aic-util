@@ -89,9 +89,13 @@ public class IntegerIterator extends EZIterator<Integer> {
 	 * 
 	 * @param start the initial value (there is no end value)
 	 */
-	public IntegerIterator(int start) {
+	private IntegerIterator(int start) {
 		this.i = start;
 		this.infinite = true;
+	}
+	
+	public static IntegerIterator fromThisValueOnForever(int start) {
+		return new IntegerIterator(start);
 	}
 
 	@Override

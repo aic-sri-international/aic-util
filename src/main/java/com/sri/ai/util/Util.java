@@ -525,6 +525,10 @@ public class Util {
 	public static <T> ArrayList<T> arrayList(T... elements) {
 		return new ArrayList<T>(Arrays.asList(elements));
 	}
+	
+	public static <T> ArrayList<T> arrayList(int size) {
+		return new ArrayList<T>(size);
+	}
 
 	/**
 	 * @return an empty stack of the given type.
@@ -1384,6 +1388,31 @@ public class Util {
 
 		return result;
 	}
+	
+	/**
+	 * Returns an array list containing the results of applying a given function to the integers from 0 to numberOfIntegers.
+	 * @param numberOfIntegers
+	 * @param function
+	 * @return
+	 */
+	public static <T> ArrayList<T> mapIntegersIntoArrayList(int numberOfIntegers, Function<Integer, T> function) {
+		return mapIntegersIntoArrayList(0, numberOfIntegers, function);
+	}
+	
+	/**
+	 * Returns an array list containing the results of applying a given function to the integers from <code>begin</code> to <code>end - 1</code>.
+	 * @param begin
+	 * @param end
+	 * @param function
+	 * @return
+	 */
+	public static <T> ArrayList<T> mapIntegersIntoArrayList(int begin, int end, Function<Integer, T> function) {
+		ArrayList<T> result = new ArrayList<T>(end - begin);
+		for (int i = begin; i != end; i++) {
+			result.add(function.apply(i));
+		}
+		return result;
+	}
 
 	public static <F, T> List<T> mapIntoList(F[] array, Function<F, T> function) {
 		return mapIntoList(Arrays.asList(array), function);
@@ -2010,7 +2039,7 @@ public class Util {
 		return maxArbitraryPrecision(numbers.iterator());
 	}
 
-	public static Number product(Iterator<Number> numbersIt) {
+	public static Number product(Iterator<? extends Number> numbersIt) {
 		double product = 1;
 		while (numbersIt.hasNext()) {
 			product *= numbersIt.next().doubleValue();
@@ -2021,7 +2050,7 @@ public class Util {
 		return numberInJustNeededType(product);
 	}
 
-	public static Number product(Collection<Number> numbers) {
+	public static Number product(Collection<? extends Number> numbers) {
 		return product(numbers.iterator());
 	}
 
@@ -5123,6 +5152,19 @@ public class Util {
 	}
 	
 	/**
+	 * Shorthand for <code>System.out.print</code>.
+	 * @param object the object to be printed.
+	 * @param <T> the type
+	 */
+	public static <T> void print(T object) {
+		System.out.print(object);
+	}
+
+	public static void print() {
+		System.out.print("");
+	}
+	
+	/**
 	 * Shorthand for <code>System.out.println</code>.
 	 * @param object the object to be printed.
 	 * @param <T> the type
@@ -5319,5 +5361,16 @@ public class Util {
 		allElements.add(firstElement);
 		allElements.addAll(otherElements);
 		return allElements;
+	}
+
+	/**
+	 * Returns a sub-list of a list corresponding to its first half (with rounding down in the case of an odd-sized list).
+	 * @param list
+	 * @return
+	 */
+	public static <T> List<T> getFirstHalfSubList(List<T> list) {
+		int numberOfHalfTheElements = (list.size() + 1)/2;
+		List<T> firstHalfElements = list.subList(0, numberOfHalfTheElements);
+		return firstHalfElements;
 	}
 }
