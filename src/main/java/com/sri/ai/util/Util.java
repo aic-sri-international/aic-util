@@ -5364,13 +5364,22 @@ public class Util {
 	}
 
 	/**
-	 * Returns a sub-list of a list corresponding to its first half (with rounding down in the case of an odd-sized list).
+	 * Returns a sub-list of a list corresponding to its first half (with rounding UP in the case of an odd-sized list).
 	 * @param list
 	 * @return
 	 */
 	public static <T> List<T> getFirstHalfSubList(List<T> list) {
 		int numberOfHalfTheElements = (list.size() + 1)/2;
 		List<T> firstHalfElements = list.subList(0, numberOfHalfTheElements);
+		return firstHalfElements;
+	}
+	
+	/**
+	 * Returns a sub-list of a list corresponding to its LAST half (with rounding UP in the case of an odd-sized list).
+	 */
+	public static <T> List<T> getLastHalfSubList(List<T> list) {
+		int numberOfHalfTheElements = (list.size())/2;
+		List<T> firstHalfElements = list.subList(numberOfHalfTheElements, list.size());
 		return firstHalfElements;
 	}
 }
