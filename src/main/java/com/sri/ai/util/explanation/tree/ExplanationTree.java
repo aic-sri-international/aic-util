@@ -1,4 +1,4 @@
-package com.sri.ai.util;
+package com.sri.ai.util.explanation.tree;
 
 import java.util.List;
 
