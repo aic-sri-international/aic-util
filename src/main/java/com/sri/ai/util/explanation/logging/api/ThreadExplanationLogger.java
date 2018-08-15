@@ -1,4 +1,4 @@
-package com.sri.ai.util.explanation.logging;
+package com.sri.ai.util.explanation.logging.api;
 
 import java.util.Collection;
 import java.util.logging.Level;
@@ -43,29 +43,17 @@ public interface ThreadExplanationLogger {
 	
 	
 	
-	static void start(NullaryFunction<String> explanation) {
-		getThreadExplanationLogger().start(explanation);
-	}
-	
 	static void start(Object... objects) {
 		getThreadExplanationLogger().start(objects);
 	}
 	
 	
 	
-	static void explain(NullaryFunction<String> explanation) {
-		getThreadExplanationLogger().explain(explanation);
-	}
-	
 	static void explain(Object... objects) {
 		getThreadExplanationLogger().explain(objects);
 	}
 	
 	
-	
-	static void end(NullaryFunction<String> explanation) {
-		getThreadExplanationLogger().end(explanation);
-	}
 	
 	static void end(Object... objects) {
 		getThreadExplanationLogger().end(objects);

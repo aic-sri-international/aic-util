@@ -1,4 +1,4 @@
-package com.sri.ai.util.explanation.logging;
+package com.sri.ai.util.explanation.logging.api;
 
 @FunctionalInterface
 public interface ExplanationHandler {

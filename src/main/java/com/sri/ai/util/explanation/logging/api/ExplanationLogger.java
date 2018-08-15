@@ -1,4 +1,4 @@
-package com.sri.ai.util.explanation.logging;
+package com.sri.ai.util.explanation.logging.api;
 
 import java.util.Collection;
 import java.util.logging.Level;
@@ -39,24 +39,10 @@ public interface ExplanationLogger {
 	
 	
 	
-	void start(NullaryFunction<String> explanation);
-	void start(Object... objects);
-	
-	void explain(NullaryFunction<String> explanation);
-	void explain(Object... objects);
-	
-	void end(NullaryFunction<String> explanation);
-	void end(Object... objects);
-	
-	
-	
-	void start(Level level, NullaryFunction<String> explanation);
 	void start(Level level, Object... objects);
 	
-	void explain(Level level, NullaryFunction<String> explanation);
 	void explain(Level level, Object... objects);
 	
-	void end(Level level, NullaryFunction<String> explanation);
 	void end(Level level, Object... objects);
 	
 	
@@ -67,4 +53,18 @@ public interface ExplanationLogger {
 	
 	boolean removeHandler(ExplanationHandler handler);
 
+	
+	
+	default void start(Object... objects) {
+		start(Level.INFO, objects);
+	}
+	
+	default void explain(Object... objects) {
+		explain(Level.INFO, objects);
+	}
+	
+	default void end(Object... objects) {
+		end(Level.INFO, objects);
+	}
+	
 }
