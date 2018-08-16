@@ -23,10 +23,57 @@ import com.sri.ai.util.base.NullaryFunction;
  * @author braz
  *
  */
+//public interface ExplanationLogger {
+//	
+//	Level getLevel();
+//	void setLevel(Level level);
+//	
+//	
+//	
+//	ExplanationFilter getFilter();
+//	void setFilter(ExplanationFilter filter);
+//	
+//	
+//	
+//	void explain(ExplanationRecord record);
+//	
+//	
+//	
+//	void start(Level level, Object... objects);
+//	
+//	void explain(Level level, Object... objects);
+//	
+//	void end(Level level, Object... objects);
+//	
+//	
+//	
+//	Collection<? extends ExplanationHandler> getHandlers();
+//
+//	void addHandler(ExplanationHandler handler);
+//	
+//	boolean removeHandler(ExplanationHandler handler);
+//
+//	
+//	
+//	default void start(Object... objects) {
+//		start(Level.INFO, objects);
+//	}
+//	
+//	default void explain(Object... objects) {
+//		explain(Level.INFO, objects);
+//	}
+//	
+//	default void end(Object... objects) {
+//		end(Level.INFO, objects);
+//	}
+//	
+//}
+
+
 public interface ExplanationLogger {
 	
-	Level getLevel();
-	void setLevel(Level level);
+	Number getThreshold();
+	void setThreshold(Number threshold);
 	
 	
 	
@@ -39,11 +86,11 @@ public interface ExplanationLogger {
 	
 	
 	
-	void start(Level level, Object... objects);
+	void start(Number importanceWeight, Object... objects);
 	
-	void explain(Level level, Object... objects);
+	void explain(Number importanceWeight, Object... objects);
 	
-	void end(Level level, Object... objects);
+	void end(Object... objects);
 	
 	
 	
@@ -56,15 +103,11 @@ public interface ExplanationLogger {
 	
 	
 	default void start(Object... objects) {
-		start(Level.INFO, objects);
+		start(1, objects);
 	}
 	
 	default void explain(Object... objects) {
-		explain(Level.INFO, objects);
-	}
-	
-	default void end(Object... objects) {
-		end(Level.INFO, objects);
+		explain(1, objects);
 	}
 	
 }
