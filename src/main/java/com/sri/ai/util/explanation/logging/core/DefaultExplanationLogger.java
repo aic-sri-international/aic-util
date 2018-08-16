@@ -13,28 +13,34 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 	
 	//TODO: ERROR CHECKING / HANDLING FOR TYPE CONVERSIONS
 	
-	double threshold;
+	private double importanceThreshold; 					// user defined threshold above which explanations are recorded
+	
+	private double compundedImportanceWeight;				// cumulative importance weight at current nesting (calculated by multiplying "start" importance weights
+	private int levelsInsideUnimportantBlock;				// tracks how far within an unimportant block (relative to the importanceThreshold) algorithm is currently processing
+	private int nestingLevel;								// current level of nesting relative to "start"/"end" invocations
+	
+	Collection<ExplanationHandler> explanationHandlers;		// collection of handlers to process recorded explanations
+	ExplanationFilter explanationFilter;				// object that processes explanations and relays important explanations to explanationHandlers
+	
 
 	@Override
 	public Number getImportanceThreshold() {
-		return threshold;
+		return importanceThreshold;
 	}
 
 	@Override
-	public void setImportanceThreshold(Number threshold) {
-			this.threshold = (double) threshold;
+	public void setImportanceThreshold(Number newImportanceThreshold) {
+		this.importanceThreshold = (double) newImportanceThreshold;
 	}
 
 	@Override
 	public ExplanationFilter getFilter() {
-		// TODO Auto-generated method stub
-		return null;
+		return explanationFilter;
 	}
 
 	@Override
-	public void setFilter(ExplanationFilter filter) {
-		// TODO Auto-generated method stub
-
+	public void setFilter(ExplanationFilter newFilter) {
+		this.explanationFilter = newFilter;
 	}
 
 	@Override
