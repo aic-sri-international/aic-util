@@ -9,7 +9,7 @@ import com.sri.ai.util.explanation.logging.api.ExplanationHandler;
 import com.sri.ai.util.explanation.logging.api.ExplanationLogger;
 import com.sri.ai.util.explanation.logging.api.ExplanationRecord;
 
-public class RelativeWeightExplanationLogger implements ExplanationLogger {
+public class DefaultExplanationLogger implements ExplanationLogger {
 	
 	//TODO: ERROR CHECKING / HANDLING FOR TYPE CONVERSIONS
 	
