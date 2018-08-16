@@ -1,8 +1,8 @@
 package com.sri.ai.util.explanation.logging.api;
 
+import java.util.function.Predicate;
+
 @FunctionalInterface
-public interface ExplanationFilter {
-	
-	boolean include(ExplanationRecord record);
+public interface ExplanationFilter extends Predicate<ExplanationRecord> {
 
 }
