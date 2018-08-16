@@ -16,12 +16,12 @@ public class RelativeWeightExplanationLogger implements ExplanationLogger {
 	double threshold;
 
 	@Override
-	public Number getThreshold() {
+	public Number getImportanceThreshold() {
 		return threshold;
 	}
 
 	@Override
-	public void setThreshold(Number threshold) {
+	public void setImportanceThreshold(Number threshold) {
 			this.threshold = (double) threshold;
 	}
 

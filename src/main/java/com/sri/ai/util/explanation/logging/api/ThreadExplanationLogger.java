@@ -1,9 +1,6 @@
 package com.sri.ai.util.explanation.logging.api;
 
 import java.util.Collection;
-import java.util.logging.Level;
-
-import com.sri.ai.util.base.NullaryFunction;
 
 /**
  * A class with static methods for accessing and using a thread-wide {@link ExplanationLogger}.
@@ -17,12 +14,12 @@ public interface ThreadExplanationLogger {
 		return null;
 	}
 	
-	static Level getLevel() {
-		return getThreadExplanationLogger().getLevel();
+	static Number getImportanceThreshold() {
+		return getThreadExplanationLogger().getImportanceThreshold();
 	}
 	
-	static void setLevel(Level level) {
-		getThreadExplanationLogger().setLevel(level);
+	static void setImportanceThreshold(Number importanceThreshold) {
+		getThreadExplanationLogger().setImportanceThreshold(importanceThreshold);
 	}
 	
 	
@@ -42,52 +39,28 @@ public interface ThreadExplanationLogger {
 	}
 	
 	
-	
+	 
 	static void start(Object... objects) {
-		getThreadExplanationLogger().start(objects);
+		getThreadExplanationLogger().explain(objects);
 	}
-	
-	
 	
 	static void explain(Object... objects) {
 		getThreadExplanationLogger().explain(objects);
 	}
-	
-	
 	
 	static void end(Object... objects) {
 		getThreadExplanationLogger().end(objects);
 	}
 	
 	
-	
-	
-	static void start(Level level, NullaryFunction<String> explanation) {
-		getThreadExplanationLogger().start(level, explanation);
+	 
+	static void start(Number importance, Object... objects) {
+		getThreadExplanationLogger().start(importance, objects);
 	}
 	
-	static void start(Level level, Object... objects) {
-		getThreadExplanationLogger().start(level, objects);
+	static void explain(Number importance, Object... objects) {
+		getThreadExplanationLogger().explain(importance, objects);
 	}
-	
-	
-	static void explain(Level level, NullaryFunction<String> explanation) {
-		getThreadExplanationLogger().explain(level, explanation);
-	}
-	
-	static void explain(Level level, Object... objects) {
-		getThreadExplanationLogger().explain(level, objects);
-	}
-	
-	
-	static void end(Level level, NullaryFunction<String> explanation) {
-		getThreadExplanationLogger().end(level, explanation);
-	}
-	
-	static void end(Level level, Object... objects) {
-		getThreadExplanationLogger().end(level, objects);
-	}
-	
 	
 	
 	

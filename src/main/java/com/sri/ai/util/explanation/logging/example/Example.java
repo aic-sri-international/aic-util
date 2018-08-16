@@ -4,12 +4,9 @@ import static com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger.en
 import static com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger.explain;
 import static com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger.start;
 
-import com.sri.ai.util.explanation.logging.api.ExplanationLogger;
-import com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger;
-
 public class Example {
 	
-	void myDay(int day) {
+	static void myDay(int day) {
 		
 		start("Starting a new day, day number ", day);
 		
@@ -20,7 +17,7 @@ public class Example {
 		end("Calling it a day, day number ", day);
 	}
 	
-	private void runErrand(int errand) {
+	static void runErrand(int errand) {
 		start("Running errand number ", errand);
 		for (int i = 0; i != 10; i++) {
 			explain("Doing task", i, " of errand ", errand);
@@ -30,8 +27,7 @@ public class Example {
 
 	public static void main(String[] args) {
 		//ThreadExplanationLogger.getThreadExplanationLogger().addHandler(new FileHandler(filename));
-		Example e = new Example();
-		e.myDay(3);
+		myDay(3);
 		
 	}
 
