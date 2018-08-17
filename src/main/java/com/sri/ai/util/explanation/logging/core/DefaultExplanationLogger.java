@@ -1,11 +1,9 @@
 package com.sri.ai.util.explanation.logging.core;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 import com.sri.ai.util.base.Stack;
-
-import javax.print.event.PrintJobAttributeListener;
-
 import com.sri.ai.util.explanation.logging.api.ExplanationFilter;
 import com.sri.ai.util.explanation.logging.api.ExplanationHandler;
 import com.sri.ai.util.explanation.logging.api.ExplanationLogger;
@@ -15,18 +13,29 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 	
 	//TODO: ERROR CHECKING / HANDLING FOR TYPE CONVERSIONS
 	
-	private double importanceThreshold; 					// user defined threshold above which explanations are recorded
+	private double importanceThreshold; 			// user defined threshold above which explanations are recorded
 	
-	private double importanceMultiplier;					// compounded importance weights at current nesting (calculated by multiplying "start" importance weights
-	private Stack<Double> storedImportanceWeights;			// stores raw importance weights from each start() invocation.  Each end() invocation pops a value.
-	private int depthInsideUnimportantBlock;				// tracks how far within an unimportant block (relative to the importanceThreshold) algorithm is currently processing
-	private int nestingDepth;								// current level of nesting relative to"start"/"end" invocations deemed as important
+	private double importanceMultiplier;			// compounded importance weights at current nesting (calculated by multiplying "start" importance weights)
+	private Stack<Double> importanceStack;			// stores raw importance weights from each start() invocation. Each end() invocation pops a value.
+	private int numberOfNestedUnimportantBlocks;	// tracks the number of unimportant blocks the explanation is inside of
+	private int nestingDepth;						// current level of nesting relative to"start"/"end" invocations deemed as important
 	
-	Collection<ExplanationHandler> explanationHandlers;		// collection of handlers to process recorded explanations
-	ExplanationFilter explanationFilter;					// object that filters relevant records and passes them to explanationHandlers
+	Collection<ExplanationHandler> handlers;		// collection of handlers to process recorded explanations
+	ExplanationFilter filter;						// object that filters relevant records and passes them to explanationHandlers
 	
 	
 	//TODO:  getTotalNexting(), etc.
+
+	public DefaultExplanationLogger() {
+		super();
+		this.importanceThreshold = 1;
+		this.importanceMultiplier = 1;
+		this.importanceStack = new Stack<>();
+		this.numberOfNestedUnimportantBlocks = 0;
+		this.nestingDepth = 0;
+		this.handlers = new HashSet<>();
+		this.filter = null;
+	}
 
 	@Override
 	public Number getImportanceThreshold() {
@@ -35,17 +44,17 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 
 	@Override
 	public void setImportanceThreshold(Number threshold) {
-		this.importanceThreshold = (double) threshold;
+		this.importanceThreshold = threshold.doubleValue();
 	}
 
 	@Override
 	public ExplanationFilter getFilter() {
-		return explanationFilter;
+		return filter;
 	}
 
 	@Override
 	public void setFilter(ExplanationFilter filter) {
-		this.explanationFilter = filter;
+		this.filter = filter;
 	}
 
 	@Override
@@ -53,106 +62,98 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 		
 		if(!insideUnimportantBlock())
 		{
-			double importanceWeight = (double) importance;
-			processStartRecordRequest(importanceWeight, objects);
+			processStartRecordRequest(importance.doubleValue(), objects);
 		}
 	    else {
-	    	increseDepthInsideUnimportantBlock();	    	
+	    	increaseDepthInsideUnimportantBlock();	    	
 	    }
 	}
 
-	private void processStartRecordRequest(double importanceWeight, Object[] objects) {
-		double adjustedImportance = calculateCompoundedImportanceValue(importanceWeight);
+	private void processStartRecordRequest(double importance, Object[] objects) {
+		double adjustedImportance = calculateCompoundedImportance(importance);
 	    if (isImportantEnough(adjustedImportance)) {
-	    	processRecordRequest(importanceWeight, adjustedImportance, objects);
+	    	processRecordRequest(importance, adjustedImportance, objects);
 			setImportanceMultiplier(adjustedImportance);
-			addImportanceWeightToStoredImportanceWeights(importanceWeight);
+			pushImportance(importance);
 		    increaseNestingDepthOfRecordings();
 	    }
 	    else {
-	    	increseDepthInsideUnimportantBlock();	    	
+	    	increaseDepthInsideUnimportantBlock();	    	
 	    }
 	}
 
 	@Override
 	public void explain(Number importance, Object... objects) {
-		if(!insideUnimportantBlock())
-		{
-			double importanceWeight = (double) importance;
-			processExplainRecordRequest(importanceWeight, objects);
+		if (!insideUnimportantBlock()) {
+			processExplainRecordRequest((double) importance, objects);
 		}
 	}
 
 
-	private void processExplainRecordRequest(double importanceWeight, Object[] objects) {
-		double adjustedImportance = calculateCompoundedImportanceValue(importanceWeight);
+	private void processExplainRecordRequest(double importance, Object[] objects) {
+		double adjustedImportance = calculateCompoundedImportance(importance);
 	    if (isImportantEnough(adjustedImportance)) {
-	    	processRecordRequest(importanceWeight, adjustedImportance, objects);
+	    	processRecordRequest(importance, adjustedImportance, objects);
 	    }		
 	}
 
 	@Override
 	public void end(Object... objects) {
 	    if (!insideUnimportantBlock()) {
-	    	double importanceWeight = popLastStartImportanceWeight();
+	    	double importance = popImportance();
 	    	double adjustedImportance = importanceMultiplier;
-		    decreaseNestingDepthOfRecordings();
-	    	processRecordRequest(importanceWeight, adjustedImportance, objects);
-			setImportanceMultiplier(adjustedImportance/importanceWeight);
+		    decreaseNestingDepthOfRecords();
+	    	processRecordRequest(importance, adjustedImportance, objects);
+			setImportanceMultiplier(adjustedImportance/importance);
 	    }
 	    else {
 	    	decreaseDepthInsideUnimportantBlock();	    	
 	    }
 	}
 
-	private void processRecordRequest(double importanceWeight, double adjustedImportance, Object[] objects) {
-		ExplanationRecord record = makeRecord(importanceWeight, adjustedImportance, objects);
-		if (explanationFilter.test(record)) {
+	private void processRecordRequest(double importance, double adjustedImportance, Object[] objects) {
+		ExplanationRecord record = makeRecord(importance, adjustedImportance, objects);
+		if (filter != null && filter.test(record)) {
 			sendRecordToHandlers(record);
 		}
 	}
 
 	@Override
 	public Collection<? extends ExplanationHandler> getHandlers() {
-		return explanationHandlers;
+		return handlers;
 	}
 
 	@Override
 	public void addHandler(ExplanationHandler handler) {
-		explanationHandlers.add(handler);
+		handlers.add(handler);
 	}
 
 	@Override
 	public boolean removeHandler(ExplanationHandler handler) {
-		//Note, this looks for the EXACT SAME object
-		return explanationHandlers.remove(handler);
+		// Note, this looks for the EXACT SAME object
+		return handlers.remove(handler);
 	}
 	
-	private double calculateCompoundedImportanceValue(double importanceWeight) {
-		double compoundedImportanceValue = importanceWeight * importanceMultiplier;
-		return compoundedImportanceValue;
+	private double calculateCompoundedImportance(double importance) {
+		double compoundedImportance = importance * importanceMultiplier;
+		return compoundedImportance;
 	}
 	
 	private boolean insideUnimportantBlock() {
-		return depthInsideUnimportantBlock > 0;
+		return numberOfNestedUnimportantBlocks > 0;
 	}
 
 	private boolean isImportantEnough(double compoundedImportance) {
-		boolean isImportant = true;
-		if(compoundedImportance > importanceThreshold)	{
-			isImportant = false;
-		}
-		return isImportant;
+		return compoundedImportance >= importanceThreshold;
 	}
 	
 	private ExplanationRecord makeRecord(double importance, double compoundedImportance, Object[] objects) {
-		ExplanationRecord record = new DefaultExplanationRecord(importance, compoundedImportance, objects);
+		ExplanationRecord record = new DefaultExplanationRecord(importance, compoundedImportance, nestingDepth, objects);
 		return record;
 	}
 	
 	private void sendRecordToHandlers(ExplanationRecord record) {
-		for(ExplanationHandler handler : explanationHandlers)
-		{
+		for (ExplanationHandler handler : handlers) {
 			handler.handle(record);
 		}
 	}
@@ -161,28 +162,28 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 		this.importanceMultiplier = newImportanceMultiplier;
 	}
 	
-	private void addImportanceWeightToStoredImportanceWeights(double importanceWeight) {
-		storedImportanceWeights.push(importanceWeight);
+	private void pushImportance(double importanceWeight) {
+		importanceStack.push(importanceWeight);
 	}
 	
-	private double popLastStartImportanceWeight() {
-		double importanceWeight = storedImportanceWeights.pop();
-		return importanceWeight;
+	private double popImportance() {
+		double importance = importanceStack.pop();
+		return importance;
 	}
 	
 	private void increaseNestingDepthOfRecordings() {
 		++nestingDepth;
 	}
 	
-	private void decreaseNestingDepthOfRecordings() {
+	private void decreaseNestingDepthOfRecords() {
 		--nestingDepth;		
 	}
 	
-	private void increseDepthInsideUnimportantBlock() {
-		++depthInsideUnimportantBlock;
+	private void increaseDepthInsideUnimportantBlock() {
+		++numberOfNestedUnimportantBlocks;
 	}
 	
 	private void decreaseDepthInsideUnimportantBlock() {
-		--depthInsideUnimportantBlock;
+		--numberOfNestedUnimportantBlocks;
 	}
 }
