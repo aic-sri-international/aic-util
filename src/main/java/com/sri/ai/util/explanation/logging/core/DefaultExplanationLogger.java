@@ -2,6 +2,8 @@ package com.sri.ai.util.explanation.logging.core;
 
 import java.util.Collection;
 
+import com.sri.ai.util.base.Stack;
+
 import javax.print.event.PrintJobAttributeListener;
 
 import com.sri.ai.util.explanation.logging.api.ExplanationFilter;
@@ -15,13 +17,16 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 	
 	private double importanceThreshold; 					// user defined threshold above which explanations are recorded
 	
-	private double compundedImportanceWeight;				// cumulative importance weight at current nesting (calculated by multiplying "start" importance weights
-	private int levelsInsideUnimportantBlock;				// tracks how far within an unimportant block (relative to the importanceThreshold) algorithm is currently processing
-	private int nestingLevel;								// current level of nesting relative to "start"/"end" invocations
+	private double importanceMultiplier;					// compounded importance weights at current nesting (calculated by multiplying "start" importance weights
+	private Stack<Double> storedImportanceWeights;			// stores raw importance weights from each start() invocation.  Each end() invocation pops a value.
+	private int depthInsideUnimportantBlock;				// tracks how far within an unimportant block (relative to the importanceThreshold) algorithm is currently processing
+	private int nestingDepth;								// current level of nesting relative to"start"/"end" invocations deemed as important
 	
 	Collection<ExplanationHandler> explanationHandlers;		// collection of handlers to process recorded explanations
-	ExplanationFilter explanationFilter;				// object that processes explanations and relays important explanations to explanationHandlers
+	ExplanationFilter explanationFilter;					// object that filters relevant records and passes them to explanationHandlers
 	
+	
+	//TODO:  getTotalNexting(), etc.
 
 	@Override
 	public Number getImportanceThreshold() {
@@ -29,8 +34,8 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 	}
 
 	@Override
-	public void setImportanceThreshold(Number newImportanceThreshold) {
-		this.importanceThreshold = (double) newImportanceThreshold;
+	public void setImportanceThreshold(Number threshold) {
+		this.importanceThreshold = (double) threshold;
 	}
 
 	@Override
@@ -39,50 +44,145 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 	}
 
 	@Override
-	public void setFilter(ExplanationFilter newFilter) {
-		this.explanationFilter = newFilter;
+	public void setFilter(ExplanationFilter filter) {
+		this.explanationFilter = filter;
 	}
 
 	@Override
-	public void explain(ExplanationRecord record) {
-		// TODO Auto-generated method stub
+	public void start(Number importance, Object... objects) {
+		
+		if(!insideUnimportantBlock())
+		{
+			double importanceWeight = (double) importance;
+			processStartRecordRequest(importanceWeight, objects);
+		}
+	    else {
+	    	increseDepthInsideUnimportantBlock();	    	
+	    }
+	}
 
+	private void processStartRecordRequest(double importanceWeight, Object[] objects) {
+		double adjustedImportance = calculateCompoundedImportanceValue(importanceWeight);
+	    if (isImportantEnough(adjustedImportance)) {
+	    	processRecordRequest(importanceWeight, adjustedImportance, objects);
+			setImportanceMultiplier(adjustedImportance);
+			addImportanceWeightToStoredImportanceWeights(importanceWeight);
+		    increaseNestingDepthOfRecordings();
+	    }
+	    else {
+	    	increseDepthInsideUnimportantBlock();	    	
+	    }
 	}
 
 	@Override
-	public void start(Number importanceWeight, Object... objects) {
-		// TODO Auto-generated method stub
-
+	public void explain(Number importance, Object... objects) {
+		if(!insideUnimportantBlock())
+		{
+			double importanceWeight = (double) importance;
+			processExplainRecordRequest(importanceWeight, objects);
+		}
 	}
 
-	@Override
-	public void explain(Number importanceWeight, Object... objects) {
-		// TODO Auto-generated method stub
 
+	private void processExplainRecordRequest(double importanceWeight, Object[] objects) {
+		double adjustedImportance = calculateCompoundedImportanceValue(importanceWeight);
+	    if (isImportantEnough(adjustedImportance)) {
+	    	processRecordRequest(importanceWeight, adjustedImportance, objects);
+	    }		
 	}
 
 	@Override
 	public void end(Object... objects) {
-		// TODO Auto-generated method stub
+	    if (!insideUnimportantBlock()) {
+	    	double importanceWeight = popImportanceWeightCorrespondingToTheLastStart();
+	    	double adjustedImportance = importanceMultiplier;
+		    decreaseNestingDepthOfRecordings();
+	    	processRecordRequest(importanceWeight, adjustedImportance, objects);
+			setImportanceMultiplier(adjustedImportance/importanceWeight);
+	    }
+	    else {
+	    	decreaseDepthInsideUnimportantBlock();	    	
+	    }
+	}
 
+	private void processRecordRequest(double importanceWeight, double adjustedImportance, Object[] objects) {
+		ExplanationRecord record = makeRecord(importanceWeight, adjustedImportance, objects);
+		if (explanationFilter.test(record)) {
+			sendRecordToHandlers(record);
+		}
 	}
 
 	@Override
 	public Collection<? extends ExplanationHandler> getHandlers() {
-		// TODO Auto-generated method stub
-		return null;
+		return explanationHandlers;
 	}
 
 	@Override
 	public void addHandler(ExplanationHandler handler) {
-		// TODO Auto-generated method stub
-
+		explanationHandlers.add(handler);
 	}
 
 	@Override
 	public boolean removeHandler(ExplanationHandler handler) {
-		// TODO Auto-generated method stub
-		return false;
+		//Note, this looks for the EXACT SAME object
+		return explanationHandlers.remove(handler);
+	}
+	
+	private double calculateCompoundedImportanceValue(double importanceWeight) {
+		double compoundedImportanceValue = importanceWeight * importanceMultiplier;
+		return compoundedImportanceValue;
+	}
+	
+	private boolean insideUnimportantBlock() {
+		return depthInsideUnimportantBlock > 0;
 	}
 
+	private boolean isImportantEnough(double compoundedImportance) {
+		boolean isImportant = true;
+		if(compoundedImportance > importanceThreshold)	{
+			isImportant = false;
+		}
+		return isImportant;
+	}
+	
+	private ExplanationRecord makeRecord(double importance, double compoundedImportance, Object[] objects) {
+		ExplanationRecord record = new DefaultExplanationRecord(importance, compoundedImportance, objects);
+		return record;
+	}
+	
+	private void sendRecordToHandlers(ExplanationRecord record) {
+		for(ExplanationHandler handler : explanationHandlers)
+		{
+			handler.handle(record);
+		}
+	}
+	
+	private void setImportanceMultiplier(double newImportanceMultiplier) {
+		this.importanceMultiplier = newImportanceMultiplier;
+	}
+	
+	private void addImportanceWeightToStoredImportanceWeights(double importanceWeight) {
+		storedImportanceWeights.push(importanceWeight);
+	}
+	
+	private double popImportanceWeightCorrespondingToTheLastStart() {
+		double importanceWeight = storedImportanceWeights.pop();
+		return importanceWeight;
+	}
+	
+	private void increaseNestingDepthOfRecordings() {
+		++nestingDepth;
+	}
+	
+	private void decreaseNestingDepthOfRecordings() {
+		--nestingDepth;		
+	}
+	
+	private void increseDepthInsideUnimportantBlock() {
+		++depthInsideUnimportantBlock;
+	}
+	
+	private void decreaseDepthInsideUnimportantBlock() {
+		--depthInsideUnimportantBlock;
+	}
 }

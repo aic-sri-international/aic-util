@@ -43,10 +43,6 @@ public interface ExplanationLogger {
 	
 	
 	
-	void explain(ExplanationRecord record);
-	
-	
-	
 	void start(Number importance, Object... objects);
 	
 	void explain(Number importance, Object... objects);
