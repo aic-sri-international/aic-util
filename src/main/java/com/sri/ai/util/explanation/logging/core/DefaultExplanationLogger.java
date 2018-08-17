@@ -65,7 +65,7 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 			processStartRecordRequest(importance.doubleValue(), objects);
 		}
 	    else {
-	    	increaseDepthInsideUnimportantBlock();	    	
+	    	increaseNumberOfNestedUnimportantBlocks();	    	
 	    }
 	}
 
@@ -78,7 +78,7 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 		    increaseNestingDepthOfRecordings();
 	    }
 	    else {
-	    	increaseDepthInsideUnimportantBlock();	    	
+	    	increaseNumberOfNestedUnimportantBlocks();	    	
 	    }
 	}
 
@@ -107,7 +107,7 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 			setImportanceMultiplier(adjustedImportance/importance);
 	    }
 	    else {
-	    	decreaseDepthInsideUnimportantBlock();	    	
+	    	decreaseNumberOfNestedUnimportantBlocks();	    	
 	    }
 	}
 
@@ -179,11 +179,11 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 		--nestingDepth;		
 	}
 	
-	private void increaseDepthInsideUnimportantBlock() {
+	private void increaseNumberOfNestedUnimportantBlocks() {
 		++numberOfNestedUnimportantBlocks;
 	}
 	
-	private void decreaseDepthInsideUnimportantBlock() {
+	private void decreaseNumberOfNestedUnimportantBlocks() {
 		--numberOfNestedUnimportantBlocks;
 	}
 }
