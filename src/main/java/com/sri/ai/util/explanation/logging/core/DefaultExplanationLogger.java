@@ -94,7 +94,7 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 	@Override
 	public void end(Object... objects) {
 	    if (!insideUnimportantBlock()) {
-	    	double importanceWeight = popImportanceWeightCorrespondingToTheLastStart();
+	    	double importanceWeight = popLastStartImportanceWeight();
 	    	double adjustedImportance = importanceMultiplier;
 		    decreaseNestingDepthOfRecordings();
 	    	processRecordRequest(importanceWeight, adjustedImportance, objects);
@@ -165,7 +165,7 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 		storedImportanceWeights.push(importanceWeight);
 	}
 	
-	private double popImportanceWeightCorrespondingToTheLastStart() {
+	private double popLastStartImportanceWeight() {
 		double importanceWeight = storedImportanceWeights.pop();
 		return importanceWeight;
 	}
