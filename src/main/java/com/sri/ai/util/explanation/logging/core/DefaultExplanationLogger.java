@@ -85,7 +85,7 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 	@Override
 	public void explain(Number importance, Object... objects) {
 		if (!insideUnimportantBlock()) {
-			processExplainRecordRequest((double) importance, objects);
+			processExplainRecordRequest(importance.doubleValue(), objects);
 		}
 	}
 
