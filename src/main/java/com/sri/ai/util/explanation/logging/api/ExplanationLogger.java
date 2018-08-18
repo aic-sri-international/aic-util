@@ -2,6 +2,9 @@ package com.sri.ai.util.explanation.logging.api;
 
 import java.util.Collection;
 
+import com.sri.ai.util.base.NullaryFunction;
+import com.sri.ai.util.explanation.logging.core.ExplanationBlock;
+
 /**
  * An {@link ExplanationLogger} receives indented information about an algorithm's execution and passes it on to {@link ExplanationHandler}s
  * with specific functionalities.
@@ -33,6 +36,11 @@ import java.util.Collection;
  */
 public interface ExplanationLogger {
 	
+	/** Convenience method for creating lazy arguments to explanations without having to write an ugly cast to {@link NullaryFunction}. */
+	public static NullaryFunction<Object> lazy(NullaryFunction<Object> code) {
+		return code;
+	}
+	
 	Number getImportanceThreshold();
 	void setImportanceThreshold(Number importanceThreshold);
 	
@@ -41,6 +49,43 @@ public interface ExplanationLogger {
 	ExplanationFilter getFilter();
 	void setFilter(ExplanationFilter filter);
 	
+	
+	
+	/**
+	 * A method for declaring an explanation start...end block that recovers gracefully from exceptions,
+	 * that is, automatically generates an end explanation indicating an exception before leaving the method,
+	 * as a way to keep nesting levels and importance weights consistent.
+	 * <p>
+	 * The method takes the arguments for the start and end explanations, but also a {@link NullaryFunction} object that
+	 * represents the block code (that is, the code in between start and end).
+	 * <p>
+	 * It assumes all arguments before the block code to be the arguments of the start explanation,
+	 * and all arguments after the block code to be the arguments of the end explanation
+	 * (but see later for a more general form that allows {@link NullaryFunction} arguments for the
+	 * start and end explanations as well).
+	 * <p>
+	 * It generates the start explanation and then executes the block code.
+	 * If a {@link Throwable} object is thrown by the block code, then an end explanation indicating that,
+	 * and containing the throwable, is automatically generated, and the throwable is re-thrown.
+	 * Otherwise, it executes the end explanation specified by the user.
+	 * 
+	 * @param objects
+	 */
+	default <T> T explanationBlock(Number importance, Object...objects) {
+		ExplanationBlock<T> block = new ExplanationBlock<T>(this, importance, objects);
+		return block.execute();
+	}
+
+	/**
+	 * Same as {@link explanationBlock(Number, Object...)} with default importance 1.0.
+	 * 
+	 * @param objects
+	 */
+	default <T> T explanationBlock(Object...objects) {
+		ExplanationBlock<T> block = new ExplanationBlock<T>(this, 1.0, objects);
+		return block.execute();
+	}
+
 	
 	
 	void start(Number importance, Object... objects);
@@ -60,11 +105,11 @@ public interface ExplanationLogger {
 	
 	
 	default void start(Object... objects) {
-		start(1, objects);
+		start(1.0, objects);
 	}
 	
 	default void explain(Object... objects) {
-		explain(1, objects);
+		explain(1.0, objects);
 	}
 	
 }

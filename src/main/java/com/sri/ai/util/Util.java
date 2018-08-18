@@ -2808,6 +2808,11 @@ public class Util {
 		return -1;
 	}
 
+	public static <E, E1 extends E> int getIndexOfFirstSatisfyingPredicateOrMinusOne(E1[] c, Predicate<E> p) {
+		int result = getIndexOfFirstSatisfyingPredicateOrMinusOne(Arrays.asList(c), p);
+		return result;
+	}
+
 	public static <T> Set<T> intersection(Collection<? extends T> c1, Collection<? extends T> c2) {
 		LinkedHashSet<T> result = new LinkedHashSet<T>();
 		for (T element : c1) {
@@ -3570,6 +3575,22 @@ public class Util {
 	}
 
 	/**
+	 * Indicates whether an array contains a given element.
+	 * 
+	 * @param array
+	 *            the array to be tested.
+	 * @param element
+	 *            the element to test if it is in the given array.
+	 * @return true if the given element is in the given array.
+	 * @param <E>
+	 *            the type of the elements.
+	 */
+	public static <E> boolean contains(E[] array, E element) {
+		boolean result = Arrays.asList(array).contains(element);
+		return result;
+	}
+
+	/**
 	 * Indicates whether an iterator's range contains a given element.
 	 * 
 	 * @param iterator
@@ -3603,8 +3624,7 @@ public class Util {
 	 * @param <E>
 	 *            the type of the elements.
 	 */
-	public static <E> boolean listFromIContains(ArrayList<E> list, int i,
-			E element) {
+	public static <E> boolean listFromIContains(List<E> list, int i, E element) {
 		ListIterator<E> iterator = list.listIterator(i);
 		boolean result = contains(iterator, element);
 		return result;
@@ -5381,5 +5401,9 @@ public class Util {
 		int numberOfHalfTheElements = (list.size())/2;
 		List<T> firstHalfElements = list.subList(numberOfHalfTheElements, list.size());
 		return firstHalfElements;
+	}
+
+	public static int getIndexOf(Object[] array, Object element) {
+		return Arrays.asList(array).indexOf(element);
 	}
 }

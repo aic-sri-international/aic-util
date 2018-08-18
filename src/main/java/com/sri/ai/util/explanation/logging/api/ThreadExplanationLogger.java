@@ -18,7 +18,7 @@ public interface ThreadExplanationLogger {
 		return getThreadExplanationLogger().getImportanceThreshold();
 	}
 	
-	static void setImportanceThreshold(Number importanceThreshold) {
+	static void setImportanceThreshold(Double importanceThreshold) {
 		getThreadExplanationLogger().setImportanceThreshold(importanceThreshold);
 	}
 	
@@ -34,12 +34,12 @@ public interface ThreadExplanationLogger {
 	
 	
 	
-	static void explain(ExplanationRecord record) {
-		getThreadExplanationLogger().explain(record);
+	static <T> T explanationBlock(Object...objects) {
+		return getThreadExplanationLogger().explanationBlock(objects);
 	}
 	
+
 	
-	 
 	static void start(Object... objects) {
 		getThreadExplanationLogger().explain(objects);
 	}
