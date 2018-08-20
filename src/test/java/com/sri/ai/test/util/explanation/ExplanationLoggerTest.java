@@ -339,7 +339,7 @@ public class ExplanationLoggerTest {
 	}
 
 	@Test
-	public void explanationBlocksWithTwoNestedExceptionTest() {
+	public void explanationBlocksWithTwoNestedExceptionsTest() {
 		
 		DefaultExplanationLogger logger;
 		StringExplanationHandler stringHandler;
