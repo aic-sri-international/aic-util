@@ -4,19 +4,32 @@ import static com.sri.ai.util.Util.list;
 import static com.sri.ai.util.Util.println;
 import static com.sri.ai.util.Util.readContentsOfFile;
 import static com.sri.ai.util.explanation.logging.api.ExplanationLogger.lazy;
-import static com.sri.ai.util.explanation.logging.core.ExplanationBlock.code;
 import static com.sri.ai.util.explanation.logging.core.ExplanationBlock.RESULT;
+import static com.sri.ai.util.explanation.logging.core.ExplanationBlock.code;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
+import com.sri.ai.util.explanation.logging.api.ExplanationConfiguration;
 import com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger;
 import com.sri.ai.util.explanation.logging.core.DefaultExplanationLogger;
 import com.sri.ai.util.explanation.logging.core.handler.StringExplanationHandler;
 
 public class ExplanationLoggerTest {
+	
+	@Before
+	public void setUp() {
+		ExplanationConfiguration.WHETHER_EXPLANATION_LOGGERS_ARE_ACTIVE_BY_DEFAULT = true;
+	}
+	
+	@After
+	public void shutDown() {
+		ExplanationConfiguration.WHETHER_EXPLANATION_LOGGERS_ARE_ACTIVE_BY_DEFAULT = false;
+	}
 	
 	@Test
 	public void basicTests() {
@@ -441,7 +454,7 @@ public class ExplanationLoggerTest {
 	}
 
 
-	@Test
+	//@Test
 	public void threadExplanationLoggerToFileTest() {
 		
 		String fileName = "explanation.txt";
