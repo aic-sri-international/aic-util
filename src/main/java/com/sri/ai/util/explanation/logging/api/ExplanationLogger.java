@@ -82,16 +82,22 @@ public interface ExplanationLogger {
 	
 	/**
 	 * A method for declaring an explanation start...end block that recovers gracefully from exceptions,
-	 * that is, automatically generates an end explanation indicating an exception before leaving the method,
+	 * that is, automatically generates an end-block explanation indicating an exception before leaving the method,
 	 * as a way to keep nesting levels and importance weights consistent.
 	 * <p>
-	 * The method takes the arguments for the start and end explanations, but also a {@link NullaryFunction} object that
-	 * represents the block code (that is, the code in between start and end).
+	 * The method takes the arguments for the start and end explanations,
+	 * but also an object of type {@link Code}
+	 * containing the block code
+	 * (that is, the code in between start and end).
+	 * Such objects can be conveniently produced by methods
+	 * {@link #code(NullaryFunction)} or {@link #code(NullaryProcedure)}
+	 * which applies to a nullary function or procedure containing the node.
+	 * Whether to use a function or a procedure depends on whether the block produces a value (Void is used for procedure).
+	 * This value is then returned by this method {@link #explanationBlock(Number, Object...)}.
+	 * 
 	 * <p>
-	 * It assumes all arguments before the block code to be the arguments of the start explanation,
+	 * The method assumes all arguments before the block code to be the arguments of the start explanation,
 	 * and all arguments after the block code to be the arguments of the end explanation
-	 * (but see later for a more general form that allows {@link NullaryFunction} arguments for the
-	 * start and end explanations as well).
 	 * <p>
 	 * It generates the start explanation and then executes the block code.
 	 * If a {@link Throwable} object is thrown by the block code, then an end explanation indicating that,
@@ -106,7 +112,7 @@ public interface ExplanationLogger {
 	}
 
 	/**
-	 * Same as {@link explanationBlock(Number, Object...)} with default importance 1.0.
+	 * Same as {@link #explanationBlock(Number, Object...)} with default importance 1.0.
 	 * 
 	 * @param objects
 	 */
