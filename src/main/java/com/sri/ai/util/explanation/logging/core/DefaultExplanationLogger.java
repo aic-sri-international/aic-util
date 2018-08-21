@@ -14,15 +14,15 @@ import com.sri.ai.util.explanation.logging.api.ExplanationRecord;
 
 public class DefaultExplanationLogger implements ExplanationLogger {
 
-	private boolean isActive;                       // whether the logger is active or not
-	private Number importanceThreshold; 			// user defined threshold above which explanations are recorded
-	private Number importanceMultiplier;			// compounded importance weights at current nesting (calculated by multiplying "start" importance weights)
-	private Stack<Number> importanceStack;			// stores raw importance weights from each start() invocation. Each end() invocation pops a value.
-	private int numberOfNestedIgnoredBlocks;	    // tracks the number of currently nested ignored blocks
-	private int nestingDepth;						// current level of nesting relative to"start"/"end" invocations deemed as important
+	private boolean isActive;                       	// whether the logger is active or not
+	private Number importanceThreshold; 				// user defined threshold above which explanations are recorded
+	private Number importanceMultiplier;				// compounded importance weights at current nesting (calculated by multiplying "start" importance weights)
+	private Stack<ExplanationRecord> startRecords;		// stores record from each relevant start() invocation. Each end() invocation pops a value.
+	private int numberOfNestedIgnoredBlocks;	    	// tracks the number of currently nested ignored blocks
+	private int nestingDepth;							// current level of nesting relative to"start"/"end" invocations deemed as important
 	
-	Collection<ExplanationHandler> handlers;		// collection of handlers to process recorded explanations
-	ExplanationFilter filter;						// object that filters relevant records and passes them to explanationHandlers
+	Collection<ExplanationHandler> handlers;			// collection of handlers to process recorded explanations
+	ExplanationFilter filter;							// object that filters relevant records and passes them to explanationHandlers
 	
 	
 	public DefaultExplanationLogger() {
@@ -30,7 +30,7 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 		this.isActive = ExplanationConfiguration.WHETHER_EXPLANATION_LOGGERS_ARE_ACTIVE_BY_DEFAULT;
 		this.importanceThreshold = 1.0;
 		this.importanceMultiplier = 1.0;
-		this.importanceStack = new Stack<>();
+		this.startRecords = new Stack<>();
 		this.numberOfNestedIgnoredBlocks = 0;
 		this.nestingDepth = 0;
 		this.handlers = new HashSet<>();
@@ -45,7 +45,7 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 	}
 	
 	public void setIsActive(boolean newIsActive) {
-		myAssert(importanceStack.isEmpty(), () -> "Cannot change whether logger is active or not while inside explanation blocks");
+		myAssert(startRecords.isEmpty(), () -> "Cannot change whether logger is active or not while inside explanation blocks");
 		this.isActive = newIsActive;
 	}
 
@@ -88,12 +88,12 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 
 	private void enterBlock(ExplanationRecord record) {
 		handleRecord(record);
-		setParametersForNewBlock(record.getAdjustedImportance(), record.getImportance());
+		setParametersForNewBlock(record);
 	}
 
-	private void setParametersForNewBlock(Number a, Number importance) {
-		setImportanceMultiplier(a);
-		pushImportance(importance);
+	private void setParametersForNewBlock(ExplanationRecord record) {
+		setImportanceMultiplier(record.getAdjustedImportance());
+		pushNewStartRecord(record);
 		increaseNestingDepth();
 	}
 
@@ -141,19 +141,28 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 	}
 
 	private void exitBlock(Object... objects) {
-		myAssert(!importanceStack.isEmpty(), () -> "Attempt to end explanation block but there are no current explanation blocks opened.");
-		Number importance = importanceStack.peek();
+		myAssert(!startRecords.isEmpty(), () -> "Attempt to end explanation block but there are no current explanation blocks opened.");
+		Number importance = getLastStartImportance();
 		Number adjustedImportance = importanceMultiplier;
 		restoreParametersForPreviousBlock(importance, adjustedImportance);
 		handleRecordIfNeeded(importance, adjustedImportance, objects);
 	}
 
+	private Number getLastStartImportance() {
+		ExplanationRecord blockStartRecord = startRecords.peek();
+		Number lastStartImportance = blockStartRecord.getImportance();
+		return lastStartImportance;
+	}
+
+
+
 	private void restoreParametersForPreviousBlock(Number importance, Number adjustedImportance) {
 		decreaseNestingDepth();
-		popImportance();
+		popStartRecord();
 		setImportanceMultiplier(adjustedImportance.doubleValue()/importance.doubleValue());
 	}
 
+	
 	private void handleRecordIfNeeded(Number importance, Number adjustedImportance, Object[] objects) {
 		ExplanationRecord record = makeRecord(importance, adjustedImportance, objects);
 		if (testRecord(record)) {
@@ -214,14 +223,14 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 		this.importanceMultiplier = newImportanceMultiplier;
 	}
 	
-	private void pushImportance(Number importance) {
-		importanceStack.push(importance);
+	private void pushNewStartRecord(ExplanationRecord record) {
+		startRecords.push(record);
 	}
-	
-	private Number popImportance() {
-		myAssert(!importanceStack.isEmpty(), () -> "Trying to pop an explanation level but we are at the top level already.");
-		Number importance = importanceStack.pop();
-		return importance;
+
+	private ExplanationRecord popStartRecord() {
+		myAssert(!startRecords.isEmpty(), () -> "Trying to pop an explanation level but we are at the top level already.");
+		ExplanationRecord lastStartRecord = startRecords.pop();
+		return lastStartRecord;
 	}
 	
 	private void increaseNestingDepth() {
