@@ -3,7 +3,9 @@ package com.sri.ai.util.explanation.logging.api;
 import java.util.Collection;
 
 import com.sri.ai.util.base.NullaryFunction;
+import com.sri.ai.util.base.NullaryProcedure;
 import com.sri.ai.util.explanation.logging.core.ExplanationBlock;
+import com.sri.ai.util.explanation.logging.core.ExplanationBlock.Code;
 
 /**
  * An {@link ExplanationLogger} receives indented information about an algorithm's execution and passes it on to {@link ExplanationHandler}s
@@ -36,10 +38,37 @@ import com.sri.ai.util.explanation.logging.core.ExplanationBlock;
  */
 public interface ExplanationLogger {
 	
+	/** 
+	 * Convenience constant redirecting to {@link ExplanationBlock#RESULT}.
+	 */
+	public static final Object RESULT = ExplanationBlock.RESULT;
+
+	/**
+	 * Convenience redirection to {@link ExplanationBlock#code(NullaryFunction)}.
+	 */
+	public static <T> Code<T> code(NullaryFunction<T> code) {
+		return ExplanationBlock.code(code);
+	}
+
+	/**
+	 * Convenience redirection to {@link ExplanationBlock#code(NullaryProcedure)}.
+	 */
+	public static Code<Void> code(NullaryProcedure code) {
+		return ExplanationBlock.code(code);
+	}
+
 	/** Convenience method for creating lazy arguments to explanations without having to write an ugly cast to {@link NullaryFunction}. */
 	public static NullaryFunction<Object> lazy(NullaryFunction<Object> code) {
 		return code;
 	}
+	
+	
+	
+	boolean isActive();
+	
+	void setIsActive(boolean newIsActive);
+	
+	
 	
 	Number getImportanceThreshold();
 	void setImportanceThreshold(Number importanceThreshold);

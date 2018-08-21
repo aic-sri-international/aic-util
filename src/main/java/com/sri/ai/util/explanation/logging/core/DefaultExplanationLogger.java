@@ -6,15 +6,16 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Stack;
 
+import com.sri.ai.util.explanation.logging.api.ExplanationConfiguration;
 import com.sri.ai.util.explanation.logging.api.ExplanationFilter;
 import com.sri.ai.util.explanation.logging.api.ExplanationHandler;
 import com.sri.ai.util.explanation.logging.api.ExplanationLogger;
 import com.sri.ai.util.explanation.logging.api.ExplanationRecord;
 
 public class DefaultExplanationLogger implements ExplanationLogger {
-	
+
+	private boolean isActive;                       // whether the logger is active or not
 	private Number importanceThreshold; 			// user defined threshold above which explanations are recorded
-	
 	private Number importanceMultiplier;			// compounded importance weights at current nesting (calculated by multiplying "start" importance weights)
 	private Stack<Number> importanceStack;			// stores raw importance weights from each start() invocation. Each end() invocation pops a value.
 	private int numberOfNestedIgnoredBlocks;	    // tracks the number of currently nested ignored blocks
@@ -26,6 +27,7 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 	
 	public DefaultExplanationLogger() {
 		super();
+		this.isActive = ExplanationConfiguration.WHETHER_EXPLANATION_LOGGERS_ARE_ACTIVE_BY_DEFAULT;
 		this.importanceThreshold = 1.0;
 		this.importanceMultiplier = 1.0;
 		this.importanceStack = new Stack<>();
@@ -35,6 +37,20 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 		this.filter = null;
 	}
 
+	
+	
+	@Override
+	public boolean isActive() {
+		return isActive;
+	}
+	
+	public void setIsActive(boolean newIsActive) {
+		myAssert(importanceStack.isEmpty(), () -> "Cannot change whether logger is active or not while inside explanation blocks");
+		this.isActive = newIsActive;
+	}
+
+	
+	
 	@Override
 	public Number getImportanceThreshold() {
 		return importanceThreshold;
@@ -58,6 +74,8 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 	@Override
 	public void start(Number importance, Object... objects) {
 
+		if (!isActive()) return;
+		
 		Number adjustedImportance = calculateAdjustedImportance(importance);
 		ExplanationRecord record = makeRecord(importance, adjustedImportance, objects);
 		if (blockMustBeIncluded(record)) {
@@ -93,6 +111,9 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 
 	@Override
 	public void explain(Number importance, Object... objects) {
+
+		if (!isActive()) return;
+		
 		if (!insideIgnoredBlock()) {
 			processExplainRecordRequest(importance, objects);
 		}
@@ -108,6 +129,9 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 
 	@Override
 	public void end(Object... objects) {
+
+		if (!isActive()) return;
+		
 	    if (!insideIgnoredBlock()) {
 	    	exitBlock(objects);
 	    }

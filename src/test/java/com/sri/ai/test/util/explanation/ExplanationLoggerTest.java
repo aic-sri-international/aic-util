@@ -2,14 +2,17 @@ package com.sri.ai.test.util.explanation;
 
 import static com.sri.ai.util.Util.list;
 import static com.sri.ai.util.Util.println;
+import static com.sri.ai.util.Util.readContentsOfFile;
 import static com.sri.ai.util.explanation.logging.api.ExplanationLogger.lazy;
-import static com.sri.ai.util.explanation.logging.core.ExplanationBlock.CODE;
+import static com.sri.ai.util.explanation.logging.core.ExplanationBlock.code;
 import static com.sri.ai.util.explanation.logging.core.ExplanationBlock.RESULT;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
+import com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger;
 import com.sri.ai.util.explanation.logging.core.DefaultExplanationLogger;
 import com.sri.ai.util.explanation.logging.core.handler.StringExplanationHandler;
 
@@ -293,7 +296,7 @@ public class ExplanationLoggerTest {
 		stringHandler = new StringExplanationHandler();
 		logger.addHandler(stringHandler);
 
-		result = logger.explanationBlock("Going to solve the universe", CODE(() -> {
+		result = logger.explanationBlock("Going to solve the universe", code(() -> {
 			logger.explain("Thanks for all the fish");
 			return 42;
 		}),	"The answer is ", RESULT);
@@ -314,18 +317,21 @@ public class ExplanationLoggerTest {
 		DefaultExplanationLogger logger;
 		StringExplanationHandler stringHandler;
 		String expected;
+		boolean topLevelExceptionWasCaught;
 		
 		logger = new DefaultExplanationLogger();
 		stringHandler = new StringExplanationHandler();
 		logger.addHandler(stringHandler);
 
+		topLevelExceptionWasCaught = false;
 		try {
-			logger.explanationBlock("Going to solve the universe", CODE(() -> {
+			logger.explanationBlock("Going to solve the universe", code(() -> {
 				logger.explain("Thanks for all the fish");
 				throw new Error("Oops");
 			}),	"The answer is ", RESULT);
 		}
 		catch (Error error) {
+			topLevelExceptionWasCaught = true;
 			assertEquals("Oops", error.getMessage());
 			expected =
 					"* Going to solve the universe\n" + 
@@ -336,6 +342,8 @@ public class ExplanationLoggerTest {
 			assertEquals(expected, stringHandler.toString());
 			println();
 		}
+		
+		assertTrue(topLevelExceptionWasCaught);
 	}
 
 	@Test
@@ -344,15 +352,17 @@ public class ExplanationLoggerTest {
 		DefaultExplanationLogger logger;
 		StringExplanationHandler stringHandler;
 		String expected;
+		boolean topLevelExceptionWasCaught;
 		
 		logger = new DefaultExplanationLogger();
 		stringHandler = new StringExplanationHandler();
 		logger.addHandler(stringHandler);
-
+		
+		topLevelExceptionWasCaught = false;
 		try {
-			logger.explanationBlock("Going to solve the universe", CODE(() -> {
+			logger.explanationBlock("Going to solve the universe", code(() -> {
 				try {
-					logger.explanationBlock("Going to solve the planet first", CODE(() -> {
+					logger.explanationBlock("Going to solve the planet first", code(() -> {
 						logger.explain("Thanks for all the fish");
 						throw new Error("Oops");
 					}),	"The answer is ", RESULT);
@@ -365,6 +375,7 @@ public class ExplanationLoggerTest {
 			}),	"The answer is ", RESULT);
 		}
 		catch (Error error) {
+			topLevelExceptionWasCaught = true;
 			assertEquals("Double oops!", error.getMessage());
 			expected =
 					"* Going to solve the universe\n" +
@@ -377,5 +388,108 @@ public class ExplanationLoggerTest {
 			assertEquals(expected, stringHandler.toString());
 			println();
 		}
+		
+		assertTrue(topLevelExceptionWasCaught);
+	}
+
+	@Test
+	public void threadExplanationLoggerTest() {
+		
+		DefaultExplanationLogger logger;
+		StringExplanationHandler stringHandler;
+		String expected;
+		boolean topLevelExceptionWasCaught;
+
+		logger = new DefaultExplanationLogger();
+		stringHandler = new StringExplanationHandler();
+		logger.addHandler(stringHandler);
+		
+		ThreadExplanationLogger.setThreadExplanationLogger(logger);
+
+		topLevelExceptionWasCaught = false;
+		try {
+			ThreadExplanationLogger.explanationBlock("Going to solve the universe", code(() -> {
+				try {
+					ThreadExplanationLogger.explanationBlock("Going to solve the planet first", code(() -> {
+						ThreadExplanationLogger.explain("Thanks for all the fish");
+						throw new Error("Oops");
+					}),	"The answer is ", RESULT);
+				}
+				catch (Error error) {
+					assertEquals("Oops", error.getMessage());
+					throw new Error("Double oops!");
+				}
+				return 0;
+			}),	"The answer is ", RESULT);
+		}
+		catch (Error error) {
+			topLevelExceptionWasCaught = true;
+			assertEquals("Double oops!", error.getMessage());
+			expected =
+					"* Going to solve the universe\n" +
+					"** Going to solve the planet first\n" +
+					"*** Thanks for all the fish\n" + 
+					"** Throwable thrown: java.lang.Error: Oops\n" +
+					"* Throwable thrown: java.lang.Error: Double oops!\n";
+			println("expected:\n" + expected);
+			println("actual  :\n" + stringHandler);
+			assertEquals(expected, stringHandler.toString());
+			println();
+		}
+		
+		assertTrue(topLevelExceptionWasCaught);
+	}
+
+
+	@Test
+	public void threadExplanationLoggerToFileTest() {
+		
+		String fileName = "explanation.txt";
+
+		DefaultExplanationLogger logger;
+		StringExplanationHandler stringHandler;
+		String expected;
+		boolean topLevelExceptionWasCaught;
+
+		logger = new DefaultExplanationLogger();
+		stringHandler = new StringExplanationHandler();
+		logger.addHandler(stringHandler);
+		
+		ThreadExplanationLogger.setThreadExplanationLogger(logger);
+
+		topLevelExceptionWasCaught = false;
+		try {
+			
+			ThreadExplanationLogger.explanationBlockToFile(fileName, "Going to solve the universe", code(() -> {
+				try {
+					ThreadExplanationLogger.explanationBlock("Going to solve the planet first", code(() -> {
+						ThreadExplanationLogger.explain("Thanks for all the fish");
+						throw new Error("Oops");
+					}),	"The answer is ", RESULT);
+				}
+				catch (Error error) {
+					assertEquals("Oops", error.getMessage());
+					throw new Error("Double oops!");
+				}
+				return 0;
+			}),	"The answer is ", RESULT);
+		}
+		catch (Error error) {
+			topLevelExceptionWasCaught = true;
+			assertEquals("Double oops!", error.getMessage());
+			expected =
+					"* Going to solve the universe\n" +
+					"** Going to solve the planet first\n" +
+					"*** Thanks for all the fish\n" + 
+					"** Throwable thrown: java.lang.Error: Oops\n" +
+					"* Throwable thrown: java.lang.Error: Double oops!\n";
+			println("expected:\n" + expected);
+			String actual = readContentsOfFile(fileName);
+			println("actual  :\n" + actual);
+			assertEquals(expected, actual);
+			println();
+		}
+		
+		assertTrue(topLevelExceptionWasCaught);
 	}
 }

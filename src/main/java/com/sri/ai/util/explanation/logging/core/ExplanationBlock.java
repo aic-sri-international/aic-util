@@ -5,6 +5,7 @@ import static com.sri.ai.util.Util.myAssert;
 import static java.util.Arrays.copyOfRange;
 
 import com.sri.ai.util.base.NullaryFunction;
+import com.sri.ai.util.base.NullaryProcedure;
 import com.sri.ai.util.explanation.logging.api.ExplanationLogger;
 
 public class ExplanationBlock<T> {
@@ -17,7 +18,7 @@ public class ExplanationBlock<T> {
 
 	public static final Object RESULT = new Object();
 	
-	private interface Code<T> extends NullaryFunction<T> {}
+	public interface Code<T> extends NullaryFunction<T> {}
 	
 	/**
 	 * A method to be used to indicate the {@link NullaryFunction} corresponding to the block's code;
@@ -25,12 +26,22 @@ public class ExplanationBlock<T> {
 	 * @param code
 	 * @return
 	 */
-	public static <T> Code<T> CODE(NullaryFunction<T> code) {
+	public static <T> Code<T> code(NullaryFunction<T> code) {
 		return () -> code.apply();
 	}
 
+	/**
+	 * Similar to {@link #code(NullaryFunction<T>)} but applied to {@link Procedure}.
+	 */
+	public static Code<Void> code(NullaryProcedure code) {
+		return 
+				() -> { 
+					code.apply(); 
+					return null; 
+					};
+	}
+
 	public ExplanationBlock(ExplanationLogger logger, Number importance, Object...objects) {
-		
 		this.logger = logger;
 		this.importance = importance;
 		setFieldsDependingOnCodePosition(objects);

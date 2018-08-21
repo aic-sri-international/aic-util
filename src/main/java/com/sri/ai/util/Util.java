@@ -42,6 +42,7 @@ import static com.sri.ai.util.base.PairOf.makePairOf;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -5405,5 +5406,19 @@ public class Util {
 
 	public static int getIndexOf(Object[] array, Object element) {
 		return Arrays.asList(array).indexOf(element);
+	}
+
+	public static String readContentsOfFile(String fileName) throws Error {
+		StringBuilder resultBuilder = new StringBuilder();
+		try (BufferedReader reader = new BufferedReader(new FileReader(fileName));) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				resultBuilder.append(line + "\n");
+			}
+		} catch (IOException e) {
+			throw new Error("Could not read " + fileName, e);
+		}
+		String result = resultBuilder.toString();
+		return result;
 	}
 }

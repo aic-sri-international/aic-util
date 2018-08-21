@@ -1,78 +1,143 @@
 package com.sri.ai.util.explanation.logging.api;
 
+import static com.sri.ai.util.Util.getOrMakeAndPut;
+import static com.sri.ai.util.Util.map;
+
 import java.util.Collection;
+import java.util.Map;
+
+import com.sri.ai.util.base.NullaryFunction;
+import com.sri.ai.util.base.NullaryProcedure;
+import com.sri.ai.util.explanation.logging.core.ExplanationBlock;
+import com.sri.ai.util.explanation.logging.core.ExplanationBlock.Code;
+import com.sri.ai.util.explanation.logging.helper.ExplanationLoggerForFileForThisThread;
+import com.sri.ai.util.explanation.logging.helper.ExplanationLoggerToConsole;
 
 /**
- * A class with static methods for accessing and using a thread-wide {@link ExplanationLogger}.
+ * A class with public static methods for accessing and using a thread-wide {@link ExplanationLogger}.
  * 
  * @author braz
  *
  */
-public interface ThreadExplanationLogger {
-	
-	static ExplanationLogger getThreadExplanationLogger() {
-		return null;
+public class ThreadExplanationLogger {
+
+	/** 
+	 * Convenience constant redirecting to {@link ExplanationBlock#RESULT}.
+	 */
+	public static final Object RESULT = ExplanationBlock.RESULT;
+
+	/**
+	 * Convenience redirection to {@link ExplanationBlock#code(NullaryFunction)}.
+	 */
+	public static <T> Code<T> code(NullaryFunction<T> code) {
+		return ExplanationBlock.code(code);
+	}
+
+	/**
+	 * Convenience redirection to {@link ExplanationBlock#code(NullaryProcedure)}.
+	 */
+	public static Code<Void> code(NullaryProcedure code) {
+		return ExplanationBlock.code(code);
+	}
+
+	/**
+	 * Convenience method that sets this thread's default explanations logger to an instance of
+	 * {@link ExplanationLoggerForFileForThisThread} linked to a file with a given name,
+	 * also arranging for this file to be automatically closed in the case a throwable is thrown,
+	 * and invokes {@link #explanationBlock(Object...)} with its remaining arguments.
+	 */
+	public static void explanationBlockToFile(String fileName, Object... objects) {
+		try (ExplanationLoggerForFileForThisThread threadLogger = new ExplanationLoggerForFileForThisThread(fileName);) {
+			ThreadExplanationLogger.explanationBlock(objects);
+		}
 	}
 	
-	static Number getImportanceThreshold() {
+	private final static Map<Thread, ExplanationLogger> fromThreadToExplanationLogger = map();
+	
+	public static ExplanationLogger getThreadExplanationLogger() {
+		ExplanationLogger logger = 
+				getOrMakeAndPut(
+						fromThreadToExplanationLogger, 
+						Thread.currentThread(),
+						() -> new ExplanationLoggerToConsole());
+		return logger;
+	}
+	
+	public static void setThreadExplanationLogger(ExplanationLogger logger) {
+		fromThreadToExplanationLogger.put(Thread.currentThread(), logger);
+	}
+	
+	
+	
+	public boolean isActive() {
+		return getThreadExplanationLogger().isActive();
+	}
+	
+	public void setIsActive(boolean newIsActive) {
+		getThreadExplanationLogger().setIsActive(newIsActive);
+	}
+
+	
+	
+	public static Number getImportanceThreshold() {
 		return getThreadExplanationLogger().getImportanceThreshold();
 	}
 	
-	static void setImportanceThreshold(Double importanceThreshold) {
+	public static void setImportanceThreshold(Double importanceThreshold) {
 		getThreadExplanationLogger().setImportanceThreshold(importanceThreshold);
 	}
 	
 	
 	
-	static ExplanationFilter getFilter() {
+	public static ExplanationFilter getFilter() {
 		return getThreadExplanationLogger().getFilter();
 	}
 	
-	static void setFilter(ExplanationFilter filter) {
+	public static void setFilter(ExplanationFilter filter) {
 		getThreadExplanationLogger().setFilter(filter);
 	}
 	
 	
 	
-	static <T> T explanationBlock(Object...objects) {
+	public static <T> T explanationBlock(Object...objects) {
 		return getThreadExplanationLogger().explanationBlock(objects);
 	}
 	
 
 	
-	static void start(Object... objects) {
+	public static void start(Object... objects) {
 		getThreadExplanationLogger().explain(objects);
 	}
 	
-	static void explain(Object... objects) {
+	public static void explain(Object... objects) {
 		getThreadExplanationLogger().explain(objects);
 	}
 	
-	static void end(Object... objects) {
+	public static void end(Object... objects) {
 		getThreadExplanationLogger().end(objects);
 	}
 	
 	
 	 
-	static void start(Number importance, Object... objects) {
+	public static void start(Number importance, Object... objects) {
 		getThreadExplanationLogger().start(importance, objects);
 	}
 	
-	static void explain(Number importance, Object... objects) {
+	public static void explain(Number importance, Object... objects) {
 		getThreadExplanationLogger().explain(importance, objects);
 	}
 	
 	
 	
-	static Collection<? extends ExplanationHandler> getHandlers() {
+	public static Collection<? extends ExplanationHandler> getHandlers() {
 		return getThreadExplanationLogger().getHandlers();
 	}
 
-	static void addHandler(ExplanationHandler handler) {
+	public static void addHandler(ExplanationHandler handler) {
 		getThreadExplanationLogger().addHandler(handler);
 	}
 	
-	static boolean removeHandler(ExplanationHandler handler) {
+	public static boolean removeHandler(ExplanationHandler handler) {
 		return getThreadExplanationLogger().removeHandler(handler);
 	}
 
