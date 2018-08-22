@@ -50,8 +50,8 @@ public abstract class AbstractWriterExplanationHandler implements ExplanationHan
 		makeSureWriterIsMade();
 		StringBuilder builder = new StringBuilder();
 		addNesting(builder, record);
-		addTimestampIfNeeded(builder, record);
 		addObjects(builder, record);
+		addTimestampIfNeeded(builder, record);
 		addBlockTimeIfNeeded(builder, record);
 		write(builder);
 	}
@@ -66,7 +66,7 @@ public abstract class AbstractWriterExplanationHandler implements ExplanationHan
 	private void addTimestampIfNeeded(StringBuilder builder, ExplanationRecord record) {
 		if (getIncludeTimestamp() && record.getTimestamp() != -1) {
 			Timestamp timestamp = new Timestamp(record.getTimestamp());
-			builder.append(" " + timestamp);
+			builder.append(" (" + timestamp + ")");
 		}
 	}
 
@@ -89,7 +89,7 @@ public abstract class AbstractWriterExplanationHandler implements ExplanationHan
 
 	private void addBlockTimeIfNeeded(StringBuilder builder, ExplanationRecord record) {
 		if (getIncludeBlockTime() && record.getBlockTime() != -1) {
-			builder.append(" (total time " + record.getBlockTime() + " ms)");
+			builder.append(" [total time " + record.getBlockTime() + " ms]");
 		}
 	}
 

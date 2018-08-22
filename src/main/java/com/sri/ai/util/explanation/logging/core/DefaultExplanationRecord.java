@@ -4,6 +4,8 @@ import com.sri.ai.util.explanation.logging.api.ExplanationRecord;
 
 public class DefaultExplanationRecord implements ExplanationRecord {
 	
+	final static long UNDEFINEDBLOCKTIME = -1;
+	
 	final Number importance;				// raw marked importance (relative to block it record was extracted from)
 	final Number adjustedImportance;		// overall importance (importance values having been multiplied when entering each successive explanation block)
 	final int nestingDepth;					// depth of nesting record was extracted from within nested start/end explanation blocks
@@ -18,6 +20,10 @@ public class DefaultExplanationRecord implements ExplanationRecord {
 		this.timestamp = timestamp;
 		this.objects = objects;
 		this.blockTime = blockTime;
+	}
+	
+	public DefaultExplanationRecord(Number importance, Number adjustedImportance, int nestingDepth, long timestamp, Object[] objects) {
+		this(importance, adjustedImportance, nestingDepth, timestamp, objects, UNDEFINEDBLOCKTIME);
 	}
 
 	@Override

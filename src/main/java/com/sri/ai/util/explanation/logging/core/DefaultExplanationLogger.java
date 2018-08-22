@@ -76,8 +76,7 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 
 		if (!isActive()) return;
 		
-		Number adjustedImportance = calculateAdjustedImportance(importance);
-		ExplanationRecord record = makeRecord(importance, adjustedImportance, objects);
+		ExplanationRecord record = makeRecord(importance, objects);
 		if (blockMustBeIncluded(record)) {
 			enterBlock(record);
 		}
@@ -102,7 +101,7 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 		boolean result =
 				!insideIgnoredBlock()
 				&&
-				isImportantEnough(record.getAdjustedImportance())
+				isImportantEnough(record)
 				&&
 				testRecord(record);
 		
@@ -115,16 +114,16 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 		if (!isActive()) return;
 		
 		if (!insideIgnoredBlock()) {
-			processExplainRecordRequest(importance, objects);
+			processExplainRequest(importance, objects);
 		}
 	}
 
 
-	private void processExplainRecordRequest(Number importance, Object[] objects) {
-		Number adjustedImportance = calculateAdjustedImportance(importance);
-	    if (isImportantEnough(adjustedImportance)) {
-	    	handleRecordIfNeeded(importance, adjustedImportance, objects);
-	    }		
+	private void processExplainRequest(Number importance, Object[] objects) {
+		ExplanationRecord record = makeRecord(importance, objects);
+	    if (isImportantEnough(record)) {
+	    	handleRecordIfNotFiltered(record);
+	    }
 	}
 
 	@Override
@@ -142,29 +141,21 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 
 	private void exitBlock(Object... objects) {
 		myAssert(!startRecords.isEmpty(), () -> "Attempt to end explanation block but there are no current explanation blocks opened.");
-		Number importance = getLastStartImportance();
-		Number adjustedImportance = importanceMultiplier;
-		restoreParametersForPreviousBlock(importance, adjustedImportance);
-		handleRecordIfNeeded(importance, adjustedImportance, objects);
-	}
-
-	private Number getLastStartImportance() {
-		ExplanationRecord blockStartRecord = startRecords.peek();
-		Number lastStartImportance = blockStartRecord.getImportance();
-		return lastStartImportance;
+		ExplanationRecord record = makeEndRecord(objects);
+		restoreParametersForPreviousBlock(record);
+		handleRecordIfNotFiltered(record);
 	}
 
 
 
-	private void restoreParametersForPreviousBlock(Number importance, Number adjustedImportance) {
+	private void restoreParametersForPreviousBlock(ExplanationRecord record) {
 		decreaseNestingDepth();
 		popStartRecord();
-		setImportanceMultiplier(adjustedImportance.doubleValue()/importance.doubleValue());
+		setImportanceMultiplier(record.getAdjustedImportance().doubleValue()/record.getImportance().doubleValue());
 	}
 
 	
-	private void handleRecordIfNeeded(Number importance, Number adjustedImportance, Object[] objects) {
-		ExplanationRecord record = makeRecord(importance, adjustedImportance, objects);
+	private void handleRecordIfNotFiltered(ExplanationRecord record) {
 		if (testRecord(record)) {
 			handleRecord(record);
 		}
@@ -203,13 +194,23 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 		return numberOfNestedIgnoredBlocks > 0;
 	}
 
-	private boolean isImportantEnough(Number adjustedImportance) {
-		return adjustedImportance.doubleValue() >= importanceThreshold.doubleValue();
+	private boolean isImportantEnough(ExplanationRecord record) {
+		return record.getAdjustedImportance().doubleValue() >= importanceThreshold.doubleValue();
 	}
 	
-	private ExplanationRecord makeRecord(Number importance, Number adjustedImportance, Object[] objects) {
+	private ExplanationRecord makeRecord(Number importance, Object[] objects) {
 		long timestamp = System.currentTimeMillis();
-		ExplanationRecord record = new DefaultExplanationRecord(importance, adjustedImportance, nestingDepth, timestamp, objects, -1);
+		Number adjustedImportance = calculateAdjustedImportance(importance);
+		ExplanationRecord record = new DefaultExplanationRecord(importance, adjustedImportance, nestingDepth, timestamp, objects);
+		return record;
+	}
+	
+	private ExplanationRecord makeEndRecord(Object[] objects) {
+		long timestamp = System.currentTimeMillis();
+		Number importance = getLastStartImportance();
+		Number adjustedImportance = importanceMultiplier;
+		long blocktime = timestamp - getLastStartTime();
+		ExplanationRecord record = new DefaultExplanationRecord(importance, adjustedImportance, nestingDepth - 1, timestamp, objects, blocktime);
 		return record;
 	}
 	
@@ -231,8 +232,21 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 		myAssert(!startRecords.isEmpty(), () -> "Trying to pop an explanation level but we are at the top level already.");
 		ExplanationRecord lastStartRecord = startRecords.pop();
 		return lastStartRecord;
+	}
+	
+	private Number getLastStartImportance() {
+		ExplanationRecord lastStart = startRecords.peek();
+		Number lastStartImportance = lastStart.getImportance();
+		return lastStartImportance;
 	}
 	
+	private long getLastStartTime() {
+		ExplanationRecord lastStart = startRecords.peek();
+		long lastStartTime = lastStart.getTimestamp();
+		return lastStartTime;
+	}
+
+
 	private void increaseNestingDepth() {
 		++nestingDepth;
 	}

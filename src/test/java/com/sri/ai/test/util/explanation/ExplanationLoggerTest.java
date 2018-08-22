@@ -505,4 +505,54 @@ public class ExplanationLoggerTest {
 		
 		assertTrue(topLevelExceptionWasCaught);
 	}
+	
+	@Test
+	public void blockTimePrintoutsTests() {
+		
+		DefaultExplanationLogger logger;
+		StringExplanationHandler stringHandler;
+		String expected;
+		
+		logger = new DefaultExplanationLogger();
+		stringHandler = new StringExplanationHandler();
+		stringHandler.setIncludeBlockTime(true);
+		stringHandler.setIncludeTimestamp(true);
+		logger.addHandler(stringHandler);
+		
+		logger.start("Starting block ", 1);
+		wasteTime();
+		logger.explain("I'm explanation 1.1");
+		wasteTime();
+		logger.start("Starting block 1.1");
+		wasteTime();
+		logger.explain("I'm explanation 1.1.1");
+		wasteTime();
+		logger.explain("I'm explanation 1.1.2");
+		wasteTime();
+		logger.explain("I'm explanation 1.1.3");
+		wasteTime();
+		logger.end("End of block 1.1");
+		wasteTime();
+		logger.explain("I'm explanation 1.2");
+		wasteTime();
+		logger.end("End of block ", 1);
+		expected =
+				"* Starting block 1\n" + 
+				"** I'm explanation 1.1\n" + 
+				"** Starting block 1.1\n" + 
+				"*** I'm explanation 1.1.1\n" + 
+				"*** I'm explanation 1.1.2\n" + 
+				"*** I'm explanation 1.1.3\n" + 
+				"** End of block 1.1\n" + 
+				"** I'm explanation 1.2\n" + 
+				"* End of block 1\n";
+		println("expected:\n" + expected);
+		println("actual  :\n" + stringHandler);
+		println();
+	}
+	
+	
+	private void wasteTime() {
+		for(int i = 0; i < 1000000; ++i);
+	}
 }
