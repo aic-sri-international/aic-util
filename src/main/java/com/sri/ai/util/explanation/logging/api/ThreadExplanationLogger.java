@@ -40,6 +40,13 @@ public class ThreadExplanationLogger {
 		return ExplanationBlock.code(code);
 	}
 
+	/** Convenience redirecting to {@link ExplanationLogger#lazy(NullaryFunction)}. */
+	public static NullaryFunction<Object> lazy(NullaryFunction<Object> code) {
+		return ExplanationLogger.lazy(code);
+	}
+
+	
+	
 	/**
 	 * Convenience method that sets this thread's default explanations logger to an instance of
 	 * {@link ExplanationLoggerForFileForThisThread} linked to a file with a given name,
