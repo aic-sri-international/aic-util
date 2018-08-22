@@ -14,7 +14,7 @@ public abstract class AbstractWriterExplanationHandler implements ExplanationHan
 
 	private static final boolean DEFAULT_INCLUDE_TIMESTAMP = false;
 
-	private static final boolean DEFAULT_INCLUDE_BLOCK_TIME = false;
+	private static final boolean DEFAULT_INCLUDE_BLOCK_TIME = true;
 	
 	private NullaryFunction<Writer> writerMaker;
 	private Writer writer;
@@ -89,7 +89,7 @@ public abstract class AbstractWriterExplanationHandler implements ExplanationHan
 
 	private void addBlockTimeIfNeeded(StringBuilder builder, ExplanationRecord record) {
 		if (getIncludeBlockTime() && record.getBlockTime() != -1) {
-			builder.append(" [total time " + record.getBlockTime() + " ms]");
+			builder.append(" (" + record.getBlockTime() + " ms)");
 		}
 	}
 
