@@ -511,7 +511,6 @@ public class ExplanationLoggerTest {
 		
 		DefaultExplanationLogger logger;
 		StringExplanationHandler stringHandler;
-		String expected;
 		
 		logger = new DefaultExplanationLogger();
 		stringHandler = new StringExplanationHandler();
@@ -536,23 +535,36 @@ public class ExplanationLoggerTest {
 		logger.explain("I'm explanation 1.2");
 		wasteTime();
 		logger.end("End of block ", 1);
-		expected =
-				"* Starting block 1\n" + 
-				"** I'm explanation 1.1\n" + 
-				"** Starting block 1.1\n" + 
-				"*** I'm explanation 1.1.1\n" + 
-				"*** I'm explanation 1.1.2\n" + 
-				"*** I'm explanation 1.1.3\n" + 
-				"** End of block 1.1\n" + 
-				"** I'm explanation 1.2\n" + 
-				"* End of block 1\n";
-		println("expected:\n" + expected);
+		println("blocks and times  :\n" + stringHandler);
+		println();
+		
+		
+		
+		int result;
+		
+		logger.removeHandler(stringHandler);
+		stringHandler = new StringExplanationHandler();
+		logger.addHandler(stringHandler);
+		stringHandler.setIncludeBlockTime(true);
+		stringHandler.setIncludeTimestamp(true);
+
+		
+		result = logger.explanationBlock("Going to solve the multiverse", code(() -> {
+			logger.explain("Thanks for all the portals");
+			wasteTime();
+			return 57;
+		}),	"The answer is ", RESULT);
+		assertEquals(57, result);
 		println("actual  :\n" + stringHandler);
 		println();
 	}
 	
 	
 	private void wasteTime() {
-		for(int i = 0; i < 1000000; ++i);
+		try {
+			Thread.sleep(10);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 }
