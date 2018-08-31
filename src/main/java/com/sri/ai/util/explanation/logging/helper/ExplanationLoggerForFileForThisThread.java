@@ -1,5 +1,6 @@
 package com.sri.ai.util.explanation.logging.helper;
 
+import com.sri.ai.util.explanation.logging.api.ExplanationLogger;
 import com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger;
 
 /** 
@@ -12,10 +13,19 @@ import com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger;
  *
  */
 public class ExplanationLoggerForFileForThisThread extends ExplanationLoggerToFile implements AutoCloseable {
+	
+	private ExplanationLogger oldThreadExplanationLogger;
 
 	public ExplanationLoggerForFileForThisThread(String fileName) {
 		super(fileName);
+		this.oldThreadExplanationLogger = ThreadExplanationLogger.getThreadExplanationLogger();
 		ThreadExplanationLogger.setThreadExplanationLogger(this);
+	}
+	
+	@Override
+	public void close() {
+		ThreadExplanationLogger.setThreadExplanationLogger(oldThreadExplanationLogger);
+		super.close();
 	}
 
 }
