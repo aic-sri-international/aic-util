@@ -113,7 +113,7 @@ public class ThreadExplanationLogger {
 
 	
 	public static void start(Object... objects) {
-		getThreadExplanationLogger().explain(objects);
+		getThreadExplanationLogger().start(objects);
 	}
 	
 	public static void explain(Object... objects) {
