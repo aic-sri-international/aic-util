@@ -1448,6 +1448,29 @@ public class Util {
 
 		return result;
 	}
+	
+	/**
+	 * Stores results of applying a function to an array's elements in a
+	 * new array and returns it.
+	 * 
+	 * @param <F>  the type of the input-array's elements.
+	 * @param <T>  the result type of the function applied to the input-array's elements.
+	 * @param inputArray
+	 * @param function
+	 * @return
+	 * 
+	 * @author Bobak
+	 */
+	public static <F, T> T[] mapIntoArray(F[] inputArray, Class<T> clazz, Function<F, T> function) {
+
+		@SuppressWarnings("unchecked")
+		T[] result = (T[]) Array.newInstance(clazz, inputArray.length);
+		for(int i = 0; i < inputArray.length; ++i)
+		{
+			result[i] = function.apply(inputArray[i]);
+		}
+		return result;
+	}
 
 	/**
 	 * Stores results of applying a function to a collection's elements in a
