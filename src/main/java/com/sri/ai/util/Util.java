@@ -3308,8 +3308,8 @@ public class Util {
 	 * @param <T>
 	 *            the type of the elements.
 	 */
-	public static <T> List<T> removeNonDestructively(Collection<T> collection, T element) {
-		List<T> result = removeNonDestructively(collection, Equals.make(element));
+	public static <T> LinkedList<T> removeNonDestructively(Collection<T> collection, T element) {
+		LinkedList<T> result = removeNonDestructively(collection, Equals.make(element));
 		return result;
 	}
 
