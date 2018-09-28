@@ -26,7 +26,7 @@ public interface GraphSetMaker {
 		TupleOfVariables nonAxisVariables = getNonAxisVariables(xAxisVariable);
 		
 		for (Assignment assignmentToNonAxisVariables: nonAxisVariables.assignments()) {
-			GraphPlot plot = makePlot(assignmentToNonAxisVariables, xAxisVariable);
+			GraphPlot plot = plot(assignmentToNonAxisVariables, xAxisVariable);
 			graphSet.add(plot);
 		}
 		
@@ -38,14 +38,20 @@ public interface GraphSetMaker {
 		return nonAxisVariables;
 	}
 	
-	default GraphPlot makePlot(Assignment assignmentToNonAxisVariables, Variable xAxisVariable) {
+	default GraphPlot plot(Assignment assignmentToNonAxisVariables, Variable xAxisVariable) {
 		
+		SingleInputFunctions singleInputFunctionsToBePlotted = getFunctions().project(xAxisVariable, assignmentToNonAxisVariables);
+		String title = assignmentToNonAxisVariables.toString();
+		return plot(title, singleInputFunctionsToBePlotted);
+		
+	}
+	
+	default GraphPlot plot(String title, SingleInputFunctions singleInputFunctionsToBePlotted) {
+		// This needs to be improved with more settings, such as units etc.
 		ExternalGraphPlotter graphMaker = externalGraphMaker();
-		graphMaker.setTitle(assignmentToNonAxisVariables.toString()); // there should be other settings here, such as units, etc.
-		SingleInputFunctions plottedSingleInputFunctions = getFunctions().project(xAxisVariable, assignmentToNonAxisVariables);
-		graphMaker.setFunctions(plottedSingleInputFunctions);
+		graphMaker.setTitle(title);
+		graphMaker.setFunctions(singleInputFunctionsToBePlotted);
 		return graphMaker.plot();
-		
 	}
 
 }
