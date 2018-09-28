@@ -1,6 +1,6 @@
 package com.sri.ai.util.graph2d.api.graph;
 
-import static com.sri.ai.util.graph2d.api.graph.ExternalGraphMaker.externalGraphMaker;
+import static com.sri.ai.util.graph2d.api.graph.ExternalGraphPlotter.externalGraphMaker;
 
 import com.sri.ai.util.graph2d.api.functions.Functions;
 import com.sri.ai.util.graph2d.api.functions.SingleInputFunctions;
@@ -14,7 +14,7 @@ import com.sri.ai.util.graph2d.api.variables.Variable;
  * @author braz
  *
  */
-public interface GraphSetMaker {
+public interface GraphSetPlotter {
 	
 	Functions getFunctions();
 	void setFunctions(Functions functions);
@@ -40,7 +40,7 @@ public interface GraphSetMaker {
 	
 	default GraphPlot makePlot(Assignment assignmentToNonAxisVariables, Variable xAxisVariable) {
 		
-		ExternalGraphMaker graphMaker = externalGraphMaker();
+		ExternalGraphPlotter graphMaker = externalGraphMaker();
 		graphMaker.setTitle(assignmentToNonAxisVariables.toString()); // there should be other settings here, such as units, etc.
 		SingleInputFunctions plottedSingleInputFunctions = getFunctions().project(xAxisVariable, assignmentToNonAxisVariables);
 		graphMaker.setFunctions(plottedSingleInputFunctions);

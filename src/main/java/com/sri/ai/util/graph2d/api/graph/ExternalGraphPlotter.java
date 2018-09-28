@@ -10,9 +10,9 @@ import com.sri.ai.util.graph2d.api.functions.SingleInputFunctions;
  * @author braz
  *
  */
-public interface ExternalGraphMaker {
+public interface ExternalGraphPlotter {
 
-	public static ExternalGraphMaker externalGraphMaker() {
+	public static ExternalGraphPlotter externalGraphMaker() {
 		// TODO implement default implementation class and create instance here
 		return null;
 	}
