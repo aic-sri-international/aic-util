@@ -3213,7 +3213,7 @@ public class Util {
 		return new ArrayList<E>(s);
 	}
 
-	public static <T> List<T> removeNonDestructively(List<T> list, int excludedIndex) {
+	public static <T> List<? extends T> removeNonDestructively(List<? extends T> list, int excludedIndex) {
 		if (excludedIndex >= list.size()) {
 			return list;
 		}
@@ -3241,7 +3241,7 @@ public class Util {
 	 * @param <E>
 	 *            the type of the elements.
 	 */
-	public static <E> LinkedList<E> removeNonDestructively(Collection<E> collection, Predicate<E> predicate) {
+	public static <E> LinkedList<? extends E> removeNonDestructively(Collection<? extends E> collection, Predicate<E> predicate) {
 		LinkedList<E> result =
 				collection.stream()
 				.filter(e -> !predicate.apply(e))
@@ -3263,7 +3263,7 @@ public class Util {
 	 * @param <E>
 	 *            the type of the elements.
 	 */
-	public static <E> LinkedHashSet<E> removeFromSetNonDestructively(Set<E> set, Predicate<E> predicate) {
+	public static <E> LinkedHashSet<? extends E> removeFromSetNonDestructively(Set<? extends E> set, Predicate<E> predicate) {
 		LinkedHashSet<E> result =
 				set.stream()
 				.filter(e -> !predicate.apply(e))
@@ -3308,8 +3308,8 @@ public class Util {
 	 * @param <T>
 	 *            the type of the elements.
 	 */
-	public static <T> LinkedList<T> removeNonDestructively(Collection<T> collection, T element) {
-		LinkedList<T> result = removeNonDestructively(collection, Equals.make(element));
+	public static <T> LinkedList<? extends T> removeNonDestructively(Collection<? extends T> collection, T element) {
+		LinkedList<? extends T> result = removeNonDestructively(collection, Equals.make(element));
 		return result;
 	}
 
