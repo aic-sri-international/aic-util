@@ -14,7 +14,7 @@ import com.sri.ai.util.graph2d.api.variables.Variable;
  * @author braz
  *
  */
-public interface GraphSetPlotter {
+public interface GraphSetMaker {
 	
 	Functions getFunctions();
 	void setFunctions(Functions functions);
