@@ -2,12 +2,12 @@ package com.sri.ai.util.graph2d.api.functions;
 
 import static com.sri.ai.util.Util.arrayList;
 import static com.sri.ai.util.graph2d.api.variables.Assignment.assignment;
-import static com.sri.ai.util.graph2d.api.variables.TupleOfVariables.singletonTuple;
+import static com.sri.ai.util.graph2d.api.variables.SetOfVariables.singletonSet;
 
 import java.util.ArrayList;
 
 import com.sri.ai.util.graph2d.api.variables.Assignment;
-import com.sri.ai.util.graph2d.api.variables.TupleOfVariables;
+import com.sri.ai.util.graph2d.api.variables.SetOfVariables;
 import com.sri.ai.util.graph2d.api.variables.Value;
 import com.sri.ai.util.graph2d.api.variables.Variable;
 
@@ -24,7 +24,7 @@ public interface SingleInputFunction extends Function {
 	}
 	
 	default void setInputVariable(Variable inputVariable) {
-		setInputVariables(singletonTuple(inputVariable));
+		setInputVariables(singletonSet(inputVariable));
 	}
 
 	default Value computeOutputVariableValue(Value inputVariableValue) {
@@ -34,7 +34,7 @@ public interface SingleInputFunction extends Function {
 	}
 
 	default Assignment makeAssignmentToInputVariable(Value inputVariableValue) {
-		TupleOfVariables variables = singletonTuple(getInputVariable());
+		SetOfVariables variables = singletonSet(getInputVariable());
 		ArrayList<Value> values = arrayList(inputVariableValue);
 		Assignment result = assignment(variables, values);
 		return result;

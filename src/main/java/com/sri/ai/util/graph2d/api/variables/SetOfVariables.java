@@ -9,14 +9,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.common.base.Function;
 import com.sri.ai.util.base.NullaryFunction;
 import com.sri.ai.util.collect.CartesianProductIterator;
 
 /**
- * An interface for immutable tuples of variables
+ * An interface for immutable sets of variables.
+ * We recommend implementations to be based on collections that are order-preserving (such as {@link LinkedHashSet}).
  *
  */
-public interface TupleOfVariables {
+public interface SetOfVariables {
 	
 	List<? extends Variable> getVariables();
 	
@@ -24,27 +26,30 @@ public interface TupleOfVariables {
 	
 	default Iterable<Assignment> assignments() {
 		
-		List<NullaryFunction<Iterator<Value>>> iteratorMakers = mapIntoList(getVariables(), v -> () -> v.valuesIterator());
+		List<NullaryFunction<Iterator<Value>>> iteratorMakers = mapIntoList(getVariables(), makeIteratorMaker());
 		
 		Iterator<ArrayList<Value>> cartesianProductIterator = new CartesianProductIterator<>(iteratorMakers);
 		
-		Iterator<Assignment> assignmentsIterator = functionIterator(cartesianProductIterator, values -> assignment(this, values));
+		Iterator<Assignment> assignmentsIterator = functionIterator(cartesianProductIterator, valuesArray -> assignment(this, valuesArray));
 		
 		Iterable<Assignment> assignmentsIterable = in(assignmentsIterator);
 		
 		return assignmentsIterable;
 	}
 
+	default Function<Variable, NullaryFunction<Iterator<Value>>> makeIteratorMaker() {
+		return v -> () -> v.valuesIterator();
+	}
 
-	/** Returns the result of removing a given variable from the tuple of variables */
-	TupleOfVariables minus(Variable variable); // implement with Util.removeNonDestructively(List<E>, E) since this object is immutable
+	/** Returns the result of removing a given variable from the set of variables */
+	SetOfVariables minus(Variable variable); // implement with Util.removeNonDestructively(Set<E>, E) since this object should be immutable
 	
-	public static TupleOfVariables tupleOfVariables(List<? extends Variable> variables) {
+	public static SetOfVariables setOfVariables(List<? extends Variable> variables) {
 		// TODO implement default implementation class and create instance here
 		return null;
 	}
 
-	public static TupleOfVariables singletonTuple(Variable variable) {
+	public static SetOfVariables singletonSet(Variable variable) {
 		// TODO implement default implementation class and create instance here
 		return null;
 	}

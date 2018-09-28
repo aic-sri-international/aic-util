@@ -1,13 +1,13 @@
 package com.sri.ai.util.graph2d.api.functions;
 
 import static com.sri.ai.util.Util.myAssert;
-import static com.sri.ai.util.graph2d.api.variables.TupleOfVariables.singletonTuple;
+import static com.sri.ai.util.graph2d.api.variables.SetOfVariables.singletonSet;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import com.sri.ai.util.graph2d.api.variables.Assignment;
-import com.sri.ai.util.graph2d.api.variables.TupleOfVariables;
+import com.sri.ai.util.graph2d.api.variables.SetOfVariables;
 import com.sri.ai.util.graph2d.api.variables.Value;
 import com.sri.ai.util.graph2d.api.variables.Variable;
 
@@ -36,7 +36,7 @@ public class ProjectionSingleInputFunction implements SingleInputFunction {
 	
 	private boolean checkIfVariablesCoincideWithBaseInputVariables() {
 		Set<Variable> baseVariables = new HashSet<Variable>(base.getInputVariables().getVariables());
-		Set<Variable> variables = new HashSet<Variable>(assignmentToRemainingVariables.getTupleOfVariables().getVariables());
+		Set<Variable> variables = new HashSet<Variable>(assignmentToRemainingVariables.getSetOfVariables().getVariables());
 		variables.add(variable);
 		boolean check = baseVariables.equals(variables);
 		return check;
@@ -48,8 +48,8 @@ public class ProjectionSingleInputFunction implements SingleInputFunction {
 	}
 
 	@Override
-	public TupleOfVariables getInputVariables() {
-		return singletonTuple(variable);
+	public SetOfVariables getInputVariables() {
+		return singletonSet(variable);
 	}
 
 	@Override
@@ -83,7 +83,7 @@ public class ProjectionSingleInputFunction implements SingleInputFunction {
 	}
 
 	@Override
-	public void setInputVariables(TupleOfVariables variables) {
+	public void setInputVariables(SetOfVariables variables) {
 		throw new Error("Cannot change " + getClass() + "'s input variables");
 	}
 }

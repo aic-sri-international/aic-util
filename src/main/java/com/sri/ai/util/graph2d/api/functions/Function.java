@@ -1,12 +1,12 @@
 package com.sri.ai.util.graph2d.api.functions;
 
 import com.sri.ai.util.graph2d.api.variables.Assignment;
-import com.sri.ai.util.graph2d.api.variables.TupleOfVariables;
+import com.sri.ai.util.graph2d.api.variables.SetOfVariables;
 import com.sri.ai.util.graph2d.api.variables.Value;
 import com.sri.ai.util.graph2d.api.variables.Variable;
 
 /**
- * A function mapping assignments to a certain tuple of input variables to a value of an output variable.	
+ * A function mapping assignments to a certain set of input variables to a value of an output variable.	
  *
  */
 public interface Function {
@@ -17,8 +17,8 @@ public interface Function {
 	Variable getOutputVariable();
 	void setOutputVariable();
 	
-	TupleOfVariables getInputVariables();
-	void setInputVariables(TupleOfVariables variables);
+	SetOfVariables getInputVariables();
+	void setInputVariables(SetOfVariables variables);
 	
 	Value computeOutputVariableValue(Assignment inputVariableValues);
 	

@@ -5,11 +5,11 @@ import static com.sri.ai.util.graph2d.api.functions.SingleInputFunctions.singleI
 import java.util.List;
 
 import com.sri.ai.util.graph2d.api.variables.Assignment;
-import com.sri.ai.util.graph2d.api.variables.TupleOfVariables;
+import com.sri.ai.util.graph2d.api.variables.SetOfVariables;
 import com.sri.ai.util.graph2d.api.variables.Variable;
 
 /**
- * A collection of {@link Function}s sharing the same tuple of input variables
+ * A collection of {@link Function}s sharing the same set of input variables
  *
  */
 public interface Functions {
@@ -17,7 +17,7 @@ public interface Functions {
 	List<? extends Function> getFunctions();
 	void setFunctions(List<? extends Function> functions);
 
-	TupleOfVariables getAllInputVariables();
+	SetOfVariables getAllInputVariables();
 	
 	/**
 	 * Creates a {@link SingleInputFunctions} object containing the projections of each of its constituent functions

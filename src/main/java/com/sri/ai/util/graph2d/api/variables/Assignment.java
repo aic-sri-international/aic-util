@@ -4,12 +4,12 @@ import java.util.ArrayList;
 
 public interface Assignment {
 
-	public static Assignment assignment(TupleOfVariables variables, ArrayList<Value> values) {
+	public static Assignment assignment(SetOfVariables variables, ArrayList<Value> values) {
 		// TODO implement default implementation class and create instance here
 		return null;
 	}
 	
-	TupleOfVariables getTupleOfVariables();
+	SetOfVariables getSetOfVariables();
 	
 	/** Returns the value of the variable in this assignment */
 	Value get(Variable variable);
