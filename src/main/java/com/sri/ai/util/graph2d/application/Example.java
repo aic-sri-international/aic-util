@@ -1,7 +1,9 @@
 package com.sri.ai.util.graph2d.application;
 
 import static com.sri.ai.util.Util.println;
+import static com.sri.ai.util.graph2d.api.functions.Function.function;
 import static com.sri.ai.util.graph2d.api.functions.Functions.functions;
+import static com.sri.ai.util.graph2d.api.graph.GraphSetMaker.graphSetMaker;
 import static com.sri.ai.util.graph2d.api.variables.SetOfVariables.setOfVariables;
 import static com.sri.ai.util.graph2d.api.variables.Value.value;
 import static com.sri.ai.util.graph2d.api.variables.Variable.enumVariable;
@@ -16,7 +18,6 @@ import com.sri.ai.util.graph2d.api.graph.GraphSet;
 import com.sri.ai.util.graph2d.api.graph.GraphSetMaker;
 import com.sri.ai.util.graph2d.api.variables.Unit;
 import com.sri.ai.util.graph2d.api.variables.Variable;
-import com.sri.ai.util.graph2d.core.DefaultFunction;
 
 public class Example {
 
@@ -29,7 +30,7 @@ public class Example {
 		Variable expense = realVariable("Expense", Unit.DOLLAR, 0, new BigDecimal("0.1"), 100);
 
 		Function incomeFunction = 
-				new DefaultFunction("Income", income, setOfVariables(continent, age, occupation),
+				function("Income", income, setOfVariables(continent, age, occupation),
 						(assignment) -> {
 							String continentValue = assignment.get(continent).stringValue();
 							String occupationValue = assignment.get(occupation).stringValue();
@@ -50,13 +51,13 @@ public class Example {
 				);
 
 		Function expenseFunction = 
-				new DefaultFunction("Expense", expense, setOfVariables(continent, age, occupation),
+				function("Expense", expense, setOfVariables(continent, age, occupation),
 						(assignment) -> value(incomeFunction.evaluate(assignment).doubleValue() * 0.75)
 				);
 		
 		Functions functions = functions(incomeFunction, expenseFunction);
 		
-		GraphSetMaker graphSetMaker = GraphSetMaker.graphSetMaker();
+		GraphSetMaker graphSetMaker = graphSetMaker();
 		
 		graphSetMaker.setFunctions(functions);
 		GraphSet graphSet = graphSetMaker.make(age);
