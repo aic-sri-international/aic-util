@@ -33,7 +33,7 @@ public class DefaultFunction implements Function {
 	}
 
 	@Override
-	public Value computeOutputVariableValue(Assignment inputVariableValues) {
+	public Value evaluate(Assignment inputVariableValues) {
 		return javaFunction.apply(inputVariableValues);
 	}
 

@@ -51,23 +51,7 @@ public class Example {
 
 		Function expenseFunction = 
 				new DefaultFunction("Expense", expense, setOfVariables(continent, age, occupation),
-						(assignment) -> {
-							String continentValue = assignment.get(continent).stringValue();
-							String occupationValue = assignment.get(occupation).stringValue();
-							
-							if (continentValue.equals("North America") || continentValue.equals("Europe")) {
-								if (occupationValue.equals("Doctor")) {
-									int ageValue = assignment.get(age).intValue();
-									return ageValue > 40? value(150000) : value(100000);
-								}
-								else {
-									return value(70000);
-								}
-							}
-							else {
-								return value(25000);
-							}
-						}
+						(assignment) -> value(incomeFunction.evaluate(assignment).doubleValue() * 0.75)
 				);
 		
 		Functions functions = functions(incomeFunction, expenseFunction);

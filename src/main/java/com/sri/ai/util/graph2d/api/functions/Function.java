@@ -4,6 +4,8 @@ import com.sri.ai.util.graph2d.api.variables.Assignment;
 import com.sri.ai.util.graph2d.api.variables.SetOfVariables;
 import com.sri.ai.util.graph2d.api.variables.Value;
 import com.sri.ai.util.graph2d.api.variables.Variable;
+import com.sri.ai.util.graph2d.core.DefaultFunction;
+import com.sri.ai.util.graph2d.core.JavaFunction;
 
 /**
  * A function mapping assignments to a certain set of input variables to a value of an output variable.	
@@ -11,13 +13,17 @@ import com.sri.ai.util.graph2d.api.variables.Variable;
  */
 public interface Function {
 	
+	static Function function(String name, Variable outputVariable, SetOfVariables inputVariables, JavaFunction<Assignment, Value> javaFunction) {
+		return new DefaultFunction(name, outputVariable, inputVariables, javaFunction);
+	}
+	
 	String getName();
 	
 	Variable getOutputVariable();
 	
 	SetOfVariables getInputVariables();
 	
-	Value computeOutputVariableValue(Assignment inputVariableValues);
+	Value evaluate(Assignment assignmentToInputVariables);
 	
 	/**
 	 * Let this function is f(x_1, ..., x_n).

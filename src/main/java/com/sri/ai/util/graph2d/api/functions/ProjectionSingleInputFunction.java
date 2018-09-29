@@ -53,10 +53,10 @@ public class ProjectionSingleInputFunction implements SingleInputFunction {
 	}
 
 	@Override
-	public Value computeOutputVariableValue(Assignment inputVariableValues) {
+	public Value evaluate(Assignment inputVariableValues) {
 		Value valueOfVariable = inputVariableValues.get(variable);
 		Assignment assignmentToAllVariables = assignmentToRemainingVariables.extend(variable, valueOfVariable);
-		Value result = base.computeOutputVariableValue(assignmentToAllVariables);
+		Value result = base.evaluate(assignmentToAllVariables);
 		return result;
 	}
 

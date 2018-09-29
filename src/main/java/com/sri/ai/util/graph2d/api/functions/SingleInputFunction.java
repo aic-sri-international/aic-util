@@ -25,7 +25,7 @@ public interface SingleInputFunction extends Function {
 	
 	default Value computeOutputVariableValue(Value inputVariableValue) {
 		Assignment assignmentToInputVariable = makeAssignmentToInputVariable(inputVariableValue);
-		Value result = computeOutputVariableValue(assignmentToInputVariable);
+		Value result = evaluate(assignmentToInputVariable);
 		return result;
 	}
 
