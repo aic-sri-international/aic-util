@@ -71,19 +71,4 @@ public class ProjectionSingleInputFunction implements SingleInputFunction {
 	public SingleInputFunction project(Variable variable, Assignment assignmentToRemainingVariables) {
 		throw new Error("Cannot project " + getClass());
 	}
-
-	@Override
-	public void setName(String name) {
-		throw new Error("Cannot change " + getClass() + "'s name");
-	}
-
-	@Override
-	public void setOutputVariable() {
-		throw new Error("Cannot change " + getClass() + "'s output variable");
-	}
-
-	@Override
-	public void setInputVariables(SetOfVariables variables) {
-		throw new Error("Cannot change " + getClass() + "'s input variables");
-	}
 }

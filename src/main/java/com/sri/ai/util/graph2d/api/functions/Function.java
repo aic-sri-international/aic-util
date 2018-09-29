@@ -12,13 +12,10 @@ import com.sri.ai.util.graph2d.api.variables.Variable;
 public interface Function {
 	
 	String getName();
-	void setName(String name);
 	
 	Variable getOutputVariable();
-	void setOutputVariable();
 	
 	SetOfVariables getInputVariables();
-	void setInputVariables(SetOfVariables variables);
 	
 	Value computeOutputVariableValue(Assignment inputVariableValues);
 	

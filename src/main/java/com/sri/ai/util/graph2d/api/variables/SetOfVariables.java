@@ -6,6 +6,7 @@ import static com.sri.ai.util.collect.FunctionIterator.functionIterator;
 import static com.sri.ai.util.graph2d.api.variables.Assignment.assignment;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -47,6 +48,10 @@ public interface SetOfVariables {
 	public static SetOfVariables setOfVariables(List<? extends Variable> variables) {
 		// TODO implement default implementation class and create instance here
 		return null;
+	}
+
+	public static SetOfVariables setOfVariables(Variable... variables) {
+		return setOfVariables(Arrays.asList(variables));
 	}
 
 	public static SetOfVariables singletonSet(Variable variable) {

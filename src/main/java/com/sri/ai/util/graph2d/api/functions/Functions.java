@@ -7,15 +7,19 @@ import java.util.List;
 import com.sri.ai.util.graph2d.api.variables.Assignment;
 import com.sri.ai.util.graph2d.api.variables.SetOfVariables;
 import com.sri.ai.util.graph2d.api.variables.Variable;
+import com.sri.ai.util.graph2d.core.DefaultFunctions;
 
 /**
  * A collection of {@link Function}s sharing the same set of input variables
  *
  */
 public interface Functions {
+
+	static Functions functions(Function... functions) {
+		return new DefaultFunctions(functions);
+	}
 	
 	List<? extends Function> getFunctions();
-	void setFunctions(List<? extends Function> functions);
 
 	SetOfVariables getAllInputVariables();
 	

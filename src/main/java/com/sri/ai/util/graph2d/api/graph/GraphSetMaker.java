@@ -7,6 +7,7 @@ import com.sri.ai.util.graph2d.api.functions.SingleInputFunctions;
 import com.sri.ai.util.graph2d.api.variables.Assignment;
 import com.sri.ai.util.graph2d.api.variables.SetOfVariables;
 import com.sri.ai.util.graph2d.api.variables.Variable;
+import com.sri.ai.util.graph2d.core.DefaultGraphSetMaker;
 
 /**
  * An interface for classes generating sets of {@link GraphSet}s from {@link Functions}.
@@ -18,6 +19,10 @@ public interface GraphSetMaker {
 	
 	Functions getFunctions();
 	void setFunctions(Functions functions);
+
+	static GraphSetMaker graphSetMaker() {
+		return new DefaultGraphSetMaker();
+	}
 	
 	default GraphSet make(Variable xAxisVariable) {
 		

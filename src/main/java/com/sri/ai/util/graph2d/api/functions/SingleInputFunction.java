@@ -23,10 +23,6 @@ public interface SingleInputFunction extends Function {
 		return getInputVariables().getFirst();
 	}
 	
-	default void setInputVariable(Variable inputVariable) {
-		setInputVariables(singletonSet(inputVariable));
-	}
-
 	default Value computeOutputVariableValue(Value inputVariableValue) {
 		Assignment assignmentToInputVariable = makeAssignmentToInputVariable(inputVariableValue);
 		Value result = computeOutputVariableValue(assignmentToInputVariable);
