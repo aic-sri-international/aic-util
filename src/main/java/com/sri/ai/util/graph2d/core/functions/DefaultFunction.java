@@ -1,4 +1,4 @@
-package com.sri.ai.util.graph2d.core;
+package com.sri.ai.util.graph2d.core.functions;
 
 import com.sri.ai.util.graph2d.api.functions.Function;
 import com.sri.ai.util.graph2d.api.variables.Assignment;

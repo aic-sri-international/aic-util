@@ -5381,7 +5381,7 @@ public class Util {
 		return accumulate(collection.iterator(), function, initial);
 	}
 
-	public static <T> Set<T> unionOfCollections(Collection<Collection<? extends T>> collectionsOfCollections) {
+	public static <T> Set<T> unionOfCollections(Collection<? extends Collection<? extends T>> collectionsOfCollections) {
 		LinkedHashSet<T> result = set();
 		for (Collection<? extends T> collection : collectionsOfCollections) {
 			result.addAll(collection);

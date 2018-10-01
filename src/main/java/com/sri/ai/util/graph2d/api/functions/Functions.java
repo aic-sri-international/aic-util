@@ -7,7 +7,7 @@ import java.util.List;
 import com.sri.ai.util.graph2d.api.variables.Assignment;
 import com.sri.ai.util.graph2d.api.variables.SetOfVariables;
 import com.sri.ai.util.graph2d.api.variables.Variable;
-import com.sri.ai.util.graph2d.core.DefaultFunctions;
+import com.sri.ai.util.graph2d.core.functions.DefaultFunctions;
 
 /**
  * A collection of {@link Function}s sharing the same set of input variables

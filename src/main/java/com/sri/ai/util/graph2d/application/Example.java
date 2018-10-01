@@ -1,5 +1,6 @@
 package com.sri.ai.util.graph2d.application;
 
+import static com.sri.ai.util.Util.map;
 import static com.sri.ai.util.Util.println;
 import static com.sri.ai.util.graph2d.api.functions.Function.function;
 import static com.sri.ai.util.graph2d.api.functions.Functions.functions;
@@ -9,8 +10,8 @@ import static com.sri.ai.util.graph2d.api.variables.Value.value;
 import static com.sri.ai.util.graph2d.api.variables.Variable.enumVariable;
 import static com.sri.ai.util.graph2d.api.variables.Variable.integerVariable;
 import static com.sri.ai.util.graph2d.api.variables.Variable.realVariable;
-
-import java.math.BigDecimal;
+import static com.sri.ai.util.graph2d.core.values.SetOfEnumValues.setOfEnumValues;
+import static com.sri.ai.util.graph2d.core.values.SetOfIntegerValues.setOfIntegerValues;
 
 import com.sri.ai.util.graph2d.api.functions.Function;
 import com.sri.ai.util.graph2d.api.functions.Functions;
@@ -23,11 +24,11 @@ public class Example {
 
 	public static void main(String[] args) {
 		
-		Variable continent = enumVariable("Continent", "North America", "Africa", "Europe");
-		Variable age = integerVariable("Age", Unit.YEAR, 18, 99);
-		Variable occupation = enumVariable("Occupation", "Driver", "CEO", "Doctor");
-		Variable income = realVariable("Income", Unit.DOLLAR, 0, new BigDecimal("0.1"), 100);
-		Variable expense = realVariable("Expense", Unit.DOLLAR, 0, new BigDecimal("0.1"), 100);
+		Variable continent = enumVariable("Continent");
+		Variable age = integerVariable("Age", Unit.YEAR);
+		Variable occupation = enumVariable("Occupation");
+		Variable income = realVariable("Income", Unit.DOLLAR);
+		Variable expense = realVariable("Expense", Unit.DOLLAR);
 
 		Function incomeFunction = 
 				function("Income", income, setOfVariables(continent, age, occupation),
@@ -49,17 +50,25 @@ public class Example {
 							}
 						}
 				);
-
+		
 		Function expenseFunction = 
 				function("Expense", expense, setOfVariables(continent, age, occupation),
 						(assignment) -> value(incomeFunction.evaluate(assignment).doubleValue() * 0.75)
 				);
 		
 		Functions functions = functions(incomeFunction, expenseFunction);
-		
+
 		GraphSetMaker graphSetMaker = graphSetMaker();
 		
 		graphSetMaker.setFunctions(functions);
+		graphSetMaker.setFromVariableToSetOfValues(
+				map(
+						continent, setOfEnumValues("North America", "Africa", "Europe"),
+						age, setOfIntegerValues(18, 99),
+						occupation, setOfEnumValues("Driver", "CEO", "Doctor")
+						)
+				);
+
 		GraphSet graphSet = graphSetMaker.make(age);
 		
 		println(graphSet);

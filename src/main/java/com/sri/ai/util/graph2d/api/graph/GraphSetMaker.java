@@ -2,9 +2,12 @@ package com.sri.ai.util.graph2d.api.graph;
 
 import static com.sri.ai.util.graph2d.api.graph.ExternalGraphPlotter.externalGraphMaker;
 
+import java.util.Map;
+
 import com.sri.ai.util.graph2d.api.functions.Functions;
 import com.sri.ai.util.graph2d.api.functions.SingleInputFunctions;
 import com.sri.ai.util.graph2d.api.variables.Assignment;
+import com.sri.ai.util.graph2d.api.variables.SetOfValues;
 import com.sri.ai.util.graph2d.api.variables.SetOfVariables;
 import com.sri.ai.util.graph2d.api.variables.Variable;
 import com.sri.ai.util.graph2d.core.DefaultGraphSetMaker;
@@ -24,13 +27,20 @@ public interface GraphSetMaker {
 		return new DefaultGraphSetMaker();
 	}
 	
+	Map<Variable, SetOfValues> getFromVariableToSetOfValues();
+	void setFromVariableToSetOfValues(Map<Variable, SetOfValues> fromVariableToSetOfValues);
+
+	SetOfValues valuesForVariable(Variable variable);
+	
+	Iterable<Assignment> assignments(SetOfVariables setOfVariables);
+
 	default GraphSet make(Variable xAxisVariable) {
 		
 		GraphSet graphSet = GraphSet.graphSet();
 		
 		SetOfVariables nonAxisVariables = getNonAxisVariables(xAxisVariable);
 		
-		for (Assignment assignmentToNonAxisVariables: nonAxisVariables.assignments()) {
+		for (Assignment assignmentToNonAxisVariables: assignments(nonAxisVariables)) {
 			GraphPlot plot = plot(assignmentToNonAxisVariables, xAxisVariable);
 			graphSet.add(plot);
 		}

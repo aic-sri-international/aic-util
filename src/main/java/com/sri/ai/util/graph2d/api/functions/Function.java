@@ -4,8 +4,8 @@ import com.sri.ai.util.graph2d.api.variables.Assignment;
 import com.sri.ai.util.graph2d.api.variables.SetOfVariables;
 import com.sri.ai.util.graph2d.api.variables.Value;
 import com.sri.ai.util.graph2d.api.variables.Variable;
-import com.sri.ai.util.graph2d.core.DefaultFunction;
-import com.sri.ai.util.graph2d.core.JavaFunction;
+import com.sri.ai.util.graph2d.core.functions.DefaultFunction;
+import com.sri.ai.util.graph2d.core.functions.JavaFunction;
 
 /**
  * A function mapping assignments to a certain set of input variables to a value of an output variable.	
