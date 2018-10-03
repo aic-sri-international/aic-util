@@ -54,7 +54,7 @@ public class DefaultGraphSetMaker implements GraphSetMaker {
 		if (setOfValues == null) {
 			throw new Error("Need values for " + variable + " but that is not defined either by the variable itself or by the functions " + this);
 		}
-		return null;
+		return setOfValues;
 	}
 
 	@Override

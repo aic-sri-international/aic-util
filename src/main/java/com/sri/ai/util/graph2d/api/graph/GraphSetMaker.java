@@ -66,6 +66,7 @@ public interface GraphSetMaker {
 		ExternalGraphPlotter graphMaker = externalGraphMaker();
 		graphMaker.setTitle(title);
 		graphMaker.setFunctions(singleInputFunctionsToBePlotted);
+		graphMaker.setFromVariableToSetOfValues(getFromVariableToSetOfValues());
 		return graphMaker.plot();
 	}
 

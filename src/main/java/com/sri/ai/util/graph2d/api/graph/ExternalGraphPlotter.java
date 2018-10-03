@@ -1,6 +1,10 @@
 package com.sri.ai.util.graph2d.api.graph;
 
+import java.util.Map;
+
 import com.sri.ai.util.graph2d.api.functions.SingleInputFunctions;
+import com.sri.ai.util.graph2d.api.variables.SetOfValues;
+import com.sri.ai.util.graph2d.api.variables.Variable;
 
 /** 
  * Interface for external libraries making images of graph plots.
@@ -23,7 +27,12 @@ public interface ExternalGraphPlotter {
 	
 	String getTitle();
 	void setTitle(String title);
+
+	/**
+	 * Receives the values to be used for the plot.
+	 */
+	void setFromVariableToSetOfValues(Map<Variable, SetOfValues> fromVariableToSetOfValues);
 	
 	GraphPlot plot();
-	
+
 }
