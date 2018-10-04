@@ -4,9 +4,8 @@ import java.util.ArrayList;
 
 public interface Assignment {
 
-	public static Assignment assignment(SetOfVariables variables, ArrayList<? extends Value> values) {
-		// TODO implement default implementation class and create instance here
-		return null;
+	static Assignment assignment(SetOfVariables variables, ArrayList<? extends Value> values) {
+		return new DefaultAssignment(variables, values);
 	}
 	
 	SetOfVariables getSetOfVariables();
