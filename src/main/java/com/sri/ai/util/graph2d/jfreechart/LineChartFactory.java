@@ -186,7 +186,7 @@ public class LineChartFactory {
       }
     }
     throw new IllegalArgumentException(
-        "Colors exceeded Need to create more colors for LineColor enum");
+        "Colors exceeded. Need to create more colors for LineColor enum");
   }
 
   public static class SeriesEntry {
