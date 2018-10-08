@@ -36,7 +36,7 @@ public interface GraphSetMaker {
 
 	default GraphSet make(Variable xAxisVariable) {
 		
-		GraphSet graphSet = GraphSet.graphSet();
+		GraphSet graphSet = GraphSet.graphSet(getFunctions());
 		
 		SetOfVariables nonAxisVariables = getNonAxisVariables(xAxisVariable);
 		

@@ -1,6 +1,7 @@
 package com.sri.ai.util.graph2d.api.variables;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.Validate;
@@ -11,8 +12,8 @@ public class DefaultAssignment implements Assignment {
   private final Map<Variable, Value> variableToValue;
 
   DefaultAssignment(SetOfVariables variables, List<? extends Value> values) {
-    Validate.notNull(variables, "SetOfVariables cannot be null");
-    Validate.notEmpty(values, "Value list cannot be empty");
+    Validate.notNull(variables, "variables cannot be null");
+    Validate.notEmpty(values, "values list cannot be empty");
     setOfVariables = variables;
     variableToValue = new HashMap<>();
 
@@ -42,22 +43,28 @@ public class DefaultAssignment implements Assignment {
   @Override
   public Value get(Variable variable) {
     Validate.notNull(variable, "Variable cannot be null");
-    return variableToValue.get(variable);
+    Value result = variableToValue.get(variable);
+    return result;
   }
 
   @Override
   public Assignment extend(Variable variable, Value value) {
-    Validate.notNull(variable, "Variable cannot be null");
-    Validate.notNull(value, "Value cannot be null");
+    Validate.notNull(variable, "variable cannot be null");
+    Validate.notNull(value, "value cannot be null");
     Validate.isTrue(!variableToValue.containsKey(variable),
-        "Variable already has an assigned value");
+        "variable already has an assigned value");
 
     List<? extends Variable> variables = setOfVariables.getVariables();
     addVariable(variables, variable);
 
-    Map<Variable, Value> variableToValue = new HashMap<>(this.variableToValue);
+    Map<Variable, Value> variableToValue = new LinkedHashMap<>(this.variableToValue);
     variableToValue.put(variable, value);
-    return new DefaultAssignment(new DefaultSetOfVariables(variables), variableToValue);
+
+    DefaultSetOfVariables defaultSetOfVariables = new DefaultSetOfVariables(variables);
+    DefaultAssignment defaultAssignment
+        = new DefaultAssignment(defaultSetOfVariables, variableToValue);
+
+    return defaultAssignment;
   }
 
   @SuppressWarnings("unchecked")

@@ -144,7 +144,8 @@ public class LineChartFactory {
 
     JFreeChart chart =
         ChartFactory.createXYLineChart(
-            null, xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, true, true, false);
+            null, xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL,
+            true, true, false);
 
     XYPlot plot = chart.getXYPlot();
 

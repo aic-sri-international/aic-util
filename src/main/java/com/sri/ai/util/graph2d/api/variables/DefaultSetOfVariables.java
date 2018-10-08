@@ -12,7 +12,7 @@ public class DefaultSetOfVariables implements SetOfVariables {
 
   private final Set<? extends Variable> variables;
 
-  DefaultSetOfVariables(List<? extends Variable> variables) {
+  public DefaultSetOfVariables(List<? extends Variable> variables) {
     this(new LinkedHashSet<>(variables));
   }
 
@@ -33,12 +33,15 @@ public class DefaultSetOfVariables implements SetOfVariables {
 
   @Override
   public Variable getFirst() {
-    return variables.iterator().next();
+    Variable firstVariable = variables.iterator().next();
+    return firstVariable;
   }
 
   @Override
   public SetOfVariables minus(Variable variable) {
-    return new DefaultSetOfVariables(Util.removeNonDestructively(variables, variable));
+    List<? extends Variable> variables = Util.removeNonDestructively(this.variables, variable);
+    DefaultSetOfVariables defaultSetOfVariables = new DefaultSetOfVariables(variables);
+    return defaultSetOfVariables;
   }
 
 }
