@@ -6,11 +6,11 @@ import com.sri.ai.util.graph2d.core.values.SetOfEnumValues;
 public class EnumVariable extends AbstractVariable {
 	
 	public EnumVariable(String name, String... values) {
-		super(name,Unit.NONE, new SetOfEnumValues(values));
+		super(name, Unit.NONE, values.length == 0? null : new SetOfEnumValues(values));
 	}
 	
 	public EnumVariable(String name, SetOfEnumValues enumSetOfValues) {
-		super(name,Unit.NONE, enumSetOfValues);
+		super(name, Unit.NONE, enumSetOfValues);
 	}
 	
 	@Override
