@@ -63,8 +63,6 @@ public class DefaultGraphSetMaker implements GraphSetMaker {
 		List<NullaryFunction<Iterator<Value>>> iteratorMakers = mapIntoList(setOfVariables.getVariables(), makeIteratorMaker());
 		
 		Iterator<ArrayList<Value>> cartesianProductIterator = new CartesianProductIterator<>(iteratorMakers);
-
-		cartesianProductIterator = new CartesianProductIterator<>(iteratorMakers);
 		
 		Iterator<Assignment> assignmentsIterator = functionIterator(cartesianProductIterator, valuesArray -> assignment(setOfVariables, valuesArray));
 		
