@@ -45,44 +45,8 @@ public class LineChartFactory {
   private String xAxisLabel;
   private String yAxisLabel;
   private List<SeriesEntry> seriesEntries = new ArrayList<>();
-
-  public static void main(String[] args) {
-    Number[][] expenses = {
-      {18, 530 * 20},
-      {20, 580 * 20},
-      {25, 740 * 20},
-      {30, 901 * 20},
-      {40, 1300 * 20},
-      {50, 2219 * 20},
-      {99, 2000 * 20},
-    };
-    Number[][] income = {
-      {18, 550 * 20},
-      {20, 630 * 20},
-      {25, 800 * 20},
-      {30, 1000 * 20},
-      {40, 1500 * 20},
-      {50, 3000 * 20},
-      {99, 3000 * 20},
-    };
-    Number[][] taxes = {
-      {18, 550},
-      {20, 630},
-      {10, 800},
-      {11, 1000},
-      {40, 1500},
-      {50, 3000},
-      {99, 3000},
-    };
-    new LineChartFactory()
-        .setTitle("North America: Average Income & Expenses Per Month")
-        .setxAxisLabel("Age (yrs.)")
-        .setyAxisLabel("Income ($)")
-        .addSeries(new SeriesEntry().setKey("Income").setDataPoints(income))
-        .addSeries(new SeriesEntry().setKey("Expenses").setDataPoints(expenses))
-        .addSeries(new SeriesEntry().setKey("Taxes").setDataPoints(taxes))
-        .generate(new File("SampleLineChart.png"));
-  }
+  private int graphWidth = Constants.GRAPH_WIDTH;
+  private int graphHeight = Constants.GRAPH_HEIGHT;
 
   public String getTitle() {
     return title;
@@ -116,13 +80,31 @@ public class LineChartFactory {
     return this;
   }
 
+  public int getGraphWidth() {
+    return graphWidth;
+  }
+
+  public LineChartFactory setGraphWidth(int graphWidth) {
+    this.graphWidth = graphWidth;
+    return this;
+  }
+
+  public int getGraphHeight() {
+    return graphHeight;
+  }
+
+  public LineChartFactory setGraphHeight(int graphHeight) {
+    this.graphHeight = graphHeight;
+    return this;
+  }
+
   public void generate(File file) {
     XYSeriesCollection dataset = new XYSeriesCollection();
     seriesEntries.forEach(se -> dataset.addSeries(toXYSeries(se)));
 
     JFreeChart chart = createChart(dataset);
     try {
-      ChartUtils.saveChartAsPNG(file, chart, 450, 400);
+      ChartUtils.saveChartAsPNG(file, chart, graphWidth, graphHeight);
     } catch (IOException e) {
       throw new RuntimeException("Cannot generate chart", e);
     }
@@ -231,5 +213,33 @@ public class LineChartFactory {
       ORANGE,
       BLACK
     }
+  }
+
+  public static void main(String[] args) {
+    Number[][] expenses = {
+        {18, 530 * 20},
+        {20, 580 * 20},
+        {25, 740 * 20},
+        {30, 901 * 20},
+        {40, 1300 * 20},
+        {50, 2219 * 20},
+        {99, 2000 * 20},
+    };
+    Number[][] income = {
+        {18, 550 * 20},
+        {20, 630 * 20},
+        {25, 800 * 20},
+        {30, 1000 * 20},
+        {40, 1500 * 20},
+        {50, 3000 * 20},
+        {99, 3000 * 20},
+    };
+    new LineChartFactory()
+        .setTitle("North America: Average Income & Expenses Per Month")
+        .setxAxisLabel("Age (yrs.)")
+        .setyAxisLabel("Income ($)")
+        .addSeries(new SeriesEntry().setKey("Income").setDataPoints(income))
+        .addSeries(new SeriesEntry().setKey("Expenses").setDataPoints(expenses))
+        .generate(new File("SampleLineChart.png"));
   }
 }
