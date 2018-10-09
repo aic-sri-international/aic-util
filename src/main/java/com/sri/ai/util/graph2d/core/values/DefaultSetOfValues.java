@@ -1,5 +1,7 @@
 package com.sri.ai.util.graph2d.core.values;
 
+import static com.sri.ai.util.Util.join;
+
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -17,6 +19,12 @@ public class DefaultSetOfValues implements SetOfValues {
 	@Override
 	public Iterator<Value> iterator() {
 		return collection.iterator();
+	}
+
+	
+	@Override
+	public String toString() {
+		return "SetOfEnumValues(" + join(collection)+ ")";
 	}
 
 }
