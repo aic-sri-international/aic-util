@@ -56,4 +56,11 @@ public class DefaultValue implements Value {
 
     return result;
   }
+
+  @Override
+  public String toString() {
+    return "DefaultValue{" +
+        "value=" + value +
+        '}';
+  }
 }
