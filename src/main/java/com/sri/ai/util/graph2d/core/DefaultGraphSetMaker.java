@@ -47,10 +47,15 @@ public class DefaultGraphSetMaker implements GraphSetMaker {
 
 	@Override
 	public SetOfValues valuesForVariable(Variable variable) {
-		SetOfValues setOfValues = variable.setOfValuesOrNull();
-		if (setOfValues == null && getFromVariableToSetOfValues() != null) {
-			setOfValues = getFromVariableToSetOfValues().get(variable);
+		// If a set of values have been defined in the GraphSetMaker for the variable, use them,
+		// else use the set of values defined in the variable itself.
+		SetOfValues setOfValues
+				= fromVariableToSetOfValues.isEmpty() ? null : fromVariableToSetOfValues.get(variable);
+
+		if (setOfValues == null) {
+			setOfValues = variable.setOfValuesOrNull();
 		}
+
 		if (setOfValues == null) {
 			throw new Error("Need values for " + variable + " but that is not defined either by the variable itself or by the functions " + this);
 		}
@@ -59,15 +64,15 @@ public class DefaultGraphSetMaker implements GraphSetMaker {
 
 	@Override
 	public Iterable<Assignment> assignments(SetOfVariables setOfVariables) {
-		
+
 		List<NullaryFunction<Iterator<Value>>> iteratorMakers = mapIntoList(setOfVariables.getVariables(), makeIteratorMaker());
-		
+
 		Iterator<ArrayList<Value>> cartesianProductIterator = new CartesianProductIterator<>(iteratorMakers);
-		
+
 		Iterator<Assignment> assignmentsIterator = functionIterator(cartesianProductIterator, valuesArray -> assignment(setOfVariables, valuesArray));
-		
+
 		Iterable<Assignment> assignmentsIterable = in(assignmentsIterator);
-		
+
 		return assignmentsIterable;
 	}
 
