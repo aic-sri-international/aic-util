@@ -14,8 +14,7 @@ public interface SingleInputFunctions extends Functions {
 	List<? extends SingleInputFunction> getFunctions();
 
 	public static SingleInputFunctions singleInputFunctions() {
-		// TODO implement default implementation class and create instance here
-		return null;
+		return new DefaultSingleInputFunctions();
 	}
 	
 	void add(SingleInputFunction singleInputFunction);
