@@ -52,7 +52,7 @@ public class BigDecimalIterator extends EZIterator<BigDecimal> {
   private static final BigDecimal DEFAULT_INCREMENT = BigDecimal.ONE;
 	private BigDecimal end;
 	private BigDecimal increment = DEFAULT_INCREMENT;
-	private boolean infinite= true;
+	private boolean infinite;
 
 	/**
 	 * 		this.end = end;
@@ -70,7 +70,10 @@ public class BigDecimalIterator extends EZIterator<BigDecimal> {
 		this.onNext = true;
 		this.end = Validate.notNull(end, "end value cannot be null");
 		this.increment = Validate.notNull(increment, "increment value cannot be null");
-		this.infinite = false;
+
+	  Validate.isTrue(increment.compareTo(BigDecimal.ZERO) > 0,
+        "increment value must be greater than zero");
+
 		if (start.compareTo(end) >= 0) {
 			throw new IllegalArgumentException(String.format("start=%s must be less than end=%s", start, end));
 		}
@@ -93,7 +96,9 @@ public class BigDecimalIterator extends EZIterator<BigDecimal> {
 	 */
   private BigDecimalIterator(BigDecimal start) {
     this.next = Validate.notNull(start, "start value cannot be null");
-	}
+    this.onNext = true;
+    this.infinite = true;
+  }
 
 	public static BigDecimalIterator fromThisValueOnForever(BigDecimal start) {
 		return new BigDecimalIterator(start);

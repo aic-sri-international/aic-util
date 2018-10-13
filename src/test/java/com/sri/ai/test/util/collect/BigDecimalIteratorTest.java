@@ -24,13 +24,23 @@ public class BigDecimalIteratorTest {
     new BigDecimalIterator(BigDecimal.ONE, BigDecimal.TEN, null);
   }
 
- @Test(expected = IllegalArgumentException.class)
+  @Test(expected = IllegalArgumentException.class)
+  public void testIncrementValueEqualZero() {
+    new BigDecimalIterator(BigDecimal.ONE, BigDecimal.TEN, BigDecimal.ZERO);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testIncrementValueLessThanZero() {
+    new BigDecimalIterator(BigDecimal.ONE, BigDecimal.TEN, new BigDecimal("-1"));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
  public void testStartEqualEndValue() {
    new BigDecimalIterator(BigDecimal.ONE, BigDecimal.ONE);
  }
 
  @Test(expected = IllegalArgumentException.class)
- public void testStartGreaternThanEndValue() {
+ public void testStartGreaterThanEndValue() {
    new BigDecimalIterator(BigDecimal.TEN, BigDecimal.ONE);
  }
 
@@ -41,21 +51,20 @@ public class BigDecimalIteratorTest {
 
  @Test
   public void testFromThisValueOnForever100() {
-    final int ITERATIONS = 100;
     BigDecimal start = new BigDecimal("1.45");
     BigDecimal cur = null;
+    final int ITERATIONS = 100;
 
     BigDecimalIterator iter = BigDecimalIterator.fromThisValueOnForever(start);
-    int count = 0;
-    while (iter.hasNext() && count++ < ITERATIONS) {
+    for (int i = 0; iter.hasNext() && i < ITERATIONS; ++i) {
       cur = iter.next();
     }
 
-    Assert.assertEquals(start.add(new BigDecimal(Integer.toString(ITERATIONS))), cur);
+    Assert.assertEquals(start.add(new BigDecimal(Integer.toString(ITERATIONS -1))), cur);
   }
 
   @Test
-  public void testRangeDefaultIncremement() {
+  public void testRangeDefaultIncrement() {
     BigDecimal start = new BigDecimal("1.45");
     BigDecimal end = new BigDecimal("10.45");
     BigDecimal cur = null;
@@ -71,14 +80,14 @@ public class BigDecimalIteratorTest {
   }
 
   @Test
-  public void testRangeNonDefaultIncremement() {
-    BigDecimal start = new BigDecimal("1.45");
-    BigDecimal end = new BigDecimal("2.45");
+  public void testRangeNonDefaultIncrement() {
+    final BigDecimal start = new BigDecimal("1.45");
+    final BigDecimal end = new BigDecimal("2.45");
     BigDecimal increment = new BigDecimal(".05");
     BigDecimal cur = null;
 
     int count = 0;
-    BigDecimalIterator iter = new BigDecimalIterator(start, end.add(increment), increment);
+    BigDecimalIterator iter = new BigDecimalIterator(start, end, increment);
     while (iter.hasNext()) {
       cur = iter.next();
       BigDecimal bigDecimalCount = new BigDecimal(Integer.toString(count++));
@@ -86,6 +95,6 @@ public class BigDecimalIteratorTest {
       Assert.assertEquals(expected, cur);
     }
 
-    Assert.assertEquals(end, cur);
+    Assert.assertEquals(end.subtract(increment), cur);
   }
 }
