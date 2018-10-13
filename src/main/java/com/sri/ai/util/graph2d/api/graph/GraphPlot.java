@@ -1,6 +1,8 @@
 package com.sri.ai.util.graph2d.api.graph;
 
 import com.sri.ai.util.graph2d.api.functions.Functions;
+import com.sri.ai.util.graph2d.api.functions.SingleInputFunctions;
+import java.io.File;
 
 /**
  * An interface for objects containing a 2D graph plot image and whatever other useful information is associated with it,
@@ -12,5 +14,6 @@ import com.sri.ai.util.graph2d.api.functions.Functions;
  *
  */
 public interface GraphPlot {
-
+  File getImageFile();
+  void setImageFile(File imageFile);
 }

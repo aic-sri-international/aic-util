@@ -16,9 +16,9 @@ import com.sri.ai.util.graph2d.api.variables.Variable;
  */
 public interface ExternalGraphPlotter {
 
-	public static ExternalGraphPlotter externalGraphMaker() {
-		// TODO implement default implementation class and create instance here
-		return null;
+	static ExternalGraphPlotter externalGraphMaker() {
+		ExternalGraphPlotter externalGraphPlotter = new DefaultLineGraphPlotter();
+		return externalGraphPlotter;
 	}
 	
 	/** The functions to be plotted. They must be single-input because the graphs are 2D. */
