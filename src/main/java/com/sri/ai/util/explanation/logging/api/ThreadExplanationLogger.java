@@ -10,6 +10,8 @@ import com.sri.ai.util.base.NullaryFunction;
 import com.sri.ai.util.base.NullaryProcedure;
 import com.sri.ai.util.explanation.logging.core.ExplanationBlock;
 import com.sri.ai.util.explanation.logging.core.ExplanationBlock.Code;
+import com.sri.ai.util.explanation.logging.core.handler.FileExplanationHandler;
+import com.sri.ai.util.explanation.logging.core.handler.SquirrelFileExplanationHandler;
 import com.sri.ai.util.explanation.logging.helper.ExplanationLoggerForFileForThisThread;
 import com.sri.ai.util.explanation.logging.helper.ExplanationLoggerToConsole;
 
@@ -53,8 +55,17 @@ public class ThreadExplanationLogger {
 	 * also arranging for this file to be automatically closed in the case a throwable is thrown,
 	 * and invokes {@link #explanationBlock(Object...)} with its remaining arguments.
 	 */
+	public static void explanationBlockToFile(Class<? extends FileExplanationHandler> fileExplanationHandlerClass, String fileName, Object... objects) {
+		try (ExplanationLoggerForFileForThisThread threadLogger = new ExplanationLoggerForFileForThisThread(fileExplanationHandlerClass, fileName);) {
+			ThreadExplanationLogger.explanationBlock(objects);
+		}
+	}
+	
+	/**
+	 * Same as {@link #explanationBlockToFile(Class, String, Object...)} for the default file explanation handler class.
+	 */
 	public static void explanationBlockToFile(String fileName, Object... objects) {
-		try (ExplanationLoggerForFileForThisThread threadLogger = new ExplanationLoggerForFileForThisThread(fileName);) {
+		try (ExplanationLoggerForFileForThisThread threadLogger = new ExplanationLoggerForFileForThisThread(SquirrelFileExplanationHandler.class, fileName);) {
 			ThreadExplanationLogger.explanationBlock(objects);
 		}
 	}

@@ -2,6 +2,7 @@ package com.sri.ai.util.explanation.logging.helper;
 
 import com.sri.ai.util.explanation.logging.api.ExplanationLogger;
 import com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger;
+import com.sri.ai.util.explanation.logging.core.handler.FileExplanationHandler;
 
 /** 
  * A convenience class that creates a {@link ExplanationLoggerToFile} and sets it as this thread's explanation logger;
@@ -16,8 +17,8 @@ public class ExplanationLoggerForFileForThisThread extends ExplanationLoggerToFi
 	
 	private ExplanationLogger oldThreadExplanationLogger;
 
-	public ExplanationLoggerForFileForThisThread(String fileName) {
-		super(fileName);
+	public ExplanationLoggerForFileForThisThread(Class<? extends FileExplanationHandler> fileExplanationHandlerClass, String fileName) {
+		super(fileExplanationHandlerClass, fileName);
 		this.oldThreadExplanationLogger = ThreadExplanationLogger.getThreadExplanationLogger();
 		ThreadExplanationLogger.setThreadExplanationLogger(this);
 	}

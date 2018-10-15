@@ -12,21 +12,22 @@ public abstract class AbstractWriterExplanationHandler implements ExplanationHan
 	
 	private static final String DEFAULT_NESTING_STRING = "*";
 
+	private static final String DEFAULT_NESTING_POSTFIX_STRING = " ";
+
 	private static final boolean DEFAULT_INCLUDE_TIMESTAMP = false;
 
 	private static final boolean DEFAULT_INCLUDE_BLOCK_TIME = true;
 	
 	private NullaryFunction<Writer> writerMaker;
 	private Writer writer;
-	private String nestingString;
-	
+	private Nesting nesting;
 	private boolean includeTimestamp;
 	private boolean includeBlockTime;
 	
 	public AbstractWriterExplanationHandler(NullaryFunction<Writer> writerMaker) {
 		this.writerMaker = writerMaker;
 		this.writer = null;
-		this.nestingString = DEFAULT_NESTING_STRING;
+		this.nesting = new Nesting(DEFAULT_NESTING_STRING, DEFAULT_NESTING_POSTFIX_STRING);
 		this.includeTimestamp = DEFAULT_INCLUDE_TIMESTAMP;
 		this.includeBlockTime = DEFAULT_INCLUDE_BLOCK_TIME;
 	}
@@ -57,10 +58,7 @@ public abstract class AbstractWriterExplanationHandler implements ExplanationHan
 	}
 
 	private void addNesting(StringBuilder builder, ExplanationRecord record) {
-		for (int i = 0; i != record.getNestingDepth() + 1; i++) {
-			builder.append(nestingString);
-		}
-		builder.append(" ");
+		builder.append(nesting.getNestingString(record.getNestingDepth()));
 	}
 
 	private void addTimestampIfNeeded(StringBuilder builder, ExplanationRecord record) {
@@ -101,12 +99,48 @@ public abstract class AbstractWriterExplanationHandler implements ExplanationHan
 		}
 	}
 
-	public String getNestingString(String nestingString) {
-		return nestingString;
+	public String getNestingStringBlock() {
+		return nesting.getNestingStringBlock();
 	}
 
-	public void setNestingString(String nestingString) {
-		this.nestingString = nestingString;
+	public void setNestingStringBlock(String nestingString) {
+		this.nesting = nesting.setNestingStringBlock(nestingString);
+	}
+
+	public String getNestingStringPostfix() {
+		return nesting.getNestingStringPostfix();
+	}
+
+	public void setNestingStringPostfix(String nestingPostfixString) {
+		this.nesting = nesting.setNestingStringPostfix(nestingPostfixString);
+	}
+
+	public void setWriterMaker(NullaryFunction<Writer> writerMaker) {
+		this.writerMaker = writerMaker;
+	}
+
+	public void setWriter(Writer writer) {
+		this.writer = writer;
+	}
+
+	public static String getDefaultNestingString() {
+		return DEFAULT_NESTING_STRING;
+	}
+
+	public static String getDefaultNestingPostfixString() {
+		return DEFAULT_NESTING_POSTFIX_STRING;
+	}
+
+	public static boolean isDefaultIncludeTimestamp() {
+		return DEFAULT_INCLUDE_TIMESTAMP;
+	}
+
+	public static boolean isDefaultIncludeBlockTime() {
+		return DEFAULT_INCLUDE_BLOCK_TIME;
+	}
+
+	public NullaryFunction<Writer> getWriterMaker() {
+		return writerMaker;
 	}
 
 	public Writer getWriter() {

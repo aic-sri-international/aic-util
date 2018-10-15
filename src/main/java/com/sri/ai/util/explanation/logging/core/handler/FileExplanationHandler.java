@@ -21,12 +21,15 @@ public class FileExplanationHandler extends AbstractWriterExplanationHandler imp
 			try {
 				return new BufferedWriter(new FileWriter(filename));
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				throw new Error(e);
 			}
 		};
 	}
 	
+	public String getFilename() {
+		return filename;
+	}
+
 	@Override
 	public String toString() {
 		return "File explanation handler for " + filename;

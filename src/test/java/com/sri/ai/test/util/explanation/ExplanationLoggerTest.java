@@ -17,6 +17,7 @@ import org.junit.Test;
 import com.sri.ai.util.explanation.logging.api.ExplanationConfiguration;
 import com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger;
 import com.sri.ai.util.explanation.logging.core.DefaultExplanationLogger;
+import com.sri.ai.util.explanation.logging.core.handler.Nesting;
 import com.sri.ai.util.explanation.logging.core.handler.StringExplanationHandler;
 
 public class ExplanationLoggerTest {
@@ -38,11 +39,13 @@ public class ExplanationLoggerTest {
 		StringExplanationHandler stringHandler;
 		String expected;
 		
+		Nesting nesting = new Nesting("*", " ");
+		
 		logger = new DefaultExplanationLogger();
 		stringHandler = new StringExplanationHandler();
 		logger.addHandler(stringHandler);
 		logger.explain("Hello, ", "World", "!!!");
-		expected = "* Hello, World!!!\n";
+		expected = nesting.getNestingString(0) + "Hello, World!!!\n";
 		println("expected: " + expected);
 		println("actual  : " + stringHandler);
 		assertEquals(expected, stringHandler.toString());
@@ -52,7 +55,7 @@ public class ExplanationLoggerTest {
 		stringHandler = new StringExplanationHandler();
 		logger.addHandler(stringHandler);
 		logger.explain("Hello, ", lazy(() -> "World"), lazy(() -> "!!!"));
-		expected = "* Hello, World!!!\n";
+		expected = nesting.getNestingString(0) + "Hello, World!!!\n";
 		println("expected: " + expected);
 		println("actual  : " + stringHandler);
 		assertEquals(expected, stringHandler.toString());
@@ -62,7 +65,7 @@ public class ExplanationLoggerTest {
 		stringHandler = new StringExplanationHandler();
 		logger.addHandler(stringHandler);
 		logger.explain();
-		expected = "* \n";
+		expected = nesting.getNestingString(0) + "\n";
 		println("expected: " + expected);
 		println("actual  : " + stringHandler);
 		assertEquals(expected, stringHandler.toString());
@@ -72,7 +75,7 @@ public class ExplanationLoggerTest {
 		stringHandler = new StringExplanationHandler();
 		logger.addHandler(stringHandler);
 		logger.explain("Can you do numbers? ", lazy(() -> "Sure! High "), lazy(() -> 5), lazy(() -> "!!!"));
-		expected = "* Can you do numbers? Sure! High 5!!!\n";
+		expected = nesting.getNestingString(0) + "Can you do numbers? Sure! High 5!!!\n";
 		println("expected: " + expected);
 		println("actual  : " + stringHandler);
 		assertEquals(expected, stringHandler.toString());
@@ -82,7 +85,7 @@ public class ExplanationLoggerTest {
 		stringHandler = new StringExplanationHandler();
 		logger.addHandler(stringHandler);
 		logger.explain("What about objects? ", lazy(() -> "You bet! "), lazy(() -> list(1, 2, 3, 4, 5)), lazy(() -> "!!!"));
-		expected = "* What about objects? You bet! [1, 2, 3, 4, 5]!!!\n";
+		expected = nesting.getNestingString(0) + "What about objects? You bet! [1, 2, 3, 4, 5]!!!\n";
 		println("expected: " + expected);
 		println("actual  : " + stringHandler);
 		assertEquals(expected, stringHandler.toString());
@@ -96,18 +99,21 @@ public class ExplanationLoggerTest {
 		StringExplanationHandler stringHandler;
 		String expected;
 		
+		Nesting nesting = new Nesting("*", " ");
+
 		logger = new DefaultExplanationLogger();
 		stringHandler = new StringExplanationHandler();
+		stringHandler.setIncludeBlockTime(false);
 		logger.addHandler(stringHandler);
 		logger.start("Starting block ", 1);
 		logger.explain("I'm explanation 1.1");
 		logger.explain("I'm explanation 1.2");
 		logger.end("End of block ", 1);
 		expected =
-				"* Starting block 1\n" + 
-				"** I'm explanation 1.1\n" + 
-				"** I'm explanation 1.2\n" + 
-				"* End of block 1\n";
+				nesting.getNestingString(0) + "Starting block 1\n" + 
+				nesting.getNestingString(1) + "I'm explanation 1.1\n" + 
+				nesting.getNestingString(1) + "I'm explanation 1.2\n" + 
+				nesting.getNestingString(0) + "End of block 1\n";
 		println("expected:\n" + expected);
 		println("actual  :\n" + stringHandler);
 		assertEquals(expected, stringHandler.toString());
@@ -115,6 +121,7 @@ public class ExplanationLoggerTest {
 		
 		logger = new DefaultExplanationLogger();
 		stringHandler = new StringExplanationHandler();
+		stringHandler.setIncludeBlockTime(false);
 		logger.addHandler(stringHandler);
 		logger.start("Starting block ", 1);
 		logger.explain("I'm explanation 1.1");
@@ -126,15 +133,15 @@ public class ExplanationLoggerTest {
 		logger.explain("I'm explanation 1.2");
 		logger.end("End of block ", 1);
 		expected =
-				"* Starting block 1\n" + 
-				"** I'm explanation 1.1\n" + 
-				"** Starting block 1.1\n" + 
-				"*** I'm explanation 1.1.1\n" + 
-				"*** I'm explanation 1.1.2\n" + 
-				"*** I'm explanation 1.1.3\n" + 
-				"** End of block 1.1\n" + 
-				"** I'm explanation 1.2\n" + 
-				"* End of block 1\n";
+				nesting.getNestingString(0) + "Starting block 1\n" + 
+				nesting.getNestingString(1) + "I'm explanation 1.1\n" + 
+				nesting.getNestingString(1) + "Starting block 1.1\n" + 
+				nesting.getNestingString(2) + "I'm explanation 1.1.1\n" + 
+				nesting.getNestingString(2) + "I'm explanation 1.1.2\n" + 
+				nesting.getNestingString(2) + "I'm explanation 1.1.3\n" + 
+				nesting.getNestingString(1) + "End of block 1.1\n" + 
+				nesting.getNestingString(1) + "I'm explanation 1.2\n" + 
+				nesting.getNestingString(0) + "End of block 1\n";
 		println("expected:\n" + expected);
 		println("actual  :\n" + stringHandler);
 		assertEquals(expected, stringHandler.toString());
@@ -192,8 +199,11 @@ public class ExplanationLoggerTest {
 		StringExplanationHandler stringHandler;
 		String expected;
 		
+		Nesting nesting = new Nesting("*", " ");
+
 		logger = new DefaultExplanationLogger();
 		stringHandler = new StringExplanationHandler();
+		stringHandler.setIncludeBlockTime(false);
 		logger.addHandler(stringHandler);
 		logger.setImportanceThreshold(1000);
 		logger.start("Starting block ", 1);
@@ -208,6 +218,7 @@ public class ExplanationLoggerTest {
 		
 		logger = new DefaultExplanationLogger();
 		stringHandler = new StringExplanationHandler();
+		stringHandler.setIncludeBlockTime(false);
 		logger.addHandler(stringHandler);
 		logger.setImportanceThreshold(0.25);
 		logger.start(0.5, "Starting block ", 1);
@@ -230,14 +241,14 @@ public class ExplanationLoggerTest {
 		logger.explain("I'm explanation 1.2");
 		logger.end("End of block ", 1);
 		expected =
-				"* Starting block 1\n" + 
-				"** Starting block 1.2\n" + 
-				"*** I'm explanation 1.2.1\n" + 
-				"*** I'm explanation 1.2.2\n" + 
-				"*** I'm explanation 1.2.3\n" + 
-				"** End of block 1.2\n" + 
-				"** I'm explanation 1.2\n" + 
-				"* End of block 1\n";
+				nesting.getNestingString(0) + "Starting block 1\n" + 
+				nesting.getNestingString(1) + "Starting block 1.2\n" + 
+				nesting.getNestingString(2) + "I'm explanation 1.2.1\n" + 
+				nesting.getNestingString(2) + "I'm explanation 1.2.2\n" + 
+				nesting.getNestingString(2) + "I'm explanation 1.2.3\n" + 
+				nesting.getNestingString(1) + "End of block 1.2\n" + 
+				nesting.getNestingString(1) + "I'm explanation 1.2\n" + 
+				nesting.getNestingString(0) + "End of block 1\n";
 		println("expected:\n" + expected);
 		println("actual  :\n" + stringHandler);
 		assertEquals(expected, stringHandler.toString());
@@ -251,8 +262,11 @@ public class ExplanationLoggerTest {
 		StringExplanationHandler stringHandler;
 		String expected;
 		
+		Nesting nesting = new Nesting("*", " ");
+
 		logger = new DefaultExplanationLogger();
 		stringHandler = new StringExplanationHandler();
+		stringHandler.setIncludeBlockTime(false);
 		logger.addHandler(stringHandler);
 		logger.setFilter(record -> record.getNestingDepth() != 2);
 		// This should select nesting depths 0, 1 and 3.
@@ -282,14 +296,14 @@ public class ExplanationLoggerTest {
 		logger.explain("I'm explanation 1.2");
 		logger.end("End of block ", 1);
 		expected =
-				"* Starting block 1\n" + 
-				"** I'm explanation 1.1\n" + 
-				"** Starting block 1.1\n" + 
-				"** End of block 1.1\n" + 
-				"** Starting block 1.2\n" + 
-				"** End of block 1.2\n" + 
-				"** I'm explanation 1.2\n" + 
-				"* End of block 1\n";
+				nesting.getNestingString(0) + "Starting block 1\n" + 
+				nesting.getNestingString(1) + "I'm explanation 1.1\n" + 
+				nesting.getNestingString(1) + "Starting block 1.1\n" + 
+				nesting.getNestingString(1) + "End of block 1.1\n" + 
+				nesting.getNestingString(1) + "Starting block 1.2\n" + 
+				nesting.getNestingString(1) + "End of block 1.2\n" + 
+				nesting.getNestingString(1) + "I'm explanation 1.2\n" + 
+				nesting.getNestingString(0) + "End of block 1\n";
 		println("expected:\n" + expected);
 		println("actual  :\n" + stringHandler);
 		assertEquals(expected, stringHandler.toString());
@@ -305,8 +319,11 @@ public class ExplanationLoggerTest {
 		String expected;
 		int result;
 		
+		Nesting nesting = new Nesting("*", " ");
+
 		logger = new DefaultExplanationLogger();
 		stringHandler = new StringExplanationHandler();
+		stringHandler.setIncludeBlockTime(false);
 		logger.addHandler(stringHandler);
 
 		result = logger.explanationBlock("Going to solve the universe", code(() -> {
@@ -315,9 +332,9 @@ public class ExplanationLoggerTest {
 		}),	"The answer is ", RESULT);
 		assertEquals(42, result);
 		expected =
-				"* Going to solve the universe\n" + 
-				"** Thanks for all the fish\n" + 
-				"* The answer is 42\n";
+				nesting.getNestingString(0) + "Going to solve the universe\n" + 
+				nesting.getNestingString(1) + "Thanks for all the fish\n" + 
+				nesting.getNestingString(0) + "The answer is 42\n";
 		println("expected:\n" + expected);
 		println("actual  :\n" + stringHandler);
 		assertEquals(expected, stringHandler.toString());
@@ -332,8 +349,11 @@ public class ExplanationLoggerTest {
 		String expected;
 		boolean topLevelExceptionWasCaught;
 		
+		Nesting nesting = new Nesting("*", " ");
+
 		logger = new DefaultExplanationLogger();
 		stringHandler = new StringExplanationHandler();
+		stringHandler.setIncludeBlockTime(false);
 		logger.addHandler(stringHandler);
 
 		topLevelExceptionWasCaught = false;
@@ -347,9 +367,9 @@ public class ExplanationLoggerTest {
 			topLevelExceptionWasCaught = true;
 			assertEquals("Oops", error.getMessage());
 			expected =
-					"* Going to solve the universe\n" + 
-					"** Thanks for all the fish\n" + 
-					"* Throwable thrown: java.lang.Error: Oops\n";
+					nesting.getNestingString(0) + "Going to solve the universe\n" + 
+					nesting.getNestingString(1) + "Thanks for all the fish\n" + 
+					nesting.getNestingString(0) + "Throwable thrown: java.lang.Error: Oops\n";
 			println("expected:\n" + expected);
 			println("actual  :\n" + stringHandler);
 			assertEquals(expected, stringHandler.toString());
@@ -367,8 +387,11 @@ public class ExplanationLoggerTest {
 		String expected;
 		boolean topLevelExceptionWasCaught;
 		
+		Nesting nesting = new Nesting("*", " ");
+		
 		logger = new DefaultExplanationLogger();
 		stringHandler = new StringExplanationHandler();
+		stringHandler.setIncludeBlockTime(false);
 		logger.addHandler(stringHandler);
 		
 		topLevelExceptionWasCaught = false;
@@ -391,11 +414,11 @@ public class ExplanationLoggerTest {
 			topLevelExceptionWasCaught = true;
 			assertEquals("Double oops!", error.getMessage());
 			expected =
-					"* Going to solve the universe\n" +
-					"** Going to solve the planet first\n" +
-					"*** Thanks for all the fish\n" + 
-					"** Throwable thrown: java.lang.Error: Oops\n" +
-					"* Throwable thrown: java.lang.Error: Double oops!\n";
+					nesting.getNestingString(0) + "Going to solve the universe\n" +
+					nesting.getNestingString(1) + "Going to solve the planet first\n" +
+					nesting.getNestingString(2) + "Thanks for all the fish\n" + 
+					nesting.getNestingString(1) + "Throwable thrown: java.lang.Error: Oops\n" +
+					nesting.getNestingString(0) + "Throwable thrown: java.lang.Error: Double oops!\n";
 			println("expected:\n" + expected);
 			println("actual  :\n" + stringHandler);
 			assertEquals(expected, stringHandler.toString());
@@ -413,8 +436,11 @@ public class ExplanationLoggerTest {
 		String expected;
 		boolean topLevelExceptionWasCaught;
 
+		Nesting nesting = new Nesting("*", " ");
+
 		logger = new DefaultExplanationLogger();
 		stringHandler = new StringExplanationHandler();
+		stringHandler.setIncludeBlockTime(false);
 		logger.addHandler(stringHandler);
 		
 		ThreadExplanationLogger.setThreadExplanationLogger(logger);
@@ -439,11 +465,11 @@ public class ExplanationLoggerTest {
 			topLevelExceptionWasCaught = true;
 			assertEquals("Double oops!", error.getMessage());
 			expected =
-					"* Going to solve the universe\n" +
-					"** Going to solve the planet first\n" +
-					"*** Thanks for all the fish\n" + 
-					"** Throwable thrown: java.lang.Error: Oops\n" +
-					"* Throwable thrown: java.lang.Error: Double oops!\n";
+					nesting.getNestingString(0) + "Going to solve the universe\n" +
+					nesting.getNestingString(1) + "Going to solve the planet first\n" +
+					nesting.getNestingString(2) + "Thanks for all the fish\n" + 
+					nesting.getNestingString(1) + "Throwable thrown: java.lang.Error: Oops\n" +
+					nesting.getNestingString(0) + "Throwable thrown: java.lang.Error: Double oops!\n";
 			println("expected:\n" + expected);
 			println("actual  :\n" + stringHandler);
 			assertEquals(expected, stringHandler.toString());
@@ -463,6 +489,8 @@ public class ExplanationLoggerTest {
 		StringExplanationHandler stringHandler;
 		String expected;
 		boolean topLevelExceptionWasCaught;
+
+		Nesting nesting = new Nesting("*", " ");
 
 		logger = new DefaultExplanationLogger();
 		stringHandler = new StringExplanationHandler();
@@ -491,11 +519,11 @@ public class ExplanationLoggerTest {
 			topLevelExceptionWasCaught = true;
 			assertEquals("Double oops!", error.getMessage());
 			expected =
-					"* Going to solve the universe\n" +
-					"** Going to solve the planet first\n" +
-					"*** Thanks for all the fish\n" + 
-					"** Throwable thrown: java.lang.Error: Oops\n" +
-					"* Throwable thrown: java.lang.Error: Double oops!\n";
+					nesting.getNestingString(0) + "Going to solve the universe\n" +
+					nesting.getNestingString(1) + "Going to solve the planet first\n" +
+					nesting.getNestingString(2) + "Thanks for all the fish\n" + 
+					nesting.getNestingString(1) + "Throwable thrown: java.lang.Error: Oops\n" +
+					nesting.getNestingString(0) + "Throwable thrown: java.lang.Error: Double oops!\n";
 			println("expected:\n" + expected);
 			String actual = readContentsOfFile(fileName);
 			println("actual  :\n" + actual);
