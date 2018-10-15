@@ -2,6 +2,9 @@ package com.sri.ai.util.graph2d.api.graph;
 
 import static com.sri.ai.util.graph2d.api.graph.ExternalGraphPlotter.externalGraphMaker;
 
+import com.sri.ai.util.graph2d.api.functions.Function;
+import com.sri.ai.util.graph2d.api.functions.SingleInputFunction;
+import java.util.List;
 import java.util.Map;
 
 import com.sri.ai.util.graph2d.api.functions.Functions;
@@ -11,6 +14,7 @@ import com.sri.ai.util.graph2d.api.variables.SetOfValues;
 import com.sri.ai.util.graph2d.api.variables.SetOfVariables;
 import com.sri.ai.util.graph2d.api.variables.Variable;
 import com.sri.ai.util.graph2d.core.DefaultGraphSetMaker;
+import java.util.stream.Collectors;
 
 /**
  * An interface for classes generating sets of {@link GraphSet}s from {@link Functions}.
@@ -52,18 +56,32 @@ public interface GraphSetMaker {
 		SetOfVariables nonAxisVariables = getFunctions().getAllInputVariables().minus(xAxisVariable);
 		return nonAxisVariables;
 	}
-	
+
+	default String buildTitle(Assignment assignmentToNonAxisVariables,
+														SingleInputFunctions singleInputFunctionsToBePlotted) {
+		List<? extends SingleInputFunction> singleInputFunctions
+				= singleInputFunctionsToBePlotted.getFunctions();
+
+		final String delimiter = singleInputFunctions.size() == 2 ? " & " : ", ";
+		String names = singleInputFunctions.stream().map(Function::getName).collect(
+				Collectors.joining(delimiter));
+
+		return names + " by " + singleInputFunctionsToBePlotted.getInputVariable().getName() + " for " +
+				assignmentToNonAxisVariables.toDisplayFormat();
+	}
+
 	default GraphPlot plot(Assignment assignmentToNonAxisVariables, Variable xAxisVariable) {
-		
-		SingleInputFunctions singleInputFunctionsToBePlotted = getFunctions().project(xAxisVariable, assignmentToNonAxisVariables);
-		String title = assignmentToNonAxisVariables.toString();
+		SingleInputFunctions singleInputFunctionsToBePlotted
+				= getFunctions().project(xAxisVariable, assignmentToNonAxisVariables);
+
+		String title = buildTitle(assignmentToNonAxisVariables, singleInputFunctionsToBePlotted);
 		return plot(title, singleInputFunctionsToBePlotted);
 		
 	}
 	
 	default GraphPlot plot(String title, SingleInputFunctions singleInputFunctionsToBePlotted) {
 		// This needs to be improved with more settings, such as units etc.
-		ExternalGraphPlotter graphMaker = externalGraphMaker();
+		ExternalGraphPlotter graphMaker = externalGraphMaker(this::valuesForVariable);
 		graphMaker.setTitle(title);
 		graphMaker.setFunctions(singleInputFunctionsToBePlotted);
 		graphMaker.setFromVariableToSetOfValues(getFromVariableToSetOfValues());

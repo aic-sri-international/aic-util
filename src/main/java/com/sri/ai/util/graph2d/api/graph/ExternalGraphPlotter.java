@@ -5,6 +5,7 @@ import java.util.Map;
 import com.sri.ai.util.graph2d.api.functions.SingleInputFunctions;
 import com.sri.ai.util.graph2d.api.variables.SetOfValues;
 import com.sri.ai.util.graph2d.api.variables.Variable;
+import java.util.function.Function;
 
 /** 
  * Interface for external libraries making images of graph plots.
@@ -16,9 +17,10 @@ import com.sri.ai.util.graph2d.api.variables.Variable;
  */
 public interface ExternalGraphPlotter {
 
-	static ExternalGraphPlotter externalGraphMaker() {
-		ExternalGraphPlotter externalGraphPlotter = new DefaultLineGraphPlotter();
-		return externalGraphPlotter;
+	static ExternalGraphPlotter externalGraphMaker(Function<Variable, SetOfValues> setOfValuesForVariable) {
+    AbstractExternalGraphPlotter abstractExternalGraphPlotter = new DefaultLineGraphPlotter();
+    abstractExternalGraphPlotter.setSetOfValuesForVariable(setOfValuesForVariable);
+		return abstractExternalGraphPlotter;
 	}
 	
 	/** The functions to be plotted. They must be single-input because the graphs are 2D. */
