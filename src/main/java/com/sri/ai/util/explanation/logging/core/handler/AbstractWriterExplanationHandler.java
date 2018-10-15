@@ -91,6 +91,14 @@ public abstract class AbstractWriterExplanationHandler implements ExplanationHan
 			throw new Error(e);
 		}
 	}
+	
+	public Nesting getNesting() {
+		return nesting;
+	}
+	
+	public void setNesting(Nesting nesting) {
+		this.nesting = nesting;
+	}
 
 	public String getNestingBlock() {
 		return nesting.getNestingBlock();
