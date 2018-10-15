@@ -25,19 +25,19 @@ public class Nesting {
 		return builder.toString();
 	}
 	
-	public String getNestingStringBlock() {
+	public String getNestingBlock() {
 		return nestingStringBlock;
 	}
 
-	public String getNestingStringPostfix() {
+	public String getNestingPostfix() {
 		return nestingStringPostfix;
 	}
 
-	public Nesting setNestingStringBlock(String newNestingString) {
+	public Nesting setNestingBlock(String newNestingString) {
 		return new Nesting(newNestingString, nestingStringPostfix);
 	}
 	
-	public Nesting setNestingStringPostfix(String newNestingStringPostfix) {
+	public Nesting setNestingPostfix(String newNestingStringPostfix) {
 		return new Nesting(nestingStringBlock, newNestingStringPostfix);
 	}
 }

@@ -7,7 +7,7 @@ public class SquirrelFileExplanationHandler extends FileExplanationHandler {
 	public SquirrelFileExplanationHandler(String filename) throws IOException {
 		super(filename);
 		setNestingStringBlock("*");
-		setNestingStringPostfix(" ");
+		setNestingPostfix(" ");
 	}
 
 	@Override

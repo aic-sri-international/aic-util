@@ -11,7 +11,7 @@ public class TabNestedFileExplanationHandler extends FileExplanationHandler {
 	public TabNestedFileExplanationHandler(String filename) throws IOException {
 		super(filename);
 		this.setNestingStringBlock("\t");
-		this.setNestingStringPostfix("");
+		this.setNestingPostfix("");
 	}
 
 	@Override
