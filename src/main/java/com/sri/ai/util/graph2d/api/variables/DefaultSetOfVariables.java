@@ -44,4 +44,10 @@ public class DefaultSetOfVariables implements SetOfVariables {
     return defaultSetOfVariables;
   }
 
+  @Override
+  public String toString() {
+    return "DefaultSetOfVariables{" +
+        "variables=" + variables +
+        '}';
+  }
 }

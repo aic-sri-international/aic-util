@@ -71,4 +71,23 @@ public class DefaultAssignment implements Assignment {
   private void addVariable(List<? extends Variable> variables , Variable variable) {
     ((List<Variable>) variables).add(variable);
   }
+
+  @Override
+  public String toDisplayFormat() {
+    StringBuilder sb = new StringBuilder();
+    variableToValue.forEach((variable,value)-> {
+      if (sb.length() > 0) {
+        sb.append(", ");
+      }
+      sb.append(variable.getName()).append('=').append(value.stringValue());
+    });
+    return sb.toString();
+  }
+
+  @Override
+  public String toString() {
+    return "DefaultAssignment{" +
+        "variableToValue=" + variableToValue +
+        '}';
+  }
 }

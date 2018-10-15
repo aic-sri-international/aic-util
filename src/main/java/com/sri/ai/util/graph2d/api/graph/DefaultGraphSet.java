@@ -32,4 +32,10 @@ public class DefaultGraphSet implements GraphSet {
     ((List<GraphPlot>) graphPlots).add(plot);
   }
 
+  @Override
+  public String toString() {
+    return "DefaultGraphSet{" +
+        "graphPlots=" + graphPlots +
+        '}';
+  }
 }

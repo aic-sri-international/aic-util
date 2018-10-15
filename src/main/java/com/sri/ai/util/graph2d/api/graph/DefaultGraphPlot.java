@@ -5,14 +5,21 @@ import java.io.File;
 public class DefaultGraphPlot implements GraphPlot {
   private File imageFile;
 
-
   @Override
   public File getImageFile() {
     return imageFile;
   }
 
   @Override
-  public void setImageFile(File imageFile) {
+  public DefaultGraphPlot setImageFile(File imageFile) {
     this.imageFile = imageFile;
+    return this;
+  }
+
+  @Override
+  public String toString() {
+    return "DefaultGraphPlot{" +
+        "imageFile=" + imageFile +
+        '}';
   }
 }

@@ -14,6 +14,8 @@ import java.io.File;
  *
  */
 public interface GraphPlot {
+
   File getImageFile();
-  void setImageFile(File imageFile);
+
+  DefaultGraphPlot setImageFile(File imageFile);
 }
