@@ -1,5 +1,6 @@
 package com.sri.ai.util.explanation.logging.helper;
 
+import com.sri.ai.util.explanation.logging.api.ExplanationConfiguration;
 import com.sri.ai.util.explanation.logging.api.ExplanationLogger;
 import com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger;
 import com.sri.ai.util.explanation.logging.core.handler.FileExplanationHandler;
@@ -23,6 +24,10 @@ public class ExplanationLoggerForFileForThisThread extends ExplanationLoggerToFi
 		ThreadExplanationLogger.setThreadExplanationLogger(this);
 	}
 	
+	public ExplanationLoggerForFileForThisThread(String fileName) {
+		this(ExplanationConfiguration.DEFAULT_FILE_EXPLANATION_HANDLER_CLASS, fileName);
+	}
+
 	@Override
 	public void close() {
 		ThreadExplanationLogger.setThreadExplanationLogger(oldThreadExplanationLogger);

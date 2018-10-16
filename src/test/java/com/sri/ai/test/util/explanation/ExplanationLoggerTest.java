@@ -22,14 +22,16 @@ import com.sri.ai.util.explanation.logging.core.handler.StringExplanationHandler
 
 public class ExplanationLoggerTest {
 	
+	private boolean oldActive;
+	
 	@Before
 	public void setUp() {
-		ExplanationConfiguration.WHETHER_EXPLANATION_LOGGERS_ARE_ACTIVE_BY_DEFAULT = true;
+		oldActive = ExplanationConfiguration.setWhetherExplanationLoggersAreActiveByDefaultAndReturnOldValue(true);
 	}
 	
 	@After
 	public void shutDown() {
-		ExplanationConfiguration.WHETHER_EXPLANATION_LOGGERS_ARE_ACTIVE_BY_DEFAULT = false;
+		ExplanationConfiguration.setWhetherExplanationLoggersAreActiveByDefaultAndReturnOldValue(oldActive);
 	}
 	
 	@Test
