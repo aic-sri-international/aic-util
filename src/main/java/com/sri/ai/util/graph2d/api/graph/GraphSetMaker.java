@@ -2,19 +2,19 @@ package com.sri.ai.util.graph2d.api.graph;
 
 import static com.sri.ai.util.graph2d.api.graph.ExternalGraphPlotter.externalGraphMaker;
 
-import com.sri.ai.util.graph2d.api.functions.Function;
-import com.sri.ai.util.graph2d.api.functions.SingleInputFunction;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import com.sri.ai.util.graph2d.api.functions.Function;
 import com.sri.ai.util.graph2d.api.functions.Functions;
+import com.sri.ai.util.graph2d.api.functions.SingleInputFunction;
 import com.sri.ai.util.graph2d.api.functions.SingleInputFunctions;
 import com.sri.ai.util.graph2d.api.variables.Assignment;
 import com.sri.ai.util.graph2d.api.variables.SetOfValues;
 import com.sri.ai.util.graph2d.api.variables.SetOfVariables;
 import com.sri.ai.util.graph2d.api.variables.Variable;
 import com.sri.ai.util.graph2d.core.DefaultGraphSetMaker;
-import java.util.stream.Collectors;
 
 /**
  * An interface for classes generating sets of {@link GraphSet}s from {@link Functions}.
@@ -24,13 +24,13 @@ import java.util.stream.Collectors;
  */
 public interface GraphSetMaker {
 	
-	Functions getFunctions();
-	void setFunctions(Functions functions);
-
 	static GraphSetMaker graphSetMaker() {
 		return new DefaultGraphSetMaker();
 	}
 	
+	Functions getFunctions();
+	void setFunctions(Functions functions);
+
 	Map<Variable, SetOfValues> getFromVariableToSetOfValues();
 	void setFromVariableToSetOfValues(Map<Variable, SetOfValues> fromVariableToSetOfValues);
 
