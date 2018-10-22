@@ -16,6 +16,7 @@ public abstract class AbstractWriterExplanationHandler implements ExplanationHan
 	private Nesting nesting;
 	private boolean includeTimestamp;
 	private boolean includeBlockTime;
+	private boolean includeRecordId;
 	
 	public AbstractWriterExplanationHandler(NullaryFunction<Writer> writerMaker) {
 		this.writerMaker = writerMaker;
@@ -23,6 +24,7 @@ public abstract class AbstractWriterExplanationHandler implements ExplanationHan
 		this.nesting = new Nesting(ExplanationConfiguration.DEFAULT_NESTING_BLOCK, ExplanationConfiguration.DEFAULT_NESTING_POSTFIX);
 		this.includeTimestamp = ExplanationConfiguration.DEFAULT_INCLUDE_TIMESTAMP;
 		this.includeBlockTime = ExplanationConfiguration.DEFAULT_INCLUDE_BLOCK_TIME;
+		this.includeRecordId = ExplanationConfiguration.DEFAULT_INCLUDE_RECORD_ID;
 	}
 	
 	public AbstractWriterExplanationHandler(Writer writer) {
@@ -44,6 +46,7 @@ public abstract class AbstractWriterExplanationHandler implements ExplanationHan
 		makeSureWriterIsMade();
 		StringBuilder builder = new StringBuilder();
 		addNesting(builder, record);
+		addRecordIdIfNeeded(builder, record);
 		addObjects(builder, record);
 		addTimestampIfNeeded(builder, record);
 		addBlockTimeIfNeeded(builder, record);
@@ -81,6 +84,12 @@ public abstract class AbstractWriterExplanationHandler implements ExplanationHan
 	private void addBlockTimeIfNeeded(StringBuilder builder, ExplanationRecord record) {
 		if (getIncludeBlockTime() && record.getBlockTime() != -1) {
 			builder.append(" (" + record.getBlockTime() + " ms)");
+		}
+	}
+
+	private void addRecordIdIfNeeded(StringBuilder builder, ExplanationRecord record) {
+		if (getIncludeRecordId() && record.getRecordId() != -1) {
+			builder.append("Id: " + record.getRecordId() + " ");
 		}
 	}
 
@@ -153,4 +162,11 @@ public abstract class AbstractWriterExplanationHandler implements ExplanationHan
 		this.includeBlockTime = includeBlockTime;
 	}
 
+	public boolean getIncludeRecordId() {
+		return includeRecordId;
+	}
+
+	public void setIncludeRecordId(boolean includeRecordId) {
+		this.includeRecordId = includeRecordId;
+	}
 }

@@ -12,6 +12,7 @@ public class DefaultExplanationRecord implements ExplanationRecord {
 	final long timestamp;                   // time the record was created to the closest millisecond
 	final Object[] objects;					// objects that were recorded from the explanation
 	final long blockTime;                   // -1 if this is not from an block end record, otherwise the difference in time between this record's timestamp and its block start timestamp
+	final long recordId;                    // a global record id based on order of construction
 	
 	public DefaultExplanationRecord(Number importance, Number adjustedImportance, int nestingDepth, long timestamp, Object[] objects, long blockTime) {
 		this.importance = importance;
@@ -20,6 +21,7 @@ public class DefaultExplanationRecord implements ExplanationRecord {
 		this.timestamp = timestamp;
 		this.objects = objects;
 		this.blockTime = blockTime;
+		this.recordId = ExplanationRecord.counter.value++;
 	}
 	
 	public DefaultExplanationRecord(Number importance, Number adjustedImportance, int nestingDepth, long timestamp, Object[] objects) {
@@ -54,6 +56,11 @@ public class DefaultExplanationRecord implements ExplanationRecord {
 	@Override
 	public long getBlockTime() {
 		return blockTime;
+	}
+
+	@Override
+	public long getRecordId() {
+		return recordId;
 	}
 
 }

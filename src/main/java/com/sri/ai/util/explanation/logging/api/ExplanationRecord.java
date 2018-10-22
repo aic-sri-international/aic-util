@@ -1,17 +1,23 @@
 package com.sri.ai.util.explanation.logging.api;
 
+import com.sri.ai.util.base.Wrapper;
+
 public interface ExplanationRecord {
 	
-	public Number getImportance();
+	Number getImportance();
 	
-	public Number getAdjustedImportance();
+	Number getAdjustedImportance();
 
-	public int getNestingDepth();
+	int getNestingDepth();
 
-	public long getTimestamp();
+	long getTimestamp();
 
-	public Object[] getObjects();
+	Object[] getObjects();
 
-	public long getBlockTime();
+	long getBlockTime();
+	
+	long getRecordId();
+	
+	static Wrapper<Long> counter = new Wrapper<>(0L);
 
 }

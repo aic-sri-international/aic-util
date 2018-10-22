@@ -48,6 +48,13 @@ public class ExplanationConfiguration {
 	public static final boolean DEFAULT_INCLUDE_BLOCK_TIME = Configuration.getBoolean("explanation.include.block.time", true);
 
 	/**
+	 * Whether record ids are included in their description;
+	 * comes from property <code>explanation.include.record.id</code> or is <code>false</code> by default;
+	 * 
+	 */
+	public static final boolean DEFAULT_INCLUDE_RECORD_ID = Configuration.getBoolean("explanation.include.record.id", false);
+
+	/**
 	 * The default class for file explanation handlers;
 	 * comes from property <code>explanation.file.explanation.handler</code> or is <code>TabNestedFileExplanationHandler.class</code> by default;
 	 * 
