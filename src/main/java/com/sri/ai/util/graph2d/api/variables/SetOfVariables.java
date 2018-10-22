@@ -1,6 +1,7 @@
 package com.sri.ai.util.graph2d.api.variables;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -9,9 +10,14 @@ import java.util.List;
  * We recommend implementations to be based on collections that are order-preserving (such as {@link LinkedHashSet}).
  *
  */
-public interface SetOfVariables {
+public interface SetOfVariables extends Iterable<Variable> {
 	
 	List<? extends Variable> getVariables();
+	
+	@SuppressWarnings("unchecked")
+	default Iterator<Variable> iterator() {
+		return (Iterator<Variable>) getVariables().iterator();
+	}
 	
 	Variable getFirst();
 

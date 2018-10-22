@@ -1,5 +1,9 @@
 package com.sri.ai.util.graph2d.api.graph;
 
+import java.io.File;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import com.sri.ai.util.graph2d.api.functions.SingleInputFunction;
 import com.sri.ai.util.graph2d.api.variables.Assignment;
 import com.sri.ai.util.graph2d.api.variables.SetOfValues;
@@ -7,10 +11,6 @@ import com.sri.ai.util.graph2d.api.variables.Value;
 import com.sri.ai.util.graph2d.api.variables.Variable;
 import com.sri.ai.util.graph2d.jfreechart.LineChartFactory;
 import com.sri.ai.util.graph2d.jfreechart.LineChartFactory.SeriesEntry;
-import java.io.File;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class DefaultLineGraphPlotter extends AbstractExternalGraphPlotter {
 
@@ -32,9 +32,7 @@ public class DefaultLineGraphPlotter extends AbstractExternalGraphPlotter {
 
       int x = 0;
 
-      Iterator<Value> xIter = setOfValuesForX.iterator();
-      while (xIter.hasNext()) {
-        Value xValue = xIter.next();
+      for (Value xValue : setOfValuesForX) {
         Assignment assignment = yFunction.makeAssignmentToInputVariable(xValue);
         Value yValue = yFunction.evaluate(assignment);
         coordinates[x][0] = xValue.doubleValue();
