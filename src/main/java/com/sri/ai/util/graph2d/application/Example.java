@@ -59,7 +59,7 @@ public class Example {
 		Functions functions = functions(incomeFunction, expenseFunction);
 
 		GraphSetMaker graphSetMaker = graphSetMaker();
-		
+
 		graphSetMaker.setFunctions(functions);
 		graphSetMaker.setFromVariableToSetOfValues(
 				map(

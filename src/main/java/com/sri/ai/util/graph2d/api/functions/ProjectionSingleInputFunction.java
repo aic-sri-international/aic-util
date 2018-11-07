@@ -62,7 +62,9 @@ public class ProjectionSingleInputFunction implements SingleInputFunction {
 
 	@Override
 	public String getName() {
-		return "Projection of " + base + " on " + assignmentToRemainingVariables;
+		//@TODO Rodrigo - I'm currently using the base name, did you want to keep the following for the name value ?
+//		return "Projection of " + base + " on " + assignmentToRemainingVariables;
+		return base.getName();
 	}
 
 	////////////////////// REMAINING METHODS ARE NOT SUPPORTED

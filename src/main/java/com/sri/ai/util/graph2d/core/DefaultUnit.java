@@ -22,4 +22,11 @@ public class DefaultUnit implements Unit {
 		return symbol;
 	}
 
+	@Override
+	public String toString() {
+		return "DefaultUnit{" +
+				"name='" + name + '\'' +
+				", symbol='" + symbol + '\'' +
+				'}';
+	}
 }

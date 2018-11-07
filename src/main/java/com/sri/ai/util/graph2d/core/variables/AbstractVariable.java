@@ -37,4 +37,12 @@ public abstract class AbstractVariable implements Variable {
 		return setOfValuesOrNull;
 	}
 
+	@Override
+	public String toString() {
+		return "AbstractVariable{" +
+				"name='" + name + '\'' +
+				", unit=" + unit +
+				", setOfValuesOrNull=" + setOfValuesOrNull +
+				'}';
+	}
 }

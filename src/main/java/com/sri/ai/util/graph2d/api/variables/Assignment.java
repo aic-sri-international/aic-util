@@ -4,9 +4,8 @@ import java.util.ArrayList;
 
 public interface Assignment {
 
-	public static Assignment assignment(SetOfVariables variables, ArrayList<? extends Value> values) {
-		// TODO implement default implementation class and create instance here
-		return null;
+	static Assignment assignment(SetOfVariables variables, ArrayList<? extends Value> values) {
+		return new DefaultAssignment(variables, values);
 	}
 	
 	SetOfVariables getSetOfVariables();
@@ -19,5 +18,12 @@ public interface Assignment {
 	 * Throws an error if variable already has an assigned value in this assignment.
 	 */
 	Assignment extend(Variable variable, Value value);
+
+  /**
+   * Returns a text string that contains each variable name and its associated string value
+   * formatted so that it is suitable to be used as part of the graph's title.
+   * @return formatted text
+   */
+	String toDisplayFormat();
 	
 }

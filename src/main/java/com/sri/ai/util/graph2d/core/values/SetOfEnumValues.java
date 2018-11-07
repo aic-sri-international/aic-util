@@ -9,11 +9,12 @@ import com.sri.ai.util.graph2d.api.variables.Value;
 public class SetOfEnumValues extends DefaultSetOfValues {
 	
 	public SetOfEnumValues(String... values) {
-		super(mapIntoList(Arrays.asList(values), v -> Value.value(v)));
+		super(mapIntoList(Arrays.asList(values), Value::value));
 	}
 
 	public static SetOfEnumValues setOfEnumValues(String... values) {
-		return new SetOfEnumValues(values);
+		SetOfEnumValues setOfEnumValues = new SetOfEnumValues(values);
+		return setOfEnumValues;
 	}
 
 }

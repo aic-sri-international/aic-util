@@ -38,78 +38,80 @@
 package com.sri.ai.util.collect;
 
 import com.google.common.annotations.Beta;
+import java.math.BigDecimal;
 import org.apache.commons.lang3.Validate;
 
 /**
- * An iterator over a given integer interval
+ * An iterator over a given BigDecimal interval
  * {@code [start, end[} (that is, with inclusive start and exclusive end)
  * with a specified increment over the interval.
  * 
- * @author braz
- * 
  */
 @Beta
-public class IntegerIterator extends EZIterator<Integer> {
-
-	private int i;
+public class BigDecimalIterator extends EZIterator<BigDecimal> {
+  private static final BigDecimal DEFAULT_INCREMENT = BigDecimal.ONE;
+	private BigDecimal end;
+	private BigDecimal increment = DEFAULT_INCREMENT;
 	private boolean infinite;
-	private int end;
-	private int increment;
 
 	/**
-	 * Constructor.
-	 * 
+	 * 		this.end = end;
+
+	 *
 	 * @param start
-	 *            the starting integer, inclusive.
+	 *            the starting BigDecimal, inclusive.
 	 * @param end
-	 *            the ending integer in the range, exclusive.
+	 *            the ending BigDecimal in the range, exclusive.
 	 * @param increment
 	 *            the amount to increment on each iteration.
 	 */
-	public IntegerIterator(int start, int end, int increment) {
-		this.i = start;
-		this.end = end;
-		this.infinite = false;
-		this.increment = increment;
+	public BigDecimalIterator(BigDecimal start, BigDecimal end, BigDecimal increment) {
+		this.next = Validate.notNull(start, "start value cannot be null");
+		this.onNext = true;
+		this.end = Validate.notNull(end, "end value cannot be null");
+		this.increment = Validate.notNull(increment, "increment value cannot be null");
 
-    Validate.isTrue(increment > 0, "Increment=%d must be greater than zero", increment);
-    Validate.isTrue(start < end, "start=%d must be less than end=%d", start, end);
+	  Validate.isTrue(increment.compareTo(BigDecimal.ZERO) > 0,
+        "increment value must be greater than zero");
+
+		if (start.compareTo(end) >= 0) {
+			throw new IllegalArgumentException(String.format("start=%s must be less than end=%s", start, end));
+		}
+	}
+
+  /**
+   * Constructor with a default increment of 1.
+   *
+   * @param start the starting BigDecimal, inclusive.
+   * @param end the ending BigDecimal in the range, exclusive
+   */
+  public BigDecimalIterator(BigDecimal start, BigDecimal end) {
+		this(start, end, DEFAULT_INCREMENT);
 	}
 
 	/**
-	 * Constructor with a default increment of 1.
-	 * 
-	 * @param start
-	 *            the starting integer, inclusive.
-	 * @param end
-	 *            the ending integer in the range, exclusive.
-	 */
-	public IntegerIterator(int start, int end) {
-		this(start, end, 1);
-	}
-
-	/**
-	 * Constructor starting at a given integer and incrementing indefinitely.
-	 * 
+	 * Constructor starting at a given BigDecimal and incrementing indefinitely with a value of 1.
+	 *
 	 * @param start the initial value (there is no end value)
 	 */
-	private IntegerIterator(int start) {
-		this.i = start;
-    this.increment = 1;
-		this.infinite = true;
-	}
-	
-	public static IntegerIterator fromThisValueOnForever(int start) {
-		return new IntegerIterator(start);
+  private BigDecimalIterator(BigDecimal start) {
+    this.next = Validate.notNull(start, "start value cannot be null");
+    this.onNext = true;
+    this.infinite = true;
+  }
+
+	public static BigDecimalIterator fromThisValueOnForever(BigDecimal start) {
+		return new BigDecimalIterator(start);
 	}
 
 	@Override
-	protected Integer calculateNext() {
-		if (infinite || i < end) {
-			int next = i;
-			i += increment;
-			return next;
-		}
-		return null;
+	protected BigDecimal calculateNext() {
+    next = next.add(increment);
+
+		if (!infinite && next.compareTo(end) >= 0) {
+      next = null;
+    }
+
+		return next;
 	}
 }
