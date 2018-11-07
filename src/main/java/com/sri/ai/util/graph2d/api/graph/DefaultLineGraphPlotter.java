@@ -26,7 +26,7 @@ public class DefaultLineGraphPlotter extends AbstractExternalGraphPlotter {
 
     for (SingleInputFunction yFunction : singleInputFunctionsToBePlotted.getFunctions()) {
       Number[][] coordinates = new Number[getEntryCount(setOfValuesForX)][2];
-      nameToCoordinates.put(yFunction.getName(), coordinates);
+      nameToCoordinates.put(yFunction.getOutputVariable().getName(), coordinates);
 
       yOutputVariable = yFunction.getOutputVariable();
 

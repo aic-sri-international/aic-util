@@ -63,8 +63,9 @@ public interface GraphSetMaker {
 				= singleInputFunctionsToBePlotted.getFunctions();
 
 		final String delimiter = singleInputFunctions.size() == 2 ? " & " : ", ";
-		String names = singleInputFunctions.stream().map(Function::getName).collect(
-				Collectors.joining(delimiter));
+		String names = singleInputFunctions.stream()
+				.map(f -> f.getOutputVariable().getName())
+				.collect(Collectors.joining(delimiter));
 
 		return names + " by " + singleInputFunctionsToBePlotted.getInputVariable().getName() + " for " +
 				assignmentToNonAxisVariables.toDisplayFormat();
