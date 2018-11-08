@@ -41,7 +41,7 @@ public class DefaultLineGraphPlotter extends AbstractExternalGraphPlotter {
       }
     }
 
-    final File imageFile = new File(getTitle() + ".png");
+
     final LineChartFactory lineChartFactory = new LineChartFactory()
         .setTitle(getTitle())
         .setxAxisLabel(formatVariable(xVariable, true))
@@ -51,6 +51,7 @@ public class DefaultLineGraphPlotter extends AbstractExternalGraphPlotter {
       lineChartFactory.addSeries(new SeriesEntry().setKey(name).setDataPoints(coordinates));
     });
 
+    File imageFile = createFileForImage();
     lineChartFactory.generate(imageFile);
 
     DefaultGraphPlot defaultGraphPlot = new DefaultGraphPlot().setImageFile(imageFile);

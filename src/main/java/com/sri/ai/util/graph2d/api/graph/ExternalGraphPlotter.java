@@ -1,5 +1,7 @@
 package com.sri.ai.util.graph2d.api.graph;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
 import com.sri.ai.util.graph2d.api.functions.SingleInputFunctions;
@@ -36,5 +38,15 @@ public interface ExternalGraphPlotter {
 	void setFromVariableToSetOfValues(Map<Variable, SetOfValues> fromVariableToSetOfValues);
 	
 	GraphPlot plot();
+
+	default File createFileForImage() {
+		File imageFile;
+		try {
+			imageFile = File.createTempFile("graph2d-", ".png");
+		} catch (IOException e) {
+			throw new RuntimeException("Cannot create tmpfile for Image", e);
+		}
+		return imageFile;
+	}
 
 }
