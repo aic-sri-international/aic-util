@@ -232,7 +232,7 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 		myAssert(!startRecords.isEmpty(), () -> "Trying to pop an explanation level but we are at the top level already.");
 		ExplanationRecord lastStartRecord = startRecords.pop();
 		return lastStartRecord;
-	}
+	}
 	
 	private Number getLastStartImportance() {
 		ExplanationRecord lastStart = startRecords.peek();
