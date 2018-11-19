@@ -10,7 +10,7 @@ final class Utils {
    * Get a table name from a file.
    *
    * @param filePath file path
-   * @return the table name represenation of the filename
+   * @return the table name representation of the filename
    */
   public static String toTableName(Path filePath) {
     String filename = filePath.getFileName().toString();
