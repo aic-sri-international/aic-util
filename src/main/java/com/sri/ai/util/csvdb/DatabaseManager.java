@@ -27,14 +27,13 @@ public class DatabaseManager {
    *
    * <p>Subdirectories will not be traversed.
    *
-   * <p>All .csv files contained within the directory will be parsed and loadeded into the database.
+   * <p>All .csv files contained within the directory will be parsed and loaded into the database.
    * The name of the csv file (without the .csv extension) is used as the table name.
    *
    * <p>Call {@link #getDatabase}, then {@link Database#getTable(String)}, then {@link
    * Table#search(Map, int)} to search for values in the database.
    *
    * <p>Calling {@link #startDirectoryWatchService()} to update the database on filesystem changes.
-   * <></>
    *
    * @param relativePathToCsvDir the relative path that contains (or will contain) CSV files
    */
