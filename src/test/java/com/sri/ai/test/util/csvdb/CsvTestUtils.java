@@ -109,12 +109,12 @@ public final class CsvTestUtils {
   }
 
   @BeforeClass
-  static void initialize() {
+  public static void initialize() {
     removeCsvTmpDirIfExists();
   }
 
   @AfterClass
-  static void cleanup() {
+  public static void cleanup() {
     removeCsvTmpDirIfExists();
   }
 
