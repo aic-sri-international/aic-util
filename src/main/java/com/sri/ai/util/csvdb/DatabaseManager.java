@@ -108,7 +108,7 @@ public class DatabaseManager {
       try {
         csvFilePaths = csvDirScanner.findCsvFiles();
       } catch (Exception e) {
-        LOG.error("Error when trying to scan for the CSV directory after an OVERFLOW event", e);
+        LOG.error("Error when trying to scan the CSV directory after an OVERFLOW event", e);
       }
 
       if (csvFilePaths != null) {
