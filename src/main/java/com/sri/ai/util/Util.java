@@ -2083,7 +2083,7 @@ public class Util {
 		while (numbersIt.hasNext()) {
 			Rational number = (Rational) numbersIt.next();
 			product = product.multiply(number);
-			if (product.equals(0)) {
+			if (product.equals(Rational.ZERO)) {
 				break;
 			}
 		}
@@ -2600,7 +2600,7 @@ public class Util {
 	 *            the type of the collections elements.
 	 */
 
-	public static <E> List<E> union(Collection<E> c1, Collection<E> c2) {
+	public static <E> List<E> addAllElementsOfCollectionsToList(Collection<E> c1, Collection<E> c2) {
 		List<E> result = new LinkedList<E>();
 		result.addAll(c1);
 		result.addAll(c2);
@@ -2619,11 +2619,47 @@ public class Util {
 	 *            the type of the collections elements.
 	 */
 
-	public static <E> ArrayList<E> unionArrayList(Collection<E> c1, Collection<E> c2) {
+	public static <E> ArrayList<E> addAllElementsOfCollectionsToArrayList(Collection<E> c1, Collection<E> c2) {
 		ArrayList<E> result = new ArrayList<E>();
 		result.addAll(c1);
 		result.addAll(c2);
 		return result;
+	}
+	
+	/**
+	 * Collects all elements in the iterables in a sequence (iterator's range) to a set (eliminating duplicates)
+	 * and returns an array list with them.
+	 * @param iterator
+	 * @return
+	 */
+	public static <E> ArrayList<E> unionArrayList(Iterator<Iterable<? extends E>> iterator) {
+		Set<E> set = union(iterator);
+		ArrayList<E> arrayList = new ArrayList<>(set);
+		return arrayList;
+	}
+	
+	/**
+	 * Returns a fresh LinkedHashSet with all elements from iterables in an iterator's range.
+	 * @param iteratorOfIterables
+	 * @return
+	 */
+	public static <E> LinkedHashSet<E> union(Iterator<Iterable<? extends E>> iteratorOfIterables) {
+		LinkedHashSet<E> result = new LinkedHashSet<>();
+		for (Iterable<? extends E> iterable : in(iteratorOfIterables)) {
+			addAll(result, iterable);
+		}
+		return result;
+	}
+	
+	/**
+	 * Adds all elements in a given iterable to a given collection (generalizes {@link Collection#addAll(Collection)} to {@link Iterable}.
+	 * @param collection
+	 * @param iterable
+	 */
+	public static <E> void addAll(Collection<? super E> collection, Iterable<? extends E> iterable) {
+		for (E e : iterable) {
+			collection.add(e);
+		}
 	}
 
 	/**
@@ -4902,14 +4938,14 @@ public class Util {
 	}
 
 	/**
-	 * Same as {@link #union(Iterator)} applied to given collection's iterator.
+	 * Same as {@link #unionOfMaps(Iterator)} applied to given collection's iterator.
 	 * @param maps the collection of maps
 	 * @param <K> the type of keys
 	 * @param <V> the type of values
 	 * @return a new map with all entries from all maps in a collection
 	 */
-	public static <K,V> Map<K,V> union(Collection<Map<K,V>> maps) {
-		return union(maps.iterator());
+	public static <K,V> Map<K,V> unionOfMaps(Collection<Map<K,V>> maps) {
+		return unionOfMaps(maps.iterator());
 	}
 
 	/**
@@ -4919,7 +4955,7 @@ public class Util {
 	 * @param <V> the type of values
 	 * @return a new map with all entries from all maps in an iterator's range
 	 */
-	public static <K,V> Map<K,V> union(Iterator<Map<K,V>> mapsIterator) {
+	public static <K,V> Map<K,V> unionOfMaps(Iterator<Map<K,V>> mapsIterator) {
 		return putAllFromAll(new LinkedHashMap<K,V>(), mapsIterator);
 	}
 
