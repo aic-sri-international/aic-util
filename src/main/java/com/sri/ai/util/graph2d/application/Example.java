@@ -15,6 +15,7 @@ import static com.sri.ai.util.graph2d.core.values.SetOfIntegerValues.setOfIntege
 
 import com.sri.ai.util.graph2d.api.functions.Function;
 import com.sri.ai.util.graph2d.api.functions.Functions;
+import com.sri.ai.util.graph2d.api.graph.GraphPlot;
 import com.sri.ai.util.graph2d.api.graph.GraphSet;
 import com.sri.ai.util.graph2d.api.graph.GraphSetMaker;
 import com.sri.ai.util.graph2d.api.variables.Unit;
@@ -59,7 +60,7 @@ public class Example {
 		Functions functions = functions(incomeFunction, expenseFunction);
 
 		GraphSetMaker graphSetMaker = graphSetMaker();
-		
+
 		graphSetMaker.setFunctions(functions);
 		graphSetMaker.setFromVariableToSetOfValues(
 				map(
@@ -72,5 +73,12 @@ public class Example {
 		GraphSet graphSet = graphSetMaker.make(age);
 		
 		println(graphSet);
+
+		// cleanup by removing graph files
+		for (GraphPlot graphPlot : graphSet.getGraphPlots()) {
+			if (graphPlot.getImageFile().delete()) {
+				println("Deleted: " + graphPlot.getImageFile().getName());
+			}
+		}
 	}
 }

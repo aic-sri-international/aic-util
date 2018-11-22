@@ -1,6 +1,7 @@
 package com.sri.ai.util.graph2d.api.variables;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -9,27 +10,30 @@ import java.util.List;
  * We recommend implementations to be based on collections that are order-preserving (such as {@link LinkedHashSet}).
  *
  */
-public interface SetOfVariables {
+public interface SetOfVariables extends Iterable<Variable> {
 	
 	List<? extends Variable> getVariables();
+	
+	@SuppressWarnings("unchecked")
+	default Iterator<Variable> iterator() {
+		return (Iterator<Variable>) getVariables().iterator();
+	}
 	
 	Variable getFirst();
 
 	/** Returns the result of removing a given variable from the set of variables */
 	SetOfVariables minus(Variable variable); // implement with Util.removeNonDestructively(Set<E>, E) since this object should be immutable
 	
-	public static SetOfVariables setOfVariables(List<? extends Variable> variables) {
-		// TODO implement default implementation class and create instance here
-		return null;
+	static SetOfVariables setOfVariables(List<? extends Variable> variables) {
+		return new DefaultSetOfVariables(variables);
 	}
 
-	public static SetOfVariables setOfVariables(Variable... variables) {
+	static SetOfVariables setOfVariables(Variable... variables) {
 		return setOfVariables(Arrays.asList(variables));
 	}
 
-	public static SetOfVariables singletonSet(Variable variable) {
-		// TODO implement default implementation class and create instance here
-		return null;
+	static SetOfVariables singletonSet(Variable variable) {
+		return new DefaultSetOfVariables(variable);
 	}
 
 }

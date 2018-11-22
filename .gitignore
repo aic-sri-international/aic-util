@@ -28,3 +28,6 @@ hs_err_pid*
 .LSOverride
 /explanation.txt
 /*.png
+
+# Temp directory created by csv unit tests
+csv_dir.tmp/

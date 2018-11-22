@@ -19,9 +19,9 @@ public interface GraphSet {
 	
 	List<? extends GraphPlot> getGraphPlots();
 
-	static GraphSet graphSet() {
-		// TODO implement default implementation class and create instance here
-		return null;
+	static GraphSet graphSet(Functions functions) {
+		DefaultGraphSet defaultGraphSet = new DefaultGraphSet(functions);
+		return defaultGraphSet;
 	}
 
 	void add(GraphPlot plot);

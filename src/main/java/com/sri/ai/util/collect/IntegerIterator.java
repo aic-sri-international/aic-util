@@ -38,6 +38,7 @@
 package com.sri.ai.util.collect;
 
 import com.google.common.annotations.Beta;
+import org.apache.commons.lang3.Validate;
 
 /**
  * An iterator over a given integer interval
@@ -70,6 +71,9 @@ public class IntegerIterator extends EZIterator<Integer> {
 		this.end = end;
 		this.infinite = false;
 		this.increment = increment;
+
+    Validate.isTrue(increment > 0, "Increment=%d must be greater than zero", increment);
+    Validate.isTrue(start < end, "start=%d must be less than end=%d", start, end);
 	}
 
 	/**
@@ -91,6 +95,7 @@ public class IntegerIterator extends EZIterator<Integer> {
 	 */
 	private IntegerIterator(int start) {
 		this.i = start;
+    this.increment = 1;
 		this.infinite = true;
 	}
 	
@@ -101,7 +106,7 @@ public class IntegerIterator extends EZIterator<Integer> {
 	@Override
 	protected Integer calculateNext() {
 		if (infinite || i < end) {
-			Integer next = Integer.valueOf(i);
+			int next = i;
 			i += increment;
 			return next;
 		}

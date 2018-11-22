@@ -5,8 +5,9 @@ package com.sri.ai.util.graph2d.api.variables;
  */
 public interface Value {
 	
-	public static Value value(Object value) {
-		return null;
+	static Value value(Object value) {
+		DefaultValue defaultValue = new DefaultValue(value);
+		return defaultValue;
 	}
 	
 	String stringValue();
