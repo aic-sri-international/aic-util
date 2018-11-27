@@ -1,4 +1,4 @@
-package com.sri.ai.util.number.algorithm.statistics;
+package com.sri.ai.util.number.statistics.api;
 
 import com.sri.ai.util.number.representation.api.ArithmeticNumber;
 

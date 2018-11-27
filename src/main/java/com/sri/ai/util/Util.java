@@ -77,6 +77,7 @@ import java.util.stream.Collectors;
 import com.google.common.annotations.Beta;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import com.google.common.base.Strings;
 import com.sri.ai.util.base.BinaryFunction;
 import com.sri.ai.util.base.BinaryPredicate;
 import com.sri.ai.util.base.Equals;
@@ -2321,17 +2322,17 @@ public class Util {
 	 * 			  the type of the function's result, must be comparable.
 	 */
 	public static <T, R  extends Comparable<R>> T argmax(Collection<? extends T> c, Function<T, R> function) {
-		R minimum = null;
+		R maximum = null;
 		T result = null;
 		for (T element : c) {
 			R value = function.apply(element);
-			if (minimum == null) {
-				minimum = value;
+			if (maximum == null) {
+				maximum = value;
 				result = element;
 			}
 			else {
-				if (value.compareTo(minimum) > 0) {
-					minimum = value;
+				if (value.compareTo(maximum) > 0) {
+					maximum = value;
 					result = element;
 				}
 			}
@@ -2339,6 +2340,64 @@ public class Util {
 		return result;
 	}
 	
+	/**
+	 * Returns the index of the element in a list whose value for the given function is maximum,
+	 * or -1 if list is empty.
+	 * 
+	 * @param list
+	 *            the list to find an element with a maximum function value.
+	 * @param function
+	 *            the function.
+	 * @return the element with a maximum function value,
+	 *            or -1 if the list is empty.
+	 * @param <T>
+	 *            the type of the elements in the list.
+	 * @param <R>
+	 * 			  the type of the function's result, must be comparable.
+	 */
+	public static <T, R  extends Comparable<R>> int argmaxIndex(List<? extends T> list, Function<T, R> function) {
+		return argmaxAndIndex(list, function).second;
+	}
+	
+	
+	/**
+	 * Returns a pair of the element in a list and its index whose value for the given function is maximum,
+	 * or (null, -1) if list is empty.
+	 * 
+	 * @param list
+	 *            the list to find an element with a maximum function value.
+	 * @param function
+	 *            the function.
+	 * @return the pair of the element with a maximum function value and its index,
+	 *            or (null, -1) if the list is empty.
+	 * @param <T>
+	 *            the type of the elements in the list.
+	 * @param <R>
+	 * 			  the type of the function's result, must be comparable.
+	 */
+	public static <T, R  extends Comparable<R>> Pair<T, Integer> argmaxAndIndex(List<? extends T> list, Function<T, R> function) {
+		R maximum = null;
+		T argmax = null;
+		int index = -1;
+		for (int i = 0; i != list.size(); i++) {
+			T element = list.get(i);
+			R value = function.apply(element);
+			if (maximum == null) {
+				maximum = value;
+				argmax = element;
+				index = i;
+			}
+			else {
+				if (value.compareTo(maximum) > 0) {
+					maximum = value;
+					argmax = element;
+					index = i;
+				}
+			}
+		}
+		return Pair.make(argmax, index);
+	}
+
 	public static Boolean and(Iterator<Boolean> booleansIt) {
 		while (booleansIt.hasNext()) {
 			if (!booleansIt.next()) {
@@ -2663,21 +2722,61 @@ public class Util {
 	}
 
 	/**
-	 * Adds all elements of given collections to a new LinkedList.
+	 * Adds all elements of given iterables to a new LinkedList.
 	 * 
-	 * @param collections
-	 *            the collections whose elements should be added to the returned
+	 * @param iterables
+	 *            the iterables whose elements should be added to the returned
 	 *            list.
 	 * @return a new Linked List containing all the elements from the given
-	 *         collections.
+	 *         iterables.
 	 * @param <E>
-	 *            the type of the collections elements.
+	 *            the type of the iterables elements.
 	 */
 	@SafeVarargs
-	public static <E> List<E> addAllToANewList(Collection<E>... collections) {
+	public static <E> LinkedList<E> addAllToANewList(Iterable<? extends E>... iterables) {
 		LinkedList<E> result = new LinkedList<E>();
-		for (Collection<E> c : collections) {
-			result.addAll(c);
+		for (Iterable<? extends E> c : iterables) {
+			addAll(result, c);
+		}
+		return result;
+	}
+
+	/**
+	 * Adds all elements of given iterables to a new ArrayList.
+	 * 
+	 * @param iterables
+	 *            the iterables whose elements should be added to the returned
+	 *            list.
+	 * @return a new ArrayList containing all the elements from the given
+	 *         iterables.
+	 * @param <E>
+	 *            the type of the iterables elements.
+	 */
+	@SafeVarargs
+	public static <E> ArrayList<E> addAllToANewArrayList(Iterable<? extends E>... iterables) {
+		ArrayList<E> result = new ArrayList<E>();
+		for (Iterable<? extends E> c : iterables) {
+			addAll(result, c);
+		}
+		return result;
+	}
+
+	/**
+	 * Adds all elements of given iterables to a new LinkedHashSet.
+	 * 
+	 * @param iterables
+	 *            the iterables whose elements should be added to the returned
+	 *            list.
+	 * @return a new LinkedHashSet containing all the elements from the given
+	 *         iterables.
+	 * @param <E>
+	 *            the type of the iterables elements.
+	 */
+	@SafeVarargs
+	public static <E> LinkedHashSet<E> addAllToANewSet(Iterable<? extends E>... iterables) {
+		LinkedHashSet<E> result = new LinkedHashSet<E>();
+		for (Iterable<? extends E> c : iterables) {
+			addAll(result, c);
 		}
 		return result;
 	}
@@ -4771,24 +4870,37 @@ public class Util {
 	 * @param iterator the iterator
 	 * @param random a random number generator
 	 * @param <T> the type of elements
-	 * @return a uniformly sampled element from the iterator's range using the random number generator.
+	 * @return a uniformly sampled element from the iterator's range using the random number generator or null if there are no elements in the range.
 	 */
 	public static <T> T pickUniformly(Iterator<T> iterator, Random random) {
-		List<T> list = listFrom(iterator);
-		T result = list.get(random.nextInt(list.size()));
-		return result;
+		if (iterator.hasNext()) {
+			List<T> list = listFrom(iterator);
+			T result = list.get(random.nextInt(list.size()));
+			return result;
+		}
+		else {
+			return null;
+		}
 	}
 	
 	/**
-	 * Iterates over all elements in collection and picks one with uniform probability.
+	 * Iterates over elements in collection and picks one with uniform probability.
 	 * 
 	 * @param collection the collection
 	 * @param random a random number generator
 	 * @param <T> the type of elements
-	 * @return a uniformly sampled element from the iterator's range using the random number generator.
+	 * @return a uniformly sampled element from the collection using the random number generator or null if collection is empty.
 	 */
 	public static <T> T pickUniformly(Collection<T> collection, Random random) {
-		return pickUniformly(collection.iterator(), random);
+		int i = random.nextInt(collection.size());
+		int counter = 0;
+		for (T element : collection) {
+			if (counter == i) {
+				return element;
+			}
+			counter++;
+		}
+		return null;
 	}
 	
 	/**
@@ -5479,5 +5591,77 @@ public class Util {
 		}
 		String result = resultBuilder.toString();
 		return result;
+	}
+
+	/**
+	 * Equivalent to:
+	 * <p> 
+	 * <code>myAssert(classToBe.isInstance(object), () -> requester + " requires " + classToBe + " but got " + object + " of class " + object.getClass())</code>
+	 * 
+	 * @param object
+	 * @param classToBe
+	 * @param requester
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T assertType(Object object, Class<T> classToBe, Object requester) {
+		myAssert(classToBe.isInstance(object), () -> requester + " requires " + classToBe + " but got " + object + " of class " + object.getClass());
+		return (T) object;
+	}
+
+	/**
+	 * Normalize n weights into a probability distribution,
+	 * while smoothing by adding (smoothingCoefficient*sum weights)/n to each weight,
+	 * returning both the probabilities and the smoothened partition.
+	 * @param weights
+	 * @param smoothingCoefficient
+	 * @return
+	 */
+	public static Pair<ArrayList<Double>, Double> probabilities(ArrayList<Double> weights, double smoothingCoefficient) {
+		Double partition = (Double) sum(weights);
+		double smoothenedPartition = partition*smoothingCoefficient;
+		if (smoothenedPartition == 0.0) {
+			throw new Error("Partition is zero given weights " + weights);
+		}
+		double smoothingPerItem = smoothenedPartition/weights.size();
+		for (int i = 0; i != weights.size(); i++) {
+			weights.set(i, weights.get(i) + smoothingPerItem);
+		}
+		ArrayList<Double> probabilities = new ArrayList<Double>(weights.size());
+		for (int i = 0; i != weights.size(); i++) {
+			probabilities.set(i, weights.get(i) / smoothenedPartition);
+		}
+		return Pair.make(probabilities, smoothenedPartition);
+	}
+
+	/**
+	 * Sample from an array of probabilities with given partition.
+	 * @param probabilities
+	 * @param partition
+	 * @param random
+	 * @return
+	 * @throws Error
+	 */
+	public static int sample(ArrayList<Double> probabilities, double partition, Random random) throws Error {
+		double point = random.nextDouble() * partition;
+		int i = 0;
+		double behindIthElement = 0;
+		while (i != probabilities.size()) {
+			behindIthElement += probabilities.get(i);
+			if (behindIthElement > point) {
+				return i;
+			}
+			i++;
+		}
+		throw new Error("Should have sampled a value but picking point " + point + " in between 0 and partition " + partition);
+	}
+
+	/**
+	 * Returns a string formed by repeating a character n times.
+	 * @param n
+	 * @param character
+	 * @return
+	 */
+	public static String fill(int n, char character) {
+		return Strings.padStart("", n, character);
 	}
 }

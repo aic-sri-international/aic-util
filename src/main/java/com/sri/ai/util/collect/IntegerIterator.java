@@ -43,7 +43,9 @@ import org.apache.commons.lang3.Validate;
 /**
  * An iterator over a given integer interval
  * {@code [start, end[} (that is, with inclusive start and exclusive end)
- * with a specified increment over the interval.
+ * with a specified increment over the interval;
+ * <code>start</code> is allowed to be greater or equal to <code>end</code>,
+ * in which case the iterator's range is empty.
  * 
  * @author braz
  * 
@@ -73,7 +75,9 @@ public class IntegerIterator extends EZIterator<Integer> {
 		this.increment = increment;
 
     Validate.isTrue(increment > 0, "Increment=%d must be greater than zero", increment);
-    Validate.isTrue(start < end, "start=%d must be less than end=%d", start, end);
+    // Validate.isTrue(start < end, "start=%d must be less than end=%d", start, end);
+    // From Rodrigo 11/26/18: The above validation is reasonable but the intention was to allow start >= end,
+    // which simply denotes an empty range. I've made that clear in the documentation.
 	}
 
 	/**

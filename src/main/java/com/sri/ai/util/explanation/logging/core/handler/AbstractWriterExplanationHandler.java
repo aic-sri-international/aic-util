@@ -96,6 +96,7 @@ public abstract class AbstractWriterExplanationHandler implements ExplanationHan
 	private void write(StringBuilder builder) throws Error {
 		try {
 			writer.write(builder.toString() + "\n");
+			writer.flush();
 		} catch (IOException e) {
 			throw new Error(e);
 		}

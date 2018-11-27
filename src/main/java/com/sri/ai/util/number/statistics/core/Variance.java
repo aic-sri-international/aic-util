@@ -1,27 +1,25 @@
-package com.sri.ai.util.number.algorithm;
+package com.sri.ai.util.number.statistics.core;
 
-import java.util.function.Function;
-
-import com.sri.ai.util.number.algorithm.statistics.MeanWithNumberFactory;
-import com.sri.ai.util.number.algorithm.statistics.StatisticWithNumberFactory;
 import com.sri.ai.util.number.representation.api.ArithmeticNumber;
 import com.sri.ai.util.number.representation.api.ArithmeticNumberFactory;
+import com.sri.ai.util.number.statistics.api.Mean;
+import com.sri.ai.util.number.statistics.api.StatisticOnNumber;
 
 /**
- * A {@link MeanOfAll} that also provides the variance of the values seens so far
+ * A {@link DefaultMean} that also provides the variance of the values seen so far
  * 
  * @author braz
  *
  */
-public class Variance implements StatisticWithNumberFactory<ArithmeticNumber> {
+public class Variance implements StatisticOnNumber<ArithmeticNumber> {
 	
-	private MeanWithNumberFactory mean;
-	private MeanWithNumberFactory variance;
+	private Mean mean;
+	private Mean variance;
 	private ArithmeticNumber two;
 	
-	public Variance(ArithmeticNumberFactory numberFactory, Function<ArithmeticNumberFactory, MeanWithNumberFactory> meanMaker) {
-		this.mean = meanMaker.apply(numberFactory);
-		this.variance= meanMaker.apply(numberFactory);
+	public Variance(ArithmeticNumberFactory numberFactory) {
+		this.mean = new DefaultMean(numberFactory);
+		this.variance= new DefaultMean(numberFactory);
 		this.two = numberFactory.make(2);
 	}
 	

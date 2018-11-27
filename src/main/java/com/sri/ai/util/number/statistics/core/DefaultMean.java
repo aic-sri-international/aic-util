@@ -1,8 +1,8 @@
-package com.sri.ai.util.number.algorithm;
+package com.sri.ai.util.number.statistics.core;
 
-import com.sri.ai.util.number.algorithm.statistics.MeanWithNumberFactory;
 import com.sri.ai.util.number.representation.api.ArithmeticNumber;
 import com.sri.ai.util.number.representation.api.ArithmeticNumberFactory;
+import com.sri.ai.util.number.statistics.api.Mean;
 
 /**
  * The mean of all n elements in the sample.
@@ -10,15 +10,15 @@ import com.sri.ai.util.number.representation.api.ArithmeticNumberFactory;
  * @author braz
  *
  */
-public class MeanOfAll implements MeanWithNumberFactory {
+public class DefaultMean implements Mean {
 	
 	private ArithmeticNumber total;
 	private long n = 0;
 	private ArithmeticNumberFactory numberFactory;
 	
-	public MeanOfAll(ArithmeticNumberFactory numberFactory) {
+	public DefaultMean(ArithmeticNumberFactory numberFactory) {
 		this.total = numberFactory.make(0.0);
-		this.n= 0;
+		this.n = 0;
 		this.numberFactory = numberFactory;
 	}
 	

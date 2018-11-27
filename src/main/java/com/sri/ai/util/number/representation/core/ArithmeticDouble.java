@@ -59,6 +59,11 @@ public class ArithmeticDouble implements ArithmeticNumber {
 	private void checkType(ArithmeticNumber another) {
 		myAssert(another instanceof ArithmeticDouble, () -> this.getClass() + " can only be operated upon with other numbers of the same class, but got " + another + " of class " + another.getClass());
 	}
+	
+	@Override
+	public double doubleValue() {
+		return number;
+	}
 
 	@Override
 	public String toString() {

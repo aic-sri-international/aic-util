@@ -11,16 +11,6 @@ public class IntegerIteratorTest {
     new IntegerIterator(1, 10, 0);
   }
 
- @Test(expected = IllegalArgumentException.class)
- public void testStartEqualEndValue() {
-   new IntegerIterator(1, 1);
- }
-
- @Test(expected = IllegalArgumentException.class)
- public void testStartGreaternThanEndValue() {
-   new IntegerIterator(10, 1);
- }
-
  @Test
   public void testFromThisValueOnForever100() {
     final int ITERATIONS = 100;

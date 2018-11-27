@@ -11,5 +11,7 @@ public interface ArithmeticNumber {
 	ArithmeticNumber divide(ArithmeticNumber another);
 	
 	ArithmeticNumber pow(ArithmeticNumber another);
+	
+	double doubleValue();
 
 }

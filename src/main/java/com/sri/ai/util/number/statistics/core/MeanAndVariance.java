@@ -1,11 +1,11 @@
-package com.sri.ai.util.number.algorithm;
+package com.sri.ai.util.number.statistics.core;
 
 import static com.sri.ai.util.base.PairOf.makePairOf;
 
 import com.sri.ai.util.base.PairOf;
-import com.sri.ai.util.number.algorithm.statistics.StatisticWithNumberFactory;
 import com.sri.ai.util.number.representation.api.ArithmeticNumber;
 import com.sri.ai.util.number.representation.api.ArithmeticNumberFactory;
+import com.sri.ai.util.number.statistics.api.StatisticOnNumber;
 
 /**
  * Keeps means and variance of whole sample.
@@ -13,12 +13,12 @@ import com.sri.ai.util.number.representation.api.ArithmeticNumberFactory;
  * @author braz
  *
  */
-public class MeanAndVariance implements StatisticWithNumberFactory<PairOf<ArithmeticNumber>> {
+public class MeanAndVariance implements StatisticOnNumber<PairOf<ArithmeticNumber>> {
 	
 	private Variance variance;
 	
 	public MeanAndVariance(ArithmeticNumberFactory numberFactory) {
-		this.variance = new Variance(numberFactory, f -> new MeanOfAll(f));
+		this.variance = new Variance(numberFactory);
 	}
 
 	@Override
