@@ -56,6 +56,17 @@ public class SetOfRealValuesTest {
   }
 
   @Test
+  public void testIterator1() {
+    double last = 0;
+
+    SetOfRealValues setOfRealValues = new SetOfRealValues(1, new BigDecimal(".5"), 3);
+    for (Value setOfRealValue : setOfRealValues) {
+      last = setOfRealValue.doubleValue();
+    }
+    Assert.assertEquals(3., last, .0000001);
+  }
+
+  @Test
   public void testIterator() {
     int first = 2;
     final String last = "6";
@@ -65,9 +76,8 @@ public class SetOfRealValuesTest {
 
     Value value = null;
 
-    Iterator<Value> iter = setOfRealValues.iterator();
-    while (iter.hasNext()) {
-      value = iter.next();
+    for (Value setOfRealValue : setOfRealValues) {
+      value = setOfRealValue;
       Assert.assertEquals(first, value.intValue());
       first += step;
     }
