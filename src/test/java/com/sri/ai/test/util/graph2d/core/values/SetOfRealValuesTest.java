@@ -1,5 +1,6 @@
 package com.sri.ai.test.util.graph2d.core.values;
 
+import com.sri.ai.util.graph2d.api.variables.DefaultValue;
 import com.sri.ai.util.graph2d.api.variables.Value;
 import com.sri.ai.util.graph2d.core.values.SetOfRealValues;
 import java.math.BigDecimal;
@@ -46,6 +47,12 @@ public class SetOfRealValuesTest {
   @Test
   public void testStringFirstEqualLast() {
     new SetOfRealValues("1", "1", "1");
+  }
+
+  @Test
+  public void testRange() {
+    SetOfRealValues setOfRealValues = new SetOfRealValues(1, BigDecimal.ONE, 3);
+    Assert.assertEquals(setOfRealValues.getIndex(new DefaultValue(BigDecimal.TEN)), -1);
   }
 
   @Test

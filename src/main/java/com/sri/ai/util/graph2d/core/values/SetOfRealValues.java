@@ -109,7 +109,7 @@ public class SetOfRealValues implements SetOfValues {
 	@Override
 	public int getIndex(Value value) {
 		double valueAsDouble = value.doubleValue();
-		if (valueAsDouble < first.doubleValue() && valueAsDouble > last.doubleValue()) {
+		if (valueAsDouble < first.doubleValue() || valueAsDouble > last.doubleValue()) {
 			return -1;
 		}
 		else {
