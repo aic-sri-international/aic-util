@@ -60,6 +60,41 @@ public class PlannerTest {
 	}
 
 	@Test
+	public void multipleAntecedentsTest() {
+
+		allRules = arrayList(
+				rule(list(a), list(b, c)),
+				rule(list(b), list(d)),
+				rule(list(b), list()),
+				rule(list(c), list(b, d)),
+				rule(list(d), list())
+				);
+
+		allGoals = list(a,b,c,d);
+		
+		expected = 
+				or(
+						and(
+								rule(list(b), list()),
+								rule(list(d), list()),
+								rule(list(c), list(b, d)),
+								rule(list(a), list(b, c))),
+						and(
+								rule(list(d), list()),
+								or(
+										and(
+												rule(list(b), list(d)),
+												rule(list(c), list(b, d)),
+												rule(list(a), list(b, c))),
+										and(
+												rule(list(b), list()),
+												rule(list(c), list(b, d)),
+												rule(list(a), list(b, c))))));
+		
+		runTest();
+	}
+
+	@Test
 	public void alternativesWithCycleTest() {
 
 		allRules = arrayList(
