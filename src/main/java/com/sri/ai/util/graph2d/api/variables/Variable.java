@@ -17,7 +17,7 @@ public interface Variable {
 	
 	Unit getUnit();
 	
-	SetOfValues setOfValuesOrNull();
+	SetOfValues getSetOfValuesOrNull();
 	
 	public static EnumVariable enumVariable(String name, String... values) {
 		return new EnumVariable(name, values);
@@ -32,6 +32,10 @@ public interface Variable {
 	}
 	
 	public static RealVariable realVariable(String name, Unit unit, int first, BigDecimal step, int last) {
+		return new RealVariable(name, unit, first, step, last);
+	}
+	
+	public static RealVariable realVariable(String name, Unit unit, String first, String step, String last) {
 		return new RealVariable(name, unit, first, step, last);
 	}
 	

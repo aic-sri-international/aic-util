@@ -1,5 +1,6 @@
 package com.sri.ai.util.graph2d.core.values;
 
+import static com.sri.ai.util.Util.myAssert;
 import static com.sri.ai.util.collect.FunctionIterator.functionIterator;
 
 import com.sri.ai.util.collect.BigDecimalIterator;
@@ -103,6 +104,35 @@ public class SetOfRealValues implements SetOfValues {
 	@Override
 	public Iterator<Value> iterator() {
 		return functionIterator(new BigDecimalIterator(first, last.add(BigDecimal.ONE), step), Value::value);
+	}
+
+	@Override
+	public int getIndex(Value value) {
+		double valueAsDouble = value.doubleValue();
+		if (valueAsDouble < first.doubleValue() && valueAsDouble > last.doubleValue()) {
+			return -1;
+		}
+		else {
+			int index = numberOfSteps(valueAsDouble);
+			return index;
+		}
+	}
+
+	public int numberOfSteps(double valueAsDouble) {
+		double numberOfStepsAsDouble = (valueAsDouble - first.doubleValue())/step.doubleValue();
+		long numberOfStepsAsLong = Math.round(numberOfStepsAsDouble);
+		int numberOfStepsAsInt = Math.toIntExact(numberOfStepsAsLong);
+		return numberOfStepsAsInt;
+	}
+
+	@Override
+	public int size() {
+		return numberOfSteps(last.doubleValue());
+	}
+	
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + " from " + first + " to " + last + ", step " + step;
 	}
 
 }

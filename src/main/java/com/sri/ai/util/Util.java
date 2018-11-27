@@ -5579,6 +5579,25 @@ public class Util {
 		return Arrays.asList(array).indexOf(element);
 	}
 
+	/**
+	 * Returns index of first element in collection equal to given element
+	 * according to natural iteration order, or -1 if not found.
+	 * @param collection
+	 * @param element
+	 * @return
+	 */
+	public static <T> int getIndexOf(Collection<? extends T> collection, T element) {
+		Iterator<? extends T> iterator = collection.iterator();
+		int i = 0;
+		while (iterator.hasNext()) {
+			if (iterator.next().equals(element)) {
+				return i;
+			}
+			i++;
+		}
+		return -1;
+	}
+
 	public static String readContentsOfFile(String fileName) throws Error {
 		StringBuilder resultBuilder = new StringBuilder();
 		try (BufferedReader reader = new BufferedReader(new FileReader(fileName));) {
@@ -5610,17 +5629,18 @@ public class Util {
 
 	/**
 	 * Normalize n weights into a probability distribution,
-	 * while smoothing by adding (smoothingCoefficient*sum weights)/n to each weight,
+	 * while smoothing by adding (smoothingCoefficient*sum weights)/n to each weight
+	 * (or making it a uniform distribution if partition is 0),
 	 * returning both the probabilities and the smoothened partition.
 	 * @param weights
 	 * @param smoothingCoefficient
 	 * @return
 	 */
 	public static Pair<ArrayList<Double>, Double> probabilities(ArrayList<Double> weights, double smoothingCoefficient) {
-		Double partition = (Double) sum(weights);
+		Double partition = sum(weights).doubleValue();
 		double smoothenedPartition = partition*smoothingCoefficient;
 		if (smoothenedPartition == 0.0) {
-			throw new Error("Partition is zero given weights " + weights);
+			smoothenedPartition = 1.0/weights.size();
 		}
 		double smoothingPerItem = smoothenedPartition/weights.size();
 		for (int i = 0; i != weights.size(); i++) {
@@ -5628,7 +5648,7 @@ public class Util {
 		}
 		ArrayList<Double> probabilities = new ArrayList<Double>(weights.size());
 		for (int i = 0; i != weights.size(); i++) {
-			probabilities.set(i, weights.get(i) / smoothenedPartition);
+			probabilities.add(weights.get(i) / smoothenedPartition);
 		}
 		return Pair.make(probabilities, smoothenedPartition);
 	}
@@ -5663,5 +5683,13 @@ public class Util {
 	 */
 	public static String fill(int n, char character) {
 		return Strings.padStart("", n, character);
+	}
+
+	public static <K,V> Map<K, V> fillMap(Collection<? extends K> keys, java.util.function.Function<K, V> valueMaker) {
+		Map<K, V> map = map();
+		for (K key : keys) {
+			map.put(key, valueMaker.apply(key));
+		}
+		return map;
 	}
 }

@@ -10,6 +10,8 @@ public interface Value {
 		return defaultValue;
 	}
 	
+	Object objectValue();
+	
 	String stringValue();
 	
 	int intValue();

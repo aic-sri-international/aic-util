@@ -13,8 +13,8 @@ public class DefaultSetOfVariables implements SetOfVariables {
   private final Set<? extends Variable> variables;
 
   public DefaultSetOfVariables(List<? extends Variable> variables) {
-    this(new LinkedHashSet<>(variables));
-  }
+	    this(new LinkedHashSet<>(variables));
+	  }
 
   DefaultSetOfVariables(Variable variable) {
     Validate.notNull(variable, "Variable cannot be null");
@@ -45,9 +45,15 @@ public class DefaultSetOfVariables implements SetOfVariables {
   }
 
   @Override
+  public int size() {
+	  return variables.size();
+  }
+
+  @Override
   public String toString() {
     return "DefaultSetOfVariables{" +
         "variables=" + variables +
         '}';
   }
+
 }

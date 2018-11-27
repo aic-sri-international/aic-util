@@ -1,13 +1,15 @@
 package com.sri.ai.util.graph2d.core.values;
 
+import static com.sri.ai.util.Util.myAssert;
 import static com.sri.ai.util.collect.FunctionIterator.functionIterator;
 
 import java.util.Iterator;
 
+import org.apache.commons.lang3.Validate;
+
 import com.sri.ai.util.collect.IntegerIterator;
 import com.sri.ai.util.graph2d.api.variables.SetOfValues;
 import com.sri.ai.util.graph2d.api.variables.Value;
-import org.apache.commons.lang3.Validate;
 
 public class SetOfIntegerValues implements SetOfValues {
 	
@@ -50,5 +52,22 @@ public class SetOfIntegerValues implements SetOfValues {
 				"first=" + first +
 				", last=" + last +
 				'}';
+	}
+
+	@Override
+	public int getIndex(Value value) {
+		int valueAsInt = value.intValue();
+		if(valueAsInt < first && valueAsInt > last) {
+			return -1;
+		}
+		else {
+			int result = valueAsInt - first;
+			return result;
+		}
+	}
+
+	@Override
+	public int size() {
+		return last - first + 1;
 	}
 }

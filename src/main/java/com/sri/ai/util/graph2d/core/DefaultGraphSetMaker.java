@@ -2,6 +2,7 @@ package com.sri.ai.util.graph2d.core;
 
 import static com.sri.ai.util.Util.in;
 import static com.sri.ai.util.Util.mapIntoList;
+import static com.sri.ai.util.Util.myAssert;
 import static com.sri.ai.util.collect.FunctionIterator.functionIterator;
 import static com.sri.ai.util.graph2d.api.variables.Assignment.assignment;
 
@@ -27,6 +28,7 @@ public class DefaultGraphSetMaker implements GraphSetMaker {
 	
 	@Override
 	public Functions getFunctions() {
+		myAssert(functions != null, () -> getClass() + " has not yet received functions to operate on");
 		return functions;
 	}
 
@@ -50,10 +52,10 @@ public class DefaultGraphSetMaker implements GraphSetMaker {
 		// If a set of values have been defined in the GraphSetMaker for the variable, use them,
 		// else use the set of values defined in the variable itself.
 		SetOfValues setOfValues
-				= fromVariableToSetOfValues.isEmpty() ? null : fromVariableToSetOfValues.get(variable);
+				= fromVariableToSetOfValues == null? null : fromVariableToSetOfValues.isEmpty() ? null : fromVariableToSetOfValues.get(variable);
 
 		if (setOfValues == null) {
-			setOfValues = variable.setOfValuesOrNull();
+			setOfValues = variable.getSetOfValuesOrNull();
 		}
 
 		if (setOfValues == null) {

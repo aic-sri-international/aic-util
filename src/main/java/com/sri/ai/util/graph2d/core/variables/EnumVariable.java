@@ -14,7 +14,7 @@ public class EnumVariable extends AbstractVariable {
 	}
 	
 	@Override
-	public SetOfEnumValues setOfValuesOrNull() {
-		return (SetOfEnumValues) super.setOfValuesOrNull();
+	public SetOfEnumValues getSetOfValuesOrNull() {
+		return (SetOfEnumValues) super.getSetOfValuesOrNull();
 	}
 }

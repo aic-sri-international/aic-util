@@ -75,7 +75,6 @@ public class Example {
 		println(graphSet);
 
 		// cleanup by removing graph files
-		// TODO: move this to a Closeable.close method.
 		for (GraphPlot graphPlot : graphSet.getGraphPlots()) {
 			if (graphPlot.getImageFile().delete()) {
 				println("Deleted: " + graphPlot.getImageFile().getName());

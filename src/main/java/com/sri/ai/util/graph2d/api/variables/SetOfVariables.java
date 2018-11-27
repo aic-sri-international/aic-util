@@ -36,4 +36,6 @@ public interface SetOfVariables extends Iterable<Variable> {
 		return new DefaultSetOfVariables(variable);
 	}
 
+	int size();
+
 }

@@ -10,6 +10,12 @@ public class DefaultValue implements Value {
     this.value = Validate.notNull(value, "value cannot be null");
   }
 
+  @Override
+  public Object objectValue() {
+    return value;
+  }
+
+  @Override
   public String stringValue() {
     return value.toString();
   }

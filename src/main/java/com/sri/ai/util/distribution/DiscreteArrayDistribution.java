@@ -1,5 +1,6 @@
 package com.sri.ai.util.distribution;
 
+import static com.sri.ai.util.Util.fill;
 import static com.sri.ai.util.Util.probabilities;
 
 import java.util.ArrayList;
@@ -8,7 +9,7 @@ import java.util.Random;
 import com.sri.ai.util.Util;
 import com.sri.ai.util.base.Pair;
 
-public class DiscreteDistribution {
+public class DiscreteArrayDistribution {
 	
 	private ArrayList<Double> weights;
 
@@ -16,14 +17,18 @@ public class DiscreteDistribution {
 	private ArrayList<Double> normalized;
 	private double partition;
 
-	public DiscreteDistribution(ArrayList<Double> weights, double smoothingCoefficient) {
+	public DiscreteArrayDistribution(int n, double smoothingCoefficient) {
+		this(fill(n, 0.0), smoothingCoefficient);
+	}
+	
+	public DiscreteArrayDistribution(ArrayList<Double> weights, double smoothingCoefficient) {
 		this.weights = weights;
 		this.normalized = null;
 		this.smoothingCoefficient = smoothingCoefficient;
 	}
 	
-	public static DiscreteDistribution fromProbabilities(ArrayList<Double> probabilities) {
-		DiscreteDistribution distribution = new DiscreteDistribution(probabilities, 0.0);
+	public static DiscreteArrayDistribution fromProbabilities(ArrayList<Double> probabilities) {
+		DiscreteArrayDistribution distribution = new DiscreteArrayDistribution(probabilities, 0.0);
 		distribution.normalized = distribution.weights;
 		distribution.partition = 1.0;
 		return distribution;
@@ -31,6 +36,12 @@ public class DiscreteDistribution {
 	
 	public double getSmoothingCoefficient() {
 		return smoothingCoefficient;
+	}
+	
+	public void add(int i, double extraWeight) {
+		weights.set(i, weights.get(i) + extraWeight);
+		partition += extraWeight;
+		normalized = null;
 	}
 	
 	public ArrayList<Double> getProbabilities() {

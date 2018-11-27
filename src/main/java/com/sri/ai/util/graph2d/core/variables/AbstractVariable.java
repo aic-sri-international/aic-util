@@ -33,7 +33,7 @@ public abstract class AbstractVariable implements Variable {
 	}
 	
 	@Override
-	public SetOfValues setOfValuesOrNull() {
+	public SetOfValues getSetOfValuesOrNull() {
 		return setOfValuesOrNull;
 	}
 
