@@ -13,10 +13,10 @@ import com.sri.ai.util.planning.api.State;
 
 public class MyRule implements Rule {
 
-	List<Goal> consequents;
-	List<Goal> antecedents;
+	List<? extends Goal> consequents;
+	List<? extends Goal> antecedents;
 	
-	public MyRule(List<Goal> consequents, List<Goal> antecedents) {
+	public MyRule(List<? extends Goal> consequents, List<? extends Goal> antecedents) {
 		this.consequents = consequents;
 		this.antecedents = antecedents;
 	}
@@ -81,7 +81,7 @@ public class MyRule implements Rule {
 		return true;
 	}
 
-	public static Rule rule(LinkedList<Goal> consequent, LinkedList<Goal> antecedent) {
+	public static Rule rule(LinkedList<? extends Goal> consequent, LinkedList<? extends Goal> antecedent) {
 		return new MyRule(consequent, antecedent);
 	}
 }

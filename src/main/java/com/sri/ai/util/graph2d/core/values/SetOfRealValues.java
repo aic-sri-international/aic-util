@@ -1,15 +1,15 @@
 package com.sri.ai.util.graph2d.core.values;
 
-import static com.sri.ai.util.Util.myAssert;
 import static com.sri.ai.util.collect.FunctionIterator.functionIterator;
 
-import com.sri.ai.util.collect.BigDecimalIterator;
 import java.math.BigDecimal;
 import java.util.Iterator;
 
+import org.apache.commons.lang3.Validate;
+
+import com.sri.ai.util.collect.BigDecimalIterator;
 import com.sri.ai.util.graph2d.api.variables.SetOfValues;
 import com.sri.ai.util.graph2d.api.variables.Value;
-import org.apache.commons.lang3.Validate;
 
 public class SetOfRealValues implements SetOfValues {
 	

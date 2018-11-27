@@ -1,6 +1,7 @@
 package com.sri.ai.util.planning.core;
 
 import static com.sri.ai.util.Util.join;
+import static com.sri.ai.util.Util.list;
 import static com.sri.ai.util.Util.map;
 import static com.sri.ai.util.Util.putInListValue;
 
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.sri.ai.util.planning.api.IndexedRules;
+import com.sri.ai.util.Util;
 import com.sri.ai.util.planning.api.Goal;
 import com.sri.ai.util.planning.api.Rule;
 
@@ -36,7 +38,7 @@ public class DefaultIndexedRules implements IndexedRules {
 
 	@Override
 	public List<Rule> getRulesFor(Goal goal) {
-		List<Rule> result = fromGoalToListOfRules.get(goal);
+		List<Rule> result = Util.getOrUseDefault(fromGoalToListOfRules, goal, list());
 		return result;
 	}
 
