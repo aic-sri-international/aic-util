@@ -37,9 +37,11 @@
  */
 package com.sri.ai.util.collect;
 
-import com.google.common.annotations.Beta;
 import java.math.BigDecimal;
+
 import org.apache.commons.lang3.Validate;
+
+import com.google.common.annotations.Beta;
 
 /**
  * An iterator over a given BigDecimal interval
@@ -73,10 +75,6 @@ public class BigDecimalIterator extends EZIterator<BigDecimal> {
 
 	  Validate.isTrue(increment.compareTo(BigDecimal.ZERO) > 0,
         "increment value must be greater than zero");
-
-		if (start.compareTo(end) >= 0) {
-			throw new IllegalArgumentException(String.format("start=%s must be less than end=%s", start, end));
-		}
 	}
 
   /**

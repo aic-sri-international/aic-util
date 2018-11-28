@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.lang3.Validate;
 
 public class DefaultAssignment implements Assignment {
@@ -13,7 +14,6 @@ public class DefaultAssignment implements Assignment {
 
   DefaultAssignment(SetOfVariables variables, List<? extends Value> values) {
     Validate.notNull(variables, "variables cannot be null");
-    Validate.notEmpty(values, "values list cannot be empty");
     setOfVariables = variables;
     variableToValue = new HashMap<>();
 

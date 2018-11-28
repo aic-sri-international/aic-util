@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.sri.ai.util.graph2d.api.functions.Function;
 import com.sri.ai.util.graph2d.api.functions.Functions;
 import com.sri.ai.util.graph2d.api.functions.SingleInputFunction;
 import com.sri.ai.util.graph2d.api.functions.SingleInputFunctions;

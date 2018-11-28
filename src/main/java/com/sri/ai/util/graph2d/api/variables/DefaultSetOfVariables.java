@@ -26,7 +26,6 @@ public class DefaultSetOfVariables implements SetOfVariables {
   }
 
   private DefaultSetOfVariables(LinkedHashSet<? extends Variable> variables) {
-    Validate.notEmpty(variables,"Variable collection cannot be empty");
     this.variables = Collections.unmodifiableSet(variables);
   }
 
