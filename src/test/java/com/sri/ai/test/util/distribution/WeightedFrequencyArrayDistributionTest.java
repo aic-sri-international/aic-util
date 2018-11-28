@@ -2,7 +2,7 @@ package com.sri.ai.test.util.distribution;
 
 import static com.sri.ai.util.Util.arrayList;
 import static com.sri.ai.util.Util.println;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 
@@ -77,6 +77,6 @@ public class WeightedFrequencyArrayDistributionTest {
 		println("Probabilities: " + distribution.getProbabilities());
 		println("Partition: " + distribution.getPartition());
 		assertEquals(expectedProbabilities, distribution.getProbabilities());
-		assertEquals(expectedPartition, distribution.getPartition());
+		assertEquals(expectedPartition, distribution.getPartition(), 0.0);
 	}
 }
