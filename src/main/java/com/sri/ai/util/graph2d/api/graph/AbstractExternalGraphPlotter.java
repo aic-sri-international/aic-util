@@ -2,11 +2,13 @@ package com.sri.ai.util.graph2d.api.graph;
 
 import com.sri.ai.util.graph2d.api.functions.SingleInputFunctions;
 import com.sri.ai.util.graph2d.api.variables.SetOfValues;
+import com.sri.ai.util.graph2d.api.variables.Unit;
 import com.sri.ai.util.graph2d.api.variables.Variable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
 public abstract class AbstractExternalGraphPlotter implements ExternalGraphPlotter {
@@ -64,8 +66,19 @@ public abstract class AbstractExternalGraphPlotter implements ExternalGraphPlott
     String formatted = null;
 
     if (variable != null) {
-      String name = useVariableName ? variable.getName() : variable.getUnit().getName();
-      formatted =  name + " (" + variable.getUnit().getSymbol() + ')';
+      String name = null;
+
+      if (useVariableName) {
+        name = variable.getName();
+      } else if (!Unit.NONE.getName().equals(variable.getUnit().getName())) {
+        name = variable.getUnit().getName();
+      }
+
+      if (StringUtils.trimToNull(variable.getUnit().getSymbol()) != null) {
+        formatted =  name + " (" + variable.getUnit().getSymbol() + ')';
+      } else {
+        formatted =  name;
+      }
     }
 
     return formatted;
