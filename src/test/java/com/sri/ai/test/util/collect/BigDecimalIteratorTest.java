@@ -6,8 +6,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class BigDecimalIteratorTest {
-
-
   @Test(expected = NullPointerException.class)
   public void testNullStartValue() {
   new BigDecimalIterator(null, BigDecimal.ONE);
@@ -33,16 +31,6 @@ public class BigDecimalIteratorTest {
   public void testIncrementValueLessThanZero() {
     new BigDecimalIterator(BigDecimal.ONE, BigDecimal.TEN, new BigDecimal("-1"));
   }
-
-  @Test(expected = IllegalArgumentException.class)
- public void testStartEqualEndValue() {
-   new BigDecimalIterator(BigDecimal.ONE, BigDecimal.ONE);
- }
-
- @Test(expected = IllegalArgumentException.class)
- public void testStartGreaterThanEndValue() {
-   new BigDecimalIterator(BigDecimal.TEN, BigDecimal.ONE);
- }
 
  @Test(expected = NullPointerException.class)
  public void testFromThisValueOnForeverNull() {
