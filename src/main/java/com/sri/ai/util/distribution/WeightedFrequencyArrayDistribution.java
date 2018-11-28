@@ -9,7 +9,7 @@ import java.util.Random;
 import com.sri.ai.util.Util;
 import com.sri.ai.util.base.Pair;
 
-public class DiscreteArrayDistribution {
+public class WeightedFrequencyArrayDistribution {
 	
 	private ArrayList<Double> weights;
 
@@ -17,18 +17,18 @@ public class DiscreteArrayDistribution {
 	private ArrayList<Double> normalized;
 	private double partition;
 
-	public DiscreteArrayDistribution(int n, double smoothingCoefficient) {
+	public WeightedFrequencyArrayDistribution(int n, double smoothingCoefficient) {
 		this(fill(n, 0.0), smoothingCoefficient);
 	}
 	
-	public DiscreteArrayDistribution(ArrayList<Double> weights, double smoothingCoefficient) {
+	public WeightedFrequencyArrayDistribution(ArrayList<Double> weights, double smoothingCoefficient) {
 		this.weights = weights;
 		this.normalized = null;
 		this.smoothingCoefficient = smoothingCoefficient;
 	}
 	
-	public static DiscreteArrayDistribution fromProbabilities(ArrayList<Double> probabilities) {
-		DiscreteArrayDistribution distribution = new DiscreteArrayDistribution(probabilities, 0.0);
+	public static WeightedFrequencyArrayDistribution fromProbabilities(ArrayList<Double> probabilities) {
+		WeightedFrequencyArrayDistribution distribution = new WeightedFrequencyArrayDistribution(probabilities, 0.0);
 		distribution.normalized = distribution.weights;
 		distribution.partition = 1.0;
 		return distribution;

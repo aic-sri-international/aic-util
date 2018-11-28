@@ -2048,7 +2048,7 @@ public class Util {
 		if (numbersIt.hasNext()) {
 			Rational result = numbersIt.next();
 			while (numbersIt.hasNext()) {
-				Rational number = (Rational) numbersIt.next();
+				Rational number = numbersIt.next();
 				if (number.compareTo(result) > 0) {
 					result = number;
 				}
@@ -5248,6 +5248,14 @@ public class Util {
 		return result;
 	}
 
+	public static <T> ArrayList<T> fillArrayList(int size, T value) {
+		ArrayList<T> result = new ArrayList<T>(size);
+		for (int i = 0; i != size; i++) {
+			result.add(value);
+		}
+		return result;
+	}
+
 	/**
 	 * Given an array list and a list of integers, returns an array list with the indexed elements in the indices order.
 	 * @param array the array from which to extract sub array.
@@ -5629,7 +5637,7 @@ public class Util {
 
 	/**
 	 * Normalize n weights into a probability distribution,
-	 * while smoothing by adding (smoothingCoefficient*sum weights)/n to each weight
+	 * while smoothing by adding ((1 + smoothingCoefficient)*sum weights)/n to each weight
 	 * (or making it a uniform distribution if partition is 0),
 	 * returning both the probabilities and the smoothened partition.
 	 * @param weights
@@ -5638,19 +5646,24 @@ public class Util {
 	 */
 	public static Pair<ArrayList<Double>, Double> probabilities(ArrayList<Double> weights, double smoothingCoefficient) {
 		Double partition = sum(weights).doubleValue();
-		double smoothenedPartition = partition*smoothingCoefficient;
-		if (smoothenedPartition == 0.0) {
-			smoothenedPartition = 1.0/weights.size();
+		int n = weights.size();
+		if (partition == 0) {
+			return Pair.pair(uniformDistributionArray(n), 1.0/n);
 		}
-		double smoothingPerItem = smoothenedPartition/weights.size();
-		for (int i = 0; i != weights.size(); i++) {
-			weights.set(i, weights.get(i) + smoothingPerItem);
+		else {
+			double smoothingAdded = partition*smoothingCoefficient;
+			double smoothenedPartition = partition + smoothingAdded;
+			double smoothingPerItem = smoothingAdded/n;
+			ArrayList<Double> probabilities = new ArrayList<Double>(n);
+			for (int i = 0; i != n; i++) {
+				probabilities.add((weights.get(i) + smoothingPerItem) / smoothenedPartition);
+			}
+			return Pair.make(probabilities, smoothenedPartition);
 		}
-		ArrayList<Double> probabilities = new ArrayList<Double>(weights.size());
-		for (int i = 0; i != weights.size(); i++) {
-			probabilities.add(weights.get(i) / smoothenedPartition);
-		}
-		return Pair.make(probabilities, smoothenedPartition);
+	}
+
+	public static ArrayList<Double> uniformDistributionArray(int n) {
+		return fillArrayList(n, 1.0/n);
 	}
 
 	/**
@@ -5672,7 +5685,7 @@ public class Util {
 			}
 			i++;
 		}
-		throw new Error("Should have sampled a value but picking point " + point + " in between 0 and partition " + partition);
+		throw new Error("Should have sampled a value but picked point " + point + " greater than partition " + partition);
 	}
 
 	/**
@@ -5692,4 +5705,30 @@ public class Util {
 		}
 		return map;
 	}
+
+	public static <T> T get(Iterable<T> iterable, int i) {
+		  if (iterable instanceof List) {
+			  return getFromIterableKnownToBeList(iterable, i);
+		  }
+		  else {
+			  return getByExplicitlyIterating(iterable, i);
+		  }
+	  }
+
+	@SuppressWarnings("unchecked")
+	  public static <T> T getFromIterableKnownToBeList(Iterable<T> iterable, int i) {
+		  T result = (T) ((List) iterable).get(i);
+		  return result;
+	  }
+
+	public static <T> T getByExplicitlyIterating(Iterable<T> iterable, int i) {
+		  int j = 0;
+		  for (T element : iterable) {
+			  if (j == i) {
+				  return element;
+			  }
+			  j++;
+		  }
+		  return null;
+	  }
 }

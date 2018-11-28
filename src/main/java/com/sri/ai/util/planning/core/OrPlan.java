@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 
-import com.sri.ai.util.distribution.DiscreteArrayDistribution;
+import com.sri.ai.util.distribution.WeightedFrequencyArrayDistribution;
 import com.sri.ai.util.planning.api.Plan;
 import com.sri.ai.util.planning.api.State;
 
@@ -93,12 +93,12 @@ public class OrPlan extends AbstractCompoundPlan {
 		}
 	}
 
-	public DiscreteArrayDistribution getDistribution() {
+	public WeightedFrequencyArrayDistribution getDistribution() {
 		// TODO: can we keep these probabilities stored and updated as needed?
 		// If we know that sub-plans are not shared anywhere else, yes.
 		ArrayList<Double> weights = mapIntoArrayList(getSubPlans(), Plan::getEstimatedSuccessWeight);
 		double smoothingCoefficient = 0.01;
-		DiscreteArrayDistribution distribution = new DiscreteArrayDistribution(weights, smoothingCoefficient);
+		WeightedFrequencyArrayDistribution distribution = new WeightedFrequencyArrayDistribution(weights, smoothingCoefficient);
 		return distribution;
 	}
 

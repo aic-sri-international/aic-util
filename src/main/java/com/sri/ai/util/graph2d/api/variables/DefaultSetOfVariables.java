@@ -1,12 +1,16 @@
 package com.sri.ai.util.graph2d.api.variables;
 
-import com.sri.ai.util.Util;
+import static com.sri.ai.util.Util.getByExplicitlyIterating;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
 import org.apache.commons.lang3.Validate;
+
+import com.sri.ai.util.Util;
 
 public class DefaultSetOfVariables implements SetOfVariables {
 
@@ -54,6 +58,11 @@ public class DefaultSetOfVariables implements SetOfVariables {
     return "DefaultSetOfVariables{" +
         "variables=" + variables +
         '}';
+  }
+
+  @Override
+  public Variable get(int i) {
+	  return getByExplicitlyIterating(variables, i);
   }
 
 }
