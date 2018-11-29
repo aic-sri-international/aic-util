@@ -41,8 +41,8 @@ public class DefaultLineGraphPlotter extends AbstractExternalGraphPlotter {
       }
     }
 
-
     final LineChartFactory lineChartFactory = new LineChartFactory()
+        .setGraphSettings(getGraphSettings())
         .setTitle(getTitle())
         .setxAxisLabel(formatVariable(xVariable, true))
         .setyAxisLabel(formatVariable(yOutputVariable, false));

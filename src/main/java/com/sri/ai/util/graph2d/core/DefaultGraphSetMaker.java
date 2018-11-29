@@ -6,6 +6,7 @@ import static com.sri.ai.util.Util.myAssert;
 import static com.sri.ai.util.collect.FunctionIterator.functionIterator;
 import static com.sri.ai.util.graph2d.api.variables.Assignment.assignment;
 
+import com.sri.ai.util.graph2d.jfreechart.GraphSettings;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -22,10 +23,20 @@ import com.sri.ai.util.graph2d.api.variables.Value;
 import com.sri.ai.util.graph2d.api.variables.Variable;
 
 public class DefaultGraphSetMaker implements GraphSetMaker {
-
+	private GraphSettings graphSettings = new GraphSettings();
 	private Functions functions;
 	private Map<Variable, SetOfValues> fromVariableToSetOfValues;
-	
+
+	@Override
+	public GraphSettings getGraphSettings() {
+		return graphSettings;
+	}
+
+	@Override
+	public void setGraphSettings(GraphSettings graphSettings) {
+		this.graphSettings = graphSettings;
+	}
+
 	@Override
 	public Functions getFunctions() {
 		myAssert(functions != null, () -> getClass() + " has not yet received functions to operate on");
