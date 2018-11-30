@@ -1,8 +1,9 @@
 package com.sri.ai.util.graph2d.api.graph;
 
-import com.sri.ai.util.graph2d.api.functions.Functions;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.sri.ai.util.graph2d.api.functions.Functions;
 
 public class DefaultGraphSet implements GraphSet {
   private Functions functions;

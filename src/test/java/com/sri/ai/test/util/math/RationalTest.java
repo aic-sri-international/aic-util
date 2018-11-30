@@ -1265,8 +1265,8 @@ public class RationalTest {
 		Assert.assertTrue(!(new Long(0)).equals(Rational.ZERO));
 		Assert.assertTrue(!(new String("0")).equals(Rational.ZERO));
 
-		Assert.assertTrue(!Rational.ONE.equals(new RuntimeException()));
-		Assert.assertTrue(!(new RuntimeException()).equals(Rational.ONE));
+		Assert.assertTrue(!Rational.ONE.equals(new Object()));
+		Assert.assertTrue(!(new Object()).equals(Rational.ONE));
 	}
 	
 	@Test

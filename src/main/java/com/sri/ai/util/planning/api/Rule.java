@@ -2,10 +2,10 @@ package com.sri.ai.util.planning.api;
 
 import java.util.Collection;
 
-public interface Rule extends Plan {
+public interface Rule<G extends Goal> extends Plan {
 	
-	Collection<? extends Goal> getAntecendents();
+	Collection<? extends G> getAntecendents();
 
-	Collection<? extends Goal> getConsequents();
+	Collection<? extends G> getConsequents();
 
 }

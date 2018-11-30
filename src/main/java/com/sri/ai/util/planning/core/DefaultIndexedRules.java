@@ -9,36 +9,36 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.sri.ai.util.planning.api.IndexedRules;
 import com.sri.ai.util.Util;
 import com.sri.ai.util.planning.api.Goal;
+import com.sri.ai.util.planning.api.IndexedRules;
 import com.sri.ai.util.planning.api.Rule;
 
-public class DefaultIndexedRules implements IndexedRules {
+public class DefaultIndexedRules<R extends Rule<G>, G extends Goal> implements IndexedRules<R, G> {
 	
-	private Map<Goal, List<Rule>> fromGoalToListOfRules;
+	private Map<G, List<R>> fromGoalToListOfRules;
 	
-	public DefaultIndexedRules(Iterable<? extends Rule> rules) {
+	public DefaultIndexedRules(Iterable<? extends R> rules) {
 		fromGoalToListOfRules = map();
-		for (Rule rule : rules) {
+		for (R rule : rules) {
 			compileRule(rule);
 		}
 	}
 
-	private void compileRule(Rule rule) {
-		for (Goal consequent: rule.getConsequents()) {
+	private void compileRule(R rule) {
+		for (G consequent: rule.getConsequents()) {
 			putInListValue(fromGoalToListOfRules, consequent, rule);
 		}
 	}
 
 	@Override
-	public Collection<? extends Goal> getGoals() {
+	public Collection<? extends G> getGoals() {
 		return fromGoalToListOfRules.keySet();
 	}
 
 	@Override
-	public List<Rule> getRulesFor(Goal goal) {
-		List<Rule> result = Util.getOrUseDefault(fromGoalToListOfRules, goal, list());
+	public List<R> getRulesFor(G goal) {
+		List<R> result = Util.getOrUseDefault(fromGoalToListOfRules, goal, list());
 		return result;
 	}
 

@@ -2,13 +2,11 @@ package com.sri.ai.util.computation.treecomputation.anytime.gradientdescent.core
 
 import static com.sri.ai.util.Util.argmax;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.sri.ai.util.computation.anytime.api.Anytime;
 import com.sri.ai.util.computation.anytime.api.Approximation;
 import com.sri.ai.util.computation.anytime.gradientdescent.api.GradientDescentAnytime;
-import com.sri.ai.util.computation.anytime.gradientdescent.api.GradientDescentApproximation;
 import com.sri.ai.util.computation.treecomputation.anytime.core.AbstractAnytimeTreeComputation;
 import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
 

@@ -1,6 +1,5 @@
 package com.sri.ai.util.csvdb;
 
-import com.sri.ai.util.csvdb.DirectoryWatcher.DirChangeEntry.TYPE;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -14,8 +13,11 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.sri.ai.util.csvdb.DirectoryWatcher.DirChangeEntry.TYPE;
 
 class DirectoryWatcher {
   private static final Logger LOG = LoggerFactory.getLogger(DirectoryWatcher.class);

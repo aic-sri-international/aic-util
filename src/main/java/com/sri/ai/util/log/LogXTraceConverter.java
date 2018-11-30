@@ -37,10 +37,10 @@
  */
 package com.sri.ai.util.log;
 
+import com.google.common.annotations.Beta;
+
 import ch.qos.logback.classic.pattern.ClassicConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-
-import com.google.common.annotations.Beta;
 
 /**
  * A logback <a

@@ -3,10 +3,7 @@ package com.sri.ai.util.rplot.dataframe;
 import static com.sri.ai.util.Util.println;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import com.sri.ai.util.Util;
 
 
 /**

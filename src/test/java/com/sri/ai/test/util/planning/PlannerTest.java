@@ -29,9 +29,9 @@ public class PlannerTest {
 	Goal e = new MyGoal("e");
 	Goal f = new MyGoal("f");
 	
-	ArrayList<? extends Rule> allRules;
+	ArrayList<? extends Rule<Goal>> allRules;
 	
-	LinkedList<Goal> allGoals;
+	LinkedList<? extends Goal> allGoals;
 	
 	Plan expected;
 	
@@ -299,7 +299,7 @@ public class PlannerTest {
 	}
 	
 	public void runTest() {
-		planner = new Planner(allGoals, allRules);
+		planner = new Planner<Rule<Goal>, Goal>(allGoals, allRules);
 		actual = planner.plan();
 		println("Goals: " + allGoals);
 		println("Rules:\n" + join("\n", allRules));

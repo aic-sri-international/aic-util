@@ -1,17 +1,30 @@
 package com.sri.ai.test.util.csvdb;
 
-import com.sri.ai.util.csvdb.SearchResult;
-import com.sri.ai.util.csvdb.Table;
-import com.sri.ai.util.csvdb.TableFactory;
-import static com.sri.ai.test.util.csvdb.CsvTestUtils.*;
+import static com.sri.ai.test.util.csvdb.CsvTestUtils.DECIMAL_FORMAT;
+import static com.sri.ai.test.util.csvdb.CsvTestUtils.INITIAL_RAINFALL;
+import static com.sri.ai.test.util.csvdb.CsvTestUtils.INITIAL_TEMPERATURE;
+import static com.sri.ai.test.util.csvdb.CsvTestUtils.MONTH;
+import static com.sri.ai.test.util.csvdb.CsvTestUtils.MONTHS_ARRAY;
+import static com.sri.ai.test.util.csvdb.CsvTestUtils.MONTH_RAIN_TEMP_HEADERS_ARRAY;
+import static com.sri.ai.test.util.csvdb.CsvTestUtils.RAINFALL;
+import static com.sri.ai.test.util.csvdb.CsvTestUtils.RAINFALL_INCR;
+import static com.sri.ai.test.util.csvdb.CsvTestUtils.TEMPERATURE;
+import static com.sri.ai.test.util.csvdb.CsvTestUtils.TEMPERATURE_DECR;
+import static com.sri.ai.test.util.csvdb.CsvTestUtils.createCsvFileDateRainTemp;
+import static com.sri.ai.test.util.csvdb.CsvTestUtils.removeCsvTmpDirIfExists;
 
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.sri.ai.util.csvdb.SearchResult;
+import com.sri.ai.util.csvdb.Table;
+import com.sri.ai.util.csvdb.TableFactory;
 
 public class TableFactoryTest {
   @BeforeClass
@@ -47,7 +60,8 @@ public class TableFactoryTest {
 
     //--- Test a table search
 
-    String dec = MONTHS_ARRAY[11];
+    @SuppressWarnings("unused")
+	String dec = MONTHS_ARRAY[11];
     Map<String, String>  map = new HashMap<>();
     map.put(MONTH, MONTHS_ARRAY[0]);
 

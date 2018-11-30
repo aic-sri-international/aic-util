@@ -2,15 +2,17 @@ package com.sri.ai.util.csvdb;
 
 import static com.sri.ai.util.csvdb.Utils.csvFilter;
 
-import com.sri.ai.util.csvdb.DirectoryWatcher.DirChangeEntry;
-import com.sri.ai.util.csvdb.DirectoryWatcher.DirChangeEntry.TYPE;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.sri.ai.util.csvdb.DirectoryWatcher.DirChangeEntry;
+import com.sri.ai.util.csvdb.DirectoryWatcher.DirChangeEntry.TYPE;
 
 /** Creates and manages a database that is populated from CSV files. */
 public class DatabaseManager {

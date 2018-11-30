@@ -103,7 +103,7 @@ public class SetOfRealValues implements SetOfValues {
 	
 	@Override
 	public Iterator<Value> iterator() {
-		return functionIterator(new BigDecimalIterator(first, last.add(new BigDecimal("0.0000000000000001")), step), Value::value);
+		return functionIterator(new BigDecimalIterator(first, last, /* exclusive = */ false, step), Value::value);
 	}
 
 	@Override

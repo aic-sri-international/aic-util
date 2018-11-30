@@ -40,7 +40,9 @@ package com.sri.ai.test.util;
 import static com.sri.ai.util.Util.addAllToList;
 import static com.sri.ai.util.Util.list;
 import static com.sri.ai.util.Util.pair;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 

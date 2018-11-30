@@ -45,14 +45,17 @@ import com.google.common.annotations.Beta;
 
 /**
  * An iterator over a given BigDecimal interval
- * {@code [start, end[} (that is, with inclusive start and exclusive end)
+ * {@code [start, end[} (with inclusive start and exclusive end)
+ * or
+ * {@code [start, end]} (with inclusive start and inclusive end)
  * with a specified increment over the interval.
  * 
  */
 @Beta
 public class BigDecimalIterator extends EZIterator<BigDecimal> {
-  private static final BigDecimal DEFAULT_INCREMENT = BigDecimal.ONE;
+	private static final BigDecimal DEFAULT_INCREMENT = BigDecimal.ONE;
 	private BigDecimal end;
+	private boolean exclusive;
 	private BigDecimal increment = DEFAULT_INCREMENT;
 	private boolean infinite;
 
@@ -63,28 +66,32 @@ public class BigDecimalIterator extends EZIterator<BigDecimal> {
 	 * @param start
 	 *            the starting BigDecimal, inclusive.
 	 * @param end
-	 *            the ending BigDecimal in the range, exclusive.
+	 *            the ending BigDecimal in the range.
+	 * @param exclusive 
+	 *            whether the end limit is exclusive or not
 	 * @param increment
 	 *            the amount to increment on each iteration.
 	 */
-	public BigDecimalIterator(BigDecimal start, BigDecimal end, BigDecimal increment) {
+	public BigDecimalIterator(BigDecimal start, BigDecimal end, boolean exclusive, BigDecimal increment) {
 		this.next = Validate.notNull(start, "start value cannot be null");
 		this.onNext = true;
 		this.end = Validate.notNull(end, "end value cannot be null");
+		this.exclusive = exclusive;
 		this.increment = Validate.notNull(increment, "increment value cannot be null");
 
-	  Validate.isTrue(increment.compareTo(BigDecimal.ZERO) > 0,
-        "increment value must be greater than zero");
+		Validate.isTrue(increment.compareTo(BigDecimal.ZERO) > 0,
+				"increment value must be greater than zero");
 	}
 
-  /**
-   * Constructor with a default increment of 1.
-   *
-   * @param start the starting BigDecimal, inclusive.
-   * @param end the ending BigDecimal in the range, exclusive
-   */
-  public BigDecimalIterator(BigDecimal start, BigDecimal end) {
-		this(start, end, DEFAULT_INCREMENT);
+	/**
+	 * Constructor with a default increment of 1.
+	 *
+	 * @param start the starting BigDecimal, inclusive.
+	 * @param end the ending BigDecimal in the range, exclusive
+	 * @param exclusive whether the end limit is exclusive or not
+	 */
+	public BigDecimalIterator(BigDecimal start, BigDecimal end, boolean exclusive) {
+		this(start, end, true, DEFAULT_INCREMENT);
 	}
 
 	/**
@@ -92,11 +99,11 @@ public class BigDecimalIterator extends EZIterator<BigDecimal> {
 	 *
 	 * @param start the initial value (there is no end value)
 	 */
-  private BigDecimalIterator(BigDecimal start) {
-    this.next = Validate.notNull(start, "start value cannot be null");
-    this.onNext = true;
-    this.infinite = true;
-  }
+	private BigDecimalIterator(BigDecimal start) {
+		this.next = Validate.notNull(start, "start value cannot be null");
+		this.onNext = true;
+		this.infinite = true;
+	}
 
 	public static BigDecimalIterator fromThisValueOnForever(BigDecimal start) {
 		return new BigDecimalIterator(start);
@@ -104,12 +111,20 @@ public class BigDecimalIterator extends EZIterator<BigDecimal> {
 
 	@Override
 	protected BigDecimal calculateNext() {
-    next = next.add(increment);
+		next = next.add(increment);
 
-		if (!infinite && next.compareTo(end) >= 0) {
-      next = null;
-    }
+		if (!infinite && finiteButBeyondEnd()) {
+			next = null;
+		}
 
 		return next;
+	}
+
+	public boolean finiteButBeyondEnd() {
+		boolean result = 
+				exclusive? 
+						next.compareTo(end) >= 0 
+						: next.compareTo(end) > 0;
+		return result;
 	}
 }

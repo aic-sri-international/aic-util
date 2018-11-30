@@ -44,8 +44,8 @@ import org.junit.Test;
 
 import com.sri.ai.util.Util;
 import com.sri.ai.util.collect.HashMapRandomAccessTree;
-import com.sri.ai.util.collect.StringIterator;
 import com.sri.ai.util.collect.RandomAccessTree;
+import com.sri.ai.util.collect.StringIterator;
 
 public class HashMapTreeTest {
 

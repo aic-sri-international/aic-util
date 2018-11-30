@@ -28,7 +28,7 @@ public class RuleMarginalizerTest {
 	Goal e = new MyGoal("e");
 	Goal f = new MyGoal("f");
 	
-	ArrayList<? extends Rule> allRules;
+	ArrayList<? extends Rule<Goal>> allRules;
 	
 	LinkedList<Goal> allGoals;
 
@@ -40,7 +40,7 @@ public class RuleMarginalizerTest {
 	
 	Set<? extends Rule> actual;
 
-	BinaryFunction<Goal, Set<? extends Goal>, Rule> 
+	BinaryFunction<Goal, Set<? extends Goal>, Rule<Goal>> 
 	ruleFactory = 
 	(consequent, antecendents) -> rule(list(consequent), new LinkedList<>(antecendents));
 
@@ -162,7 +162,7 @@ public class RuleMarginalizerTest {
 	}
 
 	public void runTest() {
-		RuleMarginalizer marginalizer = new RuleMarginalizer(allRules, marginalizedGoals, ruleFactory);
+		RuleMarginalizer<Rule<Goal>, Goal> marginalizer = new RuleMarginalizer<>(allRules, marginalizedGoals, ruleFactory);
 
 		actual = marginalizer.marginalize();
 		

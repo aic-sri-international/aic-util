@@ -1,21 +1,22 @@
 package com.sri.ai.test.util.csvdb;
 
-import static com.sri.ai.test.util.csvdb.CsvTestUtils.removeCsvTmpDirIfExists;
 import static com.sri.ai.test.util.csvdb.CsvTestUtils.createCsvFileDateRainTemp;
+import static com.sri.ai.test.util.csvdb.CsvTestUtils.removeCsvTmpDirIfExists;
 
-import com.sri.ai.util.csvdb.Database;
-import com.sri.ai.util.csvdb.DatabaseManager;
-import com.sri.ai.util.csvdb.Table;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Test;
+
+import com.sri.ai.util.csvdb.Database;
+import com.sri.ai.util.csvdb.DatabaseManager;
+import com.sri.ai.util.csvdb.Table;
 
 public class DatabaseManagerTest {
   private static DatabaseManager databaseManager;

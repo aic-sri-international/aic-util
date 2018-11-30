@@ -3,11 +3,11 @@ package com.sri.ai.util.graph2d.api.graph;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.function.Function;
 
 import com.sri.ai.util.graph2d.api.functions.SingleInputFunctions;
 import com.sri.ai.util.graph2d.api.variables.SetOfValues;
 import com.sri.ai.util.graph2d.api.variables.Variable;
-import java.util.function.Function;
 
 /** 
  * Interface for external libraries making images of graph plots.

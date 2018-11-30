@@ -40,8 +40,8 @@ package com.sri.ai.test.util;
 import static com.sri.ai.util.Util.myAssert;
 import static org.junit.Assert.fail;
 
-import org.junit.Test;
 import org.junit.After;
+import org.junit.Test;
 
 import com.sri.ai.util.Util;
 

@@ -37,12 +37,12 @@
  */
 package com.sri.ai.util.console.gui;
 
-import com.google.common.annotations.Beta;
-import com.sri.ai.util.console.ConsoleIterator;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
+
+import com.google.common.annotations.Beta;
+import com.sri.ai.util.console.ConsoleIterator;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

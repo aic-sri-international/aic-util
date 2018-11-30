@@ -1,12 +1,13 @@
 package com.sri.ai.test.util.graph2d.core.values;
 
+import java.math.BigDecimal;
+
+import org.junit.Assert;
+import org.junit.Test;
+
 import com.sri.ai.util.graph2d.api.variables.DefaultValue;
 import com.sri.ai.util.graph2d.api.variables.Value;
 import com.sri.ai.util.graph2d.core.values.SetOfRealValues;
-import java.math.BigDecimal;
-import java.util.Iterator;
-import org.junit.Assert;
-import org.junit.Test;
 
 public class SetOfRealValuesTest {
   @Test(expected = NullPointerException.class)

@@ -1151,6 +1151,19 @@ public class Util {
 	}
 
 	/**
+	 * Stores collection's elements in a new, empty array list and returns it.
+	 * 
+	 * @param collection
+	 *            the collection whose elements are to be stored in a new ArrayList.
+	 * @return a new ArrayList populated with the elements from the given collection's elements.
+	 * @param <T>
+	 *            the type of the elements in the collection.
+	 */
+	public static <T> ArrayList<T> arrayListFrom(Collection<T> collection) {
+		return arrayListFrom(collection.iterator());
+	}
+
+	/**
 	 * Makes a list out of an array.
 	 * 
 	 * @param array
@@ -1329,7 +1342,7 @@ public class Util {
 	 *            elements.
 	 */
 	public static <F, T> ArrayList<T> mapIntoArrayList(
-			Collection<? extends F> collection, Function<? super F, T> function) {
+			Collection<? extends F> collection, Function<F, T> function) {
 
 		ArrayList<T> result = new ArrayList<T>(collection.size());
 		for (F element : collection) {

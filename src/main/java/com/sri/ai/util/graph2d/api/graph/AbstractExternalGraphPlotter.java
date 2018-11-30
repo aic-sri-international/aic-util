@@ -1,15 +1,17 @@
 package com.sri.ai.util.graph2d.api.graph;
 
-import com.sri.ai.util.graph2d.api.functions.SingleInputFunctions;
-import com.sri.ai.util.graph2d.api.variables.SetOfValues;
-import com.sri.ai.util.graph2d.api.variables.Unit;
-import com.sri.ai.util.graph2d.api.variables.Variable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+
+import com.sri.ai.util.graph2d.api.functions.SingleInputFunctions;
+import com.sri.ai.util.graph2d.api.variables.SetOfValues;
+import com.sri.ai.util.graph2d.api.variables.Unit;
+import com.sri.ai.util.graph2d.api.variables.Variable;
 
 public abstract class AbstractExternalGraphPlotter implements ExternalGraphPlotter {
   protected String title;

@@ -37,8 +37,9 @@
  */
 package com.sri.ai.util.collect;
 
-import com.google.common.annotations.Beta;
 import org.apache.commons.lang3.Validate;
+
+import com.google.common.annotations.Beta;
 
 /**
  * An iterator over a given integer interval

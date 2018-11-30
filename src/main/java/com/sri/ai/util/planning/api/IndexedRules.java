@@ -3,10 +3,10 @@ package com.sri.ai.util.planning.api;
 import java.util.Collection;
 import java.util.List;
 
-public interface IndexedRules {
+public interface IndexedRules<R extends Rule, G extends Goal> {
 
-	List<Rule> getRulesFor(Goal goal);
+	List<R> getRulesFor(G goal);
 
-	Collection<? extends Goal> getGoals();
+	Collection<? extends G> getGoals();
 	
 }

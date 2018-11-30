@@ -31,58 +31,60 @@ import com.sri.ai.util.planning.dnf.core.DefaultDNF;
  * @author
  *
  */
-public class RuleMarginalizer {
+public class RuleMarginalizer<R extends Rule<G>, G extends Goal> {
 
-	private Deque<Goal> goalStack;
+	private Deque<G> goalStack;
 
-	private Collection<? extends Goal> marginalizedGoals;
+	private Collection<? extends G> marginalizedGoals;
 
-	private Collection<? extends Goal> remainingGoals;
+	private Collection<? extends G> remainingGoals;
 
-	private IndexedRules indexedRules;
+	private IndexedRules<R,G> indexedRules;
 
-	private Set<Rule> marginalizedRules;
+	private Set<R> marginalizedRules;
 
-	private BinaryFunction<Goal, Set<? extends Goal>, Rule> ruleFactory;
+	private BinaryFunction<G, Set<? extends G>, R> ruleFactory;
 
-	public RuleMarginalizer(List<? extends Rule> rules, Collection<? extends Goal> marginalized,
-			BinaryFunction<Goal, Set<? extends Goal>, Rule> ruleFactory) {
+	public RuleMarginalizer(
+			List<? extends R> rules, 
+			Collection<? extends G> marginalized,
+			BinaryFunction<G, Set<? extends G>, R> ruleFactory) {
 		this.goalStack = new LinkedList<>();
 		this.marginalizedGoals = marginalized;
-		this.indexedRules = new DefaultIndexedRules(rules);
+		this.indexedRules = new DefaultIndexedRules<R,G>(rules);
 		this.remainingGoals = getAllRemainingGoalsFromRules(indexedRules);
 		this.marginalizedRules = set();
 		this.ruleFactory = ruleFactory;
 	}
 
-	public Set<? extends Rule> marginalize() {
-		for (Goal remainingGoal : remainingGoals) {
+	public Set<? extends R> marginalize() {
+		for (G remainingGoal : remainingGoals) {
 			collectMarginalizedRulesFor(remainingGoal);
 		}
 		return marginalizedRules;
 	}
 
-	private void collectMarginalizedRulesFor(Goal remainingGoal) {
-		DNF<Goal> dnf = conditionFor(remainingGoal);
+	private void collectMarginalizedRulesFor(G remainingGoal) {
+		DNF<G> dnf = conditionFor(remainingGoal);
 		makeMarginalizedRules(remainingGoal, dnf);
 	}
 
-	public void makeMarginalizedRules(Goal remainingGoal, DNF<Goal> dnf) {
-		List<? extends Rule> marginalizedRulesForRemainingGoal = makeRulesForGoalWithGivenCondition(remainingGoal, dnf);
+	public void makeMarginalizedRules(G remainingGoal, DNF<G> dnf) {
+		List<? extends R> marginalizedRulesForRemainingGoal = makeRulesForGoalWithGivenCondition(remainingGoal, dnf);
 		marginalizedRules.addAll(marginalizedRulesForRemainingGoal);
 	}
 
-	public DNF<Goal> conditionFor(Goal goal) {
+	public DNF<G> conditionFor(G goal) {
 		if (isBeingSearched(goal)) {
 			return falseCondition();
 		}
 		else {
-			DNF<Goal> result = isProvided(goal).or(conditionFromRulesFor(goal));
+			DNF<G> result = isProvided(goal).or(conditionFromRulesFor(goal));
 			return result;
 		}
 	}
 
-	private DNF<Goal> isProvided(Goal goal) {
+	private DNF<G> isProvided(G goal) {
 		if (cannotBeProvided(goal)) {
 			return falseCondition();
 		} else {
@@ -90,13 +92,13 @@ public class RuleMarginalizer {
 		}
 	}
 
-	public boolean cannotBeProvided(Goal goal) {
+	public boolean cannotBeProvided(G goal) {
 		boolean result = marginalizedGoals.contains(goal)
 				|| searchIsAtTopLevelButWeMustUseAtLeastOneRule();
 		return result;
 	}
 
-	public boolean isBeingSearched(Goal goal) {
+	public boolean isBeingSearched(G goal) {
 		return goalStack.contains(goal);
 	}
 
@@ -104,14 +106,14 @@ public class RuleMarginalizer {
 		return goalStack.size() == 0;
 	}
 
-	public DNF<Goal> hasActuallyBeenProvided(Goal goal) {
-		return new DefaultDNF<Goal>(new DefaultConjunction<Goal>(goal));
+	public DNF<G> hasActuallyBeenProvided(G goal) {
+		return new DefaultDNF<G>(new DefaultConjunction<G>(goal));
 	}
 
-	public DNF<Goal> conditionFromRulesFor(Goal goal) {
-		DNF<Goal> conditionFromPreviousRules = falseCondition();
-		for (Rule rule : getOriginalRulesFor(goal)) {
-			DNF<Goal> conditionForAntecedents = conditionForObtainingGoalWithRule(goal, rule);
+	public DNF<G> conditionFromRulesFor(G goal) {
+		DNF<G> conditionFromPreviousRules = falseCondition();
+		for (R rule : getOriginalRulesFor(goal)) {
+			DNF<G> conditionForAntecedents = conditionForObtainingGoalWithRule(goal, rule);
 			conditionFromPreviousRules.or(conditionForAntecedents);
 			if (conditionFromPreviousRules.isTrue())
 				break;
@@ -119,17 +121,17 @@ public class RuleMarginalizer {
 		return conditionFromPreviousRules;
 	}
 
-	public DNF<Goal> conditionForObtainingGoalWithRule(Goal goal, Rule rule) {
+	public DNF<G> conditionForObtainingGoalWithRule(G goal, R rule) {
 		goalStack.push(goal);
-		DNF<Goal> conditionForAntecedents = conditionForConjunctionOfGoals(rule.getAntecendents());
+		DNF<G> conditionForAntecedents = conditionForConjunctionOfGoals(rule.getAntecendents());
 		goalStack.pop();
 		return conditionForAntecedents;
 	}
 
-	private DNF<Goal> conditionForConjunctionOfGoals(Collection<? extends Goal> goals) {
-		DNF<Goal> conditionsRequiredForPreviousGoals = falseCondition();
-		for (Goal goal : goals) {
-			DNF<Goal> conditionForGoal = conditionFor(goal);
+	private DNF<G> conditionForConjunctionOfGoals(Collection<? extends G> goals) {
+		DNF<G> conditionsRequiredForPreviousGoals = falseCondition();
+		for (G goal : goals) {
+			DNF<G> conditionForGoal = conditionFor(goal);
 			conditionsRequiredForPreviousGoals.conjoin(conditionForGoal);
 			if (conditionsRequiredForPreviousGoals.isFalse())
 				break;
@@ -137,32 +139,32 @@ public class RuleMarginalizer {
 		return conditionsRequiredForPreviousGoals;
 	}
 
-	private List<Rule> makeRulesForGoalWithGivenCondition(Goal remainingGoal, DNF<Goal> dnf) {
-		List<Rule> result = list();
-		for (Conjunction<Goal> conjunction : dnf.getConjunctions()) {
-			Rule conjunctionRule = makeRuleForGoalWithGivenCondition(remainingGoal, conjunction);
+	private List<R> makeRulesForGoalWithGivenCondition(G remainingGoal, DNF<G> dnf) {
+		List<R> result = list();
+		for (Conjunction<G> conjunction : dnf.getConjunctions()) {
+			R conjunctionRule = makeRuleForGoalWithGivenCondition(remainingGoal, conjunction);
 			result.add(conjunctionRule);
 		}
 		return result;
 	}
 
-	private Rule makeRuleForGoalWithGivenCondition(Goal remainingGoal, Conjunction<Goal> conjunction) {
-		Set<? extends Goal> antecendents = new LinkedHashSet<>(conjunction.getGoals());
-		Rule rule = ruleFactory.apply(remainingGoal, antecendents);
+	private R makeRuleForGoalWithGivenCondition(G remainingGoal, Conjunction<G> conjunction) {
+		Set<? extends G> antecendents = new LinkedHashSet<>(conjunction.getGoals());
+		R rule = ruleFactory.apply(remainingGoal, antecendents);
 		return rule;
 	}
 
-	private Collection<? extends Rule> getOriginalRulesFor(Goal goal) {
-		List<Rule> rulesForGoal = indexedRules.getRulesFor(goal);
+	private Collection<? extends R> getOriginalRulesFor(G goal) {
+		List<R> rulesForGoal = indexedRules.getRulesFor(goal);
 		return rulesForGoal;
 	}
 
-	private Collection<? extends Goal> getAllRemainingGoalsFromRules(IndexedRules indexedRules) {
+	private Collection<? extends G> getAllRemainingGoalsFromRules(IndexedRules<R,G> indexedRules) {
 		return indexedRules.getGoals();
 	}
 
-	public DNF<Goal> falseCondition() {
-		return new DefaultDNF<Goal>();
+	public DNF<G> falseCondition() {
+		return new DefaultDNF<G>();
 	}
 
 }

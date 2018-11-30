@@ -1,6 +1,5 @@
 package com.sri.ai.util.graph2d.core.values;
 
-import static com.sri.ai.util.Util.myAssert;
 import static com.sri.ai.util.collect.FunctionIterator.functionIterator;
 
 import java.util.Iterator;

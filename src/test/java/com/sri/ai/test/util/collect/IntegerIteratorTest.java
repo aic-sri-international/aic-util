@@ -1,8 +1,9 @@
 package com.sri.ai.test.util.collect;
 
-import com.sri.ai.util.collect.IntegerIterator;
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.sri.ai.util.collect.IntegerIterator;
 
 public class IntegerIteratorTest {
 

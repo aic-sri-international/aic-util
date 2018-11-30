@@ -1,9 +1,11 @@
 package com.sri.ai.test.util.graph2d.api.variables;
 
-import com.sri.ai.util.graph2d.api.variables.DefaultValue;
 import java.math.BigDecimal;
+
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.sri.ai.util.graph2d.api.variables.DefaultValue;
 
 public class DefaultValueTest {
   private final static Double DOUBLE = -19.222;

@@ -23,23 +23,23 @@ import com.sri.ai.util.planning.api.Goal;
 import com.sri.ai.util.planning.api.Plan;
 import com.sri.ai.util.planning.api.Rule;
 
-public class Planner {
+public class Planner<R extends Rule<G>, G extends Goal> {
 	
-	public static Plan plan(List<? extends Goal> allGoals, ArrayList<? extends Rule> rules) {
-		Planner planner = new Planner(allGoals, rules);
+	public static <R1 extends Rule<G1>, G1 extends Goal> Plan plan(List<G1> allGoals, ArrayList<R1> rules) {
+		Planner planner = new Planner<R1, G1>(allGoals, rules);
 		Plan plan = planner.plan();
 		return plan;
 	}
 
-	Collection<? extends Goal> allGoals;
+	Collection<? extends G> allGoals;
 	
-	private ArrayList<? extends Rule> rules;
+	private ArrayList<? extends R> rules;
 
 	private ArrayList<Boolean> ruleIsAvailable;
 	
-	Set<Goal> satisfiedGoals;
+	Set<G> satisfiedGoals;
 
-	public Planner(Collection<? extends Goal> allGoals, ArrayList<? extends Rule> rules) {
+	public Planner(Collection<? extends G> allGoals, ArrayList<? extends R> rules) {
 		this.allGoals = allGoals;
 		this.rules = rules;
 	}
@@ -79,7 +79,7 @@ public class Planner {
 		ThreadExplanationLogger.explanationBlock("Attempting rule ", rules.get(i), code(() -> {
 
 			if (ruleIsAvailable.get(i)) {
-				Rule rule = rules.get(i);
+				R rule = rules.get(i);
 				if (ruleApplies(rule)) {
 					if (ruleIsUseful(rule)) {
 						findPlansStartingWithRule(rule, i, alternativeRulePlans);
@@ -99,20 +99,20 @@ public class Planner {
 		}), "Altervative plans now ", alternativeRulePlans);
 	}
 
-	private boolean ruleApplies(Rule rule) {
+	private boolean ruleApplies(R rule) {
 		boolean result = forAll(rule.getAntecendents(), a -> satisfiedGoals.contains(a));
 		return result;
 	}
 
-	private boolean ruleIsUseful(Rule rule) {
+	private boolean ruleIsUseful(R rule) {
 		boolean result = thereExists(rule.getConsequents(), c -> !satisfiedGoals.contains(c));
 		return result;
 	}
 	
-	public void findPlansStartingWithRule(Rule rule, int i, List<Plan> alternativeRulePlans) {
+	public void findPlansStartingWithRule(R rule, int i, List<Plan> alternativeRulePlans) {
 		ThreadExplanationLogger.explanationBlock("Finding plans starting with ", rule, code(() -> {
 
-			Set<Goal> satisfiedGoalsBeforeRule = new LinkedHashSet<>(satisfiedGoals);
+			Set<G> satisfiedGoalsBeforeRule = new LinkedHashSet<>(satisfiedGoals);
 			
 			applyRule(rule, i);
 
@@ -123,7 +123,7 @@ public class Planner {
 		}), "Altervative plans now ", alternativeRulePlans);
 	}
 
-	public void applyRule(Rule rule, int i) {
+	public void applyRule(R rule, int i) {
 		ThreadExplanationLogger.explanationBlock("Applying rule ", rule, code(() -> {
 
 			ruleIsAvailable.set(i, false);
@@ -138,7 +138,7 @@ public class Planner {
 		
 	}
 
-	public void attempToFindPlanStartingWithRule(Rule rule, List<Plan> alternativeRulePlans) {
+	public void attempToFindPlanStartingWithRule(R rule, List<Plan> alternativeRulePlans) {
 		
 		ThreadExplanationLogger.explanationBlock("Solving any remaining goals after applying ", rule, code(() -> {
 
@@ -158,7 +158,7 @@ public class Planner {
 		}), "Altervative plans now ", alternativeRulePlans);
 	}
 
-	public SequentialPlan attemptPlanStartingWithRuleWhenThereAreUnsatisfiedGoalsRemaining(Rule rule) {
+	public SequentialPlan attemptPlanStartingWithRuleWhenThereAreUnsatisfiedGoalsRemaining(R rule) {
 		
 		return ThreadExplanationLogger.explanationBlock("There are unsatisfied goals yet: ", Util.subtract(allGoals, satisfiedGoals), code(() -> {
 
@@ -177,103 +177,9 @@ public class Planner {
 		}), "Plan starting with rule and solving remaining goals: ", RESULT);
 	}
 
-	public void revertRule(int i, Set<Goal> satisfiedGoalsBeforeRule) {
+	public void revertRule(int i, Set<G> satisfiedGoalsBeforeRule) {
 		ruleIsAvailable.set(i, true);
 		satisfiedGoals = satisfiedGoalsBeforeRule;
 	}
-
-//	public Plan plan(Iterable<? extends Goal> allGoals) {
-//		LinkedList<Goal> unfulfilledGoals = Util.addAllToANewList(allGoals);
-//		SequentialPlan plan = new SequentialPlan();
-//		plan(unfulfilledGoals, plan);
-//		return plan;
-//	}
-//
-//	private void plan(LinkedList<Goal> unfulfilledGoals, SequentialPlan planSoFar) {
-//		ThreadExplanationLogger.explanationBlock("Planning for ", unfulfilledGoals, " with rules ", getCompiledRules(), code(() -> {
-//			
-//			while ( ! unfulfilledGoals.isEmpty()) {
-//				fulfillSomeGoal(unfulfilledGoals, planSoFar);
-//			}
-//
-//		}), "Plan: ", planSoFar);
-//	}
-//
-//	private void fulfillSomeGoal(LinkedList<Goal> unfulfilledGoals, SequentialPlan planSoFar) {
-//		ThreadExplanationLogger.explanationBlock("Fulfilling some goal", code(() -> {
-//			
-//			Goal goal = chooseNextGoal(unfulfilledGoals);
-//			Rule rule = chooseNextRule(goal, unfulfilledGoals);
-//			apply(rule, unfulfilledGoals);
-//			planSoFar.add(rule);
-//			
-//		}), "Plan so far: ", planSoFar, ", unfullfilled goals: ", unfulfilledGoals);
-//	}
-//
-//	private Goal chooseNextGoal(LinkedList<Goal> unfulfilledGoals) {
-//		return ThreadExplanationLogger.explanationBlock("Picking goal to fulfill", code(() -> {
-//			
-//		// TODO: need to use adaptive selection here
-//		Goal goal = pickUniformly(unfulfilledGoals, getRandom());
-//		return goal;
-//
-//		}), "Picked goal: ", RESULT);
-//	}
-//
-//	private Rule chooseNextRule(Goal goal, LinkedList<Goal> unfulfilledGoals) {
-//		return ThreadExplanationLogger.explanationBlock("Choosing rule for ", goal, " given unfulfilled goals ", unfulfilledGoals, code(() -> {
-//
-//			List<Rule> rulesForGoal = getCompiledRules().getRulesFor(goal);
-//			myAssert(rulesForGoal != null, noRuleFoundFor(goal));
-//			List<Rule> rulesForGoalThatApply = getRulesThatApply(rulesForGoal, unfulfilledGoals);
-//			myAssert( ! rulesForGoalThatApply.isEmpty(), noRuleApplies(goal, rulesForGoal, unfulfilledGoals));
-//			// TODO: need to use adaptive selection here
-//			Rule rule = pickUniformly(rulesForGoalThatApply, random);
-//			return rule;
-//
-//		}), "Picked ", RESULT);
-//	}
-//
-//	private List<Rule> getRulesThatApply(List<Rule> rules, LinkedList<Goal> unfulfilledGoals) {
-//		return ThreadExplanationLogger.explanationBlock("Getting those rules that apply ", unfulfilledGoals, code(() -> {
-//
-//			List<Rule> rulesThatApply = collectToList(rules, antecedentsAreSatisfiedAccordingTo(unfulfilledGoals));
-//			return rulesThatApply;
-//
-//		}), "Picked ", RESULT);
-//	}
-//
-//	private Predicate<Rule> antecedentsAreSatisfiedAccordingTo(LinkedList<Goal> unfulfilledGoals) {
-//		return r -> forAll(r.getAntecendents(), a -> isSatisfied(a, unfulfilledGoals));
-//	}
-//
-//	private boolean isSatisfied(Goal goal, LinkedList<Goal> unfulfilledGoals) {
-//		return ThreadExplanationLogger.explanationBlock("Deciding if ", goal, " is satisfied given unfulfilled goals ", unfulfilledGoals, code(() -> {
-//
-//			boolean result = ! isUnsatisfied(goal, unfulfilledGoals);
-//			return result;
-//
-//		}), "Satisfied ", RESULT);
-//	}
-//
-//	private boolean isUnsatisfied(Goal goal, LinkedList<Goal> unfulfilledGoals) {
-//		boolean result = unfulfilledGoals.contains(goal);
-//		return result;
-//	}
-//
-//	private void apply(Rule rule, LinkedList<Goal> unfulfilledGoals) {
-//		unfulfilledGoals.removeAll(rule.getConsequents());
-//	}
-//
-//	private NullaryFunction<String> noRuleFoundFor(Goal goal) {
-//		return () -> "No rules found for goal " + goal + " in\n" + this;
-//	}
-//
-//	private NullaryFunction<String> noRuleApplies(Goal goal, List<Rule> rulesForGoal, LinkedList<Goal> unfulfilledGoals) {
-//		return () -> 
-//		"Dead end: No rule for " + goal + " below applies to current unfullfilled goals because some antecedent in each of them is unfullfilled:\n" 
-//		+ join("\n", rulesForGoal) + "\n"
-//		+ "Unfulfilled goals:\n" + join("\n", unfulfilledGoals);
-//	}
 
 }

@@ -1,6 +1,5 @@
 package com.sri.ai.util.graph2d.jfreechart;
 
-import com.sri.ai.util.graph2d.jfreechart.LineChartFactory.SeriesEntry.LineColor;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -13,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
@@ -24,6 +24,8 @@ import org.jfree.chart.title.TextTitle;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+
+import com.sri.ai.util.graph2d.jfreechart.LineChartFactory.SeriesEntry.LineColor;
 
 /**
  * Factory class to generate a line chart using JFreeChart.
