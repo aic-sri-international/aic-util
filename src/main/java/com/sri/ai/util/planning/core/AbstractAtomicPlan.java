@@ -16,6 +16,7 @@ public abstract class AbstractAtomicPlan implements Plan {
 		this.estimatedSuccessWeight = weight;
 	}
 	
+	@Override
 	public double getEstimatedSuccessWeight() {
 		return estimatedSuccessWeight;
 	}

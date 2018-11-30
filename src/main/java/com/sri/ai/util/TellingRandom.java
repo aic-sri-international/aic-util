@@ -12,6 +12,7 @@ public class TellingRandom extends Random {
 		super(seed);
 	}
 	
+	@Override
 	protected int next(int bits) {
 		int result = super.next(bits);
 		counter++;

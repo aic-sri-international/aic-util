@@ -44,6 +44,7 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 		return isActive;
 	}
 	
+	@Override
 	public void setIsActive(boolean newIsActive) {
 		myAssert(startRecords.isEmpty(), () -> "Cannot change whether logger is active or not while inside explanation blocks");
 		this.isActive = newIsActive;

@@ -55,6 +55,7 @@ public class Union<T> implements LiveSet<T> {
 		this.liveSets = liveSets;
 	}
 	
+	@Override
 	public boolean contains(T element) {
 		boolean result = thereExists(liveSets, s -> s.contains(element));
 		return result;

@@ -60,6 +60,7 @@ public interface TreeComputation<T> extends NullaryFunction<T> {
 
 	TreeComputationEvaluator<T> makeNewEvaluator();
 	
+	@Override
 	default T apply() {
 		T result = makeNewEvaluator().apply(getSubs());
 		return result;

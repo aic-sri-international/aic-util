@@ -14,6 +14,7 @@ public interface SetOfVariables extends Iterable<Variable> {
 	
 	List<? extends Variable> getVariables();
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	default Iterator<Variable> iterator() {
 		return (Iterator<Variable>) getVariables().iterator();

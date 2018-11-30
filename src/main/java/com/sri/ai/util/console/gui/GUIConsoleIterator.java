@@ -54,7 +54,7 @@ import javafx.stage.Stage;
 public class GUIConsoleIterator extends Application implements ConsoleIterator {
 	private static GUIConsoleController _controller;
 	static {
-		Thread instantiate = new Thread(() -> GUIConsoleIterator.launch(GUIConsoleIterator.class));
+		Thread instantiate = new Thread(() -> Application.launch(GUIConsoleIterator.class));
 		instantiate.start();
 	}
 	

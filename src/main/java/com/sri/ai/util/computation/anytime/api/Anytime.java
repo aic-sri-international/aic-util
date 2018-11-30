@@ -65,6 +65,7 @@ public interface Anytime<T> extends Iterator<Approximation<T>>, NullaryFunction<
 	
 	Approximation<T> getCurrentApproximation();
 
+	@Override
 	default Approximation<T> apply() {
 		while (hasNext()) {
 			next();

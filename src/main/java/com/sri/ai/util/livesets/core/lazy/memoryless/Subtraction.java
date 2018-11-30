@@ -50,6 +50,7 @@ public class Subtraction<T> implements LiveSet<T> {
 		this.liveSet2 = liveSet2;
 	}
 	
+	@Override
 	public boolean contains(T element) {
 		boolean result = 
 				liveSet1.contains(element) 

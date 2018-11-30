@@ -61,6 +61,7 @@ public class RedirectingLiveSet<T> implements LiveSet<T> {
 		this.liveSet = liveSet;
 	}
 	
+	@Override
 	public boolean contains(T element) {
 		boolean result = liveSet.contains(element);
 		return result;

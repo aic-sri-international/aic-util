@@ -156,11 +156,13 @@ public class FunctionIterator<F, T> implements LazyIterator<T> {
 	private boolean baseCurrentIsInitialized = false;
 	private F baseCurrent;
 	
+	@Override
 	public void goToNextWithoutComputingCurrent() {
 		baseCurrent = base.next();
 		baseCurrentIsInitialized = true;
 	}
 
+	@Override
 	public T computeCurrent() {
 		Util.myAssert(baseCurrentIsInitialized, () -> "No current element defined for iterator.");
 		T result = function.apply(baseCurrent);

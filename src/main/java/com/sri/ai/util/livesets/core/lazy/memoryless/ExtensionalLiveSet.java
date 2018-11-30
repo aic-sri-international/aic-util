@@ -53,6 +53,7 @@ public class ExtensionalLiveSet<T> implements LiveSet<T> {
 		this.elements = elements;
 	}
 	
+	@Override
 	public boolean contains(T element) {
 		boolean result = elements.contains(element);
 		return result;

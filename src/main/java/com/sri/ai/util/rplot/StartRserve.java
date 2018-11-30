@@ -31,7 +31,8 @@ class StreamHog extends Thread {
     return installPath;
   }
 
-  public void run() {
+  @Override
+public void run() {
     try {
       BufferedReader br = new BufferedReader(new InputStreamReader(is));
       String line = null;

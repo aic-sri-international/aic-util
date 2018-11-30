@@ -233,6 +233,7 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 		return base;
 	}
 
+	@Override
 	public Approximation<T> getCurrentApproximation() {
 		return currentApproximation;
 	}

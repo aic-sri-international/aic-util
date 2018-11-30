@@ -53,6 +53,7 @@ public class Intersection<T> implements LiveSet<T> {
 		this.liveSets = liveSets;
 	}
 	
+	@Override
 	public boolean contains(T element) {
 		boolean result = forAll(liveSets, s -> s.contains(element));
 		return result;

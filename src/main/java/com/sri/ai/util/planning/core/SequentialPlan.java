@@ -29,7 +29,7 @@ public class SequentialPlan extends AbstractCompoundPlan {
 	}
 
 	public static Function<SequentialPlan, List<? extends Plan>> getSubItems() {
-		return s -> ((SequentialPlan) s).getSubPlans();
+		return s -> s.getSubPlans();
 	}
 	
 	public SequentialPlan() {

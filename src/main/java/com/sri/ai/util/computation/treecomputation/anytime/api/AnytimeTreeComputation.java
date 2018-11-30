@@ -52,6 +52,7 @@ import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
  */
 public interface AnytimeTreeComputation<T> extends Anytime<T>, EagerTreeComputation<Approximation<T>> {
 
+	@Override
 	default Approximation<T> apply() {
 		// We can perform apply in the {@link Anytime} way, or the {@link TreeComputationTest} way,
 		// so we have to define it here in order to eliminate the ambiguity, or the compiler will complain.

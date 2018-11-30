@@ -31,6 +31,7 @@ public class Variance implements StatisticOnNumber<ArithmeticNumber> {
 		variance.add(numberVariance);
 	}
 	
+	@Override
 	public ArithmeticNumber getValue() {
 		return variance.getValue();
 	}

@@ -31,7 +31,7 @@ public class OrPlan extends AbstractCompoundPlan {
 	}
 
 	public static Function<OrPlan, List<? extends Plan>> getSubItems() {
-		return s -> ((OrPlan) s).getSubPlans();
+		return s -> s.getSubPlans();
 	}
 	
 	public static Plan or(List<? extends Plan> plans) {

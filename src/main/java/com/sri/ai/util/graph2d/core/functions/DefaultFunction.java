@@ -16,6 +16,7 @@ public class DefaultFunction extends AbstractFunction {
 		this.javaFunction = javaFunction;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}

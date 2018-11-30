@@ -91,7 +91,8 @@ public class GUIConsoleController {
 		if (!isExited()) {
 			final CountDownLatch waitLatch = new CountDownLatch(1); 
 			final InvalidationListener editListener = new InvalidationListener() {
-				 public void invalidated(Observable observable) {
+				 @Override
+				public void invalidated(Observable observable) {
 					 if (!commandLineTextField.isEditable()) {
 						 result.append(commandLineTextField.getText());
 						 commandLineTextField.setText("");

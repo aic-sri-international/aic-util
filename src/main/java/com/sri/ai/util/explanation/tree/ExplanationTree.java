@@ -23,6 +23,7 @@ public interface ExplanationTree {
 	void setIndentation(int indentation);
 
 	/** Returns an indented representation of the explanation. */
+	@Override
 	String toString();
 
 }
