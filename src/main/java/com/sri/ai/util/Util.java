@@ -5775,4 +5775,29 @@ public class Util {
 		}
 		return result;
 	}
+
+	/**
+	 * Returns a {@link java.util.function.Predicate<Integer>} that is true for i if <code>booleanArray[i]</code> is true.
+	 * @param booleanArray
+	 * @return
+	 */
+	public static java.util.function.Predicate<Integer> asPredicate(ArrayList<Boolean> booleanArray) {
+		return i -> booleanArray.get(i);
+	}
+
+	public static <T> List<? extends T> collectThoseWhoseIndexSatisfy(Collection<? extends T> list, java.util.function.Predicate<Integer> predicate) {
+		List<T> result = list();
+		int i = 0;
+		for (T element : list) {
+			if (predicate.test(i)) {
+				result.add(element);
+				i++;
+			}
+		}
+		return result;
+	}
+
+	public static <T> List<? extends T> collectThoseWhoseIndexSatisfyArrayList(Collection<? extends T> collection, ArrayList<Boolean> booleanArrayList) {
+		return collectThoseWhoseIndexSatisfy(collection, asPredicate(booleanArrayList));
+	}
 }

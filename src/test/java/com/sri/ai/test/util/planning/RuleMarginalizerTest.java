@@ -16,7 +16,7 @@ import org.junit.Test;
 import com.sri.ai.util.base.BinaryFunction;
 import com.sri.ai.util.planning.api.Goal;
 import com.sri.ai.util.planning.api.Rule;
-import com.sri.ai.util.planning.core.Planner;
+import com.sri.ai.util.planning.core.PlannerUsingEachRuleAtMostOnce;
 import com.sri.ai.util.planning.core.RuleMarginalizer;
 
 public class RuleMarginalizerTest {
@@ -36,7 +36,7 @@ public class RuleMarginalizerTest {
 	
 	List<? extends Rule> expected;
 	
-	Planner planner;
+	PlannerUsingEachRuleAtMostOnce planner;
 	
 	Set<? extends Rule> actual;
 

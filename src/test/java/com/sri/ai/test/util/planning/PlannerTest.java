@@ -18,7 +18,7 @@ import com.sri.ai.util.Util;
 import com.sri.ai.util.planning.api.Goal;
 import com.sri.ai.util.planning.api.Plan;
 import com.sri.ai.util.planning.api.Rule;
-import com.sri.ai.util.planning.core.Planner;
+import com.sri.ai.util.planning.core.PlannerUsingEachRuleAtMostOnce;
 
 public class PlannerTest {
 	
@@ -35,7 +35,7 @@ public class PlannerTest {
 	
 	Plan expected;
 	
-	Planner planner;
+	PlannerUsingEachRuleAtMostOnce planner;
 	
 	Plan actual;
 
@@ -299,7 +299,7 @@ public class PlannerTest {
 	}
 	
 	public void runTest() {
-		planner = new Planner<Rule<Goal>, Goal>(allGoals, allRules);
+		planner = new PlannerUsingEachRuleAtMostOnce<Rule<Goal>, Goal>(allGoals, allRules);
 		actual = planner.plan();
 		println("Goals: " + allGoals);
 		println("Rules:\n" + join("\n", allRules));

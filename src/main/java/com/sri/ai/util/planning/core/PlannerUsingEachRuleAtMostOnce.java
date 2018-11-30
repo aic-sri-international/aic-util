@@ -1,13 +1,16 @@
 package com.sri.ai.util.planning.core;
 
+import static com.sri.ai.util.Util.collectThoseWhoseIndexSatisfyArrayList;
 import static com.sri.ai.util.Util.fill;
 import static com.sri.ai.util.Util.forAll;
 import static com.sri.ai.util.Util.list;
 import static com.sri.ai.util.Util.set;
+import static com.sri.ai.util.Util.subtract;
 import static com.sri.ai.util.Util.thereExists;
 import static com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger.RESULT;
 import static com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger.code;
 import static com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger.explain;
+import static com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger.lazy;
 import static com.sri.ai.util.planning.core.OrPlan.or;
 import static com.sri.ai.util.planning.core.SequentialPlan.and;
 
@@ -23,10 +26,10 @@ import com.sri.ai.util.planning.api.Goal;
 import com.sri.ai.util.planning.api.Plan;
 import com.sri.ai.util.planning.api.Rule;
 
-public class Planner<R extends Rule<G>, G extends Goal> {
+public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> {
 	
-	public static <R1 extends Rule<G1>, G1 extends Goal> Plan plan(List<G1> allGoals, ArrayList<R1> rules) {
-		Planner planner = new Planner<R1, G1>(allGoals, rules);
+	public static <R1 extends Rule<G1>, G1 extends Goal> Plan planUsingEachRuleAtMostOnce(List<G1> allGoals, ArrayList<R1> rules) {
+		PlannerUsingEachRuleAtMostOnce planner = new PlannerUsingEachRuleAtMostOnce<R1, G1>(allGoals, rules);
 		Plan plan = planner.plan();
 		return plan;
 	}
@@ -38,10 +41,12 @@ public class Planner<R extends Rule<G>, G extends Goal> {
 	private ArrayList<Boolean> ruleIsAvailable;
 	
 	Set<G> satisfiedGoals;
-
-	public Planner(Collection<? extends G> allGoals, ArrayList<? extends R> rules) {
+	
+	public PlannerUsingEachRuleAtMostOnce(Collection<? extends G> allGoals, ArrayList<? extends R> rules) {
 		this.allGoals = allGoals;
 		this.rules = rules;
+		this.satisfiedGoals = set();
+		this.ruleIsAvailable = fill(rules.size(), true);
 	}
 
 	/**
@@ -52,8 +57,6 @@ public class Planner<R extends Rule<G>, G extends Goal> {
 	public Plan plan() {
 		return ThreadExplanationLogger.explanationBlock("Planning for ", allGoals, " with rules ", rules, code(() -> {
 
-			satisfiedGoals = set();
-			ruleIsAvailable = fill(rules.size(), true);
 			Plan result = subPlanGivenSatisfiedGoalsAndAvailableRules();
 			return result;
 
@@ -61,18 +64,23 @@ public class Planner<R extends Rule<G>, G extends Goal> {
 	}
 	
 	private Plan subPlanGivenSatisfiedGoalsAndAvailableRules() {
-		return ThreadExplanationLogger.explanationBlock("Planning given satisfied goals ", satisfiedGoals, " with available rules ", ruleIsAvailable, code(() -> {
+		return ThreadExplanationLogger.explanationBlock(
+				"Planning for ",  lazy(() -> subtract(allGoals, satisfiedGoals)), 
+				" with available rules ", lazy(() -> collectThoseWhoseIndexSatisfyArrayList(rules, ruleIsAvailable)),
+				", from total rule set ", lazy(() -> rules),
+				" and total goals ", allGoals,
+				code(() -> {
 
-			List<Plan> alternativeRulePlans = list();
-			for (int i = 0; i != rules.size(); i++) {
-				attemptToUseRule(i, alternativeRulePlans);
-			}
+					List<Plan> alternativeRulePlans = list();
+					for (int i = 0; i != rules.size(); i++) {
+						attemptToUseRule(i, alternativeRulePlans);
+					}
 
-			Plan result = or(alternativeRulePlans);
+					Plan result = or(alternativeRulePlans);
 
-			return result;
+					return result;
 
-		}), "Plan: ", RESULT);
+				}), "Plan: ", RESULT);
 	}
 
 	public void attemptToUseRule(int i, List<Plan> alternativeRulePlans) {
