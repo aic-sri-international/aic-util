@@ -28,15 +28,11 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
-<<<<<<< HEAD
 import com.sri.ai.util.graph2d.jfreechart.LineChartFactory.SeriesEntry.LineColor;
 
 /**
  * Factory class to generate a line chart using JFreeChart.
  */
-=======
-/** Factory class to generate a line chart using JFreeChart. */
->>>>>>> branch 'dev' of https://github.com/aic-sri-international/aic-util.git
 public class LineChartFactory {
   private static Map<LineColor, Color> colorMap = new HashMap<>();
 
