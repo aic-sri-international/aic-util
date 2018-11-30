@@ -2,6 +2,7 @@ package com.sri.ai.util.graph2d.api.graph;
 
 import static com.sri.ai.util.graph2d.api.graph.ExternalGraphPlotter.externalGraphMaker;
 
+import com.sri.ai.util.graph2d.jfreechart.GraphSettings;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -26,7 +27,11 @@ public interface GraphSetMaker {
 	static GraphSetMaker graphSetMaker() {
 		return new DefaultGraphSetMaker();
 	}
-	
+
+	GraphSettings getGraphSettings();
+
+	void setGraphSettings(GraphSettings graphSettings);
+
 	Functions getFunctions();
 	void setFunctions(Functions functions);
 
@@ -82,6 +87,7 @@ public interface GraphSetMaker {
 	default GraphPlot plot(String title, SingleInputFunctions singleInputFunctionsToBePlotted) {
 		// This needs to be improved with more settings, such as units etc.
 		ExternalGraphPlotter graphMaker = externalGraphMaker(this::valuesForVariable);
+		graphMaker.setGraphSettings(getGraphSettings());
 		graphMaker.setTitle(title);
 		graphMaker.setFunctions(singleInputFunctionsToBePlotted);
 		graphMaker.setFromVariableToSetOfValues(getFromVariableToSetOfValues());

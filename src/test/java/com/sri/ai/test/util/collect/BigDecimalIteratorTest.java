@@ -8,8 +8,6 @@ import org.junit.Test;
 import com.sri.ai.util.collect.BigDecimalIterator;
 
 public class BigDecimalIteratorTest {
-
-
   @Test(expected = NullPointerException.class)
   public void testNullStartValue() {
   new BigDecimalIterator(null, BigDecimal.ONE, true);

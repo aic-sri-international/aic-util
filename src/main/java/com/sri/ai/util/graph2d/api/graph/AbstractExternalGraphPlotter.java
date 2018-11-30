@@ -1,5 +1,6 @@
 package com.sri.ai.util.graph2d.api.graph;
 
+import com.sri.ai.util.graph2d.jfreechart.GraphSettings;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -14,10 +15,21 @@ import com.sri.ai.util.graph2d.api.variables.Unit;
 import com.sri.ai.util.graph2d.api.variables.Variable;
 
 public abstract class AbstractExternalGraphPlotter implements ExternalGraphPlotter {
+  private GraphSettings graphSettings;
   protected String title;
   Function<Variable, SetOfValues> setOfValuesForVariable;
   SingleInputFunctions singleInputFunctionsToBePlotted;
   Map<Variable, SetOfValues> fromVariableToSetOfValues;
+
+  @Override
+  public GraphSettings getGraphSettings() {
+    return graphSettings;
+  }
+
+  @Override
+  public void setGraphSettings(GraphSettings graphSettings) {
+    this.graphSettings = graphSettings;
+  }
 
   @Override
   public SingleInputFunctions getFunctions() {

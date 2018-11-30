@@ -3,6 +3,9 @@ package com.sri.ai.util.graph2d.jfreechart;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Shape;
+import java.awt.Stroke;
+import java.awt.geom.Ellipse2D;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,11 +28,15 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
+<<<<<<< HEAD
 import com.sri.ai.util.graph2d.jfreechart.LineChartFactory.SeriesEntry.LineColor;
 
 /**
  * Factory class to generate a line chart using JFreeChart.
  */
+=======
+/** Factory class to generate a line chart using JFreeChart. */
+>>>>>>> branch 'dev' of https://github.com/aic-sri-international/aic-util.git
 public class LineChartFactory {
   private static Map<LineColor, Color> colorMap = new HashMap<>();
 
@@ -43,12 +50,41 @@ public class LineChartFactory {
     colorMap.put(LineColor.BLACK, Color.BLACK);
   }
 
+  private GraphSettings graphSettings = new GraphSettings();
   private String title;
   private String xAxisLabel;
   private String yAxisLabel;
   private List<SeriesEntry> seriesEntries = new ArrayList<>();
   private int graphWidth = Constants.GRAPH_WIDTH;
   private int graphHeight = Constants.GRAPH_HEIGHT;
+
+  public static void main(String[] args) {
+    Number[][] expenses = {
+      {18, 530 * 20},
+      {20, 580 * 20},
+      {25, 740 * 20},
+      {30, 901 * 20},
+      {40, 1300 * 20},
+      {50, 2219 * 20},
+      {99, 2000 * 20},
+    };
+    Number[][] income = {
+      {18, 550 * 20},
+      {20, 630 * 20},
+      {25, 800 * 20},
+      {30, 1000 * 20},
+      {40, 1500 * 20},
+      {50, 3000 * 20},
+      {99, 3000 * 20},
+    };
+    new LineChartFactory()
+        .setTitle("North America: Average Income & Expenses Per Month")
+        .setxAxisLabel("Age (yrs.)")
+        .setyAxisLabel("Income ($)")
+        .addSeries(new SeriesEntry().setKey("Income").setDataPoints(income))
+        .addSeries(new SeriesEntry().setKey("Expenses").setDataPoints(expenses))
+        .generate(new File("SampleLineChart.png"));
+  }
 
   public String getTitle() {
     return title;
@@ -100,6 +136,15 @@ public class LineChartFactory {
     return this;
   }
 
+  public GraphSettings getGraphSettings() {
+    return graphSettings;
+  }
+
+  public LineChartFactory setGraphSettings(GraphSettings graphSettings) {
+    this.graphSettings = graphSettings;
+    return this;
+  }
+
   public void generate(File file) {
     XYSeriesCollection dataset = new XYSeriesCollection();
     seriesEntries.forEach(se -> dataset.addSeries(toXYSeries(se)));
@@ -128,12 +173,16 @@ public class LineChartFactory {
 
     JFreeChart chart =
         ChartFactory.createXYLineChart(
-            null, xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL,
-            true, true, false);
+            null, xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, true, true, false);
 
     XYPlot plot = chart.getXYPlot();
 
     XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
+    float offset = -(graphSettings.getDotWidth() / 2);
+    Shape shape =
+        new Ellipse2D.Float(
+            offset, offset, graphSettings.getDotWidth(), graphSettings.getDotWidth());
+    Stroke stroke = new BasicStroke(graphSettings.getLineWidth());
 
     for (int i = 0; i < seriesEntries.size(); ++i) {
       SeriesEntry se = seriesEntries.get(i);
@@ -144,8 +193,10 @@ public class LineChartFactory {
       assignedColors.add(lc);
 
       Color color = colorMap.get(lc);
+
       renderer.setSeriesPaint(i, color);
-      renderer.setSeriesStroke(i, new BasicStroke(2.0f));
+      renderer.setSeriesShape(i, shape);
+      renderer.setSeriesStroke(i, stroke);
     }
 
     plot.setRenderer(renderer);
@@ -215,33 +266,5 @@ public class LineChartFactory {
       ORANGE,
       BLACK
     }
-  }
-
-  public static void main(String[] args) {
-    Number[][] expenses = {
-        {18, 530 * 20},
-        {20, 580 * 20},
-        {25, 740 * 20},
-        {30, 901 * 20},
-        {40, 1300 * 20},
-        {50, 2219 * 20},
-        {99, 2000 * 20},
-    };
-    Number[][] income = {
-        {18, 550 * 20},
-        {20, 630 * 20},
-        {25, 800 * 20},
-        {30, 1000 * 20},
-        {40, 1500 * 20},
-        {50, 3000 * 20},
-        {99, 3000 * 20},
-    };
-    new LineChartFactory()
-        .setTitle("North America: Average Income & Expenses Per Month")
-        .setxAxisLabel("Age (yrs.)")
-        .setyAxisLabel("Income ($)")
-        .addSeries(new SeriesEntry().setKey("Income").setDataPoints(income))
-        .addSeries(new SeriesEntry().setKey("Expenses").setDataPoints(expenses))
-        .generate(new File("SampleLineChart.png"));
   }
 }

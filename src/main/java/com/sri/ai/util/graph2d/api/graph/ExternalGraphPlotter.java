@@ -1,5 +1,6 @@
 package com.sri.ai.util.graph2d.api.graph;
 
+import com.sri.ai.util.graph2d.jfreechart.GraphSettings;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -18,13 +19,16 @@ import com.sri.ai.util.graph2d.api.variables.Variable;
  *
  */
 public interface ExternalGraphPlotter {
-
 	static ExternalGraphPlotter externalGraphMaker(Function<Variable, SetOfValues> setOfValuesForVariable) {
     AbstractExternalGraphPlotter abstractExternalGraphPlotter = new DefaultLineGraphPlotter();
     abstractExternalGraphPlotter.setSetOfValuesForVariable(setOfValuesForVariable);
 		return abstractExternalGraphPlotter;
 	}
-	
+
+	GraphSettings getGraphSettings();
+
+	void setGraphSettings(GraphSettings graphSettings);
+
 	/** The functions to be plotted. They must be single-input because the graphs are 2D. */
 	SingleInputFunctions getFunctions();
 	void setFunctions(SingleInputFunctions functions);
