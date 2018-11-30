@@ -5744,4 +5744,35 @@ public class Util {
 		  }
 		  return null;
 	  }
+
+	/**
+	 * Same as {@link #flattenOneLevel(ArrayList, Function, ArrayList)} with an empty array list as the last argument.
+	 * @param list
+	 * @param expand
+	 * @return
+	 */
+	public static <T> ArrayList<? extends T> flattenOneLevelToArrayList(
+			ArrayList<? extends T> list, 
+			java.util.function.Function<T, ArrayList<? extends T>> expand) {
+		
+		return flattenOneLevel(list, expand, arrayList());
+	}
+
+	/**
+	 * Returns a list obtained by iterating over a list, applying a function to its elements that generate lists of sub-elements,
+	 * and placing sub-elements in a given list.
+	 * @param list
+	 * @param expand
+	 * @return
+	 */
+	public static <T> ArrayList<? extends T> flattenOneLevel(
+			ArrayList<? extends T> list,
+			java.util.function.Function<T, ArrayList<? extends T>> expand, 
+			ArrayList<T> result) {
+		
+		for (T factor : list) {
+			result.addAll(expand.apply(factor));
+		}
+		return result;
+	}
 }
