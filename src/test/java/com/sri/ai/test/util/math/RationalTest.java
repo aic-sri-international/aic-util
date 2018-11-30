@@ -1232,6 +1232,7 @@ public class RationalTest {
 		Assert.assertTrue((new Rational(7, 11)).max(new Rational(3, 5)).toString().equals("7/11"));
 	}
 	
+	@SuppressWarnings("unlikely-arg-type")
 	@Test
 	public void testEquals() {
 		// "Rational [polymorph] equals"
