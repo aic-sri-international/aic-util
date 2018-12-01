@@ -298,6 +298,25 @@ public class PlannerTest {
 		runTest();
 	}
 	
+	@Test
+	public void allGoalsAlreadySatisfiedTest() {
+		
+		allRules = arrayList(
+				rule(list(f), list(e)),
+				rule(list(e), list(d)),
+				rule(list(d), list(c)),
+				rule(list(c), list(b)),
+				rule(list(b), list(a)),
+				rule(list(a), list())
+				);
+
+		allGoals = list();
+		
+		expected = and();
+														
+		runTest();
+	}
+
 	public void runTest() {
 		planner = new PlannerUsingEachRuleAtMostOnce<Rule<Goal>, Goal>(allGoals, allRules);
 		actual = planner.plan();
@@ -307,7 +326,7 @@ public class PlannerTest {
 		if (!Util.equals(expected, actual)) {
 			println("Failure!");
 			println("Expected:\n" + expected.nestedString());
-			println("Actual:\n" + actual.nestedString());
+			println("Actual:\n" + (actual == null? null : actual.nestedString()));
 		}
 		assertEquals(expected, actual);
 	}

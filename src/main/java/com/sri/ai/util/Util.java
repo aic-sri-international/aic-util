@@ -1179,6 +1179,18 @@ public class Util {
 		}
 		return result;
 	}
+	
+	public static <T> LinkedHashSet<T> setFrom(Iterator<? extends T> iterator) {
+		LinkedHashSet<T> result = set();
+		while (iterator.hasNext()) {
+			result.add(iterator.next());
+		}
+		return result;
+	}
+
+	public static <T> LinkedHashSet<T> setFrom(Collection<? extends T> collection) {
+		return setFrom(collection.iterator());
+	}
 
 	/**
 	 * Stores results of applying a function to an iterator's range in a given list.

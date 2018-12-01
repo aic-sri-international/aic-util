@@ -1,17 +1,14 @@
 package com.sri.ai.util.planning.core;
 
 import static com.sri.ai.util.Util.collectThoseWhoseIndexSatisfyArrayList;
-import static com.sri.ai.util.Util.fill;
 import static com.sri.ai.util.Util.forAll;
 import static com.sri.ai.util.Util.list;
-import static com.sri.ai.util.Util.set;
 import static com.sri.ai.util.Util.subtract;
 import static com.sri.ai.util.Util.thereExists;
 import static com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger.RESULT;
 import static com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger.code;
 import static com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger.explain;
 import static com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger.lazy;
-import static com.sri.ai.util.planning.core.OrPlan.or;
 import static com.sri.ai.util.planning.core.SequentialPlan.and;
 
 import java.util.ArrayList;
@@ -24,29 +21,40 @@ import com.sri.ai.util.Util;
 import com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger;
 import com.sri.ai.util.planning.api.Goal;
 import com.sri.ai.util.planning.api.Plan;
+import com.sri.ai.util.planning.api.Planner;
+import com.sri.ai.util.planning.api.PlanningState;
 import com.sri.ai.util.planning.api.Rule;
 
 public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> {
 	
-	public static <R1 extends Rule<G1>, G1 extends Goal> Plan planUsingEachRuleAtMostOnce(List<G1> allGoals, ArrayList<R1> rules) {
-		PlannerUsingEachRuleAtMostOnce planner = new PlannerUsingEachRuleAtMostOnce<R1, G1>(allGoals, rules);
+	public static <R1 extends Rule<G1>, G1 extends Goal> 
+	Plan 
+	planUsingEachRuleAtMostOnce(List<G1> allGoals, ArrayList<? extends R1> rules) {
+		
+		return planUsingEachRuleAtMostOnceAndIfSuccessfulApplyingSequelPlan(allGoals, rules, new PlannerThatDoesNothing<R1, G1>());
+	}
+
+	public static <R1 extends Rule<G1>, G1 extends Goal> 
+	Plan 
+	planUsingEachRuleAtMostOnceAndIfSuccessfulApplyingSequelPlan(
+			List<G1> allGoals, ArrayList<? extends R1> rules, Planner<R1, G1> sequel) {
+		
+		PlannerUsingEachRuleAtMostOnce planner = new PlannerUsingEachRuleAtMostOnce<R1, G1>(allGoals, rules, sequel);
 		Plan plan = planner.plan();
 		return plan;
 	}
 
-	Collection<? extends G> allGoals;
+	private PlanningState<R, G> state;
 	
-	private ArrayList<? extends R> rules;
-
-	private ArrayList<Boolean> ruleIsAvailable;
-	
-	Set<G> satisfiedGoals;
+	private Planner<R, G> sequel;
 	
 	public PlannerUsingEachRuleAtMostOnce(Collection<? extends G> allGoals, ArrayList<? extends R> rules) {
-		this.allGoals = allGoals;
-		this.rules = rules;
-		this.satisfiedGoals = set();
-		this.ruleIsAvailable = fill(rules.size(), true);
+		this(allGoals, rules, new PlannerThatDoesNothing<R, G>());
+	}
+	
+	public PlannerUsingEachRuleAtMostOnce(Collection<? extends G> allGoals, ArrayList<? extends R> rules, Planner<R, G> sequel) {
+		this.state = new PlanningState<>(allGoals, rules);
+		this.sequel = sequel;
 	}
 
 	/**
@@ -55,39 +63,47 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> {
 	 * @return
 	 */
 	public Plan plan() {
-		return ThreadExplanationLogger.explanationBlock("Planning for ", allGoals, " with rules ", rules, code(() -> {
-
-			Plan result = subPlanGivenSatisfiedGoalsAndAvailableRules();
-			return result;
-
-		}), "Plan: ", RESULT);
-	}
-	
-	private Plan subPlanGivenSatisfiedGoalsAndAvailableRules() {
 		return ThreadExplanationLogger.explanationBlock(
-				"Planning for ",  lazy(() -> subtract(allGoals, satisfiedGoals)), 
-				" with available rules ", lazy(() -> collectThoseWhoseIndexSatisfyArrayList(rules, ruleIsAvailable)),
-				", from total rule set ", lazy(() -> rules),
-				" and total goals ", allGoals,
+				"Planning for ",  lazy(() -> subtract(state.allGoals, state.satisfiedGoals)), 
+				" with available rules ", lazy(() -> collectThoseWhoseIndexSatisfyArrayList(state.rules, state.ruleIsAvailable)),
+				", from total rule set ", lazy(() -> state.rules),
+				" and total goals ", state.allGoals,
 				code(() -> {
 
-					List<Plan> alternativeRulePlans = list();
-					for (int i = 0; i != rules.size(); i++) {
-						attemptToUseRule(i, alternativeRulePlans);
+					Plan result;
+					
+					if (allGoalsAreSatisfied()) {
+						explain("All goals are satisfied, returning sequel plan provided by sequel planner " + sequel.getClass());
+						result = sequel.plan(state);
 					}
-
-					Plan result = or(alternativeRulePlans);
+					else {
+						result = planIfThereIsAtLeastOneUnsatisfiedGoal();
+					}
 
 					return result;
 
 				}), "Plan: ", RESULT);
 	}
 
-	public void attemptToUseRule(int i, List<Plan> alternativeRulePlans) {
-		ThreadExplanationLogger.explanationBlock("Attempting rule ", rules.get(i), code(() -> {
+	private Plan planIfThereIsAtLeastOneUnsatisfiedGoal() {
+		return ThreadExplanationLogger.explanationBlock("There are still unsatisfied goals", code(() -> {
+			
+			Plan result;
+			List<Plan> alternativeRulePlans = list();
+			for (int i = 0; i != state.rules.size(); i++) {
+				attemptToUseRule(i, alternativeRulePlans);
+			}
+			result = OrPlan.or(alternativeRulePlans);
+			return result;
+			
+		}), "Plan is: ", RESULT);
+	}
 
-			if (ruleIsAvailable.get(i)) {
-				R rule = rules.get(i);
+	private void attemptToUseRule(int i, List<Plan> alternativeRulePlans) {
+		ThreadExplanationLogger.explanationBlock("Attempting rule ", state.rules.get(i), code(() -> {
+
+			if (state.ruleIsAvailable.get(i)) {
+				R rule = state.rules.get(i);
 				if (ruleApplies(rule)) {
 					if (ruleIsUseful(rule)) {
 						findPlansStartingWithRule(rule, i, alternativeRulePlans);
@@ -107,87 +123,70 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> {
 		}), "Altervative plans now ", alternativeRulePlans);
 	}
 
-	private boolean ruleApplies(R rule) {
-		boolean result = forAll(rule.getAntecendents(), a -> satisfiedGoals.contains(a));
-		return result;
-	}
-
-	private boolean ruleIsUseful(R rule) {
-		boolean result = thereExists(rule.getConsequents(), c -> !satisfiedGoals.contains(c));
-		return result;
-	}
-	
-	public void findPlansStartingWithRule(R rule, int i, List<Plan> alternativeRulePlans) {
+	private void findPlansStartingWithRule(R rule, int i, List<Plan> alternativeRulePlans) {
 		ThreadExplanationLogger.explanationBlock("Finding plans starting with ", rule, code(() -> {
 
-			Set<G> satisfiedGoalsBeforeRule = new LinkedHashSet<>(satisfiedGoals);
-			
-			applyRule(rule, i);
-
-			attempToFindPlanStartingWithRule(rule, alternativeRulePlans);
-
-			revertRule(i, satisfiedGoalsBeforeRule);
-
-		}), "Altervative plans now ", alternativeRulePlans);
-	}
-
-	public void applyRule(R rule, int i) {
-		ThreadExplanationLogger.explanationBlock("Applying rule ", rule, code(() -> {
-
-			ruleIsAvailable.set(i, false);
-			satisfiedGoals.addAll(rule.getConsequents());
-			// Note: copying satisfiedGoals is not desirable and one may wonder why not treat it like we treat ruleIsAvailable.
-			// That would not work
-			// because adding the rule's consequents to satisfiedGoals would be ok,
-			// but reverting it would not be easy since some of the consequents might have already been in satisfiedGoals
-			// while others not, so it would not be clear which ones to remove.
-
-		}), "Satisfied goals after application are: ", satisfiedGoals);
-		
-	}
-
-	public void attempToFindPlanStartingWithRule(R rule, List<Plan> alternativeRulePlans) {
-		
-		ThreadExplanationLogger.explanationBlock("Solving any remaining goals after applying ", rule, code(() -> {
-
-			boolean allGoalsAreSatisfied = satisfiedGoals.size() == allGoals.size();
-
-			Plan planStartingWithRule;
-
-			if (allGoalsAreSatisfied) {
-				planStartingWithRule = and(rule);
-			}
-			else {
-				planStartingWithRule = attemptPlanStartingWithRuleWhenThereAreUnsatisfiedGoalsRemaining(rule);
-			}
-
+			Plan planStartingWithRule = tryRule(rule, i);
 			alternativeRulePlans.add(planStartingWithRule);
-
+			
 		}), "Altervative plans now ", alternativeRulePlans);
 	}
 
-	public SequentialPlan attemptPlanStartingWithRuleWhenThereAreUnsatisfiedGoalsRemaining(R rule) {
+	private Plan tryRule(R rule, int i) {
 		
-		return ThreadExplanationLogger.explanationBlock("There are unsatisfied goals yet: ", Util.subtract(allGoals, satisfiedGoals), code(() -> {
+		return ThreadExplanationLogger.explanationBlock("There are unsatisfied goals yet: ", Util.subtract(state.allGoals, state.satisfiedGoals), code(() -> {
 
-			Plan planStartingWithRule;
-			Plan subPlanAfterRule = subPlanGivenSatisfiedGoalsAndAvailableRules();
-			if (subPlanAfterRule == null) {
-				explain("Could not find sub-plan after applying rule to solve remaining goals.");
-				planStartingWithRule = null;
-			}
-			else {
-				explain("Found sub-plan for remaining goals: " + subPlanAfterRule);
-				planStartingWithRule = and(rule, subPlanAfterRule);
-			}
+			Set<G> howThingsUsedToBe = applyRule(rule, i);
+
+			Plan planStartingWithRule = planGivenWeJustAppliedThisRule(rule);
+
+			revertRule(i, howThingsUsedToBe);
+
 			return planStartingWithRule;
 
 		}), "Plan starting with rule and solving remaining goals: ", RESULT);
 	}
 
-	public void revertRule(int i, Set<G> satisfiedGoalsBeforeRule) {
-		ruleIsAvailable.set(i, true);
-		satisfiedGoals = satisfiedGoalsBeforeRule;
+	private Plan planGivenWeJustAppliedThisRule(R rule) {
+		return and(rule, plan());
+	}
+
+	private boolean ruleApplies(R rule) {
+		boolean result = forAll(rule.getAntecendents(), a -> state.satisfiedGoals.contains(a));
+		return result;
+	}
+
+	private boolean ruleIsUseful(R rule) {
+		boolean result = thereExists(rule.getConsequents(), c -> !state.satisfiedGoals.contains(c));
+		return result;
+	}
+	
+	private Set<G> applyRule(R rule, int i) {
+		return ThreadExplanationLogger.explanationBlock("Applying rule ", rule, code(() -> {
+	
+			Set<G> satisfiedGoalsBeforeRule = new LinkedHashSet<>(state.satisfiedGoals);
+
+			state.ruleIsAvailable.set(i, false);
+			state.satisfiedGoals.addAll(rule.getConsequents());
+			// Note: copying satisfiedGoals is not desirable and one may wonder why not treat it like we treat ruleIsAvailable.
+			// That would not work
+			// because adding the rule's consequents to satisfiedGoals would be ok,
+			// but reverting it would not be easy since some of the consequents might have already been in satisfiedGoals
+			// while others not, so it would not be clear which ones to remove.
+			
+			return satisfiedGoalsBeforeRule;
+	
+		}), "Satisfied goals after application are: ", state.satisfiedGoals);
+		
+	}
+
+	private void revertRule(int i, Set<G> satisfiedGoalsBeforeRule) {
+		state.ruleIsAvailable.set(i, true);
+		state.satisfiedGoals = satisfiedGoalsBeforeRule;
+	}
+
+	private boolean allGoalsAreSatisfied() {
+		return state.satisfiedGoals.size() == state.allGoals.size();
 	}
 
 }

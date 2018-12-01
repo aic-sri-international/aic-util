@@ -5,10 +5,11 @@ import static com.sri.ai.util.Util.arrayList;
 import static com.sri.ai.util.Util.join;
 import static com.sri.ai.util.Util.list;
 import static com.sri.ai.util.Util.println;
+import static com.sri.ai.util.Util.set;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
@@ -34,7 +35,7 @@ public class RuleMarginalizerTest {
 
 	LinkedList<Goal> marginalizedGoals;
 	
-	List<? extends Rule> expected;
+	Set<? extends Rule> expected;
 	
 	PlannerUsingEachRuleAtMostOnce planner;
 	
@@ -53,7 +54,7 @@ public class RuleMarginalizerTest {
 
 		marginalizedGoals = list(a);
 		
-		expected = list(rule(list(a), list()));
+		expected = set(rule(list(b), list()));
 		
 		runTest();
 	}
@@ -67,7 +68,7 @@ public class RuleMarginalizerTest {
 
 		marginalizedGoals = list(a);
 		
-		expected = list();
+		expected = set();
 		
 		runTest();
 	}
@@ -82,7 +83,7 @@ public class RuleMarginalizerTest {
 
 		marginalizedGoals = list(a);
 		
-		expected = list(rule(list(b), list()));
+		expected = set(rule(list(b), list()));
 		
 		runTest();
 	}
@@ -96,7 +97,7 @@ public class RuleMarginalizerTest {
 
 		marginalizedGoals = list(a);
 		
-		expected = list(rule(list(b), list()));
+		expected = set(rule(list(b), list()));
 		
 		runTest();
 	}
@@ -110,9 +111,13 @@ public class RuleMarginalizerTest {
 
 		marginalizedGoals = list(c);
 		
-		expected = list();
+		expected = set();
 		
 		runTest();
+	}
+
+	@Test
+	public void multipleAntecedents2Test() {
 
 		allRules = arrayList(
 				rule(list(c), list(a, b)),
@@ -122,7 +127,7 @@ public class RuleMarginalizerTest {
 
 		marginalizedGoals = list(c);
 		
-		expected = list(rule(list(b), list(a)));
+		expected = set(rule(list(b), list(a)));
 		
 		runTest();
 	}
@@ -141,9 +146,52 @@ public class RuleMarginalizerTest {
 
 		marginalizedGoals = list(e, c, a);
 		
-		expected = list(
+		expected = set(
 				rule(list(f), list(d)),
+				rule(list(f), list(b)),
+				rule(list(f), list()),
+				rule(list(d), list(b)),
+				rule(list(d), list()),
+				rule(list(b), list())
+				);
+		
+		runTest();
+	}
+
+	@Test
+	public void longChainTestWithDependencyBetweenGoalsTest() {
+
+		allRules = arrayList(
+				rule(list(f), list(e)),
+				rule(list(e), list(d)),
+				rule(list(d), list(c)),
+				rule(list(c), list(b)),
+				rule(list(b), list(a))
+				);
+
+		marginalizedGoals = list(e, c, a);
+		
+		expected = set(
+				rule(list(f), list(d)),
+				rule(list(f), list(b)),
 				rule(list(d), list(b))
+				);
+		
+		runTest();
+	}
+
+	@Test
+	public void dependencyBetweenGoalsTest() {
+
+		allRules = arrayList(
+				rule(list(c), list(b)),
+				rule(list(b), list(a))
+				);
+
+		marginalizedGoals = list(a);
+		
+		expected = set(
+				rule(list(c), list(b))
 				);
 		
 		runTest();
@@ -156,7 +204,23 @@ public class RuleMarginalizerTest {
 
 		marginalizedGoals = list(a);
 		
-		expected = list();
+		expected = set();
+		
+		runTest();
+	}
+
+	@Test
+	public void debuggingCaseTest() {
+
+		allRules = arrayList(
+				rule(list(a), list(b)),
+				rule(list(b), list(a)),
+				rule(list(a), list())
+				);
+
+		marginalizedGoals = list(a);
+		
+		expected = set(rule(list(b), list()));
 		
 		runTest();
 	}
@@ -166,6 +230,8 @@ public class RuleMarginalizerTest {
 
 		actual = marginalizer.marginalize();
 		
-		println(join("\n", actual));
+		println("Expected rules: " + join(expected));
+		println("Actual rules: " + join(actual));
+		assertEquals(expected, actual);
 	}
 }

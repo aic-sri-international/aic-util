@@ -2,6 +2,7 @@ package com.sri.ai.util.planning.core;
 
 import static com.sri.ai.util.Util.list;
 import static com.sri.ai.util.Util.set;
+import static com.sri.ai.util.Util.subtract;
 
 import java.util.Collection;
 import java.util.Deque;
@@ -37,7 +38,7 @@ public class RuleMarginalizer<R extends Rule<G>, G extends Goal> {
 
 	private Collection<? extends G> marginalizedGoals;
 
-	private Collection<? extends G> remainingGoals;
+	private Collection<? extends G> allGoals;
 
 	private IndexedRules<R,G> indexedRules;
 
@@ -52,12 +53,13 @@ public class RuleMarginalizer<R extends Rule<G>, G extends Goal> {
 		this.goalStack = new LinkedList<>();
 		this.marginalizedGoals = marginalized;
 		this.indexedRules = new DefaultIndexedRules<R,G>(rules);
-		this.remainingGoals = getAllRemainingGoalsFromRules(indexedRules);
+		this.allGoals = getAllRemainingGoalsFromRules(indexedRules);
 		this.marginalizedRules = set();
 		this.ruleFactory = ruleFactory;
 	}
 
 	public Set<? extends R> marginalize() {
+		Collection<? extends G> remainingGoals = subtract(allGoals, marginalizedGoals);
 		for (G remainingGoal : remainingGoals) {
 			collectMarginalizedRulesFor(remainingGoal);
 		}
@@ -114,7 +116,7 @@ public class RuleMarginalizer<R extends Rule<G>, G extends Goal> {
 		DNF<G> conditionFromPreviousRules = falseCondition();
 		for (R rule : getOriginalRulesFor(goal)) {
 			DNF<G> conditionForAntecedents = conditionForObtainingGoalWithRule(goal, rule);
-			conditionFromPreviousRules.or(conditionForAntecedents);
+			conditionFromPreviousRules = conditionFromPreviousRules.or(conditionForAntecedents);
 			if (conditionFromPreviousRules.isTrue())
 				break;
 		}
@@ -129,10 +131,10 @@ public class RuleMarginalizer<R extends Rule<G>, G extends Goal> {
 	}
 
 	private DNF<G> conditionForConjunctionOfGoals(Collection<? extends G> goals) {
-		DNF<G> conditionsRequiredForPreviousGoals = falseCondition();
+		DNF<G> conditionsRequiredForPreviousGoals = trueCondition();
 		for (G goal : goals) {
 			DNF<G> conditionForGoal = conditionFor(goal);
-			conditionsRequiredForPreviousGoals.conjoin(conditionForGoal);
+			conditionsRequiredForPreviousGoals = conditionsRequiredForPreviousGoals.and(conditionForGoal);
 			if (conditionsRequiredForPreviousGoals.isFalse())
 				break;
 		}
@@ -161,6 +163,10 @@ public class RuleMarginalizer<R extends Rule<G>, G extends Goal> {
 
 	private Collection<? extends G> getAllRemainingGoalsFromRules(IndexedRules<R,G> indexedRules) {
 		return indexedRules.getGoals();
+	}
+
+	private DNF<G> trueCondition() {
+		return new DefaultDNF<G>(new DefaultConjunction<G>());
 	}
 
 	public DNF<G> falseCondition() {

@@ -2,6 +2,7 @@ package com.sri.ai.util.planning.dnf.core;
 
 import static com.sri.ai.util.Util.join;
 import static com.sri.ai.util.Util.set;
+import static com.sri.ai.util.Util.setFrom;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -25,7 +26,7 @@ public class DefaultDNF<T> implements DNF<T> {
 	}
 
 	@Override
-	public DNF<T> conjoin(DNF<T> another) {
+	public DNF<T> and(DNF<T> another) {
 		Set<Conjunction<T>> conjoinedConjunctions = set();
 		for (Conjunction<T> conjunction : getConjunctions()) {
 			DNF<T> conjunctionAndAnother = conjunction.conjoin(another);
@@ -36,9 +37,9 @@ public class DefaultDNF<T> implements DNF<T> {
 
 	@Override
 	public DNF<T> or(DNF<T> another) {
-		Set<Conjunction<T>> conjoinedConjunctions = set();
-		conjoinedConjunctions.addAll(another.getConjunctions());
-		return new DefaultDNF<T>(conjoinedConjunctions);
+		Set<Conjunction<T>> unionOfConjunctions = setFrom(conjunctions);
+		unionOfConjunctions.addAll(another.getConjunctions());
+		return new DefaultDNF<T>(unionOfConjunctions);
 	}
 
 	@Override
@@ -87,7 +88,7 @@ public class DefaultDNF<T> implements DNF<T> {
 
 	@Override
 	public String toString() {
-		return join("or", getConjunctions());
+		return isFalse()? "false" : join("or", getConjunctions());
 	}
 
 }

@@ -2,6 +2,7 @@ package com.sri.ai.util.planning.dnf.core;
 
 import static com.sri.ai.util.Util.join;
 import static com.sri.ai.util.Util.set;
+import static com.sri.ai.util.Util.setFrom;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -40,7 +41,7 @@ public class DefaultConjunction<L> implements Conjunction<L> {
 
 	@Override
 	public Conjunction<L> conjoin(Conjunction<L> another) {
-		Set<L> literals = set();
+		Set<L> literals = setFrom(this.literals);
 		literals.addAll(another.getGoals());
 		return new DefaultConjunction<L>(literals);
 	}
@@ -78,7 +79,7 @@ public class DefaultConjunction<L> implements Conjunction<L> {
 
 	@Override
 	public String toString() {
-		return join("and", getGoals());
+		return isTrue()? "true" : join("and", getGoals());
 	}
 
 }

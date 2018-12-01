@@ -3,6 +3,7 @@ package com.sri.ai.util.planning.core;
 import static com.sri.ai.util.Util.join;
 import static com.sri.ai.util.Util.list;
 import static com.sri.ai.util.Util.product;
+import static com.sri.ai.util.Util.thereExists;
 import static com.sri.ai.util.collect.FunctionIterator.functionIterator;
 
 import java.util.Arrays;
@@ -20,7 +21,7 @@ public class SequentialPlan extends AbstractCompoundPlan {
 	}
 
 	public static Plan and(List<? extends Plan> subPlans) {
-		if (subPlans.isEmpty()) return null;
+		if (thereExists(subPlans, s -> s == null)) return null;
 		List<? extends Plan> flattenedSubPlans = flatten(subPlans, SequentialPlan.class, getSubItems());
 		if (flattenedSubPlans.size() == 1) {
 			return flattenedSubPlans.get(0);

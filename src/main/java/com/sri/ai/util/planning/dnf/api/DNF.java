@@ -4,7 +4,7 @@ import java.util.Set;
 
 public interface DNF<L> {
 
-	DNF<L> conjoin(DNF<L> another);
+	DNF<L> and(DNF<L> another);
 
 	DNF<L> or(DNF<L> dnfForAntecedent);
 
