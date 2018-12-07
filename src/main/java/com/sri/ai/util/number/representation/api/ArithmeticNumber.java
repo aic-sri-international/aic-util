@@ -1,6 +1,6 @@
 package com.sri.ai.util.number.representation.api;
 
-public interface ArithmeticNumber {
+public interface ArithmeticNumber extends Comparable<ArithmeticNumber> {
 	
 	ArithmeticNumber add(ArithmeticNumber another);
 	
@@ -11,6 +11,9 @@ public interface ArithmeticNumber {
 	ArithmeticNumber divide(ArithmeticNumber another);
 	
 	ArithmeticNumber pow(ArithmeticNumber another);
+
+	@Override
+	int compareTo(ArithmeticNumber another);
 	
 	double doubleValue();
 

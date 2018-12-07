@@ -6,8 +6,8 @@ public interface StatisticOnNumber<T> extends Statistic<T> {
 	
 	ArithmeticNumberFactory getNumberFactory();
 	
-	default void add(double number) {
-		add(getNumberFactory().make(number));
+	default void add(double number, double weight) {
+		add(getNumberFactory().make(number), getNumberFactory().make(weight));
 	}
 	
 }

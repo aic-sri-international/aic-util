@@ -15,13 +15,11 @@ import com.sri.ai.util.planning.api.State;
 
 public class OrPlan extends AbstractCompoundPlan {
 	
-	private Random random;
-	
 	public static Plan or(Plan... subPlans) {
 		return or(Arrays.asList(subPlans));
 	}
 
-	public static Plan and(List<? extends Plan> subPlans) {
+	public static Plan or(List<? extends Plan> subPlans) {
 		if (subPlans.isEmpty()) return null;
 		List<? extends Plan> flattenedSubPlans = AbstractCompoundPlan.flatten(subPlans, OrPlan.class, getSubItems());
 		if (flattenedSubPlans.size() == 1) {
@@ -34,35 +32,12 @@ public class OrPlan extends AbstractCompoundPlan {
 		return s -> s.getSubPlans();
 	}
 	
-	public static Plan or(List<? extends Plan> plans) {
-		Plan result;
-		if (plans.isEmpty()) {
-			result = null;
-		}
-		else if (plans.size() == 1){
-			result = plans.get(0);
-		}
-		else {
-			result = new OrPlan(plans);
-		}
-		return result;
-	}
-
 	public OrPlan(List<? extends Plan> subPlans) {
 		this(subPlans, null);
 	}
 
 	public OrPlan(List<? extends Plan> subPlans, Random random) {
 		super(subPlans);
-		this.random = random;
-	}
-
-	public Random getRandom() {
-		return random;
-	}
-
-	public void setRandom(Random random) {
-		this.random = random;
 	}
 
 	@Override
@@ -78,7 +53,7 @@ public class OrPlan extends AbstractCompoundPlan {
 
 	@Override
 	public void execute(State state) {
-		Random random = getRandom();
+		Random random = state.getRandom();
 		myAssert(random != null, () -> getClass() + " cannot execute without having been provided a Random");
 		int i = getDistribution().sample(random);
 		getSubPlans().get(i).execute(state);

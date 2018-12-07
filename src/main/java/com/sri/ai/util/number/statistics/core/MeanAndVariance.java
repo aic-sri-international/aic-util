@@ -22,10 +22,11 @@ public class MeanAndVariance implements StatisticOnNumber<PairOf<ArithmeticNumbe
 	}
 
 	@Override
-	public void add(ArithmeticNumber number) {
-		variance.add(number);
+	public void add(ArithmeticNumber number, ArithmeticNumber weight) {
+		variance.add(number, weight);
 	}
-
+	// TODO: this class is looking useless if variance provides the mean already
+	
 	@Override
 	public PairOf<ArithmeticNumber> getValue() {
 		return makePairOf(variance.getMean(), variance.getValue());

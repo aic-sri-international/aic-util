@@ -70,4 +70,20 @@ public class ArithmeticDouble implements ArithmeticNumber {
 		return Double.toString(number);
 	}
 
+	@Override
+	public int compareTo(ArithmeticNumber another) {
+		int result;
+		double anotherAsDouble = another.doubleValue();
+		if (number < anotherAsDouble) {
+			result = -1;
+		}
+		else if (number == anotherAsDouble) {
+			result = 0;
+		}
+		else {
+			result = 1;
+		}
+		return result;
+	}
+
 }

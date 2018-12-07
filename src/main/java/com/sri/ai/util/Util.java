@@ -5692,25 +5692,24 @@ public class Util {
 	}
 
 	/**
-	 * Sample from an array of probabilities with given partition.
+	 * Sample from an array of probabilities.
 	 * @param probabilities
-	 * @param partition
 	 * @param random
 	 * @return
 	 * @throws Error
 	 */
-	public static int sample(ArrayList<Double> probabilities, double partition, Random random) throws Error {
-		double point = random.nextDouble() * partition;
+	public static int sample(ArrayList<Double> probabilities, Random random) throws Error {
+		double point = random.nextDouble();
 		int i = 0;
 		double behindIthElement = 0;
 		while (i != probabilities.size()) {
 			behindIthElement += probabilities.get(i);
-			if (behindIthElement > point) {
+			if (point < behindIthElement) {
 				return i;
 			}
 			i++;
 		}
-		throw new Error("Should have sampled a value but picked point " + point + " greater than partition " + partition);
+		throw new Error("Should have sampled a value but picked point " + point + " which did not work for probabilities " + probabilities);
 	}
 
 	/**

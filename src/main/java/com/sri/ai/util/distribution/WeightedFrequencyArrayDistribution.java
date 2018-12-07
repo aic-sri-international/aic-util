@@ -63,7 +63,7 @@ public class WeightedFrequencyArrayDistribution {
 	}
 	
 	public int sample(Random random) {
-		int sample = Util.sample(getProbabilities(), getPartition(), random);
+		int sample = Util.sample(getProbabilities(), random);
 		return sample;
 	}
 }

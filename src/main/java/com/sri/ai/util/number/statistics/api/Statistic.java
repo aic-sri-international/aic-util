@@ -4,7 +4,7 @@ import com.sri.ai.util.number.representation.api.ArithmeticNumber;
 
 public interface Statistic<T> {
 	
-	void add(ArithmeticNumber number);
+	void add(ArithmeticNumber number, ArithmeticNumber weight);
 	
 	T getValue();
 
