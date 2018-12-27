@@ -8,4 +8,5 @@ public interface Statistic<T> {
 	
 	T getValue();
 
+	ArithmeticNumber getTotalWeight();
 }

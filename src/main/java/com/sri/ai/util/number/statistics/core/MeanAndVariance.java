@@ -45,4 +45,9 @@ public class MeanAndVariance implements StatisticOnNumber<PairOf<ArithmeticNumbe
 		return variance.getNumberFactory();
 	}
 
+	@Override
+	public ArithmeticNumber getTotalWeight() {
+		return variance.getTotalWeight();
+	}
+
 }

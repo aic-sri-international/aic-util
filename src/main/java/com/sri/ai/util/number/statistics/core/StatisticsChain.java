@@ -38,13 +38,20 @@ public class StatisticsChain<T> implements Statistic<T> {
 
 	@Override
 	public void add(ArithmeticNumber number, ArithmeticNumber weight) {
-		base.add(number, weight);
-		next.add(base.getValue(), numberFactory.make(1.0));
+		if (weight.doubleValue() != 0.0) {
+			base.add(number, weight);
+			next.add(base.getValue(), numberFactory.make(1.0));
+		}
 	}
 
 	@Override
 	public T getValue() {
 		return next.getValue();
+	}
+
+	@Override
+	public ArithmeticNumber getTotalWeight() {
+		return base.getTotalWeight();
 	}
 
 }

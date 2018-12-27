@@ -1,19 +1,33 @@
 package com.sri.ai.util.planning.core;
 
+import static com.sri.ai.util.Util.fill;
+import static com.sri.ai.util.Util.increment;
+import static com.sri.ai.util.Util.join;
 import static com.sri.ai.util.Util.mapIntoArrayList;
 import static com.sri.ai.util.Util.myAssert;
+import static com.sri.ai.util.collect.FunctionIterator.functionIterator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 
+import com.sri.ai.util.collect.IntegerIterator;
 import com.sri.ai.util.distribution.WeightedFrequencyArrayDistribution;
 import com.sri.ai.util.planning.api.Plan;
 import com.sri.ai.util.planning.api.State;
 
 public class OrPlan extends AbstractCompoundPlan {
+	
+	/**
+	 * If true, uses sub-plans' sampling rules' {@link SamplingFactor#getEstimatedSuccessWeight()} to set up initial sampling plan; otherwise,
+	 * use uniform distribution.
+	 */
+	public static boolean useEstimatedSuccessWeight = true;
+	
+	private ArrayList<Integer> numberOfSubPlanExecutions;
 	
 	public static Plan or(Plan... subPlans) {
 		return or(Arrays.asList(subPlans));
@@ -38,6 +52,7 @@ public class OrPlan extends AbstractCompoundPlan {
 
 	public OrPlan(List<? extends Plan> subPlans, Random random) {
 		super(subPlans);
+		numberOfSubPlanExecutions = fill(subPlans.size(), 0);
 	}
 
 	@Override
@@ -57,6 +72,7 @@ public class OrPlan extends AbstractCompoundPlan {
 		myAssert(random != null, () -> getClass() + " cannot execute without having been provided a Random");
 		int i = getDistribution().sample(random);
 		getSubPlans().get(i).execute(state);
+		increment(numberOfSubPlanExecutions, i);
 	}
 
 	@Override
@@ -66,15 +82,26 @@ public class OrPlan extends AbstractCompoundPlan {
 		for (int i = 0; i != getSubPlans().size(); i++) {
 			getSubPlans().get(i).reward(reward * probabilities.get(i));
 		}
+//		List<Double> afterProbabilities = getDistribution().getProbabilities();
+//		println("Reward of " + reward);
+//		println("Probabilities before reward: " + probabilities);
+//		println("Probabilities after reward: " + afterProbabilities);
 	}
 
 	public WeightedFrequencyArrayDistribution getDistribution() {
 		// TODO: can we keep these probabilities stored and updated as needed?
 		// If we know that sub-plans are not shared anywhere else, yes.
-		ArrayList<Double> weights = mapIntoArrayList(getSubPlans(), Plan::getEstimatedSuccessWeight);
+		ArrayList<Double> weights = mapIntoArrayList(getSubPlans(), effectiveWeight());
 		double smoothingCoefficient = 0.01;
 		WeightedFrequencyArrayDistribution distribution = new WeightedFrequencyArrayDistribution(weights, smoothingCoefficient);
 		return distribution;
+	}
+
+	private com.google.common.base.Function<Plan, Double> effectiveWeight() {
+		return 
+				useEstimatedSuccessWeight? 
+						Plan::getEstimatedSuccessWeight
+						: p -> 0.5;
 	}
 
 	@Override
@@ -82,4 +109,19 @@ public class OrPlan extends AbstractCompoundPlan {
 		return "or";
 	}
 	
+	public List<Integer> getNumberOfSubPlanExecutions() {
+		return Collections.unmodifiableList(numberOfSubPlanExecutions);
+	}
+
+	@Override
+	public String nestedString(int level) {
+		return 
+				padding(level) + operatorName() + "(\n"
+				+ join("\n", functionIterator(new IntegerIterator(0, getSubPlans().size()), subPlanNestedString(level))) + ")"; 
+	}
+
+	private com.google.common.base.Function<Integer, String> subPlanNestedString(int level) {
+		return i -> getSubPlans().get(i).nestedString(level + 1) + " with probability " + getDistribution().getProbabilities().get(i);
+	}
+
 }

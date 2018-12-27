@@ -25,10 +25,12 @@ public class Variance implements StatisticOnNumber<ArithmeticNumber> {
 	
 	@Override
 	public void add(ArithmeticNumber number, ArithmeticNumber weight) {
-		mean.add(number, weight);
-		ArithmeticNumber deviation = number.subtract(getMean());
-		ArithmeticNumber numberVariance = deviation.pow(two);
-		variance.add(numberVariance, weight);
+		if (weight.doubleValue() != 0.0) {
+			mean.add(number, weight);
+			ArithmeticNumber deviation = number.subtract(getMean());
+			ArithmeticNumber numberVariance = deviation.pow(two);
+			variance.add(numberVariance, weight);
+		}
 	}
 	
 	@Override
@@ -43,6 +45,11 @@ public class Variance implements StatisticOnNumber<ArithmeticNumber> {
 	@Override
 	public ArithmeticNumberFactory getNumberFactory() {
 		return mean.getNumberFactory();
+	}
+
+	@Override
+	public ArithmeticNumber getTotalWeight() {
+		return mean.getTotalWeight();
 	}
 
 }

@@ -2,7 +2,7 @@ package com.sri.ai.util.planning.core;
 
 import static com.sri.ai.util.Util.join;
 import static com.sri.ai.util.Util.list;
-import static com.sri.ai.util.Util.product;
+import static com.sri.ai.util.Util.min;
 import static com.sri.ai.util.Util.thereExists;
 import static com.sri.ai.util.collect.FunctionIterator.functionIterator;
 
@@ -58,7 +58,7 @@ public class SequentialPlan extends AbstractCompoundPlan {
 
 	@Override
 	public double getEstimatedSuccessWeight() {
-		Double result = (Double) product(subPlanEstimatedSuccessWeights());
+		Double result = min(subPlanEstimatedSuccessWeights());
 		return result;
 	}
 

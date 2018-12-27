@@ -100,7 +100,7 @@ public class IntegerIterator extends EZIterator<Integer> {
 	 */
 	private IntegerIterator(int start) {
 		this.i = start;
-    this.increment = 1;
+		this.increment = 1;
 		this.infinite = true;
 	}
 	

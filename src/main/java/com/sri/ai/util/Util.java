@@ -2252,6 +2252,48 @@ public class Util {
 	}
 	
 	/**
+	 * Returns the minimum element in an iterator's range according to a comparator.
+	 * 
+	 * @param c
+	 *            the iterator to find a minimum from.
+	 * @param comparator
+	 *            the comparator to use to determine the minimum between
+	 *            elements.
+	 * @return the minimum of the given iterator, or null if the iterator's range is
+	 *         empty.
+	 * @param <T>
+	 *            the type of the elements in the iterator's range.
+	 */
+	public static <T> T min(Iterator<? extends T> c, Comparator<T> comparator) {
+		T result = null;
+		for (T element : in(c)) {
+			if (result == null || comparator.compare(result, element) > 0) {
+				result = element;
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Returns the minimum element in an iterator's range (containing comparables) according to their natural order.
+	 * 
+	 * @param c
+	 *            the iterator to find a minimum from.
+	 * @return the minimum of the given iterator, or null if the iterator's range is empty.
+	 * @param <T>
+	 *            the type of the elements in the iterator's range.
+	 */
+	public static <T extends Comparable<T>> T min(Iterator<? extends T> c) {
+		T result = null;
+		for (T element : in(c)) {
+			if (result == null || result.compareTo(element) > 0) {
+				result = element;
+			}
+		}
+		return result;
+	}
+
+	/**
 	 * Returns the minimum element in a collection according to a comparator.
 	 * 
 	 * @param c
@@ -5810,5 +5852,18 @@ public class Util {
 
 	public static <T> List<? extends T> collectThoseWhoseIndexSatisfyArrayList(Collection<? extends T> collection, ArrayList<Boolean> booleanArrayList) {
 		return collectThoseWhoseIndexSatisfy(collection, asPredicate(booleanArrayList));
+	}
+
+	/**
+	 * Increments a given position in an array list of integers.
+	 * @param array
+	 * @param i
+	 */
+	public static void increment(ArrayList<Integer> array, int i) {
+		array.set(i,  1 + array.get(i));
+	}
+
+	public static double percentageWithTwoDecimalPlaces(int i, long total) {
+		return Math.round(i*1.0/total * 10000)/100.0;
 	}
 }

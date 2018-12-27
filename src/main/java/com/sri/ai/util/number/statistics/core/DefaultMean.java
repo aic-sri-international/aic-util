@@ -49,4 +49,9 @@ public class DefaultMean implements Mean {
 		return result;
 	}
 
+	@Override
+	public ArithmeticNumber getTotalWeight() {
+		return sumOfWeights;
+	}
+
 }

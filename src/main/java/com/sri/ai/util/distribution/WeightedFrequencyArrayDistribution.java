@@ -9,6 +9,15 @@ import java.util.Random;
 import com.sri.ai.util.Util;
 import com.sri.ai.util.base.Pair;
 
+/**
+ * A class that keeps track of weighted occurrences of values in a categorical type and provides
+ * a probability distribution based on them.
+ * It uses a smoothing coefficient which is a proportion of the sum of all weights that gets distributed to all values
+ * (see {@link Util#probabilities}).
+ * 
+ * @author braz
+ *
+ */
 public class WeightedFrequencyArrayDistribution {
 	
 	private ArrayList<Double> weights;
@@ -65,5 +74,11 @@ public class WeightedFrequencyArrayDistribution {
 	public int sample(Random random) {
 		int sample = Util.sample(getProbabilities(), random);
 		return sample;
+	}
+	
+	@Override
+	public String toString() {
+		ensureNormalization();
+		return Util.join(getProbabilities());
 	}
 }
