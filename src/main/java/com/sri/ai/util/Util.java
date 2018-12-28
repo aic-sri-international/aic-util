@@ -5866,4 +5866,36 @@ public class Util {
 	public static double percentageWithTwoDecimalPlaces(int i, long total) {
 		return Math.round(i*1.0/total * 10000)/100.0;
 	}
+
+	/**
+	 * Collect indices of elements in collection that satisfy predicate.
+	 * @param collection
+	 * @param predicate
+	 * @return
+	 */
+	public static <T> List<Integer> collectIndices(Collection<? extends T> collection, Predicate<T> predicate) {
+		List<Integer> result = list();
+		Iterator<? extends T> iterator = collection.iterator();
+		for (int i = 0; i != collection.size(); i++) {
+			T element = iterator.next();
+			if (predicate.apply(element)) {
+				result.add(i);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Creates a new list with elements from a list corresponding to given indices (using random access, which is constant time for array lists but linear time for linked lists).
+	 * @param list
+	 * @param indices
+	 * @return
+	 */
+	public static <T> List<T> splice(List<? extends T> list, Collection<? extends Integer> indices) {
+		List<T> result = list();
+		for (int index : indices) {
+			result.add(list.get(index));
+		}
+		return result;
+	}
 }

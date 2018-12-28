@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 
+import com.google.common.base.Predicate;
+import com.sri.ai.util.Util;
 import com.sri.ai.util.collect.IntegerIterator;
 import com.sri.ai.util.distribution.WeightedFrequencyArrayDistribution;
 import com.sri.ai.util.planning.api.Plan;
@@ -89,12 +91,34 @@ public class OrPlan extends AbstractCompoundPlan {
 	}
 
 	public WeightedFrequencyArrayDistribution getDistribution() {
-		// TODO: can we keep these probabilities stored and updated as needed?
-		// If we know that sub-plans are not shared anywhere else, yes.
 		ArrayList<Double> weights = mapIntoArrayList(getSubPlans(), effectiveWeight());
-		double smoothingCoefficient = 0.01;
-		WeightedFrequencyArrayDistribution distribution = new WeightedFrequencyArrayDistribution(weights, smoothingCoefficient);
+		WeightedFrequencyArrayDistribution distributionForAbsoluteSubPlansOrNull = makeDistributionForAbsoluteSubPlansOrNull(weights);
+		WeightedFrequencyArrayDistribution distribution;
+		if (distributionForAbsoluteSubPlansOrNull != null) {
+			distribution = distributionForAbsoluteSubPlansOrNull;
+		}
+		else {
+			double smoothingCoefficient = 0.01;
+			distribution = new WeightedFrequencyArrayDistribution(weights, smoothingCoefficient);
+		}
 		return distribution;
+	}
+
+	private WeightedFrequencyArrayDistribution makeDistributionForAbsoluteSubPlansOrNull(ArrayList<Double> weights) {
+		List<Integer> absolutePlansIndices = Util.collectIndices(getSubPlans(), isAbsolutePlan());
+		if (absolutePlansIndices.size() > 1) {
+			List<Plan> absoluteSubPlans = Util.splice(getSubPlans(), absolutePlansIndices);
+			throw new Error(this + " has more than one absolute sub-plan: " + join(absoluteSubPlans));
+		}
+		else if (absolutePlansIndices.size() == 1) {
+			ArrayList<Double> weightsAfterAbsolute = Util.fill(getSubPlans().size(), 0.0);
+			weightsAfterAbsolute.set(absolutePlansIndices.get(0), 1.0);
+			return new WeightedFrequencyArrayDistribution(weightsAfterAbsolute, 0.0);
+			// TODO: create a new implementation of WeightedFrequencyArrayDistribution for single-value categorical distributions.
+		}
+		else {
+			return null;
+		}
 	}
 
 	private com.google.common.base.Function<Plan, Double> effectiveWeight() {
@@ -102,6 +126,10 @@ public class OrPlan extends AbstractCompoundPlan {
 				useEstimatedSuccessWeight? 
 						Plan::getEstimatedSuccessWeight
 						: p -> 0.5;
+	}
+
+	private Predicate<Plan> isAbsolutePlan() {
+		return p -> p.getEstimatedSuccessWeight() == Double.MAX_VALUE;
 	}
 
 	@Override
