@@ -38,6 +38,8 @@
 package com.sri.ai.util;
 
 import static com.sri.ai.util.base.PairOf.makePairOf;
+import static com.sri.ai.util.collect.FunctionIterator.functionIterator;
+import static com.sri.ai.util.collect.PredicateIterator.predicateIterator;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -81,11 +83,13 @@ import com.google.common.base.Strings;
 import com.sri.ai.util.base.BinaryFunction;
 import com.sri.ai.util.base.BinaryPredicate;
 import com.sri.ai.util.base.Equals;
+import com.sri.ai.util.base.IndexingFunction;
 import com.sri.ai.util.base.NullaryFunction;
 import com.sri.ai.util.base.Pair;
 import com.sri.ai.util.base.PairOf;
 import com.sri.ai.util.base.TernaryFunction;
 import com.sri.ai.util.collect.EZIterator;
+import com.sri.ai.util.collect.NestedIterator;
 import com.sri.ai.util.math.Rational;
 
 /**
@@ -2622,8 +2626,7 @@ public class Util {
 	 * @param <E>
 	 *            the type of the collections elements.
 	 */
-	public static <E> boolean forAll(Collection<E> collection,
-			Predicate<E> predicate) {
+	public static <E> boolean forAll(Collection<? extends E> collection, Predicate<E> predicate) {
 		boolean result = collection.stream().allMatch(predicate::apply);
 		return result;
 	}
@@ -5895,6 +5898,57 @@ public class Util {
 		List<T> result = list();
 		for (int index : indices) {
 			result.add(list.get(index));
+		}
+		return result;
+	}
+
+	/**
+	 * Creates a list containing the elements in the range of a default {@link NestedIterator}.
+	 * @param objects
+	 * @return
+	 */
+	public static <T> List<T> flatList(Object... objects) {
+		NestedIterator<T> nestedIterator = new NestedIterator<T>(objects);
+		List<T> result = listFrom(nestedIterator);
+		return result;
+	}
+
+	/**
+	 * Returns an iterator over the elements of a collection whose indices satisfy a predicate.
+	 * @param collection
+	 * @param predicate
+	 * @return
+	 */
+	public static <T> Iterator<T> filterByIndexIterator(Collection<T> collection, Predicate<Integer> predicate) {
+		return filterByIndexIterator(collection.iterator(), predicate);
+	}
+
+	/**
+	 * Returns an iterator over the elements of an iterator whose indices satisfy a predicate.
+	 * @param iterator
+	 * @param predicate
+	 * @return
+	 */
+	public static <T> Iterator<T> filterByIndexIterator(Iterator<T> iterator, Predicate<Integer> predicate) {
+		Iterator<Pair<T, Integer>> indexedIterator = functionIterator(iterator, new IndexingFunction<T>());
+		Iterator<Pair<T, Integer>> filteredIndexedIterator = predicateIterator(indexedIterator, p -> predicate.apply(p.second));
+		Iterator<T> filteredIterator = functionIterator(filteredIndexedIterator, p -> p.first);
+		return filteredIterator;
+	}
+
+	/**
+	 * Accumulates the result of a binary operator by applying it to the elements in an iterator's range or,
+	 * more formally, returns <code>initial</code> if <code>iterator.hasNext()</code> is false,
+	 * or <code>operator(fold(iterator, operator, initial), iterator.next())</code> otherwise.
+	 * @param iterator
+	 * @param operator
+	 * @param initial
+	 * @return
+	 */
+	public static <T> T fold(Iterator<T> iterator, BinaryFunction<T, T, T> operator, T initial) {
+		T result = initial;
+		for (T element : in(iterator)) {
+			result = operator.apply(result, element);
 		}
 		return result;
 	}
