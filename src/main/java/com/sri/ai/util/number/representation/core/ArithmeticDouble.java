@@ -66,12 +66,12 @@ public class ArithmeticDouble implements ArithmeticNumber {
 	}
 
 	@Override
-	public ArithmeticNumber zero() {
+	public ArithmeticDouble zero() {
 		return new ArithmeticDouble(0.0);
 	}
 
 	@Override
-	public ArithmeticNumber one() {
+	public ArithmeticDouble one() {
 		return new ArithmeticDouble(1.0);
 	}
 
