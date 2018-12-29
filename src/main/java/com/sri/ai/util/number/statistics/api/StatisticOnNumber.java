@@ -1,8 +1,9 @@
 package com.sri.ai.util.number.statistics.api;
 
+import com.sri.ai.util.number.representation.api.ArithmeticNumber;
 import com.sri.ai.util.number.representation.api.ArithmeticNumberFactory;
 
-public interface StatisticOnNumber<T> extends Statistic<T> {
+public interface StatisticOnNumber<T> extends Statistic<ArithmeticNumber, T> {
 	
 	ArithmeticNumberFactory getNumberFactory();
 	

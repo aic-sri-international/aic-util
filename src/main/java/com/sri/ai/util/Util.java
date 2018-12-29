@@ -5952,4 +5952,23 @@ public class Util {
 		}
 		return result;
 	}
+
+	/**
+	 * Creates a map given collections of keys and values (associated through iteration order).
+	 * @param keys
+	 * @param values
+	 * @return
+	 */
+	public static <K, V> Map<K, V> mapFromLists(Collection<? extends K> keys, Collection<? extends V> values) {
+		myAssert(keys.size() == values.size(), () -> "mapFromLists requires the same number of keys and values, but got " + keys.size() + " and " + values.size());
+		Map<K, V> result = map();
+		Iterator<? extends K> keyIterator = keys.iterator();
+		Iterator<? extends V> valueIterator = values.iterator();
+		while (keyIterator.hasNext()) {
+			K key = keyIterator.next();
+			V value = valueIterator.next();
+			result.put(key, value);
+		}
+		return result;
+	}
 }
