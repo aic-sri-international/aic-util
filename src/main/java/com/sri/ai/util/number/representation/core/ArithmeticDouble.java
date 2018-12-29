@@ -66,6 +66,16 @@ public class ArithmeticDouble implements ArithmeticNumber {
 	}
 
 	@Override
+	public ArithmeticNumber zero() {
+		return new ArithmeticDouble(0.0);
+	}
+
+	@Override
+	public ArithmeticNumber one() {
+		return new ArithmeticDouble(1.0);
+	}
+
+	@Override
 	public String toString() {
 		return Double.toString(number);
 	}

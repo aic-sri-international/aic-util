@@ -16,5 +16,9 @@ public interface ArithmeticNumber extends Comparable<ArithmeticNumber> {
 	int compareTo(ArithmeticNumber another);
 	
 	double doubleValue();
+	
+	ArithmeticNumber zero();
+	
+	ArithmeticNumber one();
 
 }
