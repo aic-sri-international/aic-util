@@ -9,63 +9,63 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import com.sri.ai.util.Util;
-import com.sri.ai.util.planning.dnf.api.Conjunction;
+import com.sri.ai.util.planning.dnf.api.ConjunctiveClause;
 import com.sri.ai.util.planning.dnf.api.DNF;
 
 public class DefaultDNF<T> implements DNF<T> {
 	
-	Set<? extends Conjunction<T>> conjunctions;
+	Set<? extends ConjunctiveClause<T>> conjunctiveClauses;
 
 	@SafeVarargs
-	public DefaultDNF(Conjunction<T>... conjunctions) {
-		this(new LinkedHashSet<>(Arrays.asList(conjunctions)));
+	public DefaultDNF(ConjunctiveClause<T>... conjunctiveClauses) {
+		this(new LinkedHashSet<>(Arrays.asList(conjunctiveClauses)));
 	}
 
-	public DefaultDNF(Set<? extends Conjunction<T>> conjunctions) {
-		this.conjunctions = conjunctions;
+	public DefaultDNF(Set<? extends ConjunctiveClause<T>> conjunctiveClauses) {
+		this.conjunctiveClauses = conjunctiveClauses;
 	}
 
 	@Override
 	public DNF<T> and(DNF<T> another) {
-		Set<Conjunction<T>> conjoinedConjunctions = set();
-		for (Conjunction<T> conjunction : getConjunctions()) {
-			DNF<T> conjunctionAndAnother = conjunction.conjoin(another);
-			conjoinedConjunctions.addAll(conjunctionAndAnother.getConjunctions());
+		Set<ConjunctiveClause<T>> conjoinedConjunctions = set();
+		for (ConjunctiveClause<T> conjunctiveClause : getConjunctiveClauses()) {
+			DNF<T> conjunctiveClauseAndAnother = conjunctiveClause.conjoin(another);
+			conjoinedConjunctions.addAll(conjunctiveClauseAndAnother.getConjunctiveClauses());
 		}
 		return new DefaultDNF<T>(conjoinedConjunctions);
 	}
 
 	@Override
 	public DNF<T> or(DNF<T> another) {
-		Set<Conjunction<T>> unionOfConjunctions = setFrom(conjunctions);
-		unionOfConjunctions.addAll(another.getConjunctions());
+		Set<ConjunctiveClause<T>> unionOfConjunctions = setFrom(conjunctiveClauses);
+		unionOfConjunctions.addAll(another.getConjunctiveClauses());
 		return new DefaultDNF<T>(unionOfConjunctions);
 	}
 
 	@Override
 	public boolean isTrue() {
 		boolean result = 
-				getConjunctions().size() == 1
-				&& Util.getFirst(getConjunctions()).isTrue();
+				getConjunctiveClauses().size() == 1
+				&& Util.getFirst(getConjunctiveClauses()).isTrue();
 		return result;
 	}
 
 	@Override
 	public boolean isFalse() {
-		boolean result = getConjunctions().isEmpty();
+		boolean result = getConjunctiveClauses().isEmpty();
 		return result;
 	}
 
 	@Override
-	public Set<? extends Conjunction<T>> getConjunctions() {
-		return conjunctions;
+	public Set<? extends ConjunctiveClause<T>> getConjunctiveClauses() {
+		return conjunctiveClauses;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((conjunctions == null) ? 0 : conjunctions.hashCode());
+		result = prime * result + ((conjunctiveClauses == null) ? 0 : conjunctiveClauses.hashCode());
 		return result;
 	}
 
@@ -78,17 +78,17 @@ public class DefaultDNF<T> implements DNF<T> {
 		if (getClass() != obj.getClass())
 			return false;
 		DefaultDNF other = (DefaultDNF) obj;
-		if (conjunctions == null) {
-			if (other.conjunctions != null)
+		if (conjunctiveClauses == null) {
+			if (other.conjunctiveClauses != null)
 				return false;
-		} else if (!conjunctions.equals(other.conjunctions))
+		} else if (!conjunctiveClauses.equals(other.conjunctiveClauses))
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return isFalse()? "false" : join("or", getConjunctions());
+		return isFalse()? "false" : join("or", getConjunctiveClauses());
 	}
 
 }

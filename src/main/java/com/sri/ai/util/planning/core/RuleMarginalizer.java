@@ -15,9 +15,9 @@ import com.sri.ai.util.base.BinaryFunction;
 import com.sri.ai.util.planning.api.Goal;
 import com.sri.ai.util.planning.api.IndexedRules;
 import com.sri.ai.util.planning.api.Rule;
-import com.sri.ai.util.planning.dnf.api.Conjunction;
+import com.sri.ai.util.planning.dnf.api.ConjunctiveClause;
 import com.sri.ai.util.planning.dnf.api.DNF;
-import com.sri.ai.util.planning.dnf.core.DefaultConjunction;
+import com.sri.ai.util.planning.dnf.core.PositiveConjunctiveClause;
 import com.sri.ai.util.planning.dnf.core.DefaultDNF;
 
 /**
@@ -109,7 +109,7 @@ public class RuleMarginalizer<R extends Rule<G>, G extends Goal> {
 	}
 
 	public DNF<G> hasActuallyBeenProvided(G goal) {
-		return new DefaultDNF<G>(new DefaultConjunction<G>(goal));
+		return new DefaultDNF<G>(new PositiveConjunctiveClause<G>(goal));
 	}
 
 	public DNF<G> conditionFromRulesFor(G goal) {
@@ -143,15 +143,15 @@ public class RuleMarginalizer<R extends Rule<G>, G extends Goal> {
 
 	private List<R> makeRulesForGoalWithGivenCondition(G remainingGoal, DNF<G> dnf) {
 		List<R> result = list();
-		for (Conjunction<G> conjunction : dnf.getConjunctions()) {
+		for (ConjunctiveClause<G> conjunction : dnf.getConjunctiveClauses()) {
 			R conjunctionRule = makeRuleForGoalWithGivenCondition(remainingGoal, conjunction);
 			result.add(conjunctionRule);
 		}
 		return result;
 	}
 
-	private R makeRuleForGoalWithGivenCondition(G remainingGoal, Conjunction<G> conjunction) {
-		Set<? extends G> antecendents = new LinkedHashSet<>(conjunction.getGoals());
+	private R makeRuleForGoalWithGivenCondition(G remainingGoal, ConjunctiveClause<G> conjunction) {
+		Set<? extends G> antecendents = new LinkedHashSet<>(conjunction.getLiterals());
 		R rule = ruleFactory.apply(remainingGoal, antecendents);
 		return rule;
 	}
@@ -166,7 +166,7 @@ public class RuleMarginalizer<R extends Rule<G>, G extends Goal> {
 	}
 
 	private DNF<G> trueCondition() {
-		return new DefaultDNF<G>(new DefaultConjunction<G>());
+		return new DefaultDNF<G>(new PositiveConjunctiveClause<G>());
 	}
 
 	public DNF<G> falseCondition() {

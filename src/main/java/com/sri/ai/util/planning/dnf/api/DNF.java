@@ -12,6 +12,6 @@ public interface DNF<L> {
 
 	boolean isFalse();
 
-	Set<? extends Conjunction<L>> getConjunctions();
+	Set<? extends ConjunctiveClause<L>> getConjunctiveClauses();
 
 }

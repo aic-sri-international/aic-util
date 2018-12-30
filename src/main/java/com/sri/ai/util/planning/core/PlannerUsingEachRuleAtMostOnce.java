@@ -25,7 +25,7 @@ import com.sri.ai.util.planning.api.Planner;
 import com.sri.ai.util.planning.api.PlanningState;
 import com.sri.ai.util.planning.api.Rule;
 
-public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> {
+public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> implements Planner<R, G> {
 	
 	public static <R1 extends Rule<G1>, G1 extends Goal> 
 	Plan 
@@ -57,6 +57,13 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> {
 		this.sequel = sequel;
 	}
 
+	@Override
+	public Plan plan(PlanningState<R, G> state) {
+		this.state = state;
+		Plan result = plan();
+		return result;
+	}
+	
 	/**
 	 * Returns a plan that is guaranteed to achieve all goals given available rules,
 	 * or null if there is no such plan. 
