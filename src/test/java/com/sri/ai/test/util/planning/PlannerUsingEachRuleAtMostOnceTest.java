@@ -20,7 +20,7 @@ import com.sri.ai.util.planning.api.Plan;
 import com.sri.ai.util.planning.api.Rule;
 import com.sri.ai.util.planning.core.PlannerUsingEachRuleAtMostOnce;
 
-public class PlannerTest {
+public class PlannerUsingEachRuleAtMostOnceTest {
 	
 	Goal a = new MyGoal("a");
 	Goal b = new MyGoal("b");
@@ -32,6 +32,8 @@ public class PlannerTest {
 	ArrayList<? extends Rule<Goal>> allRules;
 	
 	LinkedList<? extends Goal> allGoals;
+	
+	LinkedList<? extends Goal> satisfiedGoals;
 	
 	Plan expected;
 	
@@ -50,6 +52,8 @@ public class PlannerTest {
 				);
 
 		allGoals = list(a,b);
+		
+		satisfiedGoals = list();
 		
 		expected = 
 				and(
@@ -71,6 +75,8 @@ public class PlannerTest {
 				);
 
 		allGoals = list(a,b,c,d);
+		
+		satisfiedGoals = list();
 		
 		expected = 
 				or(
@@ -105,6 +111,8 @@ public class PlannerTest {
 
 		allGoals = list(a,b);
 		
+		satisfiedGoals = list();
+		
 		expected = 
 				and(
 						rule(list(a), list()), 
@@ -124,6 +132,8 @@ public class PlannerTest {
 				);
 
 		allGoals = list(a,b);
+		
+		satisfiedGoals = list();
 		
 		expected = 
 				or(
@@ -154,6 +164,8 @@ public class PlannerTest {
 				);
 
 		allGoals = list(a,b,c);
+		
+		satisfiedGoals = list();
 		
 		expected = 
 		or(
@@ -199,6 +211,8 @@ public class PlannerTest {
 
 		allGoals = list(a,b,c,d,e,f);
 		
+		satisfiedGoals = list();
+		
 		expected = 
 				and(
 						rule(list(a), list()),
@@ -225,6 +239,8 @@ public class PlannerTest {
 
 		allGoals = list(a,b,c,d,e,f);
 		
+		satisfiedGoals = list();
+		
 		expected = null;
 														
 		runTest();
@@ -243,6 +259,8 @@ public class PlannerTest {
 				);
 
 		allGoals = list(a,b,c,d,e,f);
+		
+		satisfiedGoals = list();
 		
 		expected = null;
 														
@@ -263,6 +281,8 @@ public class PlannerTest {
 
 		allGoals = list(a,b,c,d,e,f);
 		
+		satisfiedGoals = list();
+		
 		// gigantic all-permutations kind of plan, but the output looks correct
 		// runTest();
 	}
@@ -273,6 +293,8 @@ public class PlannerTest {
 		allRules = arrayList();
 
 		allGoals = list(a,b,c,d,e,f);
+		
+		satisfiedGoals = list();
 		
 		expected = null;
 														
@@ -293,6 +315,8 @@ public class PlannerTest {
 
 		allGoals = list();
 		
+		satisfiedGoals = list();
+		
 		expected = and();
 														
 		runTest();
@@ -312,13 +336,50 @@ public class PlannerTest {
 
 		allGoals = list();
 		
+		satisfiedGoals = list();
+		
 		expected = and();
 														
 		runTest();
 	}
 
+	@Test
+	public void satisfiedGoalsTest() {
+		
+		allRules = arrayList(
+				rule(list(f), list(e)),
+				rule(list(e), list(d)),
+				rule(list(d), list(c)),
+				rule(list(c), list(b)),
+				rule(list(b), list(a)),
+				rule(list(a), list())
+				);
+
+		allGoals = list(a,b,c,d,e,f);
+		
+		satisfiedGoals = list(b, c, d);
+		
+		expected = 
+				or(
+						and(
+								rule(list(e), list(d)),
+								or(
+										and(
+												rule(list(f), list(e)),
+												rule(list(a), list())),
+										and(
+												rule(list(a), list()),
+												rule(list(f), list(e))))),
+						and(
+								rule(list(a), list()),
+								rule(list(e), list(d)),
+								rule(list(f), list(e))));
+														
+		runTest();
+	}
+
 	public void runTest() {
-		planner = new PlannerUsingEachRuleAtMostOnce<Rule<Goal>, Goal>(allGoals, allRules);
+		planner = new PlannerUsingEachRuleAtMostOnce<Rule<Goal>, Goal>(allGoals, satisfiedGoals, allRules);
 		actual = planner.plan();
 		println("Goals: " + allGoals);
 		println("Rules:\n" + join("\n", allRules));

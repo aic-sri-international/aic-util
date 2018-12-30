@@ -29,17 +29,20 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 	
 	public static <R1 extends Rule<G1>, G1 extends Goal> 
 	Plan 
-	planUsingEachRuleAtMostOnce(List<G1> allGoals, ArrayList<? extends R1> rules) {
+	planUsingEachRuleAtMostOnce(List<G1> allGoals, Collection<? extends G1> satisfiedGoals, ArrayList<? extends R1> rules) {
 		
-		return planUsingEachRuleAtMostOnceAndIfSuccessfulApplyingSequelPlan(allGoals, rules, new PlannerThatDoesNothing<R1, G1>());
+		return planUsingEachRuleAtMostOnceAndIfSuccessfulApplyingSequelPlan(allGoals, satisfiedGoals, rules, new PlannerThatDoesNothing<R1, G1>());
 	}
 
 	public static <R1 extends Rule<G1>, G1 extends Goal> 
 	Plan 
 	planUsingEachRuleAtMostOnceAndIfSuccessfulApplyingSequelPlan(
-			List<G1> allGoals, ArrayList<? extends R1> rules, Planner<R1, G1> sequel) {
+			List<G1> allGoals, 
+			Collection<? extends G1> satisfiedGoals, 
+			ArrayList<? extends R1> rules, 
+			Planner<R1, G1> sequel) {
 		
-		PlannerUsingEachRuleAtMostOnce planner = new PlannerUsingEachRuleAtMostOnce<R1, G1>(allGoals, rules, sequel);
+		PlannerUsingEachRuleAtMostOnce planner = new PlannerUsingEachRuleAtMostOnce<R1, G1>(allGoals, satisfiedGoals, rules, sequel);
 		Plan plan = planner.plan();
 		return plan;
 	}
@@ -48,12 +51,12 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 	
 	private Planner<R, G> sequel;
 	
-	public PlannerUsingEachRuleAtMostOnce(Collection<? extends G> allGoals, ArrayList<? extends R> rules) {
-		this(allGoals, rules, new PlannerThatDoesNothing<R, G>());
+	public PlannerUsingEachRuleAtMostOnce(Collection<? extends G> allGoals, Collection<? extends G> satisfiedGoals, ArrayList<? extends R> rules) {
+		this(allGoals, satisfiedGoals, rules, new PlannerThatDoesNothing<R, G>());
 	}
 	
-	public PlannerUsingEachRuleAtMostOnce(Collection<? extends G> allGoals, ArrayList<? extends R> rules, Planner<R, G> sequel) {
-		this.state = new PlanningState<>(allGoals, rules);
+	public PlannerUsingEachRuleAtMostOnce(Collection<? extends G> allGoals, Collection<? extends G> satisfiedGoals, ArrayList<? extends R> rules, Planner<R, G> sequel) {
+		this.state = new PlanningState<>(allGoals, satisfiedGoals, rules);
 		this.sequel = sequel;
 	}
 
