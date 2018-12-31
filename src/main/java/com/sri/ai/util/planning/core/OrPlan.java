@@ -106,19 +106,20 @@ public class OrPlan extends AbstractCompoundPlan {
 
 	private WeightedFrequencyArrayDistribution makeDistributionForAbsoluteSubPlansOrNull(ArrayList<Double> weights) {
 		List<Integer> absolutePlansIndices = Util.collectIndices(getSubPlans(), isAbsolutePlan());
-		if (absolutePlansIndices.size() > 1) {
-			List<Plan> absoluteSubPlans = Util.splice(getSubPlans(), absolutePlansIndices);
-			throw new Error(this + " has more than one absolute sub-plan: " + join(absoluteSubPlans));
-		}
-		else if (absolutePlansIndices.size() == 1) {
-			ArrayList<Double> weightsAfterAbsolute = Util.fill(getSubPlans().size(), 0.0);
-			weightsAfterAbsolute.set(absolutePlansIndices.get(0), 1.0);
-			return new WeightedFrequencyArrayDistribution(weightsAfterAbsolute, 0.0);
-			// TODO: create a new implementation of WeightedFrequencyArrayDistribution for single-value categorical distributions.
+		if ( ! absolutePlansIndices.isEmpty()) {
+			return makeUniformDistributionOnAbsolutePlans(absolutePlansIndices);
 		}
 		else {
 			return null;
 		}
+	}
+
+	public WeightedFrequencyArrayDistribution makeUniformDistributionOnAbsolutePlans(List<Integer> absolutePlansIndices) {
+		ArrayList<Double> weightsAfterAbsolute = Util.fill(getSubPlans().size(), 0.0);
+		for (int i : absolutePlansIndices) {
+			weightsAfterAbsolute.set(i, 1.0);
+		}
+		return new WeightedFrequencyArrayDistribution(weightsAfterAbsolute, 0.0);
 	}
 
 	private com.google.common.base.Function<Plan, Double> effectiveWeight() {
@@ -129,7 +130,9 @@ public class OrPlan extends AbstractCompoundPlan {
 	}
 
 	private Predicate<Plan> isAbsolutePlan() {
-		return p -> p.getEstimatedSuccessWeight() == Double.MAX_VALUE;
+		return p -> {
+			return p.getEstimatedSuccessWeight() == Plan.MAXIMUM_ESTIMATED_SUCCESS_WEIGHT;
+		};
 	}
 
 	@Override

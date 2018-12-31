@@ -20,5 +20,7 @@ public interface ArithmeticNumber extends Comparable<ArithmeticNumber> {
 	ArithmeticNumber zero();
 	
 	ArithmeticNumber one();
+	
+	ArithmeticNumber make(double value);
 
 }

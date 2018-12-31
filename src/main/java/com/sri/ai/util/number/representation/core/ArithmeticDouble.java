@@ -76,6 +76,11 @@ public class ArithmeticDouble implements ArithmeticNumber {
 	}
 
 	@Override
+	public ArithmeticDouble make(double value) {
+		return new ArithmeticDouble(value);
+	}
+
+	@Override
 	public String toString() {
 		return Double.toString(number);
 	}

@@ -4,6 +4,8 @@ import com.google.common.base.Strings;
 
 public interface Plan {
 
+	double MAXIMUM_ESTIMATED_SUCCESS_WEIGHT = Double.MAX_VALUE;
+
 	/**
 	 * A "success weight" proportional to the probability of choosing this plan when compared to alternative plans.
 	 * Using Double.MAX_VALUE indicates an infinite value and two alternative plans with this value may raise an exception.
