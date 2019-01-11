@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.sri.ai.util.graph2d.api.variables.DefaultValue;
+import com.sri.ai.util.function.core.values.DefaultValue;
 
 public class DefaultValueTest {
   private final static Double DOUBLE = -19.222;

@@ -5,9 +5,9 @@ import java.math.BigDecimal;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.sri.ai.util.graph2d.api.variables.DefaultValue;
-import com.sri.ai.util.graph2d.api.variables.Value;
-import com.sri.ai.util.graph2d.core.values.SetOfRealValues;
+import com.sri.ai.util.function.api.values.Value;
+import com.sri.ai.util.function.core.values.DefaultValue;
+import com.sri.ai.util.function.core.values.SetOfRealValues;
 
 public class SetOfRealValuesTest {
   @Test(expected = NullPointerException.class)

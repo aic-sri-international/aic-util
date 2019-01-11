@@ -2,24 +2,24 @@ package com.sri.ai.util.graph2d.application;
 
 import static com.sri.ai.util.Util.map;
 import static com.sri.ai.util.Util.println;
-import static com.sri.ai.util.graph2d.api.functions.Function.function;
-import static com.sri.ai.util.graph2d.api.functions.Functions.functions;
-import static com.sri.ai.util.graph2d.api.graph.GraphSetMaker.graphSetMaker;
-import static com.sri.ai.util.graph2d.api.variables.SetOfVariables.setOfVariables;
-import static com.sri.ai.util.graph2d.api.variables.Value.value;
-import static com.sri.ai.util.graph2d.api.variables.Variable.enumVariable;
-import static com.sri.ai.util.graph2d.api.variables.Variable.integerVariable;
-import static com.sri.ai.util.graph2d.api.variables.Variable.realVariable;
-import static com.sri.ai.util.graph2d.core.values.SetOfEnumValues.setOfEnumValues;
-import static com.sri.ai.util.graph2d.core.values.SetOfIntegerValues.setOfIntegerValues;
+import static com.sri.ai.util.function.api.functions.Function.function;
+import static com.sri.ai.util.function.api.functions.Functions.functions;
+import static com.sri.ai.util.function.api.values.Value.value;
+import static com.sri.ai.util.function.api.variables.SetOfVariables.setOfVariables;
+import static com.sri.ai.util.function.api.variables.Variable.enumVariable;
+import static com.sri.ai.util.function.api.variables.Variable.integerVariable;
+import static com.sri.ai.util.function.api.variables.Variable.realVariable;
+import static com.sri.ai.util.function.core.values.SetOfEnumValues.setOfEnumValues;
+import static com.sri.ai.util.function.core.values.SetOfIntegerValues.setOfIntegerValues;
+import static com.sri.ai.util.graph2d.api.GraphSetMaker.graphSetMaker;
 
-import com.sri.ai.util.graph2d.api.functions.Function;
-import com.sri.ai.util.graph2d.api.functions.Functions;
-import com.sri.ai.util.graph2d.api.graph.GraphPlot;
-import com.sri.ai.util.graph2d.api.graph.GraphSet;
-import com.sri.ai.util.graph2d.api.graph.GraphSetMaker;
-import com.sri.ai.util.graph2d.api.variables.Unit;
-import com.sri.ai.util.graph2d.api.variables.Variable;
+import com.sri.ai.util.function.api.functions.Function;
+import com.sri.ai.util.function.api.functions.Functions;
+import com.sri.ai.util.function.api.variables.Unit;
+import com.sri.ai.util.function.api.variables.Variable;
+import com.sri.ai.util.graph2d.api.GraphPlot;
+import com.sri.ai.util.graph2d.api.GraphSet;
+import com.sri.ai.util.graph2d.api.GraphSetMaker;
 
 public class Example {
 

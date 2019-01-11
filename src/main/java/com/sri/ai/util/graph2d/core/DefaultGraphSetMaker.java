@@ -4,9 +4,8 @@ import static com.sri.ai.util.Util.in;
 import static com.sri.ai.util.Util.mapIntoList;
 import static com.sri.ai.util.Util.myAssert;
 import static com.sri.ai.util.collect.FunctionIterator.functionIterator;
-import static com.sri.ai.util.graph2d.api.variables.Assignment.assignment;
+import static com.sri.ai.util.function.api.variables.Assignment.assignment;
 
-import com.sri.ai.util.graph2d.jfreechart.GraphSettings;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -14,13 +13,14 @@ import java.util.Map;
 
 import com.sri.ai.util.base.NullaryFunction;
 import com.sri.ai.util.collect.CartesianProductIterator;
-import com.sri.ai.util.graph2d.api.functions.Functions;
-import com.sri.ai.util.graph2d.api.graph.GraphSetMaker;
-import com.sri.ai.util.graph2d.api.variables.Assignment;
-import com.sri.ai.util.graph2d.api.variables.SetOfValues;
-import com.sri.ai.util.graph2d.api.variables.SetOfVariables;
-import com.sri.ai.util.graph2d.api.variables.Value;
-import com.sri.ai.util.graph2d.api.variables.Variable;
+import com.sri.ai.util.function.api.functions.Functions;
+import com.sri.ai.util.function.api.values.Value;
+import com.sri.ai.util.function.api.variables.Assignment;
+import com.sri.ai.util.function.api.variables.SetOfValues;
+import com.sri.ai.util.function.api.variables.SetOfVariables;
+import com.sri.ai.util.function.api.variables.Variable;
+import com.sri.ai.util.graph2d.api.GraphSetMaker;
+import com.sri.ai.util.graph2d.core.jfreechart.GraphSettings;
 
 public class DefaultGraphSetMaker implements GraphSetMaker {
 	private GraphSettings graphSettings = new GraphSettings();
