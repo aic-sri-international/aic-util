@@ -27,10 +27,6 @@ public class DiscretizedConditionalProbabilityDistributionFunction extends Abstr
 
 	/////////////////////////////////
 
-	public DiscretizedConditionalProbabilityDistributionFunction(SetOfVariables setOfInputVariablesWithRange, int queryVariableIndex) {
-		this(new DiscretizedConditionalProbabilityDistribution(setOfInputVariablesWithRange, queryVariableIndex));
-	}
-	
 	public DiscretizedConditionalProbabilityDistributionFunction(DiscretizedConditionalProbabilityDistribution conditionalDistribution) {
 		
 		super(makeOutputVariable(conditionalDistribution), conditionalDistribution.getSetOfVariablesWithRange());
@@ -42,6 +38,10 @@ public class DiscretizedConditionalProbabilityDistributionFunction extends Abstr
 
 	}
 
+	public DiscretizedConditionalProbabilityDistributionFunction(SetOfVariables setOfInputVariablesWithRange, int queryVariableIndex) {
+		this(new DiscretizedConditionalProbabilityDistribution(setOfInputVariablesWithRange, queryVariableIndex));
+	}
+	
 	private static RealVariable makeOutputVariable(DiscretizedConditionalProbabilityDistribution conditionalDistribution) {
 		return makeOutputVariable(conditionalDistribution.getSetOfVariablesWithRange().get(conditionalDistribution.getQueryVariableIndex()));
 	}
@@ -60,6 +60,10 @@ public class DiscretizedConditionalProbabilityDistributionFunction extends Abstr
 		return conditionalDistribution.getQueryVariableIndex();
 	}
 
+	public DiscretizedConditionalProbabilityDistribution getConditionalDistribution() {
+		return conditionalDistribution;
+	}
+
 	/////////////////////////////////
 
 	public void register(ArrayList<Object> valueObjects, double weight) {
@@ -71,7 +75,7 @@ public class DiscretizedConditionalProbabilityDistributionFunction extends Abstr
 	@Override
 	public Value evaluate(Assignment assignmentToInputVariables) {
 		ArrayList<Object> valueObjects = getValues(assignmentToInputVariables);
-		return conditionalDistribution.evaluate(valueObjects);
+		return conditionalDistribution.apply(valueObjects);
 	}
 
 	private ArrayList<Object> getValues(Assignment assignment) {

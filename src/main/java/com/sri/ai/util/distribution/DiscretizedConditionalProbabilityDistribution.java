@@ -8,7 +8,7 @@ import com.sri.ai.util.function.api.variables.SetOfVariables;
 import com.sri.ai.util.function.api.variables.Variable;
 import com.sri.ai.util.function.core.values.DefaultValue;
 
-public class DiscretizedConditionalProbabilityDistribution {
+public class DiscretizedConditionalProbabilityDistribution implements java.util.function.Function<ArrayList<Object>, Value> {
 
 	protected ConditionalDiscretizer discretizer;
 	protected WeightedFrequencyArrayConditionalDistribution conditionalDistribution;
@@ -41,7 +41,8 @@ public class DiscretizedConditionalProbabilityDistribution {
 		}
 	}
 
-	public Value evaluate(ArrayList<Object> valueObjects) {
+	@Override
+	public Value apply(ArrayList<Object> valueObjects) {
 		Pair<Integer, ArrayList<Integer>> valueIndices = discretizer.getValueIndices(valueObjects);
 		int queryValueIndex = valueIndices.first;
 		ArrayList<Integer> nonQueryValueIndices = valueIndices.second;
