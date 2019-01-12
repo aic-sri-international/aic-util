@@ -22,6 +22,16 @@ public class DiscretizedConditionalProbabilityDistribution {
 
 	//////////////////////////////
 
+	public SetOfVariables getSetOfVariablesWithRange() {
+		return discretizer.getSetOfVariablesWithRange();
+	}
+
+	public int getQueryVariableIndex() {
+		return discretizer.getQueryVariableIndex();
+	}
+
+	//////////////////////////////
+
 	public void register(ArrayList<Object> valueObjects, double weight) {
 		Pair<Integer, ArrayList<Integer>> valueIndices = discretizer.getValueIndices(valueObjects);
 		Integer queryValueIndex = valueIndices.first;

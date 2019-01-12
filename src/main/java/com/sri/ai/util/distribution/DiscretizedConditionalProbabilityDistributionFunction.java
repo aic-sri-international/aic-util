@@ -19,30 +19,45 @@ import com.sri.ai.util.function.core.variables.RealVariable;
  * @author braz
  *
  */
-public class DiscretizedProbabilityDistributionFunction extends AbstractFunction {
+public class DiscretizedConditionalProbabilityDistributionFunction extends AbstractFunction {
 
 	protected DiscretizedConditionalProbabilityDistribution conditionalDistribution;
 	
-	protected int queryVariableIndex;
 	protected WeightedFrequencyArrayConditionalDistribution indexDistribution;
 
 	/////////////////////////////////
 
-	protected DiscretizedProbabilityDistributionFunction(SetOfVariables setOfInputVariablesWithRange, int queryVariableIndex) {
+	public DiscretizedConditionalProbabilityDistributionFunction(SetOfVariables setOfInputVariablesWithRange, int queryVariableIndex) {
+		this(new DiscretizedConditionalProbabilityDistribution(setOfInputVariablesWithRange, queryVariableIndex));
+	}
+	
+	public DiscretizedConditionalProbabilityDistributionFunction(DiscretizedConditionalProbabilityDistribution conditionalDistribution) {
 		
-		super(makeOutputVariable(setOfInputVariablesWithRange.get(queryVariableIndex)), setOfInputVariablesWithRange);
+		super(makeOutputVariable(conditionalDistribution), conditionalDistribution.getSetOfVariablesWithRange());
 
-		conditionalDistribution = new DiscretizedConditionalProbabilityDistribution(setOfInputVariablesWithRange, queryVariableIndex);
+		this.conditionalDistribution = conditionalDistribution;
 		
-		this.queryVariableIndex = queryVariableIndex;
-
-		int numberOfQueryValueIndices = getSetOfInputVariables().getVariables().get(queryVariableIndex).getSetOfValuesOrNull().size() + 1;
+		int numberOfQueryValueIndices = getSetOfInputVariables().getVariables().get(getQueryVariableIndex()).getSetOfValuesOrNull().size() + 1;
 		this.indexDistribution = new WeightedFrequencyArrayConditionalDistribution(numberOfQueryValueIndices);
 
+	}
+
+	private static RealVariable makeOutputVariable(DiscretizedConditionalProbabilityDistribution conditionalDistribution) {
+		return makeOutputVariable(conditionalDistribution.getSetOfVariablesWithRange().get(conditionalDistribution.getQueryVariableIndex()));
 	}
 	
 	public static RealVariable makeOutputVariable(Variable queryVariable) {
 		return new RealVariable("P(" + queryVariable.getName() + " | ...)", Unit.NONE);
+	}
+
+	//////////////////////////////
+
+	public SetOfVariables getSetOfVariablesWithRange() {
+		return conditionalDistribution.getSetOfVariablesWithRange();
+	}
+
+	public int getQueryVariableIndex() {
+		return conditionalDistribution.getQueryVariableIndex();
 	}
 
 	/////////////////////////////////
@@ -70,7 +85,7 @@ public class DiscretizedProbabilityDistributionFunction extends AbstractFunction
 
 	@Override
 	public String getName() {
-		return "P(" + getSetOfInputVariables().getVariables().get(queryVariableIndex).getName() + " | ...)";
+		return "P(" + getSetOfInputVariables().getVariables().get(getQueryVariableIndex()).getName() + " | ...)";
 	}
 
 }

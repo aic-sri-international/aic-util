@@ -38,6 +38,18 @@ public class ConditionalDiscretizer {
 
 	}
 	
+	//////////////////////////////
+
+	public SetOfVariables getSetOfVariablesWithRange() {
+		return setOfVariablesWithRange;
+	}
+
+	public int getQueryVariableIndex() {
+		return queryVariableIndex;
+	}
+
+	//////////////////////////////
+
 	/**
 	 * Returns the index of the value of the query, and the indices of values of remaining variables.
 	 * If index of value of query is -1 (meaning the value is out of range), the indices of values of remaining variables are not calculated (array is empty).
