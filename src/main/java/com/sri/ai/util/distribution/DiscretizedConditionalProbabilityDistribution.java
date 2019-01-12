@@ -13,19 +13,15 @@ public class DiscretizedConditionalProbabilityDistribution {
 	protected ConditionalDiscretizer discretizer;
 	protected WeightedFrequencyArrayConditionalDistribution conditionalDistribution;
 
+	//////////////////////////////
+
 	protected DiscretizedConditionalProbabilityDistribution(SetOfVariables setOfVariablesWithRange, int queryVariableIndex) {
 		this.discretizer = new ConditionalDiscretizer(setOfVariablesWithRange, queryVariableIndex);
 		this.conditionalDistribution = makeConditionalDistribution(setOfVariablesWithRange, queryVariableIndex);
 	}
 
-	private WeightedFrequencyArrayConditionalDistribution makeConditionalDistribution(SetOfVariables setOfVariablesWithRange, int queryVariableIndex) {
-		Variable queryVariable = setOfVariablesWithRange.getVariables().get(queryVariableIndex);
-		int numberOfQueryValueIndices = queryVariable.getSetOfValuesOrNull().size() + 1;
-		WeightedFrequencyArrayConditionalDistribution conditionalDistribution = 
-				new WeightedFrequencyArrayConditionalDistribution(numberOfQueryValueIndices);
-		return conditionalDistribution;
-	}
-	
+	//////////////////////////////
+
 	public void register(ArrayList<Object> valueObjects, double weight) {
 		Pair<Integer, ArrayList<Integer>> valueIndices = discretizer.getValueIndices(valueObjects);
 		Integer queryValueIndex = valueIndices.first;
@@ -41,6 +37,16 @@ public class DiscretizedConditionalProbabilityDistribution {
 		ArrayList<Integer> nonQueryValueIndices = valueIndices.second;
 		double probability = conditionalDistribution.getProbability(queryValueIndex, nonQueryValueIndices);
 		return new DefaultValue(probability);
+	}
+
+	//////////////////////////////
+
+	private WeightedFrequencyArrayConditionalDistribution makeConditionalDistribution(SetOfVariables setOfVariablesWithRange, int queryVariableIndex) {
+		Variable queryVariable = setOfVariablesWithRange.getVariables().get(queryVariableIndex);
+		int numberOfQueryValueIndices = queryVariable.getSetOfValuesOrNull().size() + 1;
+		WeightedFrequencyArrayConditionalDistribution conditionalDistribution = 
+				new WeightedFrequencyArrayConditionalDistribution(numberOfQueryValueIndices);
+		return conditionalDistribution;
 	}
 
 }

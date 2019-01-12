@@ -32,7 +32,7 @@ public class DefaultFunctions implements Functions {
 	public SetOfVariables getAllInputVariables() {
 		List<Variable> allInputVariables = list();
 		for (Function function: getFunctions()) {
-			allInputVariables.addAll(function.getInputVariables().getVariables());
+			allInputVariables.addAll(function.getSetOfInputVariables().getVariables());
 		}
 		SetOfVariables result = setOfVariables(allInputVariables);
 		return result;

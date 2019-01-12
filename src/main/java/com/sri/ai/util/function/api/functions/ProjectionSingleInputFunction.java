@@ -35,7 +35,7 @@ public class ProjectionSingleInputFunction implements SingleInputFunction {
 	}
 	
 	private boolean checkIfVariablesCoincideWithBaseInputVariables() {
-		Set<Variable> baseVariables = new HashSet<Variable>(base.getInputVariables().getVariables());
+		Set<Variable> baseVariables = new HashSet<Variable>(base.getSetOfInputVariables().getVariables());
 		Set<Variable> variables = new HashSet<Variable>(assignmentToRemainingVariables.getSetOfVariables().getVariables());
 		variables.add(variable);
 		boolean check = baseVariables.equals(variables);
@@ -48,7 +48,7 @@ public class ProjectionSingleInputFunction implements SingleInputFunction {
 	}
 
 	@Override
-	public SetOfVariables getInputVariables() {
+	public SetOfVariables getSetOfInputVariables() {
 		return singletonSet(variable);
 	}
 

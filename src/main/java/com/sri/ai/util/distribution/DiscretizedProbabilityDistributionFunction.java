@@ -36,13 +36,19 @@ public class DiscretizedProbabilityDistributionFunction extends AbstractFunction
 		
 		this.queryVariableIndex = queryVariableIndex;
 
-		int numberOfQueryValueIndices = getInputVariables().getVariables().get(queryVariableIndex).getSetOfValuesOrNull().size() + 1;
+		int numberOfQueryValueIndices = getSetOfInputVariables().getVariables().get(queryVariableIndex).getSetOfValuesOrNull().size() + 1;
 		this.indexDistribution = new WeightedFrequencyArrayConditionalDistribution(numberOfQueryValueIndices);
 
 	}
 	
 	public static RealVariable makeOutputVariable(Variable queryVariable) {
 		return new RealVariable("P(" + queryVariable.getName() + " | ...)", Unit.NONE);
+	}
+
+	/////////////////////////////////
+
+	public void register(ArrayList<Object> valueObjects, double weight) {
+		conditionalDistribution.register(valueObjects, weight);
 	}
 	
 	/////////////////////////////////
@@ -59,18 +65,12 @@ public class DiscretizedProbabilityDistributionFunction extends AbstractFunction
 	}
 	
 	protected List<? extends Variable> getVariables() {
-		return getInputVariables().getVariables();
+		return getSetOfInputVariables().getVariables();
 	}
 
 	@Override
 	public String getName() {
-		return "P(" + getInputVariables().getVariables().get(queryVariableIndex).getName() + " | ...)";
-	}
-
-	/////////////////////////////////
-
-	public void register(ArrayList<Object> valueObjects, double weight) {
-		conditionalDistribution.register(valueObjects, weight);
+		return "P(" + getSetOfInputVariables().getVariables().get(queryVariableIndex).getName() + " | ...)";
 	}
 
 }

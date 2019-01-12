@@ -38,10 +38,6 @@ public class ConditionalDiscretizer {
 
 	}
 	
-	protected List<? extends Variable> getVariables() {
-		return setOfVariablesWithRange.getVariables();
-	}
-
 	/**
 	 * Returns the index of the value of the query, and the indices of values of remaining variables.
 	 * If index of value of query is -1 (meaning the value is out of range), the indices of values of remaining variables are not calculated (array is empty).
@@ -49,8 +45,12 @@ public class ConditionalDiscretizer {
 	 * @return
 	 */
 	public Pair<Integer, ArrayList<Integer>> getValueIndices(ArrayList<Object> valueObjects) {
-		Object queryValueObject = getValueOfVariableAt(queryVariableIndex, valueObjects);
-		int queryValueIndex = getIndexOfValue(queryVariable, queryValueObject);
+		int queryValueIndex = getIndexOfValueOfVariableAt(queryVariableIndex, valueObjects);
+		ArrayList<Integer> nonQueryValueIndices = makeNonQueryValueIndices(valueObjects, queryValueIndex);
+		return new Pair<>(queryValueIndex, nonQueryValueIndices);
+	}
+
+	private ArrayList<Integer> makeNonQueryValueIndices(ArrayList<Object> valueObjects, int queryValueIndex) {
 		ArrayList<Integer> nonQueryValueIndices;
 		if (queryValueIndex != -1) { // is in range
 			nonQueryValueIndices = getNonQueryValueIndices(valueObjects);
@@ -58,7 +58,26 @@ public class ConditionalDiscretizer {
 		else {
 			nonQueryValueIndices = arrayList();
 		}
-		return new Pair<>(queryValueIndex, nonQueryValueIndices);
+		return nonQueryValueIndices;
+	}
+
+	private ArrayList<Integer> getNonQueryValueIndices(ArrayList<Object> valueObjects) {
+		ArrayList<Integer> result = arrayList(numberOfVariables() - 1);
+		for (int i = 0; i != numberOfVariables(); i++) {
+			if (i != queryVariableIndex) {
+				int indexOfValueOfIthVariable = getIndexOfValueOfVariableAt(i, valueObjects);
+				result.add(indexOfValueOfIthVariable);
+			}
+		}
+		return result;
+	}
+
+	//////////////////////////////
+
+	private int getIndexOfValueOfVariableAt(int i, ArrayList<Object> valueObjects) {
+		Object valueObject = getValueOfVariableAt(i, valueObjects);
+		int indexOfValueOfIthVariable = getIndexOfValue(getVariable(i), valueObject);
+		return indexOfValueOfIthVariable;
 	}
 
 	private Object getValueOfVariableAt(int variableIndex, ArrayList<Object> valueObjects) {
@@ -73,16 +92,10 @@ public class ConditionalDiscretizer {
 		return result;
 	}
 
-	private ArrayList<Integer> getNonQueryValueIndices(ArrayList<Object> valueObjects) {
-		ArrayList<Integer> result = arrayList(numberOfVariables() - 1);
-		for (int i = 0; i != numberOfVariables(); i++) {
-			if (i != queryVariableIndex) {
-				Object valueObject = getValueOfVariableAt(i, valueObjects);
-				int indexOfValueOfIthVariable = getIndexOfValue(getVariable(i), valueObject);
-				result.add(indexOfValueOfIthVariable);
-			}
-		}
-		return result;
+	//////////////////////////////
+
+	protected List<? extends Variable> getVariables() {
+		return setOfVariablesWithRange.getVariables();
 	}
 
 	protected int numberOfVariables() {

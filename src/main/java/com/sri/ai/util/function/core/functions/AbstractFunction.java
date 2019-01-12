@@ -21,7 +21,7 @@ public abstract class AbstractFunction implements Function {
 	}
 
 	@Override
-	public SetOfVariables getInputVariables() {
+	public SetOfVariables getSetOfInputVariables() {
 		return inputVariables;
 	}
 

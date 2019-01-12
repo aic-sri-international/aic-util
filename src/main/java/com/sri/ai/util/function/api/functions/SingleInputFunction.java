@@ -20,7 +20,7 @@ import com.sri.ai.util.function.api.variables.Variable;
 public interface SingleInputFunction extends Function {
 
 	default Variable getInputVariable() {
-		return getInputVariables().getFirst();
+		return getSetOfInputVariables().getFirst();
 	}
 	
 	default Value computeOutputVariableValue(Value inputVariableValue) {

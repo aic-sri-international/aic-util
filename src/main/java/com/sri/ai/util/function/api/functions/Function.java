@@ -21,7 +21,7 @@ public interface Function {
 	
 	Variable getOutputVariable();
 	
-	SetOfVariables getInputVariables();
+	SetOfVariables getSetOfInputVariables();
 	
 	Value evaluate(Assignment assignmentToInputVariables);
 	
