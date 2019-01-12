@@ -8,11 +8,11 @@ public abstract class AbstractFunction implements Function {
 	
 	protected Variable outputVariable;
 	
-	protected SetOfVariables inputVariables;
+	protected SetOfVariables setOfInputVariables;
 	
 	public AbstractFunction(Variable outputVariable, SetOfVariables inputVariables) {
 		this.outputVariable = outputVariable;
-		this.inputVariables = inputVariables;
+		this.setOfInputVariables = inputVariables;
 	}
 
 	@Override
@@ -22,15 +22,15 @@ public abstract class AbstractFunction implements Function {
 
 	@Override
 	public SetOfVariables getSetOfInputVariables() {
-		return inputVariables;
+		return setOfInputVariables;
 	}
 
 	public void setOutputVariable(Variable outputVariable) {
 		this.outputVariable = outputVariable;
 	}
 
-	public void setInputVariables(SetOfVariables inputVariables) {
-		this.inputVariables = inputVariables;
+	public void setSetOfInputVariables(SetOfVariables setOfInputVariables) {
+		this.setOfInputVariables = setOfInputVariables;
 	}
 
 }
