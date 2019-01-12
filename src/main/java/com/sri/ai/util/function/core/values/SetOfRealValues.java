@@ -12,11 +12,11 @@ import com.sri.ai.util.function.api.values.Value;
 import com.sri.ai.util.function.api.variables.SetOfValues;
 
 public class SetOfRealValues implements SetOfValues {
-	
+
 	private BigDecimal first;
 	private BigDecimal step;
 	private BigDecimal last;
-	
+
 	/**
 	 * Construct a set of real values
 	 * <p>
@@ -54,7 +54,6 @@ public class SetOfRealValues implements SetOfValues {
 	 * @param last maximum value
 	 */
 	public SetOfRealValues(int first, BigDecimal step, int last) {
-		Validate.isTrue(first <= last, "first cannot be greater than last");
 		Validate.notNull(step, "step cannot be null");
 		Validate.isTrue(step.compareTo(BigDecimal.ZERO) > 0, "step must be greater than zero");
 
@@ -82,24 +81,21 @@ public class SetOfRealValues implements SetOfValues {
 		this.step = new BigDecimal(step);
 		this.last = new BigDecimal(last);
 
-		Validate.isTrue(this.first.compareTo(this.last) <= 0,
-				"first cannot be greater than last");
-		Validate.isTrue(this.step.compareTo(BigDecimal.ZERO) > 0,
-				"step must be greater than zero");
+		Validate.isTrue(this.step.compareTo(BigDecimal.ZERO) > 0, "step must be greater than zero");
 	}
 
 	public BigDecimal getFirst() {
 		return first;
 	}
-	
+
 	public BigDecimal getStep() {
 		return step;
 	}
-	
+
 	public BigDecimal getLast() {
 		return last;
 	}
-	
+
 	@Override
 	public Iterator<Value> iterator() {
 		return functionIterator(new BigDecimalIterator(first, last, /* exclusive = */ false, step), Value::value);
@@ -128,7 +124,7 @@ public class SetOfRealValues implements SetOfValues {
 	public int size() {
 		return numberOfSteps(last.doubleValue());
 	}
-	
+
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + " from " + first + " to " + last + ", step " + step;

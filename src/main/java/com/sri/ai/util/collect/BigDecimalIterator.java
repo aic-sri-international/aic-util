@@ -74,7 +74,7 @@ public class BigDecimalIterator extends EZIterator<BigDecimal> {
 	 */
 	public BigDecimalIterator(BigDecimal start, BigDecimal end, boolean exclusive, BigDecimal increment) {
 		this.next = Validate.notNull(start, "start value cannot be null");
-		this.onNext = true;
+		this.onNext = exclusive? start.compareTo(end) < 0 : start.compareTo(end) <= 0;
 		this.end = Validate.notNull(end, "end value cannot be null");
 		this.exclusive = exclusive;
 		this.increment = Validate.notNull(increment, "increment value cannot be null");
