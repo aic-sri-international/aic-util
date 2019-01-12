@@ -13,13 +13,13 @@ import java.util.Map;
  * @author braz
  *
  */
-public class WeightedFrequencyArrayDistributionOfMainVariableGivenRemainingVariables {
+public class WeightedFrequencyArrayConditionalDistribution {
 	
 	private Map<ArrayList<Integer>, WeightedFrequencyArrayDistribution> distributions = map();
 
 	private int numberOfMainVariableValues; 
 
-	public WeightedFrequencyArrayDistributionOfMainVariableGivenRemainingVariables(int numberOfMainVariableValues) {
+	public WeightedFrequencyArrayConditionalDistribution(int numberOfMainVariableValues) {
 		this.numberOfMainVariableValues = numberOfMainVariableValues;
 	}
 
