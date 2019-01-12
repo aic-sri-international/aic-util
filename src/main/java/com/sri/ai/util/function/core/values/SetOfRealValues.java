@@ -54,10 +54,9 @@ public class SetOfRealValues implements SetOfValues {
 	 * @param last maximum value
 	 */
 	public SetOfRealValues(int first, BigDecimal step, int last) {
-		Validate.isTrue(first <= last,"first cannot be greater than last");
+		Validate.isTrue(first <= last, "first cannot be greater than last");
 		Validate.notNull(step, "step cannot be null");
-		Validate.isTrue(step.compareTo(BigDecimal.ZERO) > 0,
-				"step must be greater than zero");
+		Validate.isTrue(step.compareTo(BigDecimal.ZERO) > 0, "step must be greater than zero");
 
 		this.first = new BigDecimal(first);
 		this.step = step;
