@@ -1,20 +1,10 @@
 package com.sri.ai.util.graph2d.core;
 
-import static com.sri.ai.util.Util.in;
-import static com.sri.ai.util.Util.mapIntoList;
 import static com.sri.ai.util.Util.myAssert;
-import static com.sri.ai.util.collect.FunctionIterator.functionIterator;
-import static com.sri.ai.util.function.api.variables.Assignment.assignment;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
-import com.sri.ai.util.base.NullaryFunction;
-import com.sri.ai.util.collect.CartesianProductIterator;
 import com.sri.ai.util.function.api.functions.Functions;
-import com.sri.ai.util.function.api.values.Value;
 import com.sri.ai.util.function.api.variables.Assignment;
 import com.sri.ai.util.function.api.variables.SetOfValues;
 import com.sri.ai.util.function.api.variables.SetOfVariables;
@@ -77,19 +67,6 @@ public class DefaultGraphSetMaker implements GraphSetMaker {
 
 	@Override
 	public Iterable<Assignment> assignments(SetOfVariables setOfVariables) {
-
-		List<NullaryFunction<Iterator<Value>>> iteratorMakers = mapIntoList(setOfVariables.getVariables(), makeIteratorMaker());
-
-		Iterator<ArrayList<Value>> cartesianProductIterator = new CartesianProductIterator<>(iteratorMakers);
-
-		Iterator<Assignment> assignmentsIterator = functionIterator(cartesianProductIterator, valuesArray -> assignment(setOfVariables, valuesArray));
-
-		Iterable<Assignment> assignmentsIterable = in(assignmentsIterator);
-
-		return assignmentsIterable;
-	}
-
-	private com.google.common.base.Function<Variable, NullaryFunction<Iterator<Value>>> makeIteratorMaker() {
-		return v -> () -> valuesForVariable(v).iterator();
+		return Assignment.assignments(setOfVariables, this::valuesForVariable);
 	}
 }
