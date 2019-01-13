@@ -100,7 +100,7 @@ public class ConditionalDiscretizer {
 
 	private int getIndexOfValue(Variable variable, Object valueObject) {
 		Value value = Value.value(valueObject);
-		int result = variable.getSetOfValuesOrNull().getIndex(value);
+		int result = variable.getSetOfValuesOrNull().getIndexOf(value);
 		return result;
 	}
 

@@ -31,7 +31,7 @@ public class DefaultSetOfValues implements SetOfValues {
 	}
 
 	@Override
-	public int getIndex(Value value) {
+	public int getIndexOf(Value value) {
 		int index = Util.getIndexOf(collection, value);
 		return index;
 	}

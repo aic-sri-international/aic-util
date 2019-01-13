@@ -14,7 +14,7 @@ public interface SetOfValues extends Iterable<Value> {
 	 * @param value
 	 * @return
 	 */
-	int getIndex(Value value);
+	int getIndexOf(Value value);
 
 	int size();
 

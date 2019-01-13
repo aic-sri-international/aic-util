@@ -54,7 +54,7 @@ public class SetOfIntegerValues implements SetOfValues {
 	}
 
 	@Override
-	public int getIndex(Value value) {
+	public int getIndexOf(Value value) {
 		int valueAsInt = value.intValue();
 		if(valueAsInt < first && valueAsInt > last) {
 			return -1;
