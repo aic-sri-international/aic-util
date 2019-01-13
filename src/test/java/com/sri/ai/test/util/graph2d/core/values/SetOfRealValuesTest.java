@@ -48,7 +48,8 @@ public class SetOfRealValuesTest {
 
 	@Test
 	public void testIteratorOverEmptyRange() {
-		SetOfRealValues setOfRealValues = new SetOfRealValues(5, new BigDecimal(".5"), 4);
+		// step does not need to be positive if range is empty; testing this here too.
+		SetOfRealValues setOfRealValues = new SetOfRealValues(5, new BigDecimal("-1"), 4);
 		int counter = 0;
 		for (@SuppressWarnings("unused") Value setOfRealValue : setOfRealValues) {
 			counter++;

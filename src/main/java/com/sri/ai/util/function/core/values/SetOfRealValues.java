@@ -66,13 +66,14 @@ public class SetOfRealValues implements SetOfValues {
 	 */
 	public SetOfRealValues(int first, BigDecimal step, int last) {
 		Validate.notNull(step, "step cannot be null");
-		Validate.isTrue(step.compareTo(BigDecimal.ZERO) > 0, "step must be greater than zero");
 
 		this.first = new BigDecimal(first);
 		setStep(step);
 		this.last = new BigDecimal(last);
 		this.lowerBoundForDiscretizedValue = this.first;
 		this.upperBoundForDiscretizedValue = this.last;
+
+		Validate.isTrue(!isGreaterThanAPoint() || step.compareTo(BigDecimal.ZERO) > 0, "step must be greater than zero if set of real values is greater than a point");
 	}
 
 	private void setStep(BigDecimal step) {
@@ -101,7 +102,7 @@ public class SetOfRealValues implements SetOfValues {
 		this.lowerBoundForDiscretizedValue = this.first;
 		this.upperBoundForDiscretizedValue = this.last;
 
-		Validate.isTrue(this.step.compareTo(BigDecimal.ZERO) > 0, "step must be greater than zero");
+		Validate.isTrue(!isGreaterThanAPoint() || this.step.compareTo(BigDecimal.ZERO) > 0, "step must be greater than zero if set of real values is greater than a point");
 	}
 
 	/**
@@ -118,13 +119,29 @@ public class SetOfRealValues implements SetOfValues {
 		Validate.notNull(first, "first cannot be null");
 		Validate.notNull(step, "step cannot be null");
 		Validate.notNull(last, "last cannot be null");
-		Validate.isTrue(step.compareTo(BigDecimal.ZERO) > 0, "step must be greater than zero");
 
 		this.first = first;
 		setStep(step);
 		this.last = last;
 		this.lowerBoundForDiscretizedValue = this.first;
 		this.upperBoundForDiscretizedValue = this.last;
+
+		Validate.isTrue(!isGreaterThanAPoint() || step.compareTo(BigDecimal.ZERO) > 0, "step must be greater than zero if set of real values is greater than a point");
+	}
+
+	private boolean isEmpty() {
+		boolean result = last.compareTo(first) < 0;
+		return result;
+	}
+
+	private boolean isSingleton() {
+		boolean result = last.compareTo(first) == 0;
+		return result;
+	}
+
+	private boolean isGreaterThanAPoint() {
+		boolean result = last.compareTo(first) > 0;
+		return result;
 	}
 
 	/**
@@ -175,7 +192,7 @@ public class SetOfRealValues implements SetOfValues {
 	@Override
 	public int getIndexOf(Value value) {
 		BigDecimal valueAsBigDecimal = new BigDecimal(value.doubleValue());
-		if (valueAsBigDecimal.compareTo(lowerBoundForDiscretizedValue) < 0 || valueAsBigDecimal.compareTo(upperBoundForDiscretizedValue) > 0) {
+		if (isEmpty() || valueAsBigDecimal.compareTo(lowerBoundForDiscretizedValue) < 0 || valueAsBigDecimal.compareTo(upperBoundForDiscretizedValue) > 0) {
 			return -1;
 		}
 
@@ -204,7 +221,12 @@ public class SetOfRealValues implements SetOfValues {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + " from " + first + " to " + last + ", step " + step + ", lower bound " + lowerBoundForDiscretizedValue + ", upperBoundForDiscretizedValue " + upperBoundForDiscretizedValue;
+		return 
+				isEmpty()
+				? "Empty set of real values"
+						: isSingleton()
+						? "Singleton set of real " + first
+						: getClass().getSimpleName() + " from " + first + " to " + last + ", step " + step + ", lower bound " + lowerBoundForDiscretizedValue + ", upperBoundForDiscretizedValue " + upperBoundForDiscretizedValue;
 	}
 
 }

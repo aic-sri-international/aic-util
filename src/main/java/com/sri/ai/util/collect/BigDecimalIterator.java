@@ -56,6 +56,8 @@ public class BigDecimalIterator extends EZIterator<BigDecimal> {
 	private static final BigDecimal DEFAULT_INCREMENT = BigDecimal.ONE;
 	private BigDecimal end;
 	private boolean exclusive;
+	private boolean rangeIsEmpty;
+	private boolean rangeIsSingleton;
 	private BigDecimal increment = DEFAULT_INCREMENT;
 	private boolean infinite;
 
@@ -74,13 +76,15 @@ public class BigDecimalIterator extends EZIterator<BigDecimal> {
 	 */
 	public BigDecimalIterator(BigDecimal start, BigDecimal end, boolean exclusive, BigDecimal increment) {
 		this.next = Validate.notNull(start, "start value cannot be null");
-		this.onNext = exclusive? start.compareTo(end) < 0 : start.compareTo(end) <= 0;
+		this.rangeIsEmpty = exclusive? start.compareTo(end) >= 0 : start.compareTo(end) > 0;
+		this.rangeIsSingleton = !exclusive && start.compareTo(end) == 0;
+		this.onNext = ! rangeIsEmpty;
 		this.end = Validate.notNull(end, "end value cannot be null");
 		this.exclusive = exclusive;
 		this.increment = Validate.notNull(increment, "increment value cannot be null");
 
-		Validate.isTrue(increment.compareTo(BigDecimal.ZERO) > 0,
-				"increment value must be greater than zero");
+		Validate.isTrue(rangeIsEmpty || rangeIsSingleton || increment.compareTo(BigDecimal.ZERO) > 0,
+				"increment value must be greater than zero if range is greater than a point");
 	}
 
 	/**
@@ -103,6 +107,8 @@ public class BigDecimalIterator extends EZIterator<BigDecimal> {
 		this.next = Validate.notNull(start, "start value cannot be null");
 		this.onNext = true;
 		this.infinite = true;
+		this.rangeIsEmpty = false;
+		this.rangeIsSingleton = false;
 	}
 
 	public static BigDecimalIterator fromThisValueOnForever(BigDecimal start) {
@@ -111,12 +117,16 @@ public class BigDecimalIterator extends EZIterator<BigDecimal> {
 
 	@Override
 	protected BigDecimal calculateNext() {
-		next = next.add(increment);
-
-		if (!infinite && finiteButBeyondEnd()) {
+		if (rangeIsEmpty || rangeIsSingleton) {
 			next = null;
 		}
+		else {
+			next = next.add(increment);
 
+			if (!infinite && finiteButBeyondEnd()) {
+				next = null;
+			}
+		}
 		return next;
 	}
 

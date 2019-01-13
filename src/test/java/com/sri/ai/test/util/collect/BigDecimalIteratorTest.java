@@ -90,10 +90,27 @@ public class BigDecimalIteratorTest {
 	}
 
 	@Test
+	public void testStartGreaterThanEnd() {
+		final BigDecimal start = new BigDecimal("5");
+		final BigDecimal end = new BigDecimal("4");
+		// in the case of empty ranges, increment does not have to be positive, so testing this here too
+		BigDecimal increment = new BigDecimal("-.05");
+
+		int count = 0;
+		BigDecimalIterator iter = new BigDecimalIterator(start, end, true, increment);
+		while (iter.hasNext()) {
+			count++;
+		}
+
+		Assert.assertEquals(0, count);
+	}
+
+	@Test
 	public void testStartEqualToExclusiveEnd() {
 		final BigDecimal start = new BigDecimal("1.45");
 		final BigDecimal end = new BigDecimal("1.45");
-		BigDecimal increment = new BigDecimal(".05");
+		// in the case of empty ranges, increment does not have to be positive, so testing this here too
+		BigDecimal increment = new BigDecimal("-.05");
 
 		int count = 0;
 		BigDecimalIterator iter = new BigDecimalIterator(start, end, true, increment);
@@ -108,7 +125,8 @@ public class BigDecimalIteratorTest {
 	public void testStartEqualToInclusiveEnd() {
 		final BigDecimal start = new BigDecimal("1.45");
 		final BigDecimal end = new BigDecimal("1.45");
-		BigDecimal increment = new BigDecimal(".05");
+		// in the case of singleton ranges, increment does not have to be positive, so testing this here too
+		BigDecimal increment = new BigDecimal("-1");
 
 		int count = 0;
 		BigDecimalIterator iter = new BigDecimalIterator(start, end, false, increment);
