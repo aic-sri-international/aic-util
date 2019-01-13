@@ -47,4 +47,9 @@ public class WeightedFrequencyArrayConditionalDistribution {
 	private boolean isValid(int mainValue) {
 		return mainValue >= 0 && mainValue < numberOfMainVariableValues;
 	}
+	
+	@Override
+	public String toString() {
+		return distributions.toString();
+	}
 }

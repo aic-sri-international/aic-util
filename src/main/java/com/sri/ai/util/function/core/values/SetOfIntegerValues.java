@@ -4,8 +4,6 @@ import static com.sri.ai.util.collect.FunctionIterator.functionIterator;
 
 import java.util.Iterator;
 
-import org.apache.commons.lang3.Validate;
-
 import com.sri.ai.util.collect.IntegerIterator;
 import com.sri.ai.util.function.api.values.Value;
 import com.sri.ai.util.function.api.variables.SetOfValues;
@@ -21,9 +19,6 @@ public class SetOfIntegerValues implements SetOfValues {
 	 * @param last ending integer - inclusive
 	 */
 	public SetOfIntegerValues(int first, int last) {
-		Validate.isTrue(first <= last,
-				String.format("first=%d must be less than or equal to last=%d", first, last));
-
 		this.first = first;
 		this.last = last;
 	}
@@ -46,14 +41,6 @@ public class SetOfIntegerValues implements SetOfValues {
 	}
 
 	@Override
-	public String toString() {
-		return "SetOfIntegerValues{" +
-				"first=" + first +
-				", last=" + last +
-				'}';
-	}
-
-	@Override
 	public int getIndexOf(Value value) {
 		int valueAsInt = value.intValue();
 		if(valueAsInt < first && valueAsInt > last) {
@@ -68,5 +55,13 @@ public class SetOfIntegerValues implements SetOfValues {
 	@Override
 	public int size() {
 		return last - first + 1;
+	}
+
+	@Override
+	public String toString() {
+		return "SetOfIntegerValues{" +
+				"first=" + first +
+				", last=" + last +
+				'}';
 	}
 }

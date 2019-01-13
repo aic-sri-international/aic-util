@@ -60,4 +60,8 @@ public class DiscretizedConditionalProbabilityDistribution implements java.util.
 		return conditionalDistribution;
 	}
 
+	@Override
+	public String toString() {
+		return conditionalDistribution.toString();
+	}
 }
