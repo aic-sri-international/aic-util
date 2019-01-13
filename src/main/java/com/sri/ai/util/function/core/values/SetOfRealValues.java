@@ -15,17 +15,18 @@ public class SetOfRealValues implements SetOfValues {
 
 	private BigDecimal first;
 	private BigDecimal step;
+	private BigDecimal halfStep;
 	private BigDecimal last;
 
 	/**
 	 * Lower bound of values for which we determine an index -- default is first
 	 */
-	private double lowerBoundForDiscretizedValue;
+	private BigDecimal lowerBoundForDiscretizedValue;
 
 	/**
 	 * Upper bound of values for which we determine an index -- default is last
 	 */
-	private double upperBoundForDiscretizedValue;
+	private BigDecimal upperBoundForDiscretizedValue;
 	
 	/**
 	 * Construct a set of real values
@@ -68,10 +69,15 @@ public class SetOfRealValues implements SetOfValues {
 		Validate.isTrue(step.compareTo(BigDecimal.ZERO) > 0, "step must be greater than zero");
 
 		this.first = new BigDecimal(first);
-		this.step = step;
+		setStep(step);
 		this.last = new BigDecimal(last);
-		this.lowerBoundForDiscretizedValue = this.first.doubleValue();
-		this.upperBoundForDiscretizedValue = this.last.doubleValue();
+		this.lowerBoundForDiscretizedValue = this.first;
+		this.upperBoundForDiscretizedValue = this.last;
+	}
+
+	private void setStep(BigDecimal step) {
+		this.step = step;
+		this.halfStep = step.divide(new BigDecimal(2));
 	}
 
 	/**
@@ -90,10 +96,10 @@ public class SetOfRealValues implements SetOfValues {
 		Validate.notNull(last, "last cannot be null");
 
 		this.first = new BigDecimal(first);
-		this.step = new BigDecimal(step);
+		setStep(new BigDecimal(step));
 		this.last = new BigDecimal(last);
-		this.lowerBoundForDiscretizedValue = this.first.doubleValue();
-		this.upperBoundForDiscretizedValue = this.last.doubleValue();
+		this.lowerBoundForDiscretizedValue = this.first;
+		this.upperBoundForDiscretizedValue = this.last;
 
 		Validate.isTrue(this.step.compareTo(BigDecimal.ZERO) > 0, "step must be greater than zero");
 	}
@@ -112,40 +118,40 @@ public class SetOfRealValues implements SetOfValues {
 		Validate.notNull(first, "first cannot be null");
 		Validate.notNull(step, "step cannot be null");
 		Validate.notNull(last, "last cannot be null");
-		Validate.isTrue(this.step.compareTo(BigDecimal.ZERO) > 0, "step must be greater than zero");
+		Validate.isTrue(step.compareTo(BigDecimal.ZERO) > 0, "step must be greater than zero");
 
 		this.first = first;
-		this.step = step;
+		setStep(step);
 		this.last = last;
-		this.lowerBoundForDiscretizedValue = this.first.doubleValue();
-		this.upperBoundForDiscretizedValue = this.last.doubleValue();
+		this.lowerBoundForDiscretizedValue = this.first;
+		this.upperBoundForDiscretizedValue = this.last;
 	}
 
 	/**
 	 * Get the lower bound of values for which we determine an index -- default is first
 	 */
-	public double getLowerBoundForDiscretizedValue() {
+	public BigDecimal getLowerBoundForDiscretizedValue() {
 		return lowerBoundForDiscretizedValue;
 	}
 
 	/**
 	 * Set the lower bound of values for which we determine an index
 	 */
-	public void setLowerBoundForDiscretizedValue(double lowerBoundForDiscretizedValue) {
+	public void setLowerBoundForDiscretizedValue(BigDecimal lowerBoundForDiscretizedValue) {
 		this.lowerBoundForDiscretizedValue = lowerBoundForDiscretizedValue;
 	}
 
 	/**
 	 * Get the upper bound of values for which we determine an index -- default is last
 	 */
-	public double getUpperBoundForDiscretizedValue() {
+	public BigDecimal getUpperBoundForDiscretizedValue() {
 		return upperBoundForDiscretizedValue;
 	}
 
 	/**
 	 * Set the upper bound of values for which we determine an index
 	 */
-	public void setUpperBoundForDiscretizedValue(double upperBoundForDiscretizedValue) {
+	public void setUpperBoundForDiscretizedValue(BigDecimal upperBoundForDiscretizedValue) {
 		this.upperBoundForDiscretizedValue = upperBoundForDiscretizedValue;
 	}
 
@@ -168,40 +174,37 @@ public class SetOfRealValues implements SetOfValues {
 
 	@Override
 	public int getIndexOf(Value value) {
-		double valueAsDouble = value.doubleValue();
-		if (valueAsDouble < lowerBoundForDiscretizedValue || valueAsDouble > upperBoundForDiscretizedValue) {
+		BigDecimal valueAsBigDecimal = new BigDecimal(value.doubleValue());
+		if (valueAsBigDecimal.compareTo(lowerBoundForDiscretizedValue) < 0 || valueAsBigDecimal.compareTo(upperBoundForDiscretizedValue) > 0) {
 			return -1;
 		}
 
-		double firstDoubleValue = first.doubleValue();
-		if (valueAsDouble < firstDoubleValue) {
-			valueAsDouble = firstDoubleValue;
+		if (valueAsBigDecimal.compareTo(first) < 0) {
+			valueAsBigDecimal = first;
 		} else {
-			double lastDoubleValue = last.doubleValue();
-			if (valueAsDouble > lastDoubleValue) {
-				valueAsDouble = lastDoubleValue;
+			if (valueAsBigDecimal.compareTo(last) > 0) {
+				valueAsBigDecimal = last;
 			}
 		}
 		
-		int index = numberOfSteps(valueAsDouble);
+		int index = numberOfSteps(valueAsBigDecimal);
 		return index;
 	}
 
-	public int numberOfSteps(double valueAsDouble) {
-		double numberOfStepsAsDouble = (valueAsDouble - first.doubleValue())/step.doubleValue();
-		long numberOfStepsAsLong = Math.round(numberOfStepsAsDouble);
-		int numberOfStepsAsInt = Math.toIntExact(numberOfStepsAsLong);
-		return numberOfStepsAsInt;
+	public int numberOfSteps(BigDecimal valueAsBigDecimal) {
+		int numberOfSteps = valueAsBigDecimal.add(halfStep).subtract(first).divideToIntegralValue(step).intValue();
+		
+		return numberOfSteps;
 	}
 
 	@Override
 	public int size() {
-		return numberOfSteps(last.doubleValue());
+		return numberOfSteps(last);
 	}
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + " from " + first + " to " + last + ", step " + step;
+		return getClass().getSimpleName() + " from " + first + " to " + last + ", step " + step + ", lower bound " + lowerBoundForDiscretizedValue + ", upperBoundForDiscretizedValue " + upperBoundForDiscretizedValue;
 	}
 
 }

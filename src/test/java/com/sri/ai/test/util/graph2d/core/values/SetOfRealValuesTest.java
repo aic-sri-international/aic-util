@@ -95,7 +95,11 @@ public class SetOfRealValuesTest {
 
 		Assert.assertEquals(-1, setOfRealValues.getIndexOf(Value.value(1.9)));
 		Assert.assertEquals(0, setOfRealValues.getIndexOf(Value.value(2.0)));
+		Assert.assertEquals(0, setOfRealValues.getIndexOf(Value.value(2.999)));
+		Assert.assertEquals(1, setOfRealValues.getIndexOf(Value.value(3.0)));
+		Assert.assertEquals(1, setOfRealValues.getIndexOf(Value.value(3.9)));
 		Assert.assertEquals(1, setOfRealValues.getIndexOf(Value.value(4.0)));
+		Assert.assertEquals(1, setOfRealValues.getIndexOf(Value.value(4.1)));
 		Assert.assertEquals(2, setOfRealValues.getIndexOf(Value.value(6.0)));
 		Assert.assertEquals(-1, setOfRealValues.getIndexOf(Value.value(7.0)));
 	}
@@ -107,8 +111,8 @@ public class SetOfRealValuesTest {
 		final int step = 2;
 
 		SetOfRealValues setOfRealValues = new SetOfRealValues(Integer.toString(first), Integer.toString(step), last);
-		setOfRealValues.setLowerBoundForDiscretizedValue(1.0);
-		setOfRealValues.setUpperBoundForDiscretizedValue(7.0);
+		setOfRealValues.setLowerBoundForDiscretizedValue(new BigDecimal(1));
+		setOfRealValues.setUpperBoundForDiscretizedValue(new BigDecimal(7));
 		
 		Assert.assertEquals(-1, setOfRealValues.getIndexOf(Value.value(0.9)));
 		Assert.assertEquals(0, setOfRealValues.getIndexOf(Value.value(1.0)));
