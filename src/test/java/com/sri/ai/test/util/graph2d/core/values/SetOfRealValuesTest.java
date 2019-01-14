@@ -1,10 +1,13 @@
 package com.sri.ai.test.util.graph2d.core.values;
 
+import static org.junit.Assert.assertEquals;
+
 import java.math.BigDecimal;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.sri.ai.util.base.Pair;
 import com.sri.ai.util.function.api.values.Value;
 import com.sri.ai.util.function.core.values.DefaultValue;
 import com.sri.ai.util.function.core.values.SetOfRealValues;
@@ -43,7 +46,14 @@ public class SetOfRealValuesTest {
 	@Test
 	public void testRange() {
 		SetOfRealValues setOfRealValues = new SetOfRealValues(1, BigDecimal.ONE, 3);
-		Assert.assertEquals(setOfRealValues.getIndexOf(new DefaultValue(BigDecimal.TEN)), -1);
+		Assert.assertEquals(-1, setOfRealValues.getIndexOf(new DefaultValue(BigDecimal.TEN)));
+	}
+
+	@Test
+	public void testStepIrrelevancyInSingleton() {
+		new SetOfRealValues(1, new BigDecimal(-1), 1);
+		new SetOfRealValues(1, new BigDecimal(0), 1);
+		new SetOfRealValues(1, new BigDecimal(1), 1);
 	}
 
 	@Test
@@ -55,6 +65,17 @@ public class SetOfRealValuesTest {
 			counter++;
 		}
 		Assert.assertEquals(0, counter);
+	}
+
+	@Test
+	public void testIteratorOverSingleton() {
+		// step does not need to be positive if range is empty; testing this here too.
+		SetOfRealValues setOfRealValues = new SetOfRealValues(5, new BigDecimal("-1"), 5);
+		int counter = 0;
+		for (@SuppressWarnings("unused") Value setOfRealValue : setOfRealValues) {
+			counter++;
+		}
+		Assert.assertEquals(1, counter);
 	}
 
 	@Test
@@ -123,5 +144,133 @@ public class SetOfRealValuesTest {
 		Assert.assertEquals(2, setOfRealValues.getIndexOf(Value.value(6.0)));
 		Assert.assertEquals(2, setOfRealValues.getIndexOf(Value.value(7.0)));
 		Assert.assertEquals(-1, setOfRealValues.getIndexOf(Value.value(7.1)));
+	}
+
+	@Test
+	public void testGetIndexOfWithEmptyRange() {
+		int first = 3;
+		final String last = "2";
+		final int step = -1;
+
+		SetOfRealValues setOfRealValues = new SetOfRealValues(Integer.toString(first), Integer.toString(step), last);
+		setOfRealValues.setLowerBoundForDiscretizedValue(new BigDecimal(1));
+		setOfRealValues.setUpperBoundForDiscretizedValue(new BigDecimal(7));
+		
+		Assert.assertEquals(-1, setOfRealValues.getIndexOf(Value.value(0.9)));
+		Assert.assertEquals(-1, setOfRealValues.getIndexOf(Value.value(1.0)));
+		Assert.assertEquals(-1, setOfRealValues.getIndexOf(Value.value(1.9)));
+		Assert.assertEquals(-1, setOfRealValues.getIndexOf(Value.value(2.0)));
+		Assert.assertEquals(-1, setOfRealValues.getIndexOf(Value.value(4.0)));
+		Assert.assertEquals(-1, setOfRealValues.getIndexOf(Value.value(6.0)));
+		Assert.assertEquals(-1, setOfRealValues.getIndexOf(Value.value(7.0)));
+		Assert.assertEquals(-1, setOfRealValues.getIndexOf(Value.value(7.1)));
+	}
+
+	@Test
+	public void testGetIndexOfWithSingleton() {
+		int first = 3;
+		final String last = "3";
+		final int step = -1;
+
+		SetOfRealValues setOfRealValues = new SetOfRealValues(Integer.toString(first), Integer.toString(step), last);
+		setOfRealValues.setLowerBoundForDiscretizedValue(new BigDecimal(1));
+		setOfRealValues.setUpperBoundForDiscretizedValue(new BigDecimal(7));
+		
+		Assert.assertEquals(-1, setOfRealValues.getIndexOf(Value.value(0.9)));
+		Assert.assertEquals(0, setOfRealValues.getIndexOf(Value.value(1.0)));
+		Assert.assertEquals(0, setOfRealValues.getIndexOf(Value.value(1.9)));
+		Assert.assertEquals(0, setOfRealValues.getIndexOf(Value.value(2.0)));
+		Assert.assertEquals(0, setOfRealValues.getIndexOf(Value.value(4.0)));
+		Assert.assertEquals(0, setOfRealValues.getIndexOf(Value.value(6.0)));
+		Assert.assertEquals(0, setOfRealValues.getIndexOf(Value.value(7.0)));
+		Assert.assertEquals(-1, setOfRealValues.getIndexOf(Value.value(7.1)));
+	}
+
+	@Test(expected = IndexOutOfBoundsException.class)
+	public void testGetOnEmptyRange() {
+		SetOfRealValues setOfRealValues = new SetOfRealValues(5, new BigDecimal("-1"), 4);
+		setOfRealValues.get(0);
+	}
+
+	@Test(expected = IndexOutOfBoundsException.class)
+	public void testGetWithIndexMappingToANumberLessThanFirst() {
+		SetOfRealValues setOfRealValues = new SetOfRealValues(1, BigDecimal.ONE, 3);
+		setOfRealValues.get(-1);
+	}
+
+	@Test(expected = IndexOutOfBoundsException.class)
+	public void testGetWithIndexMappingToANumberGreaterThanLast() {
+		SetOfRealValues setOfRealValues = new SetOfRealValues(1, BigDecimal.ONE, 3);
+		setOfRealValues.get(3);
+	}
+
+	@Test
+	public void testGet() {
+		SetOfRealValues setOfRealValues = new SetOfRealValues(1, BigDecimal.ONE, 3);
+		assertEquals(Value.value(new BigDecimal(1)), setOfRealValues.get(0));
+		assertEquals(Value.value(new BigDecimal(2)), setOfRealValues.get(1));
+		assertEquals(Value.value(new BigDecimal(3)), setOfRealValues.get(2));
+	}
+
+	@Test
+	public void testGetOnSingleton() {
+		SetOfRealValues setOfRealValues = new SetOfRealValues(1, BigDecimal.ZERO, 1);
+		assertEquals(Value.value(new BigDecimal(1)), setOfRealValues.get(0));
+	}
+	
+	@Test
+	public void testGetBoundsForIndex() {
+		SetOfRealValues setOfRealValues = new SetOfRealValues(1, BigDecimal.ONE, 3);
+		setOfRealValues.setLowerBoundForDiscretizedValue(BigDecimal.ZERO);
+		setOfRealValues.setUpperBoundForDiscretizedValue(new BigDecimal(4));
+
+		assertEquals(null, setOfRealValues.getBoundsForIndex(-1));
+		assertEquals(Pair.make(new BigDecimal(0), new BigDecimal(1.5)), setOfRealValues.getBoundsForIndex(0));
+		assertEquals(Pair.make(new BigDecimal(1.5), new BigDecimal(2.5)), setOfRealValues.getBoundsForIndex(1));
+		assertEquals(Pair.make(new BigDecimal(2.5), new BigDecimal(4)), setOfRealValues.getBoundsForIndex(2));
+		assertEquals(null, setOfRealValues.getBoundsForIndex(3));
+	}
+
+	@Test
+	public void testGetBoundsForIndexForSingleton() {
+		SetOfRealValues setOfRealValues = new SetOfRealValues(1, BigDecimal.ZERO, 1);
+		setOfRealValues.setLowerBoundForDiscretizedValue(BigDecimal.ZERO);
+		setOfRealValues.setUpperBoundForDiscretizedValue(new BigDecimal(4));
+		
+		assertEquals(null, setOfRealValues.getBoundsForIndex(-1));
+		assertEquals(Pair.make(new BigDecimal(0), new BigDecimal(4)), setOfRealValues.getBoundsForIndex(0));
+		assertEquals(null, setOfRealValues.getBoundsForIndex(1));
+		assertEquals(null, setOfRealValues.getBoundsForIndex(2));
+	}
+	
+	@Test
+	public void testGetBoundsForIndexForEmptyRange() {
+		SetOfRealValues setOfRealValues = new SetOfRealValues(5, new BigDecimal("-1"), 4);
+		setOfRealValues.setLowerBoundForDiscretizedValue(BigDecimal.ZERO);
+		setOfRealValues.setUpperBoundForDiscretizedValue(new BigDecimal(4));
+		
+		assertEquals(null, setOfRealValues.getBoundsForIndex(-1));
+		assertEquals(null, setOfRealValues.getBoundsForIndex(0));
+		assertEquals(null, setOfRealValues.getBoundsForIndex(1));
+		assertEquals(null, setOfRealValues.getBoundsForIndex(2));
+	}
+
+	
+	@Test
+	public void testSize() {
+		SetOfRealValues setOfRealValues = new SetOfRealValues(1, BigDecimal.ONE, 3);
+		assertEquals(3, setOfRealValues.size());
+	}
+
+	@Test
+	public void testSizeForSingleton() {
+		SetOfRealValues setOfRealValues = new SetOfRealValues(1, BigDecimal.ZERO, 1);
+		assertEquals(1, setOfRealValues.size());
+	}
+	
+	@Test
+	public void testSizeForEmptyRange() {
+		SetOfRealValues setOfRealValues = new SetOfRealValues(5, new BigDecimal("-1"), 4);
+		assertEquals(0, setOfRealValues.size());
 	}
 }

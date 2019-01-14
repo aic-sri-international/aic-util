@@ -32,7 +32,7 @@ public class DefaultSetOfVariables implements SetOfVariables {
   }
 
   @Override
-  public List<? extends Variable> getVariables() {
+  public ArrayList<? extends Variable> getVariables() {
     return new ArrayList<>(variables);
   }
 

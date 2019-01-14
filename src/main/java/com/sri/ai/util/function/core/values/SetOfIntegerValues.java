@@ -1,6 +1,7 @@
 package com.sri.ai.util.function.core.values;
 
 import static com.sri.ai.util.collect.FunctionIterator.functionIterator;
+import static com.sri.ai.util.function.api.values.Value.value;
 
 import java.util.Iterator;
 
@@ -38,6 +39,14 @@ public class SetOfIntegerValues implements SetOfValues {
 	@Override
 	public Iterator<Value> iterator() {
 		return functionIterator(new IntegerIterator(first, last + 1), Value::value);
+	}
+
+	@Override
+	public Value get(int i) {
+		if (i >= 0 && i < size()) {
+			return value(first + i);
+		}
+		throw new IndexOutOfBoundsException("Set of integer values has size " + size() + " but index was " + i);
 	}
 
 	@Override

@@ -23,6 +23,10 @@ public interface Assignment {
 	}
 
 	SetOfVariables getSetOfVariables();
+	
+	default int size() {
+		return getSetOfVariables().size();
+	}
 
 	/** Returns the value of the variable in this assignment */
 	Value get(Variable variable);

@@ -1,12 +1,14 @@
 package com.sri.ai.util.function.core.values;
 
 import static com.sri.ai.util.collect.FunctionIterator.functionIterator;
+import static com.sri.ai.util.function.api.values.Value.value;
 
 import java.math.BigDecimal;
 import java.util.Iterator;
 
 import org.apache.commons.lang3.Validate;
 
+import com.sri.ai.util.base.Pair;
 import com.sri.ai.util.collect.BigDecimalIterator;
 import com.sri.ai.util.function.api.values.Value;
 import com.sri.ai.util.function.api.variables.SetOfValues;
@@ -189,11 +191,27 @@ public class SetOfRealValues implements SetOfValues {
 		return functionIterator(new BigDecimalIterator(first, last, /* exclusive = */ false, step), Value::value);
 	}
 
+
+	@Override
+	public Value get(int i) {
+		if (!isEmpty()) {
+			BigDecimal projectedValue = first.add(step.multiply(new BigDecimal(i)));
+			if (projectedValue.compareTo(first) >= 0 && projectedValue.compareTo(last) <= 0) {
+				return value(projectedValue);
+			}
+		}
+		throw new IndexOutOfBoundsException("Set of integer values has size " + size() + " but index was " + i);
+	}
+
 	@Override
 	public int getIndexOf(Value value) {
 		BigDecimal valueAsBigDecimal = new BigDecimal(value.doubleValue());
 		if (isEmpty() || valueAsBigDecimal.compareTo(lowerBoundForDiscretizedValue) < 0 || valueAsBigDecimal.compareTo(upperBoundForDiscretizedValue) > 0) {
 			return -1;
+		}
+		
+		if(size() == 1) {
+			return 0;
 		}
 
 		if (valueAsBigDecimal.compareTo(first) < 0) {
@@ -208,15 +226,41 @@ public class SetOfRealValues implements SetOfValues {
 		return index;
 	}
 
+	/** Returns the number of steps needed to take to reach a value, or -1 if set has empty range. */
 	public int numberOfSteps(BigDecimal valueAsBigDecimal) {
+		if (isEmpty()) {
+			return -1;
+		}
+		if (valueAsBigDecimal.equals(first)) {
+			return 0;
+		}
 		int numberOfSteps = valueAsBigDecimal.add(halfStep).subtract(first).divideToIntegralValue(step).intValue();
-		
 		return numberOfSteps;
+	}
+
+	/**
+	 * Returns a pair containing the lower (inclusive) and upper (exclusive) bounds for values mapped to the <code>valueIndex</code>-th value,
+	 * or null if set is empty.
+	 * Note that the lower bound for the first value's index (0) is given by {@link #getLowerBoundForDiscretizedValue()}
+	 * and the upper bound for the last value's index ({@link #size()}) is given by {@link #getUpperBoundForDiscretizedValue()}.
+	 * @param valueIndex
+	 * @return
+	 */
+	public Pair<BigDecimal, BigDecimal> getBoundsForIndex(int valueIndex) {
+		if (isEmpty() || valueIndex < 0 || valueIndex > size() - 1) {
+			return null;
+		}
+		else {
+			BigDecimal value = (BigDecimal) get(valueIndex).objectValue();
+			BigDecimal indexLowerBound = valueIndex == 0? getLowerBoundForDiscretizedValue() : value.subtract(halfStep);
+			BigDecimal indexUpperBound = valueIndex == size() - 1? getUpperBoundForDiscretizedValue() : value.add(halfStep);
+			return Pair.make(indexLowerBound, indexUpperBound);
+		}
 	}
 
 	@Override
 	public int size() {
-		return numberOfSteps(last);
+		return numberOfSteps(last) + 1;
 	}
 
 	@Override

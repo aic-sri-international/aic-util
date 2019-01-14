@@ -19,7 +19,7 @@ import com.sri.ai.util.function.core.variables.RealVariable;
  * @author braz
  *
  */
-public class DiscretizedConditionalProbabilityDistributionFunction extends AbstractFunction {
+public class DiscretizedConditionalProbabilityDistributionFunction extends AbstractFunction implements java.util.function.Function<ArrayList<Object>, Value> {
 
 	protected DiscretizedConditionalProbabilityDistribution conditionalDistribution;
 	
@@ -76,6 +76,11 @@ public class DiscretizedConditionalProbabilityDistributionFunction extends Abstr
 	public Value evaluate(Assignment assignmentToInputVariables) {
 		ArrayList<Object> valueObjects = getValues(assignmentToInputVariables);
 		return conditionalDistribution.apply(valueObjects);
+	}
+	
+	@Override
+	public Value apply(ArrayList<Object> values) {
+		return conditionalDistribution.apply(values);
 	}
 
 	private ArrayList<Object> getValues(Assignment assignment) {

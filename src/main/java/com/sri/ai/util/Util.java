@@ -89,6 +89,7 @@ import com.sri.ai.util.base.Pair;
 import com.sri.ai.util.base.PairOf;
 import com.sri.ai.util.base.TernaryFunction;
 import com.sri.ai.util.collect.EZIterator;
+import com.sri.ai.util.collect.IntegerIterator;
 import com.sri.ai.util.collect.NestedIterator;
 import com.sri.ai.util.math.Rational;
 
@@ -1260,6 +1261,30 @@ public class Util {
 	}
 
 	/**
+	 * Same as {@link #mapIntoList(Iterator, Function)} using <code>new IntegerIterator(firstInclusive, lastExclusive)</code>.
+	 * @param firstInclusive
+	 * @param lastExclusive
+	 * @param function
+	 * @return
+	 */
+	public static <T> List<T> mapIntegersIntoList(int firstInclusive, int lastExclusive, Function<Integer, T> function) {
+		List<T> result = new LinkedList<T>();
+		mapIntoList(new IntegerIterator(firstInclusive, lastExclusive), function, result);
+		return result;
+	}
+
+	/**
+	 * Same as {@link #mapIntoList(Iterator, Function)} using <code>new IntegerIterator(0, lastExclusive)</code>.
+	 * @param lastExclusive
+	 * @param function
+	 * @return
+	 */
+	public static <T> List<T> mapIntegersIntoList(int lastExclusive, Function<Integer, T> function) {
+		return mapIntegersIntoList(0, lastExclusive, function);
+	}
+
+
+	/**
 	 * Stores results of applying a function to a collection's elements in a
 	 * new, empty list and returns it.
 	 * 
@@ -1421,13 +1446,13 @@ public class Util {
 	}
 	
 	/**
-	 * Returns an array list containing the results of applying a given function to the integers from 0 to numberOfIntegers.
-	 * @param numberOfIntegers
+	 * Returns an array list containing the results of applying a given function to the integers from 0 to <code>lastExclusive - 1</code>.
+	 * @param lastExclusive
 	 * @param function
 	 * @return
 	 */
-	public static <T> ArrayList<T> mapIntegersIntoArrayList(int numberOfIntegers, Function<Integer, T> function) {
-		return mapIntegersIntoArrayList(0, numberOfIntegers, function);
+	public static <T> ArrayList<T> mapIntegersIntoArrayList(int lastExclusive, Function<Integer, T> function) {
+		return mapIntegersIntoArrayList(0, lastExclusive, function);
 	}
 	
 	/**

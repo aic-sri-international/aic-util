@@ -1,5 +1,6 @@
 package com.sri.ai.util.function.api.variables;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -14,7 +15,7 @@ import com.sri.ai.util.function.core.variables.DefaultSetOfVariables;
  */
 public interface SetOfVariables extends Iterable<Variable> {
 	
-	List<? extends Variable> getVariables();
+	ArrayList<? extends Variable> getVariables();
 	
 	@Override
 	@SuppressWarnings("unchecked")
