@@ -85,6 +85,7 @@ import com.sri.ai.util.base.BinaryPredicate;
 import com.sri.ai.util.base.Equals;
 import com.sri.ai.util.base.IndexingFunction;
 import com.sri.ai.util.base.NullaryFunction;
+import com.sri.ai.util.base.NullaryProcedure;
 import com.sri.ai.util.base.Pair;
 import com.sri.ai.util.base.PairOf;
 import com.sri.ai.util.base.TernaryFunction;
@@ -6027,5 +6028,12 @@ public class Util {
 			result.put(key, value);
 		}
 		return result;
+	}
+
+	/** Executes a given {@link NullaryProcedure} a given number of times. */
+	public static void repeat(int numberOfSamples, NullaryProcedure procedure) {
+		for (int i = 0; i != numberOfSamples; i++) {
+			procedure.apply();
+		}
 	}
 }

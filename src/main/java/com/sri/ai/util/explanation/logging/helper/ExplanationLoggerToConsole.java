@@ -15,7 +15,7 @@ public class ExplanationLoggerToConsole extends DefaultExplanationLogger {
 	
 	public ExplanationLoggerToConsole() {
 		super();
-		ExplanationHandler handler = new ConsoleExplanationHandler();
+		ExplanationHandler handler = new ConsoleExplanationHandler(isActive());
 		addHandler(handler);
 	}
 
