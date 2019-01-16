@@ -95,7 +95,9 @@ public abstract class AbstractExternalGraphPlotter implements ExternalGraphPlott
         formatted =  name;
       }
     }
-
+    if (formatted != null && formatted.length() == 1) {
+      formatted = null;
+    }
     return formatted;
   }
 }
