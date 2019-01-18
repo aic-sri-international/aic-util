@@ -17,4 +17,9 @@ public class IntegerVariable extends AbstractVariable {
 	public IntegerVariable(String name, Unit unit, int first, int last) {
 		super(name, unit, new SetOfIntegerValues(first, last));
 	}
+
+	@Override
+	public SetOfIntegerValues getSetOfValuesOrNull() {
+		return (SetOfIntegerValues) setOfValuesOrNull;
+	}
 }

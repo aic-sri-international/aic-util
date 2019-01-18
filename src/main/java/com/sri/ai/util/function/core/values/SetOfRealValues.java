@@ -131,7 +131,7 @@ public class SetOfRealValues implements SetOfValues {
 		Validate.isTrue(!isGreaterThanAPoint() || step.compareTo(BigDecimal.ZERO) > 0, "step must be greater than zero if set of real values is greater than a point");
 	}
 
-	private boolean isEmpty() {
+	public boolean isEmpty() {
 		boolean result = last.compareTo(first) < 0;
 		return result;
 	}
@@ -200,7 +200,7 @@ public class SetOfRealValues implements SetOfValues {
 				return value(projectedValue);
 			}
 		}
-		throw new IndexOutOfBoundsException("Set of integer values has size " + size() + " but index was " + i);
+		throw new IndexOutOfBoundsException("Set of real values has size " + size() + " but index was " + i);
 	}
 
 	@Override

@@ -37,4 +37,8 @@ public class RealVariable extends AbstractVariable {
 				+ getSetOfValuesOrNull() + "]";
 	}
 
+	@Override
+	public SetOfRealValues getSetOfValuesOrNull() {
+		return (SetOfRealValues) setOfValuesOrNull;
+	}
 }
