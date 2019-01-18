@@ -71,7 +71,7 @@ public class OrPlan extends AbstractCompoundPlan {
 	@Override
 	public void execute(State state) {
 		Random random = state.getRandom();
-		myAssert(random != null, () -> getClass() + " cannot execute without having been provided a Random");
+		myAssert(random != null, () -> getClass() + " cannot execute without " + State.class.getSimpleName() + " providing it a Random");
 		int i = getDistribution().sample(random);
 		getSubPlans().get(i).execute(state);
 		increment(numberOfSubPlanExecutions, i);
