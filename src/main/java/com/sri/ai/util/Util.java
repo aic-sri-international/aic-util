@@ -1471,6 +1471,34 @@ public class Util {
 		return result;
 	}
 
+	/**
+	 * Returns an array containing the results of applying a given function to the integers from 0 to <code>lastExclusive - 1</code>.
+	 * @param lastExclusive
+	 * @param function
+	 * @return
+	 */
+	public static <T> T[] mapIntegersIntoArray(Class<T> clazz, int lastExclusive, Function<Integer, T> function) {
+		return mapIntegersIntoArray(clazz, 0, lastExclusive, function);
+	}
+	
+	/**
+	 * Returns an array containing the results of applying a given function to the integers from <code>begin</code> to <code>end - 1</code>.
+	 * @param begin
+	 * @param end
+	 * @param function
+	 * @return
+	 */
+	public static <T> T[] mapIntegersIntoArray(Class<T> clazz, int begin, int end, Function<Integer, T> function) {
+		@SuppressWarnings("unchecked")
+		T[] result = (T[]) Array.newInstance(clazz, end - begin);
+		int arrayIndex = 0;
+		for (int i = begin; i != end; i++) {
+			result[arrayIndex] = function.apply(i);
+			arrayIndex++;
+		}
+		return result;
+	}
+
 	public static <F, T> List<T> mapIntoList(F[] array, Function<F, T> function) {
 		return mapIntoList(Arrays.asList(array), function);
 	}
@@ -6003,7 +6031,7 @@ public class Util {
 	 * @param initial
 	 * @return
 	 */
-	public static <T> T fold(Iterator<T> iterator, BinaryFunction<T, T, T> operator, T initial) {
+	public static <T> T fold(Iterator<? extends T> iterator, BinaryFunction<T, T, T> operator, T initial) {
 		T result = initial;
 		for (T element : in(iterator)) {
 			result = operator.apply(result, element);
