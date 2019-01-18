@@ -22,8 +22,8 @@ import com.sri.ai.util.graph2d.core.jfreechart.GraphSettings;
  */
 public interface ExternalGraphPlotter {
 	static ExternalGraphPlotter externalGraphMaker(Function<Variable, SetOfValues> setOfValuesForVariable) {
-    AbstractExternalGraphPlotter abstractExternalGraphPlotter = new DefaultLineGraphPlotter();
-    abstractExternalGraphPlotter.setSetOfValuesForVariable(setOfValuesForVariable);
+		AbstractExternalGraphPlotter abstractExternalGraphPlotter = new DefaultLineGraphPlotter();
+		abstractExternalGraphPlotter.setSetOfValuesForVariable(setOfValuesForVariable);
 		return abstractExternalGraphPlotter;
 	}
 
@@ -34,23 +34,32 @@ public interface ExternalGraphPlotter {
 	/** The functions to be plotted. They must be single-input because the graphs are 2D. */
 	SingleInputFunctions getFunctions();
 	void setFunctions(SingleInputFunctions functions);
-	
+
 	String getTitle();
 	void setTitle(String title);
+
+	/** The file pathname to use (minus the extension); if not provided, a temp file will be created. */
+	String getFilePathname();
+	void setFilePathname(String filePathname);
 
 	/**
 	 * Receives the values to be used for the plot.
 	 */
 	void setFromVariableToSetOfValues(Map<Variable, SetOfValues> fromVariableToSetOfValues);
-	
+
 	GraphPlot plot();
 
 	default File createFileForImage() {
 		File imageFile;
-		try {
-			imageFile = File.createTempFile("graph2d-", ".png");
-		} catch (IOException e) {
-			throw new RuntimeException("Cannot create tmpfile for Image", e);
+		if (getFilePathname() == null || getFilePathname() == "") {
+			try {
+				imageFile = File.createTempFile("graph2d-", ".png");
+			} catch (IOException e) {
+				throw new RuntimeException("Cannot create tmpfile for Image", e);
+			}
+		}
+		else {
+			imageFile = new File(getFilePathname() + ".png");
 		}
 		return imageFile;
 	}

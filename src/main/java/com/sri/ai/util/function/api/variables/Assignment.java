@@ -2,6 +2,7 @@ package com.sri.ai.util.function.api.variables;
 
 import static com.sri.ai.util.Util.findFirst;
 import static com.sri.ai.util.Util.in;
+import static com.sri.ai.util.Util.mapIntoArrayList;
 import static com.sri.ai.util.Util.mapIntoList;
 import static com.sri.ai.util.Util.myAssert;
 import static com.sri.ai.util.collect.FunctionIterator.functionIterator;
@@ -15,6 +16,7 @@ import com.sri.ai.util.base.NullaryFunction;
 import com.sri.ai.util.collect.CartesianProductIterator;
 import com.sri.ai.util.function.api.values.Value;
 import com.sri.ai.util.function.core.variables.DefaultAssignment;
+import com.sri.ai.util.function.core.variables.RealVariable;
 
 public interface Assignment {
 
@@ -74,6 +76,19 @@ public interface Assignment {
 		Iterable<Assignment> assignmentsIterable = in(assignmentsIterator);
 
 		return assignmentsIterable;
+	}
+
+	/**
+	 * Returns the indices of the values in this assignment, in the same iteration order as the variables in the assignment,
+	 * according to the set of values attributed to each of them by a given function (this can be slow if some of the variables
+	 * are {@link RealVariable} because finding their index requires floating point math.
+	 * @param setOfValuesForVariable
+	 * @return
+	 */
+	default ArrayList<Integer> indices(Function<Variable, SetOfValues> setOfValuesForVariable) {
+		ArrayList<? extends Variable> variables = getSetOfVariables().getVariables();
+		ArrayList<Integer> result = mapIntoArrayList(variables, v -> setOfValuesForVariable.apply(v).getIndexOf(get(v)));
+		return result;
 	}
 
 }

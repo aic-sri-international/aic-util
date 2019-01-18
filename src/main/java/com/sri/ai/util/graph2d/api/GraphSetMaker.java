@@ -1,5 +1,6 @@
 package com.sri.ai.util.graph2d.api;
 
+import static com.sri.ai.util.Util.join;
 import static com.sri.ai.util.graph2d.api.ExternalGraphPlotter.externalGraphMaker;
 
 import java.util.List;
@@ -38,6 +39,14 @@ public interface GraphSetMaker {
 	Map<Variable, SetOfValues> getFromVariableToSetOfValues();
 	void setFromVariableToSetOfValues(Map<Variable, SetOfValues> fromVariableToSetOfValues);
 
+	/** 
+	 * The base for the file pathnames to use for each plot; 
+	 * the actual pathname will be the concatenation of the base and the plot's title.
+	 * If not provided, temp files will be created.
+	 */
+	String getFilePathnameBase();
+	void setFilePathnameBase(String filePathname);
+
 	SetOfValues valuesForVariable(Variable variable);
 	
 	Iterable<Assignment> assignments(SetOfVariables setOfVariables);
@@ -61,6 +70,15 @@ public interface GraphSetMaker {
 		return nonAxisVariables;
 	}
 
+	default GraphPlot plot(Assignment assignmentToNonAxisVariables, Variable xAxisVariable) {
+		SingleInputFunctions singleInputFunctionsToBePlotted
+				= getFunctions().project(xAxisVariable, assignmentToNonAxisVariables);
+
+		String title = buildTitle(assignmentToNonAxisVariables, singleInputFunctionsToBePlotted);
+		return plot(title, singleInputFunctionsToBePlotted, assignmentToNonAxisVariables);
+		
+	}
+	
 	default String buildTitle(Assignment assignmentToNonAxisVariables,
 														SingleInputFunctions singleInputFunctionsToBePlotted) {
 		List<? extends SingleInputFunction> singleInputFunctions
@@ -75,22 +93,22 @@ public interface GraphSetMaker {
 				assignmentToNonAxisVariables.toDisplayFormat();
 	}
 
-	default GraphPlot plot(Assignment assignmentToNonAxisVariables, Variable xAxisVariable) {
-		SingleInputFunctions singleInputFunctionsToBePlotted
-				= getFunctions().project(xAxisVariable, assignmentToNonAxisVariables);
-
-		String title = buildTitle(assignmentToNonAxisVariables, singleInputFunctionsToBePlotted);
-		return plot(title, singleInputFunctionsToBePlotted);
-		
-	}
-	
-	default GraphPlot plot(String title, SingleInputFunctions singleInputFunctionsToBePlotted) {
+	default GraphPlot plot(String title, SingleInputFunctions singleInputFunctionsToBePlotted, Assignment assignment) {
 		// This needs to be improved with more settings, such as units etc.
 		ExternalGraphPlotter graphMaker = externalGraphMaker(this::valuesForVariable);
 		graphMaker.setGraphSettings(getGraphSettings());
 		graphMaker.setTitle(title);
 		graphMaker.setFunctions(singleInputFunctionsToBePlotted);
 		graphMaker.setFromVariableToSetOfValues(getFromVariableToSetOfValues());
+		String filePathname;
+		if (getFilePathnameBase() == "") {
+			filePathname = "";
+		}
+		else {
+			String assignmentInFileName = join("", assignment.indices(this::valuesForVariable));
+			filePathname = getFilePathnameBase() + assignmentInFileName;
+		}
+		graphMaker.setFilePathname(filePathname);
 		return graphMaker.plot();
 	}
 

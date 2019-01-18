@@ -69,4 +69,17 @@ public class DefaultGraphSetMaker implements GraphSetMaker {
 	public Iterable<Assignment> assignments(SetOfVariables setOfVariables) {
 		return Assignment.assignments(setOfVariables, this::valuesForVariable);
 	}
+	
+	private String filePathnameBase = "";
+	
+	@Override
+	public String getFilePathnameBase() {
+		return filePathnameBase;
+	}
+
+	@Override
+	public void setFilePathnameBase(String filePathnameBase) {
+		this.filePathnameBase = filePathnameBase;
+	}
+	
 }
