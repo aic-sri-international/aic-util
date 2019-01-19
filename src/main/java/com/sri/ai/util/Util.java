@@ -6050,6 +6050,52 @@ public class Util {
 		return result;
 	}
 
+	/** 
+	 * Same as {@link #fold(Iterator, BinaryFunction, Object)} but for a collection.
+	 * @param collection
+	 * @param operator
+	 * @param initial
+	 * @return
+	 */
+	public static <T> T fold(Collection<? extends T> collection, BinaryFunction<T, T, T> operator, T initial) {
+		return fold(collection.iterator(), operator, initial);
+	}
+	
+	/**
+	 * Accumulates the result of a binary operator by applying it to the elements in an iterator's range
+	 * while short-circuiting if an absorbing element
+	 * (an element <code>t</code> such that <code>t operator u = t for all u</code>) is reached or,
+	 * more formally, returns <code>initial</code> if <code>iterator.hasNext()</code> is false or <code>initial</code> is absorbing,
+	 * or <code>operator(fold(iterator, operator, initial), iterator.next())</code> otherwise.
+	 * @param iterator
+	 * @param operator the operator
+	 * @param initial the initial value
+	 * @param isAbsorbingElement indicates whether a value is an absorbing element
+	 * @return
+	 */
+	public static <T> T fold(Iterator<? extends T> iterator, BinaryFunction<T, T, T> operator, T initial, Predicate<T> isAbsorbingElement) {
+		T result = initial;
+		for (T element : in(iterator)) {
+			if (isAbsorbingElement.apply(result)) {
+				break;
+			}
+			result = operator.apply(result, element);
+		}
+		return result;
+	}
+
+	/**
+	 * Same as {@link #fold(Iterator, BinaryFunction, Object, Predicate)} but for a collection.
+	 * @param collection
+	 * @param operator
+	 * @param initial
+	 * @param isAbsorbingElement
+	 * @return
+	 */
+	public static <T> T fold(Collection<? extends T> collection, BinaryFunction<T, T, T> operator, T initial, Predicate<T> isAbsorbingElement) {
+		return fold(collection.iterator(), operator, initial, isAbsorbingElement);
+	}
+	
 	/**
 	 * Creates a map given collections of keys and values (associated through iteration order).
 	 * @param keys

@@ -1,7 +1,11 @@
 package com.sri.ai.util.planning.core;
 
+import static com.sri.ai.util.Util.fold;
+import static com.sri.ai.util.collect.FunctionIterator.functionIterator;
+
 import java.util.Collection;
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -44,14 +48,14 @@ public class DNFProjectorPlanner<R extends Rule<G>, G extends Goal> {
 	}
 	
 	private DNF<G> getConditionForObtainingUnsatisfiedGoalWithinSearch(G goal) {
-		DNF<G> currentCondition = falseCondition();
-		for (R rule : getOriginalRulesFor(goal)) {
-			DNF<G> conditionForAntecedents = conditionForObtainingGoalWithRule(goal, rule);
-			currentCondition = currentCondition.or(conditionForAntecedents);
-			if (currentCondition.isTrue())
-				break;
-		}
+		DNF<G> currentCondition = fold(getConditionsIterator(goal), DNF<G>::or, falseCondition(), c -> c.isTrue());
 		return currentCondition;
+	}
+
+	private Iterator<DNF<G>> getConditionsIterator(G goal) {
+		return functionIterator(
+				getOriginalRulesFor(goal), 
+				(r) -> conditionForObtainingGoalWithRule(goal, r));
 	}
 
 	private DNF<G> conditionForObtainingGoalWithRule(G goal, R rule) {
