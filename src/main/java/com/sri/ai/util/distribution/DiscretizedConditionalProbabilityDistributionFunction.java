@@ -47,7 +47,7 @@ public class DiscretizedConditionalProbabilityDistributionFunction extends Abstr
 	}
 	
 	public static RealVariable makeOutputVariable(Variable queryVariable) {
-		return new RealVariable("P(" + queryVariable.getName() + " | ...)", Unit.NONE);
+		return new RealVariable("Probability of " + queryVariable.getName(), Unit.NONE);
 	}
 
 	//////////////////////////////

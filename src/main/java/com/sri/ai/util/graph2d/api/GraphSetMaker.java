@@ -89,10 +89,15 @@ public interface GraphSetMaker {
 				.map(f -> f.getOutputVariable().getName())
 				.collect(Collectors.joining(delimiter));
 
-		return names + " by " + singleInputFunctionsToBePlotted.getInputVariable().getName() + " for " +
-				assignmentToNonAxisVariables.toDisplayFormat();
+		String inputVariableName = singleInputFunctionsToBePlotted.getInputVariable().getName();
+		String xAxisDescription = inputVariableName.length() > 1? " by " + inputVariableName : "";
+		
+		int numberOfRemainingVariables = assignmentToNonAxisVariables.size();
+		String remainingVariablesDescription = numberOfRemainingVariables > 0? " for " + assignmentToNonAxisVariables.toDisplayFormat() : "";
+		
+		return names + xAxisDescription + remainingVariablesDescription;
 	}
-
+	
 	default GraphPlot plot(String title, SingleInputFunctions singleInputFunctionsToBePlotted, Assignment assignment) {
 		// This needs to be improved with more settings, such as units etc.
 		ExternalGraphPlotter graphMaker = externalGraphMaker(this::valuesForVariable);
