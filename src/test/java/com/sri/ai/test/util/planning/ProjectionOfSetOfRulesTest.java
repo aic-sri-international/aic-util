@@ -21,7 +21,7 @@ import com.sri.ai.util.planning.api.Goal;
 import com.sri.ai.util.planning.api.Rule;
 import com.sri.ai.util.planning.core.ProjectionOfSetOfRules;
 
-public class RuleMarginalizerTest {
+public class ProjectionOfSetOfRulesTest {
 	
 	Goal a = new MyGoal("a");
 	Goal b = new MyGoal("b");

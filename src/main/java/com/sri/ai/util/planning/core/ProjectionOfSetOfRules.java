@@ -1,12 +1,11 @@
 package com.sri.ai.util.planning.core;
 
+import static com.sri.ai.util.Util.mapIntoSet;
 import static com.sri.ai.util.Util.set;
 import static java.util.Collections.unmodifiableSet;
 
 import java.util.Collection;
-import java.util.Deque;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -16,8 +15,6 @@ import com.sri.ai.util.planning.api.IndexedSetOfRules;
 import com.sri.ai.util.planning.api.Rule;
 import com.sri.ai.util.planning.dnf.api.ConjunctiveClause;
 import com.sri.ai.util.planning.dnf.api.DNF;
-import com.sri.ai.util.planning.dnf.core.DefaultDNF;
-import com.sri.ai.util.planning.dnf.core.PositiveConjunctiveClause;
 
 /**
  * An algorithm that takes an original set of rules and a set of goals to be <i>projected</i>,
@@ -37,12 +34,10 @@ import com.sri.ai.util.planning.dnf.core.PositiveConjunctiveClause;
  * (because I can use the original rule for obtaining flour and the other original rule to bake a cake from the flour).
  * If I project these rules into obtaining flour, I get a projected rule for obtaining flour without any antecedents.
  * 
- * @author
+ * @author braz
  *
  */
 public class ProjectionOfSetOfRules<R extends Rule<G>, G extends Goal> {
-
-	private Deque<G> goalStack;
 
 	private Collection<? extends G> projectedGoals;
 
@@ -52,6 +47,8 @@ public class ProjectionOfSetOfRules<R extends Rule<G>, G extends Goal> {
 
 	private BinaryFunction<G, Set<? extends G>, R> ruleFactory;
 
+	private DNFProjectorPlanner<R, G> projector;
+	
 	///////////////////////////////
 	
 	public ProjectionOfSetOfRules(
@@ -63,6 +60,7 @@ public class ProjectionOfSetOfRules<R extends Rule<G>, G extends Goal> {
 		this.indexedRules = new DefaultIndexedRules<R,G>(rules);
 		this.projectedRules = null;
 		this.ruleFactory = ruleFactory;
+		this.projector = new DNFProjectorPlanner<R, G>(indexedRules, g -> !projectedGoals.contains(g));
 	}
 
 	/////////////////////////////// Projection
@@ -76,122 +74,27 @@ public class ProjectionOfSetOfRules<R extends Rule<G>, G extends Goal> {
 
 	private void project() {
 		projectedRules = set();
-		for (G projectedGoal : projectedGoals) {
-			collectProjectedRulesFor(projectedGoal);
-		}
+		projectedGoals.stream().forEach(this::collectProjectedRulesFor);
 	}
 
 	private void collectProjectedRulesFor(G projectedGoal) {
-		resetSearch();
-		DNF<G> dnf = conditionFor(projectedGoal);
+		DNF<G> dnf = projector.plan(projectedGoal);
 		makeRulesForGoalWithGivenCondition(projectedGoal, dnf);
-	}
-
-	/////////////////////////////// Determining conditions for goal
-	
-	private void resetSearch() {
-		goalStack = new LinkedList<>();
-	}
-
-	public DNF<G> conditionFor(G goal) {
-		if (isBeingSearched(goal)) {
-			return falseCondition();
-		}
-		else {
-			DNF<G> result = isProvided(goal).or(conditionObtaining(goal));
-			return result;
-		}
-	}
-
-	private boolean isBeingSearched(G goal) {
-		return goalStack.contains(goal);
-	}
-
-	private DNF<G> isProvided(G goal) {
-		if (cannotBeProvided(goal)) {
-			return falseCondition();
-		} else {
-			return hasActuallyBeenProvided(goal);
-		}
-	}
-
-	private boolean cannotBeProvided(G goal) {
-		boolean result = 
-				isEliminatedGoal(goal)
-				|| 
-				searchIsAtTopLevelButWeMustUseAtLeastOneRule();
-		return result;
-	}
-
-	private boolean isEliminatedGoal(G goal) {
-		return !projectedGoals.contains(goal);
-	}
-
-	private boolean searchIsAtTopLevelButWeMustUseAtLeastOneRule() {
-		return goalStack.size() == 0;
-	}
-
-	public DNF<G> hasActuallyBeenProvided(G goal) {
-		return new DefaultDNF<G>(new PositiveConjunctiveClause<G>(goal));
-	}
-
-	public DNF<G> conditionObtaining(G goal) {
-		DNF<G> conditionFromPreviousRules = falseCondition();
-		for (R rule : getOriginalRulesFor(goal)) {
-			DNF<G> conditionForAntecedents = conditionForObtainingGoalWithRule(goal, rule);
-			conditionFromPreviousRules = conditionFromPreviousRules.or(conditionForAntecedents);
-			if (conditionFromPreviousRules.isTrue())
-				break;
-		}
-		return conditionFromPreviousRules;
-	}
-
-	private Collection<? extends R> getOriginalRulesFor(G goal) {
-		List<R> rulesForGoal = indexedRules.getRulesFor(goal);
-		return rulesForGoal;
-	}
-	
-	public DNF<G> conditionForObtainingGoalWithRule(G goal, R rule) {
-		goalStack.push(goal);
-		DNF<G> conditionForAntecedents = conditionForConjunctionOfGoals(rule.getAntecendents());
-		goalStack.pop();
-		return conditionForAntecedents;
-	}
-
-	private DNF<G> conditionForConjunctionOfGoals(Collection<? extends G> goals) {
-		DNF<G> conditionsRequiredForPreviousGoals = trueCondition();
-		for (G goal : goals) {
-			DNF<G> conditionForGoal = conditionFor(goal);
-			conditionsRequiredForPreviousGoals = conditionsRequiredForPreviousGoals.and(conditionForGoal);
-			if (conditionsRequiredForPreviousGoals.isFalse())
-				break;
-		}
-		return conditionsRequiredForPreviousGoals;
 	}
 
 	/////////////////////////////// Making rules from conditions
 	
 	private void makeRulesForGoalWithGivenCondition(G projectedGoal, DNF<G> dnf) {
-		for (ConjunctiveClause<G> conjunction : dnf.getConjunctiveClauses()) {
-			R conjunctionRule = makeRuleForGoalWithGivenCondition(projectedGoal, conjunction);
-			projectedRules.add(conjunctionRule);
-		}
+		mapIntoSet(
+				dnf.getConjunctiveClauses(), 
+				c -> makeRuleForGoalWithGivenCondition(projectedGoal, c), 
+				projectedRules);
 	}
 
 	private R makeRuleForGoalWithGivenCondition(G projectedGoal, ConjunctiveClause<G> conjunction) {
 		Set<? extends G> antecendents = new LinkedHashSet<>(conjunction.getLiterals());
 		R rule = ruleFactory.apply(projectedGoal, antecendents);
 		return rule;
-	}
-
-	////////////////////////////// Auxiliary
-
-	private DNF<G> trueCondition() {
-		return new DefaultDNF<G>(new PositiveConjunctiveClause<G>());
-	}
-
-	public DNF<G> falseCondition() {
-		return new DefaultDNF<G>();
 	}
 
 }

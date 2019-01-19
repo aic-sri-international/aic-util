@@ -1670,6 +1670,13 @@ public class Util {
 		return result;
 	}
 
+	public static <F, T> Set<T> mapIntoSet(Collection<? extends F> set, Function<F, T> function, Set<T> result) {
+		for (F f : set) {
+			result.add(function.apply(f));
+		}
+		return result;
+	}
+
 	/**
 	 * Stores results of applying a function to an collection's elements in a new,
 	 * empty linked hash set and returns it if any elements are distinct instances from originals,
