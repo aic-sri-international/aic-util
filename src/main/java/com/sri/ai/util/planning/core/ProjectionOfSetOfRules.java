@@ -67,17 +67,17 @@ public class ProjectionOfSetOfRules<R extends Rule<G>, G extends Goal> {
 	
 	public Set<? extends R> getProjectedSetOfRules() {
 		if (projectedRules == null) {
-			project();
+			computeProjectedRules();
 		}
 		return unmodifiableSet(projectedRules);
 	}
 
-	private void project() {
+	private void computeProjectedRules() {
 		projectedRules = set();
-		projectedGoals.stream().forEach(this::collectProjectedRulesFor);
+		projectedGoals.forEach(this::collectProjectedRulesForGoal);
 	}
 
-	private void collectProjectedRulesFor(G projectedGoal) {
+	private void collectProjectedRulesForGoal(G projectedGoal) {
 		DNF<G> dnf = projector.plan(projectedGoal);
 		makeRulesForGoalWithGivenCondition(projectedGoal, dnf);
 	}
