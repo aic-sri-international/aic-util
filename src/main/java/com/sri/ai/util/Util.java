@@ -2788,6 +2788,10 @@ public class Util {
 		return result;
 	}
 
+	public static <E> boolean thereExists(E[] array, Predicate<E> predicate) {
+		return thereExists(Arrays.asList(array), predicate);
+	}
+
 	/**
 	 * Indicates whether there is a true element in array.
 	 * 
@@ -6082,5 +6086,11 @@ public class Util {
 		catch (Exception e) {
 			return null;
 		}
+	}
+
+	public static boolean objectStringEqualsOneOf(Object object, String... strings) {
+		String objectString = object.toString();
+		boolean result = thereExists(strings, s -> objectString.equals(s));
+		return result;
 	}
 }

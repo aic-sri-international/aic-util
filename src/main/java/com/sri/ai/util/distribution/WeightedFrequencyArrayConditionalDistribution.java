@@ -40,7 +40,7 @@ public class WeightedFrequencyArrayConditionalDistribution {
 				getValuePossiblyCreatingIt(
 						distributions, 
 						remainingValues, 
-						key -> new WeightedFrequencyArrayDistribution(numberOfMainVariableValues, 0.01));
+						key -> new WeightedFrequencyArrayDistribution(numberOfMainVariableValues, 0.0));
 		return result;
 	}
 
