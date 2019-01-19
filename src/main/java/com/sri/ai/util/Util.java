@@ -6064,4 +6064,14 @@ public class Util {
 			procedure.apply();
 		}
 	}
+
+	public static boolean containsAllCaseInsensitive(String string, String... subStrings) {
+		return containsAllCaseInsensitive(string, Arrays.asList(subStrings));
+	}
+
+	public static boolean containsAllCaseInsensitive(String string, List<String> subStrings) {
+		String lowerCase = string.toLowerCase();
+		boolean result = forAll(subStrings, s -> lowerCase.contains(s));
+		return result;
+	}
 }
