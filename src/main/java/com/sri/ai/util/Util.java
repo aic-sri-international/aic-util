@@ -6074,4 +6074,13 @@ public class Util {
 		boolean result = forAll(subStrings, s -> lowerCase.contains(s.toLowerCase()));
 		return result;
 	}
+
+	public static Double parseAsDoubleOrNull(String string) {
+		try {
+			return Double.parseDouble(string);
+		}
+		catch (Exception e) {
+			return null;
+		}
+	}
 }
