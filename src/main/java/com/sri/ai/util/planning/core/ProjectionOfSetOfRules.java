@@ -1,7 +1,6 @@
 package com.sri.ai.util.planning.core;
 
 import static com.sri.ai.util.Util.set;
-import static com.sri.ai.util.Util.subtract;
 import static java.util.Collections.unmodifiableSet;
 
 import java.util.Collection;
@@ -13,7 +12,7 @@ import java.util.Set;
 
 import com.sri.ai.util.base.BinaryFunction;
 import com.sri.ai.util.planning.api.Goal;
-import com.sri.ai.util.planning.api.IndexedRules;
+import com.sri.ai.util.planning.api.IndexedSetOfRules;
 import com.sri.ai.util.planning.api.Rule;
 import com.sri.ai.util.planning.dnf.api.ConjunctiveClause;
 import com.sri.ai.util.planning.dnf.api.DNF;
@@ -21,77 +20,85 @@ import com.sri.ai.util.planning.dnf.core.DefaultDNF;
 import com.sri.ai.util.planning.dnf.core.PositiveConjunctiveClause;
 
 /**
- * An algorithm that takes a set of rules and a set of <i>marginalized</i>
- * goals, and computes another set of rules indicating which <i>remaining</i>
- * (that is, not marginalized) goals can be obtained from which using the
- * original set of rules.
+ * An algorithm that takes an original set of rules and a set of goals to be <i>projected</i>,
+ * and computes a <code>projected</code> set of rules for obtaining the <i>projected</i> goals
+ * and whose antecedents are projected goals themselves.
  * <p>
- * In other words, it produces a set of rules that assumes that marginalized
- * goals are never a given.
+ * The relationship between the original and projected set of rules is as follows:
+ * a rule is a projected rule if and only if
+ * its consequents and antecedents are all projected goals,
+ * and it is possible to obtain its consequents by applying the original set of rules to its antecedents.
+ * <p>
+ * Note that, since a projected rule's antecedents are all projected goals,
+ * it is implicitly assumed that all other original goals are not satisfied (since they are never in the projected rule's antecedents).
+ * <p>
+ * For example, suppose I have one rule for obtaining flour and another for using the flour to bake a cake.
+ * If I project these rules into just baking a cake, I will get a single rule for baking a cake without any antecedents
+ * (because I can use the original rule for obtaining flour and the other original rule to bake a cake from the flour).
+ * If I project these rules into obtaining flour, I get a projected rule for obtaining flour without any antecedents.
  * 
  * @author
  *
  */
-public class RuleMarginalizer<R extends Rule<G>, G extends Goal> {
+public class ProjectionOfSetOfRules<R extends Rule<G>, G extends Goal> {
 
 	private Deque<G> goalStack;
 
-	private Collection<? extends G> marginalizedGoals;
+	private Collection<? extends G> projectedGoals;
 
-	private Collection<? extends G> allGoals;
+	private IndexedSetOfRules<R,G> indexedRules;
 
-	private IndexedRules<R,G> indexedRules;
-
-	private Set<R> marginalizedRules;
+	private Set<R> projectedRules;
 
 	private BinaryFunction<G, Set<? extends G>, R> ruleFactory;
 
 	///////////////////////////////
 	
-	public RuleMarginalizer(
+	public ProjectionOfSetOfRules(
 			List<? extends R> rules, 
-			Collection<? extends G> marginalized,
+			Collection<? extends G> projectedGoals,
 			BinaryFunction<G, Set<? extends G>, R> ruleFactory) {
 		
-		this.goalStack = new LinkedList<>();
-		this.marginalizedGoals = marginalized;
+		this.projectedGoals = projectedGoals;
 		this.indexedRules = new DefaultIndexedRules<R,G>(rules);
-		this.allGoals = getAllRemainingGoalsFromRules(indexedRules);
-		this.marginalizedRules = null;
+		this.projectedRules = null;
 		this.ruleFactory = ruleFactory;
 	}
 
-	/////////////////////////////// Marginalization
+	/////////////////////////////// Projection
 	
-	public Set<? extends R> getMarginalizedRules() {
-		if (marginalizedRules == null) {
-			marginalizedRules = marginalize();
+	public Set<? extends R> getProjectedSetOfRules() {
+		if (projectedRules == null) {
+			project();
 		}
-		return unmodifiableSet(marginalizedRules);
+		return unmodifiableSet(projectedRules);
 	}
 
-	private Set<R> marginalize() {
-		marginalizedRules = set();
-		Collection<? extends G> remainingGoals = subtract(allGoals, marginalizedGoals);
-		for (G remainingGoal : remainingGoals) {
-			collectMarginalizedRulesFor(remainingGoal);
+	private void project() {
+		projectedRules = set();
+		for (G projectedGoal : projectedGoals) {
+			collectProjectedRulesFor(projectedGoal);
 		}
-		return marginalizedRules;
 	}
 
-	private void collectMarginalizedRulesFor(G remainingGoal) {
-		DNF<G> dnf = conditionFor(remainingGoal);
-		makeRulesForGoalWithGivenCondition(remainingGoal, dnf);
+	private void collectProjectedRulesFor(G projectedGoal) {
+		resetSearch();
+		DNF<G> dnf = conditionFor(projectedGoal);
+		makeRulesForGoalWithGivenCondition(projectedGoal, dnf);
 	}
 
 	/////////////////////////////// Determining conditions for goal
 	
+	private void resetSearch() {
+		goalStack = new LinkedList<>();
+	}
+
 	public DNF<G> conditionFor(G goal) {
 		if (isBeingSearched(goal)) {
 			return falseCondition();
 		}
 		else {
-			DNF<G> result = isProvided(goal).or(conditionFromRulesFor(goal));
+			DNF<G> result = isProvided(goal).or(conditionObtaining(goal));
 			return result;
 		}
 	}
@@ -110,10 +117,14 @@ public class RuleMarginalizer<R extends Rule<G>, G extends Goal> {
 
 	private boolean cannotBeProvided(G goal) {
 		boolean result = 
-				marginalizedGoals.contains(goal)
+				isEliminatedGoal(goal)
 				|| 
 				searchIsAtTopLevelButWeMustUseAtLeastOneRule();
 		return result;
+	}
+
+	private boolean isEliminatedGoal(G goal) {
+		return !projectedGoals.contains(goal);
 	}
 
 	private boolean searchIsAtTopLevelButWeMustUseAtLeastOneRule() {
@@ -124,7 +135,7 @@ public class RuleMarginalizer<R extends Rule<G>, G extends Goal> {
 		return new DefaultDNF<G>(new PositiveConjunctiveClause<G>(goal));
 	}
 
-	public DNF<G> conditionFromRulesFor(G goal) {
+	public DNF<G> conditionObtaining(G goal) {
 		DNF<G> conditionFromPreviousRules = falseCondition();
 		for (R rule : getOriginalRulesFor(goal)) {
 			DNF<G> conditionForAntecedents = conditionForObtainingGoalWithRule(goal, rule);
@@ -160,24 +171,20 @@ public class RuleMarginalizer<R extends Rule<G>, G extends Goal> {
 
 	/////////////////////////////// Making rules from conditions
 	
-	private void makeRulesForGoalWithGivenCondition(G remainingGoal, DNF<G> dnf) {
+	private void makeRulesForGoalWithGivenCondition(G projectedGoal, DNF<G> dnf) {
 		for (ConjunctiveClause<G> conjunction : dnf.getConjunctiveClauses()) {
-			R conjunctionRule = makeRuleForGoalWithGivenCondition(remainingGoal, conjunction);
-			marginalizedRules.add(conjunctionRule);
+			R conjunctionRule = makeRuleForGoalWithGivenCondition(projectedGoal, conjunction);
+			projectedRules.add(conjunctionRule);
 		}
 	}
 
-	private R makeRuleForGoalWithGivenCondition(G remainingGoal, ConjunctiveClause<G> conjunction) {
+	private R makeRuleForGoalWithGivenCondition(G projectedGoal, ConjunctiveClause<G> conjunction) {
 		Set<? extends G> antecendents = new LinkedHashSet<>(conjunction.getLiterals());
-		R rule = ruleFactory.apply(remainingGoal, antecendents);
+		R rule = ruleFactory.apply(projectedGoal, antecendents);
 		return rule;
 	}
 
 	////////////////////////////// Auxiliary
-
-	private Collection<? extends G> getAllRemainingGoalsFromRules(IndexedRules<R,G> indexedRules) {
-		return indexedRules.getGoals();
-	}
 
 	private DNF<G> trueCondition() {
 		return new DefaultDNF<G>(new PositiveConjunctiveClause<G>());

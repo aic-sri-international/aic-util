@@ -11,10 +11,10 @@ import java.util.Map;
 
 import com.sri.ai.util.Util;
 import com.sri.ai.util.planning.api.Goal;
-import com.sri.ai.util.planning.api.IndexedRules;
+import com.sri.ai.util.planning.api.IndexedSetOfRules;
 import com.sri.ai.util.planning.api.Rule;
 
-public class DefaultIndexedRules<R extends Rule<G>, G extends Goal> implements IndexedRules<R, G> {
+public class DefaultIndexedRules<R extends Rule<G>, G extends Goal> implements IndexedSetOfRules<R, G> {
 	
 	private Map<G, List<R>> fromGoalToListOfRules;
 	

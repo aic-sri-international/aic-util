@@ -6,10 +6,12 @@ import static com.sri.ai.util.Util.join;
 import static com.sri.ai.util.Util.list;
 import static com.sri.ai.util.Util.println;
 import static com.sri.ai.util.Util.set;
+import static com.sri.ai.util.Util.subtract;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
@@ -17,8 +19,7 @@ import org.junit.Test;
 import com.sri.ai.util.base.BinaryFunction;
 import com.sri.ai.util.planning.api.Goal;
 import com.sri.ai.util.planning.api.Rule;
-import com.sri.ai.util.planning.core.PlannerUsingEachRuleAtMostOnce;
-import com.sri.ai.util.planning.core.RuleMarginalizer;
+import com.sri.ai.util.planning.core.ProjectionOfSetOfRules;
 
 public class RuleMarginalizerTest {
 	
@@ -29,19 +30,16 @@ public class RuleMarginalizerTest {
 	Goal e = new MyGoal("e");
 	Goal f = new MyGoal("f");
 	
-	ArrayList<? extends Rule<Goal>> allRules;
+	private ArrayList<? extends Rule<Goal>> allRules;
 	
-	LinkedList<Goal> allGoals;
 
-	LinkedList<Goal> marginalizedGoals;
+	private LinkedList<Goal> marginalizedGoals;
 	
-	Set<? extends Rule> expected;
+	private Set<? extends Rule> expected;
 	
-	PlannerUsingEachRuleAtMostOnce planner;
-	
-	Set<? extends Rule> actual;
+	private Set<? extends Rule> actual;
 
-	BinaryFunction<Goal, Set<? extends Goal>, Rule<Goal>> 
+	private BinaryFunction<Goal, Set<? extends Goal>, Rule<Goal>> 
 	ruleFactory = 
 	(consequent, antecendents) -> rule(list(consequent), new LinkedList<>(antecendents));
 
@@ -226,12 +224,32 @@ public class RuleMarginalizerTest {
 	}
 
 	public void runTest() {
-		RuleMarginalizer<Rule<Goal>, Goal> marginalizer = new RuleMarginalizer<>(allRules, marginalizedGoals, ruleFactory);
+		
+		List<Goal> projectedGoals = getProjectedGoals();
+		
+		ProjectionOfSetOfRules<Rule<Goal>, Goal> marginalizer = new ProjectionOfSetOfRules<>(allRules, projectedGoals, ruleFactory);
 
-		actual = marginalizer.getMarginalizedRules();
+		actual = marginalizer.getProjectedSetOfRules();
 		
 		println("Expected rules: " + join(expected));
 		println("Actual rules: " + join(actual));
 		assertEquals(expected, actual);
+	}
+
+	private List<Goal> getProjectedGoals() {
+		List<Goal> allGoals = gatherAllGoals();
+		
+		List<Goal> projectedGoals = subtract(allGoals, marginalizedGoals);
+		return projectedGoals;
+	}
+
+	private List<Goal> gatherAllGoals() {
+		List<Goal> allGoals = list();
+		for (Rule rule : allRules) {
+			MyRule myRule = (MyRule) rule;
+			allGoals.addAll(myRule.getAntecendents());
+			allGoals.addAll(myRule.getConsequents());
+		}
+		return allGoals;
 	}
 }
