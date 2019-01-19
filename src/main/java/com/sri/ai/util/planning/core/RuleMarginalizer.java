@@ -1,8 +1,8 @@
 package com.sri.ai.util.planning.core;
 
-import static com.sri.ai.util.Util.list;
 import static com.sri.ai.util.Util.set;
 import static com.sri.ai.util.Util.subtract;
+import static java.util.Collections.unmodifiableSet;
 
 import java.util.Collection;
 import java.util.Deque;
@@ -17,8 +17,8 @@ import com.sri.ai.util.planning.api.IndexedRules;
 import com.sri.ai.util.planning.api.Rule;
 import com.sri.ai.util.planning.dnf.api.ConjunctiveClause;
 import com.sri.ai.util.planning.dnf.api.DNF;
-import com.sri.ai.util.planning.dnf.core.PositiveConjunctiveClause;
 import com.sri.ai.util.planning.dnf.core.DefaultDNF;
+import com.sri.ai.util.planning.dnf.core.PositiveConjunctiveClause;
 
 /**
  * An algorithm that takes a set of rules and a set of <i>marginalized</i>
@@ -46,19 +46,32 @@ public class RuleMarginalizer<R extends Rule<G>, G extends Goal> {
 
 	private BinaryFunction<G, Set<? extends G>, R> ruleFactory;
 
+	///////////////////////////////
+	
 	public RuleMarginalizer(
 			List<? extends R> rules, 
 			Collection<? extends G> marginalized,
 			BinaryFunction<G, Set<? extends G>, R> ruleFactory) {
+		
 		this.goalStack = new LinkedList<>();
 		this.marginalizedGoals = marginalized;
 		this.indexedRules = new DefaultIndexedRules<R,G>(rules);
 		this.allGoals = getAllRemainingGoalsFromRules(indexedRules);
-		this.marginalizedRules = set();
+		this.marginalizedRules = null;
 		this.ruleFactory = ruleFactory;
 	}
 
-	public Set<? extends R> marginalize() {
+	/////////////////////////////// Marginalization
+	
+	public Set<? extends R> getMarginalizedRules() {
+		if (marginalizedRules == null) {
+			marginalizedRules = marginalize();
+		}
+		return unmodifiableSet(marginalizedRules);
+	}
+
+	private Set<R> marginalize() {
+		marginalizedRules = set();
 		Collection<? extends G> remainingGoals = subtract(allGoals, marginalizedGoals);
 		for (G remainingGoal : remainingGoals) {
 			collectMarginalizedRulesFor(remainingGoal);
@@ -68,14 +81,11 @@ public class RuleMarginalizer<R extends Rule<G>, G extends Goal> {
 
 	private void collectMarginalizedRulesFor(G remainingGoal) {
 		DNF<G> dnf = conditionFor(remainingGoal);
-		makeMarginalizedRules(remainingGoal, dnf);
+		makeRulesForGoalWithGivenCondition(remainingGoal, dnf);
 	}
 
-	public void makeMarginalizedRules(G remainingGoal, DNF<G> dnf) {
-		List<? extends R> marginalizedRulesForRemainingGoal = makeRulesForGoalWithGivenCondition(remainingGoal, dnf);
-		marginalizedRules.addAll(marginalizedRulesForRemainingGoal);
-	}
-
+	/////////////////////////////// Determining conditions for goal
+	
 	public DNF<G> conditionFor(G goal) {
 		if (isBeingSearched(goal)) {
 			return falseCondition();
@@ -86,6 +96,10 @@ public class RuleMarginalizer<R extends Rule<G>, G extends Goal> {
 		}
 	}
 
+	private boolean isBeingSearched(G goal) {
+		return goalStack.contains(goal);
+	}
+
 	private DNF<G> isProvided(G goal) {
 		if (cannotBeProvided(goal)) {
 			return falseCondition();
@@ -94,14 +108,12 @@ public class RuleMarginalizer<R extends Rule<G>, G extends Goal> {
 		}
 	}
 
-	public boolean cannotBeProvided(G goal) {
-		boolean result = marginalizedGoals.contains(goal)
-				|| searchIsAtTopLevelButWeMustUseAtLeastOneRule();
+	private boolean cannotBeProvided(G goal) {
+		boolean result = 
+				marginalizedGoals.contains(goal)
+				|| 
+				searchIsAtTopLevelButWeMustUseAtLeastOneRule();
 		return result;
-	}
-
-	public boolean isBeingSearched(G goal) {
-		return goalStack.contains(goal);
 	}
 
 	private boolean searchIsAtTopLevelButWeMustUseAtLeastOneRule() {
@@ -123,6 +135,11 @@ public class RuleMarginalizer<R extends Rule<G>, G extends Goal> {
 		return conditionFromPreviousRules;
 	}
 
+	private Collection<? extends R> getOriginalRulesFor(G goal) {
+		List<R> rulesForGoal = indexedRules.getRulesFor(goal);
+		return rulesForGoal;
+	}
+	
 	public DNF<G> conditionForObtainingGoalWithRule(G goal, R rule) {
 		goalStack.push(goal);
 		DNF<G> conditionForAntecedents = conditionForConjunctionOfGoals(rule.getAntecendents());
@@ -141,13 +158,13 @@ public class RuleMarginalizer<R extends Rule<G>, G extends Goal> {
 		return conditionsRequiredForPreviousGoals;
 	}
 
-	private List<R> makeRulesForGoalWithGivenCondition(G remainingGoal, DNF<G> dnf) {
-		List<R> result = list();
+	/////////////////////////////// Making rules from conditions
+	
+	private void makeRulesForGoalWithGivenCondition(G remainingGoal, DNF<G> dnf) {
 		for (ConjunctiveClause<G> conjunction : dnf.getConjunctiveClauses()) {
 			R conjunctionRule = makeRuleForGoalWithGivenCondition(remainingGoal, conjunction);
-			result.add(conjunctionRule);
+			marginalizedRules.add(conjunctionRule);
 		}
-		return result;
 	}
 
 	private R makeRuleForGoalWithGivenCondition(G remainingGoal, ConjunctiveClause<G> conjunction) {
@@ -156,10 +173,7 @@ public class RuleMarginalizer<R extends Rule<G>, G extends Goal> {
 		return rule;
 	}
 
-	private Collection<? extends R> getOriginalRulesFor(G goal) {
-		List<R> rulesForGoal = indexedRules.getRulesFor(goal);
-		return rulesForGoal;
-	}
+	////////////////////////////// Auxiliary
 
 	private Collection<? extends G> getAllRemainingGoalsFromRules(IndexedRules<R,G> indexedRules) {
 		return indexedRules.getGoals();

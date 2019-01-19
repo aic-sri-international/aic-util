@@ -130,7 +130,7 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 				explain("Rule has been used already");
 			}
 
-		}), "Altervative plans now ", alternativeRulePlans);
+		}), "Alternative plans now ", alternativeRulePlans);
 	}
 
 	private void findPlansStartingWithRule(R rule, int i, List<Plan> alternativeRulePlans) {
@@ -139,7 +139,7 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 			Plan planStartingWithRule = tryRule(rule, i);
 			alternativeRulePlans.add(planStartingWithRule);
 			
-		}), "Altervative plans now ", alternativeRulePlans);
+		}), "Alternative plans now ", alternativeRulePlans);
 	}
 
 	private Plan tryRule(R rule, int i) {

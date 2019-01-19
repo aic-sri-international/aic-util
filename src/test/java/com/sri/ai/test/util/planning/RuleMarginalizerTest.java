@@ -228,7 +228,7 @@ public class RuleMarginalizerTest {
 	public void runTest() {
 		RuleMarginalizer<Rule<Goal>, Goal> marginalizer = new RuleMarginalizer<>(allRules, marginalizedGoals, ruleFactory);
 
-		actual = marginalizer.marginalize();
+		actual = marginalizer.getMarginalizedRules();
 		
 		println("Expected rules: " + join(expected));
 		println("Actual rules: " + join(actual));
