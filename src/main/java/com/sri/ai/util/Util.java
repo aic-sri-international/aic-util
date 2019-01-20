@@ -1973,7 +1973,7 @@ public class Util {
 	 * @param <E>
 	 *            the type of the elements being collected.
 	 */
-	public static <E> Collection<E> collect(Iterator<E> iterator,
+	public static <E> Collection<E> collect(Iterator<? extends E> iterator,
 			Predicate<E> predicate, Collection<E> collected) {
 
 		iterator.forEachRemaining(e -> {
@@ -2043,20 +2043,56 @@ public class Util {
 
 	/**
 	 * Collects elements in an iterator's range satisfying a given predicate into a new
-	 * linked array list and returns it.
+	 * array list and returns it.
 	 * 
 	 * @param iterator
 	 *            the iterator from which elements are to be copied.
 	 * @param predicate
 	 *            the test to be applied to determine which elements should be
 	 *            copied into the returned list.
-	 * @return a List of the elements in the collection that matched the given
+	 * @return a List of the elements in the iterator's range that matched the given
 	 *         predicate.
 	 * @param <T>
 	 *            the type of the elements to collect.
 	 */
 	public static <T> ArrayList<T> collectToArrayList(Iterator<T> iterator, Predicate<T> predicate) {
 		return (ArrayList<T>) collect(iterator, predicate, new ArrayList<T>());
+	}
+
+	/**
+	 * Collects elements in an iterator's range satisfying a given predicate into a new
+	 * linked hash set and returns it.
+	 * 
+	 * @param iterator
+	 *            the iterator from which elements are to be copied.
+	 * @param predicate
+	 *            the test to be applied to determine which elements should be
+	 *            copied into the returned set.
+	 * @return a Set of the elements in the iterator's range that matched the given
+	 *         predicate.
+	 * @param <T>
+	 *            the type of the elements to collect.
+	 */
+	public static <T> LinkedHashSet<T> collectToSet(Iterator<T> iterator, Predicate<T> predicate) {
+		return (LinkedHashSet<T>) collect(iterator, predicate, new LinkedHashSet<T>());
+	}
+
+	/**
+	 * Collects elements in a collection satisfying a given predicate into a new
+	 * linked hash set and returns it.
+	 * 
+	 * @param collection
+	 *            the collection from which elements are to be copied.
+	 * @param predicate
+	 *            the test to be applied to determine which elements should be
+	 *            copied into the returned set.
+	 * @return a Set of the elements in the collection that matched the given
+	 *         predicate.
+	 * @param <T>
+	 *            the type of the elements to collect.
+	 */
+	public static <T> LinkedHashSet<T> collectToSet(Collection<? extends T> collection, Predicate<T> predicate) {
+		return (LinkedHashSet<T>) collect(collection.iterator(), predicate, new LinkedHashSet<T>());
 	}
 
 	/**

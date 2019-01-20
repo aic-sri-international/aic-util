@@ -29,7 +29,7 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 	
 	public static <R1 extends Rule<G1>, G1 extends Goal> 
 	Plan 
-	planUsingEachRuleAtMostOnce(List<G1> allGoals, Collection<? extends G1> satisfiedGoals, ArrayList<? extends R1> rules) {
+	planUsingEachRuleAtMostOnce(Collection<? extends G1> allGoals, Collection<? extends G1> satisfiedGoals, ArrayList<? extends R1> rules) {
 		
 		return planUsingEachRuleAtMostOnceAndIfSuccessfulApplyingSequelPlan(allGoals, satisfiedGoals, rules, new PlannerThatDoesNothing<R1, G1>());
 	}
@@ -37,7 +37,7 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 	public static <R1 extends Rule<G1>, G1 extends Goal> 
 	Plan 
 	planUsingEachRuleAtMostOnceAndIfSuccessfulApplyingSequelPlan(
-			List<G1> allGoals, 
+			Collection<? extends G1> allGoals, 
 			Collection<? extends G1> satisfiedGoals, 
 			ArrayList<? extends R1> rules, 
 			Planner<R1, G1> sequel) {
