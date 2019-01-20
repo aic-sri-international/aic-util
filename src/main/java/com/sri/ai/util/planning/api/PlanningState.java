@@ -2,18 +2,13 @@ package com.sri.ai.util.planning.api;
 
 import static com.sri.ai.util.Util.collectThoseWhoseIndexSatisfyArrayList;
 import static com.sri.ai.util.Util.fill;
-import static com.sri.ai.util.Util.myAssert;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import com.sri.ai.util.Util;
-
 public class PlanningState<R extends Rule<G>, G extends Goal> {
-	
-	public Collection<? extends G> allGoals;
 	
 	public ArrayList<? extends R> rules;
 
@@ -21,19 +16,19 @@ public class PlanningState<R extends Rule<G>, G extends Goal> {
 	
 	public Set<G> satisfiedGoals;
 	
-	public PlanningState(Collection<? extends G> allGoals, Collection<? extends G> satisfiedGoals, ArrayList<? extends R> rules) {
-		myAssert(allGoals.containsAll(satisfiedGoals), () -> "Planning requires 'all goals' to include indeed all goals, even the already satisfied ones, but " + Util.subtract(satisfiedGoals, allGoals) + " are satisfied goals not included in 'all goals'");
-		this.allGoals = allGoals;
+	public Set<G> failedGoals;
+	
+	public PlanningState(Collection<? extends G> allRequiredGoals, Collection<? extends G> satisfiedGoals, Collection<? extends G> failedGoals, ArrayList<? extends R> rules) {
 		this.rules = rules;
 		this.satisfiedGoals = new LinkedHashSet<>(satisfiedGoals);
+		this.failedGoals = new LinkedHashSet<>(failedGoals);
 		this.ruleIsAvailable = fill(rules.size(), true);
 	}
 
 	@Override
 	public String toString() {
 		return 
-				"Planning state with goals " + allGoals + ", " 
-				+ ", rules " + rules
+				"Planning state with rules " + rules
 				+ ", available rules " + collectThoseWhoseIndexSatisfyArrayList(rules, ruleIsAvailable)
 				+ ", satisfied goals " + satisfiedGoals;
 	}

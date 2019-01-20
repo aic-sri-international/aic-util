@@ -379,7 +379,7 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 	}
 
 	public void runTest() {
-		planner = new PlannerUsingEachRuleAtMostOnce<Rule<Goal>, Goal>(allGoals, satisfiedGoals, allRules);
+		planner = new PlannerUsingEachRuleAtMostOnce<Rule<Goal>, Goal>(allGoals, satisfiedGoals, list(), g -> true, allRules);
 		actual = planner.plan();
 		println("Goals: " + allGoals);
 		println("Rules:\n" + join("\n", allRules));

@@ -12,6 +12,10 @@ public interface Plan {
 	 */
 	double getEstimatedSuccessWeight();
 
+	default boolean isDeterministic() {
+		return getEstimatedSuccessWeight() == MAXIMUM_ESTIMATED_SUCCESS_WEIGHT;
+	}
+	
 	void execute(State state);
 	
 	void reward(double reward);

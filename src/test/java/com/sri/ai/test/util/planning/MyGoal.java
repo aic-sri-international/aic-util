@@ -13,4 +13,5 @@ class MyGoal implements Goal {
 	public String toString() {
 		return name;
 	}
+
 }
