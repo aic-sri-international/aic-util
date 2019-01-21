@@ -8,4 +8,9 @@ public interface Rule<G extends Goal> extends Plan {
 
 	Collection<? extends G> getConsequents();
 
+	@Override
+	default boolean isFailedPlan() {
+		return false;
+	}
+	
 }

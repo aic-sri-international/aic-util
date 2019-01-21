@@ -32,6 +32,11 @@ public class MyRule implements Rule<Goal> {
 	}
 
 	@Override
+	public boolean isFailedPlan() {
+		return false;
+	}
+
+	@Override
 	public void execute(State state) {
 		println(this);
 	}

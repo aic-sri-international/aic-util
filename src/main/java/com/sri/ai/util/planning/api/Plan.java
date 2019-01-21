@@ -15,6 +15,12 @@ public interface Plan {
 	default boolean isDeterministic() {
 		return getEstimatedSuccessWeight() == MAXIMUM_ESTIMATED_SUCCESS_WEIGHT;
 	}
+
+	/**
+	 * Indicates that this plan has no alternatives (can be used to represent a failed plan).
+	 * @return
+	 */
+	boolean isFailedPlan();
 	
 	void execute(State state);
 	

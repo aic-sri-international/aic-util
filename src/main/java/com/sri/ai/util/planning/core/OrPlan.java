@@ -36,7 +36,6 @@ public class OrPlan extends AbstractCompoundPlan {
 	}
 
 	public static Plan or(List<? extends Plan> subPlans) {
-		if (subPlans.isEmpty()) return null;
 		List<? extends Plan> flattenedSubPlans = AbstractCompoundPlan.flatten(subPlans, OrPlan.class, getSubItems());
 		if (flattenedSubPlans.size() == 1) {
 			return flattenedSubPlans.get(0);
@@ -56,6 +55,11 @@ public class OrPlan extends AbstractCompoundPlan {
 		super(subPlans);
 		numberOfSubPlanExecutions = fill(subPlans.size(), 0);
 	}
+	
+	@Override
+	public boolean isFailedPlan() {
+		return getSubPlans().isEmpty();
+	}
 
 	@Override
 	public double getEstimatedSuccessWeight() {
@@ -70,11 +74,13 @@ public class OrPlan extends AbstractCompoundPlan {
 
 	@Override
 	public void execute(State state) {
-		Random random = state.getRandom();
-		myAssert(random != null, () -> getClass() + " cannot execute without " + State.class.getSimpleName() + " providing it a Random");
-		int i = getDistribution().sample(random);
-		getSubPlans().get(i).execute(state);
-		increment(numberOfSubPlanExecutions, i);
+		if ( ! getSubPlans().isEmpty()) {
+			Random random = state.getRandom();
+			myAssert(random != null, () -> getClass() + " cannot execute without " + State.class.getSimpleName() + " providing it a Random");
+			int i = getDistribution().sample(random);
+			getSubPlans().get(i).execute(state);
+			increment(numberOfSubPlanExecutions, i);
+		}
 	}
 
 	@Override

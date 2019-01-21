@@ -2,12 +2,15 @@ package com.sri.ai.test.util.planning;
 
 import static com.sri.ai.test.util.planning.MyRule.rule;
 import static com.sri.ai.util.Util.arrayList;
+import static com.sri.ai.util.Util.containsAllCaseInsensitive;
 import static com.sri.ai.util.Util.join;
 import static com.sri.ai.util.Util.list;
 import static com.sri.ai.util.Util.println;
+import static com.sri.ai.util.planning.core.ContingentPlan.contingent;
 import static com.sri.ai.util.planning.core.OrPlan.or;
 import static com.sri.ai.util.planning.core.SequentialPlan.and;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -15,6 +18,7 @@ import java.util.LinkedList;
 import org.junit.Test;
 
 import com.sri.ai.util.Util;
+import com.sri.ai.util.planning.api.ContingentGoal;
 import com.sri.ai.util.planning.api.Goal;
 import com.sri.ai.util.planning.api.Plan;
 import com.sri.ai.util.planning.api.Rule;
@@ -29,9 +33,16 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 	Goal e = new MyGoal("e");
 	Goal f = new MyGoal("f");
 	
+	ContingentGoal ca = new MyContingentGoal("ca");
+	ContingentGoal cb = new MyContingentGoal("cb");
+	ContingentGoal cc = new MyContingentGoal("cc");
+	ContingentGoal cd = new MyContingentGoal("cd");
+	ContingentGoal ce = new MyContingentGoal("ce");
+	ContingentGoal cf = new MyContingentGoal("cf");
+	
 	ArrayList<? extends Rule<Goal>> allRules;
 	
-	LinkedList<? extends Goal> allGoals;
+	LinkedList<? extends Goal> allRequiredGoals;
 	
 	LinkedList<? extends Goal> satisfiedGoals;
 	
@@ -51,7 +62,7 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 				rule(list(d), list(c))
 				);
 
-		allGoals = list(a,b);
+		allRequiredGoals = list(a,b);
 		
 		satisfiedGoals = list();
 		
@@ -74,7 +85,7 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 				rule(list(d), list())
 				);
 
-		allGoals = list(a,b,c,d);
+		allRequiredGoals = list(a,b,c,d);
 		
 		satisfiedGoals = list();
 		
@@ -109,7 +120,7 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 				rule(list(b), list(a))
 				);
 
-		allGoals = list(a,b);
+		allRequiredGoals = list(a,b);
 		
 		satisfiedGoals = list();
 		
@@ -131,7 +142,7 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 				rule(list(b), list(a))
 				);
 
-		allGoals = list(a,b);
+		allRequiredGoals = list(a,b);
 		
 		satisfiedGoals = list();
 		
@@ -163,7 +174,7 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 				rule(list(c), list())
 				);
 
-		allGoals = list(a,b,c);
+		allRequiredGoals = list(a,b,c);
 		
 		satisfiedGoals = list();
 		
@@ -209,7 +220,7 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 				rule(list(a), list())
 				);
 
-		allGoals = list(a,b,c,d,e,f);
+		allRequiredGoals = list(a,b,c,d,e,f);
 		
 		satisfiedGoals = list();
 		
@@ -237,11 +248,11 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 				// rule(list(a), list()) // the root cannot be created.
 				);
 
-		allGoals = list(a,b,c,d,e,f);
+		allRequiredGoals = list(a,b,c,d,e,f);
 		
 		satisfiedGoals = list();
 		
-		expected = null;
+		expected = or(); // empty plan
 														
 		runTest();
 	}
@@ -258,11 +269,11 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 				rule(list(a), list(f)) // there we go again
 				);
 
-		allGoals = list(a,b,c,d,e,f);
+		allRequiredGoals = list(a,b,c,d,e,f);
 		
 		satisfiedGoals = list();
 		
-		expected = null;
+		expected = or(); // empty plan
 														
 		runTest();
 	}
@@ -279,7 +290,7 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 				rule(list(a), list())
 				);
 
-		allGoals = list(a,b,c,d,e,f);
+		allRequiredGoals = list(a,b,c,d,e,f);
 		
 		satisfiedGoals = list();
 		
@@ -292,11 +303,11 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 		
 		allRules = arrayList();
 
-		allGoals = list(a,b,c,d,e,f);
+		allRequiredGoals = list(a,b,c,d,e,f);
 		
 		satisfiedGoals = list();
 		
-		expected = null;
+		expected = or(); // empty plan
 														
 		runTest();
 	}
@@ -313,7 +324,7 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 				rule(list(a), list())
 				);
 
-		allGoals = list();
+		allRequiredGoals = list();
 		
 		satisfiedGoals = list();
 		
@@ -323,7 +334,7 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 	}
 	
 	@Test
-	public void allGoalsAlreadySatisfiedTest() {
+	public void allRequiredGoalsAlreadySatisfiedTest() {
 		
 		allRules = arrayList(
 				rule(list(f), list(e)),
@@ -334,7 +345,7 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 				rule(list(a), list())
 				);
 
-		allGoals = list();
+		allRequiredGoals = list();
 		
 		satisfiedGoals = list();
 		
@@ -355,7 +366,7 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 				rule(list(a), list())
 				);
 
-		allGoals = list(a,b,c,d,e,f);
+		allRequiredGoals = list(a,b,c,d,e,f);
 		
 		satisfiedGoals = list(b, c, d);
 		
@@ -378,10 +389,269 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 		runTest();
 	}
 
+	@Test
+	public void basicContingentGoalsTest() {
+		
+		allRules = arrayList(
+				rule(list(b), list(ca)),
+				rule(list(b), list(a)),
+				rule(list(a), list())
+				);
+
+		allRequiredGoals = list(b);
+		
+		satisfiedGoals = list();
+		
+		expected = 
+				or(
+						contingent(
+								ca, 
+								rule(list(b), list(ca)), 
+								and(
+										rule(list(a), list()), 
+										rule(list(b), list(a)))),
+						and(
+								rule(list(a), list()),
+								or(
+										rule(list(b), list(a)))));
+						
+														
+		runTest();
+		
+	}
+
+
+	@Test
+	public void overallSuccessDependsOnContingentGoalsTest() {
+		
+		allRules = arrayList(
+				rule(list(b), list(ca))
+				);
+
+		allRequiredGoals = list(b);
+		
+		satisfiedGoals = list();
+		
+		expected = or(); 
+														
+		runTest();
+		
+	}
+
+	@Test
+	public void twoLevelContingentGoalsTest() {
+		
+		allRules = arrayList(
+				rule(list(b), list(a, ca)),
+				rule(list(a), list(ca)),
+				rule(list(b), list())
+				);
+
+		allRequiredGoals = list(b);
+		
+		satisfiedGoals = list();
+		
+		expected = 
+				or(
+						contingent(
+								ca, 
+								and(
+										rule(list(a), list(ca)),
+										or(
+												rule(list(b), list(a, ca)),
+												rule(list(b), list()))),
+								rule(list(b), list())),
+						rule(list(b), list()));
+														
+		runTest();
+		
+	}
+
+	@Test
+	public void threeLevelContingentGoalsTest() {
+		
+		allRules = arrayList(
+				rule(list(c), list(b, ca)),
+				rule(list(b), list(ca)),
+				rule(list(b), list(a)),
+				rule(list(a), list())
+				);
+
+		allRequiredGoals = list(b);
+		
+		satisfiedGoals = list();
+		
+		expected = 
+				or(
+						contingent(
+								ca,
+								rule(list(b), list(ca)),
+								and(
+										rule(list(a), list()), 
+										rule(list(b), list(a)))),
+						and(
+								rule(list(a), list()),
+								rule(list(b), list(a))));
+														
+		runTest();
+		
+	}
+
+	@Test
+	public void twoContingentGoalsInDifferentRulesTest() {
+		
+		allRules = arrayList(
+				rule(list(b), list(ca)),
+				rule(list(b), list(cb)),
+				rule(list(b), list())
+				);
+
+		allRequiredGoals = list(b);
+		
+		satisfiedGoals = list();
+		
+		expected = 
+				or(
+						contingent(
+								ca, 
+								rule(list(b), list(ca)),
+								or(
+										contingent(
+												cb,
+												rule(list(b), list(cb)),
+												rule(list(b), list())),
+										rule(list(b), list()))),
+						rule(list(b), list()));
+														
+		runTest();
+		
+	}
+
+	@Test
+	public void twoContingentGoalsInTheSameRuleAndNoWayToGuaranteedPlanTest() {
+		
+		allRules = arrayList(
+				rule(list(c), list(a, ca, cb)),
+				rule(list(a), list()) // there is no guaranteed way of reaching requires goal
+				);
+
+		allRequiredGoals = list(c);
+		
+		satisfiedGoals = list();
+		
+		expected = or();
+														
+		runTest();
+		
+	}
+
+	@Test
+	public void twoContingentGoalsInTheSameRuleAndNoWayToGuaranteedPlanButContingentPlansAreGivenTest() {
+		
+		allRules = arrayList(
+				rule(list(c), list(a, ca, cb)),
+				rule(list(a), list()) // there is no guaranteed way of reaching requires goal
+				);
+
+		allRequiredGoals = list(c);
+		
+		satisfiedGoals = list(ca, cb);
+		
+		expected = and(
+				rule(list(a), list()),
+				rule(list(c), list(a, ca, cb))
+				);
+														
+		runTest();
+		
+	}
+
+	@Test
+	public void twoContingentGoalsInTheSameRuleTest() {
+		
+		allRules = arrayList(
+				rule(list(c), list(a, ca, cb)),
+				rule(list(a), list()),
+				rule(list(c), list()) // must always have a guaranteed way of reaching requires goals
+				);
+
+		allRequiredGoals = list(c);
+		
+		satisfiedGoals = list();
+		
+		expected = 
+				or(
+						and(
+								rule(list(a), list()),
+								or(
+										contingent(
+												ca, 
+												contingent(
+														cb, 
+														rule(list(c), list(a, ca, cb)),
+														rule(list(c), list())),
+												rule(list(c), list())),
+										rule(list(c), list()))),
+						rule(list(c), list()));
+
+		runTest();
+		
+	}
+
+	@Test
+	public void contingentGoalsCannotBeRequiredTest() {
+		
+		allRules = arrayList(
+				rule(list(c), list(a, ca, cb))
+				);
+
+		allRequiredGoals = list(ca);
+		
+		satisfiedGoals = list();
+		
+		try {
+			new PlannerUsingEachRuleAtMostOnce<Rule<Goal>, Goal>(allRequiredGoals, satisfiedGoals, list(), g -> false, allRules);
+		} catch (Error e) {
+			if (containsAllCaseInsensitive(e.getMessage(), "required", "contingent")) {
+				println(e.getMessage());
+				return;
+			}
+			else {
+				throw e;
+			}
+		}
+		fail("Should have throw error about contingent goals not being allowed to be required");
+	}
+
+	@Test
+	public void contingentGoalsCannotBeInConsequentsTest() {
+		
+		allRules = arrayList(
+				rule(list(ca), list(a, ca, cb))
+				);
+
+		allRequiredGoals = list();
+		
+		satisfiedGoals = list();
+		
+		try {
+			new PlannerUsingEachRuleAtMostOnce<Rule<Goal>, Goal>(allRequiredGoals, satisfiedGoals, list(), g -> false, allRules);
+		} catch (Error e) {
+			if (containsAllCaseInsensitive(e.getMessage(), "consequents", "contingent")) {
+				println(e.getMessage());
+				return;
+			}
+			else {
+				throw e;
+			}
+		}
+		fail("Should have throw error about contingent goals not being allowed to be required");
+	}
+
 	public void runTest() {
-		planner = new PlannerUsingEachRuleAtMostOnce<Rule<Goal>, Goal>(allGoals, satisfiedGoals, list(), g -> true, allRules);
+		planner = new PlannerUsingEachRuleAtMostOnce<Rule<Goal>, Goal>(allRequiredGoals, satisfiedGoals, list(), g -> false, allRules);
 		actual = planner.plan();
-		println("Goals: " + allGoals);
+		println("Goals: " + allRequiredGoals);
 		println("Rules:\n" + join("\n", allRules));
 		println("Plan: " + actual);
 		if (!Util.equals(expected, actual)) {

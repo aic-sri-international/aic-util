@@ -42,6 +42,11 @@ public class SequentialPlan extends AbstractCompoundPlan {
 	}
 
 	@Override
+	public boolean isFailedPlan() {
+		return false;
+	}
+
+	@Override
 	public void execute(State state) {
 		for (Plan executer : getSubPlans()) {
 			executer.execute(state);

@@ -23,12 +23,31 @@ public class PlanningState<R extends Rule<G>, G extends Goal> {
 	
 	public Set<G> negatedEffectivelyContingentGoals;
 	
-	public PlanningState(Collection<? extends G> allRequiredGoals, Collection<? extends G> satisfiedGoals, Collection<? extends G> negatedEffectivelyContingentGoals, ArrayList<? extends R> rules) {
+	public PlanningState(
+			Collection<? extends G> allRequiredGoals, 
+			Collection<? extends G> satisfiedGoals, 
+			Collection<? extends G> negatedEffectivelyContingentGoals, 
+			ArrayList<? extends R> rules) {
+		
 		this.allRequiredGoals = allRequiredGoals;
 		this.rules = rules;
 		this.satisfiedGoals = new LinkedHashSet<>(satisfiedGoals);
 		this.negatedEffectivelyContingentGoals = new LinkedHashSet<>(negatedEffectivelyContingentGoals);
 		this.ruleIsAvailable = fill(rules.size(), true);
+	}
+
+	/** Copy constructor. */
+	private PlanningState(PlanningState<R, G> another) {
+		
+		this.allRequiredGoals = another.allRequiredGoals;
+		this.rules = another.rules;
+		this.satisfiedGoals = new LinkedHashSet<>(another.satisfiedGoals);
+		this.negatedEffectivelyContingentGoals = new LinkedHashSet<>(another.negatedEffectivelyContingentGoals);
+		this.ruleIsAvailable = new ArrayList<>(another.ruleIsAvailable);
+	}
+
+	public PlanningState<R, G> copy() {
+		return new PlanningState<R, G>(this);
 	}
 
 	@Override

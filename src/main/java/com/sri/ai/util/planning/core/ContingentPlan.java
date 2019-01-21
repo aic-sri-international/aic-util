@@ -25,6 +25,10 @@ public class ContingentPlan extends AbstractCompoundPlan {
 		this.thenBranch = thenBranch;
 		this.elseBranch = elseBranch;
 	}
+	
+	public static ContingentPlan contingent(ContingentGoal contingentGoal, Plan thenBranch, Plan elseBranch) {
+		return new ContingentPlan(contingentGoal, thenBranch, elseBranch);
+	}
 
 	@Override
 	public double getEstimatedSuccessWeight() {
@@ -36,6 +40,11 @@ public class ContingentPlan extends AbstractCompoundPlan {
 			// the plan to indicate absolute success if only one of its branches can do it.
 			return Math.min(thenBranch.getEstimatedSuccessWeight(), elseBranch.getEstimatedSuccessWeight());
 		}
+	}
+
+	@Override
+	public boolean isFailedPlan() {
+		return false;
 	}
 
 	@Override
