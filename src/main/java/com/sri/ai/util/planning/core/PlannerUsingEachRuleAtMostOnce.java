@@ -113,11 +113,11 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 	}
 	
 	public PlannerUsingEachRuleAtMostOnce(Collection<? extends G> allRequiredGoals, Collection<? extends G> satisfiedGoals, Collection<? extends G> negatedEffectiveContingentGoals, Predicate<G> isEffectivelyStaticGoal, ArrayList<? extends R> rules, Planner<R, G> sequel) {
-		myAssert(forAll(allRequiredGoals, g -> isEffectivelyStaticGoal.test(g)), () -> "Required goals cannot contain contingent goals.");
-		myAssert(forAll(rules, r -> forAll(r.getConsequents(), c -> isEffectivelyStaticGoal.test(c))), () -> "Rules consequents cannot contain contingent goals.");
 		this.state = new PlanningState<>(allRequiredGoals, satisfiedGoals, negatedEffectiveContingentGoals, rules);
 		this.isEffectivelyStaticGoal = isEffectivelyStaticGoal;
 		this.sequel = sequel;
+		myAssert(forAll(allRequiredGoals, g -> isStatic(g)), () -> "Required goals cannot contain contingent goals.");
+		myAssert(forAll(rules, r -> forAll(r.getConsequents(), c -> isStatic(c))), () -> "Rules consequents cannot contain contingent goals.");
 	}
 
 	@Override

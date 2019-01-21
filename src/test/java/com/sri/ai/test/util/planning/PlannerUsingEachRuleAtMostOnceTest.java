@@ -599,6 +599,38 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 	}
 
 	@Test
+	public void repeatedContingentGoalsTest() {
+		
+		allRules = arrayList(
+				rule(list(c), list(ca, a, ca, cb, ca, cb, ca)),
+				rule(list(a), list(ca, cb)),
+				rule(list(c), list()) // must always have a guaranteed way of reaching requires goals
+				);
+
+		allRequiredGoals = list(c);
+		
+		satisfiedGoals = list();
+		
+		expected = 
+				or(
+						contingent(
+								ca, 
+								contingent(
+										cb, 
+										and(
+												rule(list(a), list(ca, cb)),
+												or(
+														rule(list(c), list(ca, a, ca, cb, ca, cb, ca)),
+														rule(list(c), list()))),
+										rule(list(c), list())),
+								rule(list(c), list())),
+						rule(list(c), list()));
+
+		runTest();
+		
+	}
+
+	@Test
 	public void contingentGoalsCannotBeRequiredTest() {
 		
 		allRules = arrayList(
