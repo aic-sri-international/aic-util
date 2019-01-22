@@ -52,7 +52,7 @@ public abstract class AbstractCompoundPlan implements Plan {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "(" + join(getSubPlans()) + ")";
+		return operatorName() + "(" + join(getSubPlans()) + ")";
 	}
 
 	@Override

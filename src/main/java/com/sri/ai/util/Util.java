@@ -5974,14 +5974,14 @@ public class Util {
 		return i -> booleanArray.get(i);
 	}
 
-	public static <T> List<? extends T> collectThoseWhoseIndexSatisfy(Collection<? extends T> list, java.util.function.Predicate<Integer> predicate) {
+	public static <T> List<T> collectThoseWhoseIndexSatisfy(Collection<? extends T> list, java.util.function.Predicate<Integer> predicate) {
 		List<T> result = list();
 		int i = 0;
 		for (T element : list) {
 			if (predicate.test(i)) {
 				result.add(element);
-				i++;
 			}
+			i++;
 		}
 		return result;
 	}

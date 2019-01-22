@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import com.sri.ai.util.Util;
 import com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger;
 import com.sri.ai.util.planning.api.ContingentGoal;
 import com.sri.ai.util.planning.api.Goal;
@@ -137,7 +136,8 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 				"Planning for ",  lazy(() -> subtract(state.allRequiredGoals, state.satisfiedGoals)), 
 				" with available rules ", lazy(() -> collectThoseWhoseIndexSatisfyArrayList(state.rules, state.ruleIsAvailable)),
 				", from total rule set ", lazy(() -> state.rules),
-				" and total goals ", state.allRequiredGoals,
+				", required goals ", state.allRequiredGoals,
+				", satisfied goals ", state.satisfiedGoals,
 				code(() -> {
 
 					Plan result;
@@ -198,18 +198,18 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 	private void considerRule(R rule, int i, List<Plan> alternativeRulePlans) {
 		ThreadExplanationLogger.explanationBlock("Considering available rule ",  rule, code(() -> {
 
-			Goal unsatisifedStaticAntecedent = getUnsatisifedStaticAntecedent(rule);
-			if (unsatisifedStaticAntecedent == null) {
+			Goal unsatisfiedStaticAntecedent = getunsatisfiedStaticAntecedent(rule);
+			if (unsatisfiedStaticAntecedent == null) {
 				considerRuleWithAtLeastEffectivelyAntecedentsAllSatisfied(rule, i, alternativeRulePlans);
 			}
 			else {
-				explain("Rule does not apply because ", unsatisifedStaticAntecedent, " is unsatisifed");
+				explain("Rule does not apply because ", unsatisfiedStaticAntecedent, " is unsatisfied");
 			}
 
 		}));
 	}
 
-	private Goal getUnsatisifedStaticAntecedent(R rule) {
+	private Goal getunsatisfiedStaticAntecedent(R rule) {
 		Goal unsatisfiedStaticAntecendent = 
 				getFirstSatisfyingPredicateOrNull(
 						rule.getAntecendents(), 
@@ -307,19 +307,15 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 	}
 
 	private void findPlansStartingWithRule(R rule, int i, List<Plan> alternativeRulePlans) {
-		ThreadExplanationLogger.explanationBlock("Finding plans starting with ", rule, code(() -> {
-
-			Plan planStartingWithRule = tryRule(rule, i);
-			if ( ! planStartingWithRule.isFailedPlan()) {
-				alternativeRulePlans.add(planStartingWithRule);
-			}
-			
-		}), "Alternative plans now ", alternativeRulePlans);
+		Plan planStartingWithRule = tryRule(rule, i);
+		if ( ! planStartingWithRule.isFailedPlan()) {
+			alternativeRulePlans.add(planStartingWithRule);
+		}
 	}
 
 	private Plan tryRule(R rule, int i) {
 		
-		return ThreadExplanationLogger.explanationBlock("There are unsatisfied required goals yet: ", Util.subtract(state.allRequiredGoals, state.satisfiedGoals), code(() -> {
+		return ThreadExplanationLogger.explanationBlock("Finding plans starting with ", rule, code(() -> {
 
 			Set<G> howThingsUsedToBe = applyRule(rule, i);
 
