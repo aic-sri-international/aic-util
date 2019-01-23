@@ -32,6 +32,10 @@ public class DiscretizedConditionalProbabilityDistribution implements java.util.
 		return discretizer.getQueryVariableIndex();
 	}
 
+	public double getTotalWeight() {
+		return conditionalDistribution.getTotalWeight();
+	}
+
 	//////////////////////////////
 
 	public void register(ArrayList<Object> valueObjects, double weight) {

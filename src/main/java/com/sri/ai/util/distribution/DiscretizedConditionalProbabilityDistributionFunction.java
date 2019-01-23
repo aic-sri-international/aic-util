@@ -23,8 +23,6 @@ public class DiscretizedConditionalProbabilityDistributionFunction extends Abstr
 
 	protected DiscretizedConditionalProbabilityDistribution conditionalDistribution;
 	
-	protected WeightedFrequencyArrayConditionalDistribution indexDistribution;
-
 	/////////////////////////////////
 
 	public DiscretizedConditionalProbabilityDistributionFunction(DiscretizedConditionalProbabilityDistribution conditionalDistribution) {
@@ -32,9 +30,6 @@ public class DiscretizedConditionalProbabilityDistributionFunction extends Abstr
 		super(makeOutputVariable(conditionalDistribution), conditionalDistribution.getSetOfVariablesWithRange());
 
 		this.conditionalDistribution = conditionalDistribution;
-		
-		int numberOfQueryValueIndices = getSetOfInputVariables().getVariables().get(getQueryVariableIndex()).getSetOfValuesOrNull().size() + 1;
-		this.indexDistribution = new WeightedFrequencyArrayConditionalDistribution(numberOfQueryValueIndices);
 
 	}
 
@@ -62,6 +57,10 @@ public class DiscretizedConditionalProbabilityDistributionFunction extends Abstr
 
 	public DiscretizedConditionalProbabilityDistribution getConditionalDistribution() {
 		return conditionalDistribution;
+	}
+	
+	public double getTotalWeight() {
+		return conditionalDistribution.getTotalWeight();
 	}
 
 	/////////////////////////////////

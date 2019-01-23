@@ -18,6 +18,8 @@ public class WeightedFrequencyArrayConditionalDistribution {
 	private Map<ArrayList<Integer>, WeightedFrequencyArrayDistribution> distributions = map();
 
 	private int numberOfMainVariableValues; 
+	
+	private double totalWeight = 0;
 
 	public WeightedFrequencyArrayConditionalDistribution(int numberOfMainVariableValues) {
 		this.numberOfMainVariableValues = numberOfMainVariableValues;
@@ -27,6 +29,7 @@ public class WeightedFrequencyArrayConditionalDistribution {
 		myAssert(isValid(mainValue), () -> getClass() + " received main value " + mainValue + " out of range 0.." + (numberOfMainVariableValues - 1));
 		WeightedFrequencyArrayDistribution distribution = getDistributionOnMainVariableGivenRemainingValues(remainingValues);
 		distribution.add(mainValue, weight);
+		totalWeight += weight;
 	}
 
 	public double getProbability(int mainValue, ArrayList<Integer> remainingValues) {
@@ -42,6 +45,10 @@ public class WeightedFrequencyArrayConditionalDistribution {
 						remainingValues, 
 						key -> new WeightedFrequencyArrayDistribution(numberOfMainVariableValues, 0.0));
 		return result;
+	}
+
+	public double getTotalWeight() {
+		return totalWeight;
 	}
 
 	private boolean isValid(int mainValue) {

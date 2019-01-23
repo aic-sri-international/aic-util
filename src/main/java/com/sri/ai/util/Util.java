@@ -6167,8 +6167,8 @@ public class Util {
 	}
 
 	/** Executes a given {@link NullaryProcedure} a given number of times. */
-	public static void repeat(int numberOfSamples, NullaryProcedure procedure) {
-		for (int i = 0; i != numberOfSamples; i++) {
+	public static void repeat(int n, NullaryProcedure procedure) {
+		for (int i = 0; i != n; i++) {
 			procedure.apply();
 		}
 	}
