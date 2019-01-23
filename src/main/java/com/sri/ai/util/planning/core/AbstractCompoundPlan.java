@@ -13,7 +13,7 @@ import com.sri.ai.util.planning.api.Plan;
 
 public abstract class AbstractCompoundPlan implements Plan {
 	
-	protected abstract String operatorName();
+	public abstract String operatorName();
 	
 	private List<? extends Plan> subPlans;
 	

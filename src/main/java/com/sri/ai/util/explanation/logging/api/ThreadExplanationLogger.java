@@ -13,6 +13,7 @@ import com.sri.ai.util.explanation.logging.core.ExplanationBlock.Code;
 import com.sri.ai.util.explanation.logging.core.handler.FileExplanationHandler;
 import com.sri.ai.util.explanation.logging.helper.ExplanationLoggerForFileForThisThread;
 import com.sri.ai.util.explanation.logging.helper.ExplanationLoggerToConsole;
+import com.sri.ai.util.explanation.logging.helper.ExplanationLoggerToFile;
 
 /**
  * A class with public static methods for accessing and using a thread-wide {@link ExplanationLogger}.
@@ -76,8 +77,25 @@ public class ThreadExplanationLogger {
 				getOrMakeAndPut(
 						fromThreadToExplanationLogger, 
 						Thread.currentThread(),
-						() -> new ExplanationLoggerToConsole());
+						() -> getDefaultThreadExplanationLogger());
 		return logger;
+	}
+
+	/**
+	 * Returns the explanation logger to be used by default for the thread logger
+	 * (that is, a logger to be used if one has not been explicitly provided by {@link #setThreadExplanationLogger(ExplanationLogger)}.
+	 * If a file handler has been specified in the system properties, it is used to create a file logger to the file "explanations.txt"
+	 * in the current directory.
+	 * Otherwise, returns a console logger.
+	 * @return
+	 */
+	public static ExplanationLogger getDefaultThreadExplanationLogger() {
+		if (ExplanationConfiguration.explanationFileHasBeenRequested()) {
+			return new ExplanationLoggerToFile(ExplanationConfiguration.DEFAULT_FILE_EXPLANATION_HANDLER_CLASS, "explanations.txt");
+		}
+		else {
+			return new ExplanationLoggerToConsole();
+		}
 	}
 	
 	public static void setThreadExplanationLogger(ExplanationLogger logger) {

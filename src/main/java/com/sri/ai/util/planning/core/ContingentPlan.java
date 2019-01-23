@@ -65,7 +65,7 @@ public class ContingentPlan extends AbstractCompoundPlan {
 	}
 
 	@Override
-	protected String operatorName() {
+	public String operatorName() {
 		return "contingent[" + contingentGoal + "]";
 	}
 

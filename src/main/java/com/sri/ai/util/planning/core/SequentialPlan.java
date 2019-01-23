@@ -77,7 +77,7 @@ public class SequentialPlan extends AbstractCompoundPlan {
 	}
 
 	@Override
-	protected String operatorName() {
+	public String operatorName() {
 		return "and";
 	}
 }

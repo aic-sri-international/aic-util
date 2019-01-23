@@ -142,7 +142,7 @@ public class OrPlan extends AbstractCompoundPlan {
 	}
 
 	@Override
-	protected String operatorName() {
+	public String operatorName() {
 		return "or";
 	}
 	

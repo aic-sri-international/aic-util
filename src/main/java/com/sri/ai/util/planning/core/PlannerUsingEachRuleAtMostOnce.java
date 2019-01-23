@@ -27,6 +27,7 @@ import com.sri.ai.util.planning.api.Plan;
 import com.sri.ai.util.planning.api.Planner;
 import com.sri.ai.util.planning.api.PlanningState;
 import com.sri.ai.util.planning.api.Rule;
+import com.sri.ai.util.planning.util.PlanExplanation;
 
 /**
  * A planner based on a set of rules and a <code>isEffectivelyStaticGoal</code> predicate.
@@ -134,8 +135,8 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 	public Plan plan() {
 		return ThreadExplanationLogger.explanationBlock(
 				"Planning for ",  lazy(() -> subtract(state.allRequiredGoals, state.satisfiedGoals)), 
-				" with available rules ", lazy(() -> collectThoseWhoseIndexSatisfyArrayList(state.rules, state.ruleIsAvailable)),
-				", from total rule set ", lazy(() -> state.rules),
+				" with still unused rules ", lazy(() -> collectThoseWhoseIndexSatisfyArrayList(state.rules, state.ruleIsAvailable)),
+				", out of total rule set ", lazy(() -> state.rules),
 				", required goals ", state.allRequiredGoals,
 				", satisfied goals ", state.satisfiedGoals,
 				code(() -> {
@@ -150,17 +151,25 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 						result = planIfThereIsAtLeastOneUnsatisfiedGoal();
 					}
 
+					explain("Resulting plan:");
+					PlanExplanation.explain(result);
+
 					return result;
 
-				}), "Plan: ", RESULT);
+				}));
 	}
 
 	private Plan planIfThereIsAtLeastOneUnsatisfiedGoal() {
 		return ThreadExplanationLogger.explanationBlock("There are still unsatisfied required goals", code(() -> {
 			
-			return planIfThereIsAtLeastOneSatisfiedRequiredGoalStartingAtRuleWithIndex(0);
+			Plan result = planIfThereIsAtLeastOneSatisfiedRequiredGoalStartingAtRuleWithIndex(0);
 			
-		}), "Plan is: ", RESULT);
+			explain("Resulting plan:");
+			PlanExplanation.explain(result);
+
+			return result;
+
+		}));
 	}
 
 	private Plan planIfThereIsAtLeastOneSatisfiedRequiredGoalStartingAtRuleWithIndex(int initialRuleIndex) {
@@ -171,9 +180,13 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 				attemptToUseRule(i, alternativeRulePlans);
 			}
 			result = OrPlan.or(alternativeRulePlans);
+
+			explain("Resulting plan:");
+			PlanExplanation.explain(result);
+
 			return result;
 
-		}), "Plan is: ", RESULT);
+		}));
 	}
 
 	private void attemptToUseRule(int i, List<Plan> alternativeRulePlans) {
@@ -191,14 +204,19 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 			else {
 				explain("Rule has been used already");
 			}
+			
+			explain("Alternative plans:");
+			for (Plan alternativeRulePlan : alternativeRulePlans) {
+				PlanExplanation.explain(alternativeRulePlan);
+			}
 
-		}), "Alternative plans now ", alternativeRulePlans);
+		}));
 	}
 
 	private void considerRule(R rule, int i, List<Plan> alternativeRulePlans) {
 		ThreadExplanationLogger.explanationBlock("Considering available rule ",  rule, code(() -> {
 
-			Goal unsatisfiedStaticAntecedent = getunsatisfiedStaticAntecedent(rule);
+			Goal unsatisfiedStaticAntecedent = getUnsatisfiedStaticAntecedent(rule);
 			if (unsatisfiedStaticAntecedent == null) {
 				considerRuleWithAtLeastEffectivelyAntecedentsAllSatisfied(rule, i, alternativeRulePlans);
 			}
@@ -209,7 +227,7 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 		}));
 	}
 
-	private Goal getunsatisfiedStaticAntecedent(R rule) {
+	private Goal getUnsatisfiedStaticAntecedent(R rule) {
 		Goal unsatisfiedStaticAntecendent = 
 				getFirstSatisfyingPredicateOrNull(
 						rule.getAntecendents(), 
@@ -225,7 +243,7 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 
 			ContingentGoal negatedContingentGoal = negatedContingentGoal(rule);
 			if (negatedContingentGoal == null) {
-				considerRuleWithAtLeastEffectivelyAntecedentsAllSatisfiedAndNoContingentGoalsAreNegated(rule, i, alternativeRulePlans);
+				considerRuleWithAtLeastEffectivelyAntecedentsAllSatisfiedAndNoContingentGoalsNegated(rule, i, alternativeRulePlans);
 			}
 			else {
 				explain("Rule does not apply because ", negatedContingentGoal, " is already negated");
@@ -234,7 +252,7 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 	}));
 }
 
-	private void considerRuleWithAtLeastEffectivelyAntecedentsAllSatisfiedAndNoContingentGoalsAreNegated(R rule, int i, List<Plan> alternativeRulePlans) {
+	private void considerRuleWithAtLeastEffectivelyAntecedentsAllSatisfiedAndNoContingentGoalsNegated(R rule, int i, List<Plan> alternativeRulePlans) {
 		ThreadExplanationLogger.explanationBlock("Considering rule with all static antecedents satisfied and no contingent goals negated: ", rule, code(() -> {
 
 			ContingentGoal contingentGoalNotYetDefined = contingentGoalNotYetDefined(rule);

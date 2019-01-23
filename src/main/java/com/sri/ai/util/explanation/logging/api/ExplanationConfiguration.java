@@ -80,4 +80,9 @@ public class ExplanationConfiguration {
 			throw new Error("File explanation handler class " + classNameFromProperties + " must extend " + FileExplanationHandler.class, e);
 		}
 	}
+	
+	public static boolean explanationFileHasBeenRequested() {
+		String classNameFromProperties = Configuration.getString("explanation.file.explanation.handler", "");
+		return !classNameFromProperties.isEmpty();
+	}
 }

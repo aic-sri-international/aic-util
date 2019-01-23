@@ -85,9 +85,11 @@ import com.sri.ai.util.base.BinaryPredicate;
 import com.sri.ai.util.base.Equals;
 import com.sri.ai.util.base.IndexingFunction;
 import com.sri.ai.util.base.NullaryFunction;
+import com.sri.ai.util.base.NullaryPredicate;
 import com.sri.ai.util.base.NullaryProcedure;
 import com.sri.ai.util.base.Pair;
 import com.sri.ai.util.base.PairOf;
+import com.sri.ai.util.base.Procedure;
 import com.sri.ai.util.base.TernaryFunction;
 import com.sri.ai.util.collect.EZIterator;
 import com.sri.ai.util.collect.IntegerIterator;
@@ -832,6 +834,19 @@ public class Util {
 	}
 
 	/**
+	 * Adds all elements of iterator's range to a new linked list.
+	 * 
+	 * @param i
+	 *            the iterator whose range is to be added to the list.
+	 * @return the list.
+	 * @param <T>
+	 *            the type of the elements given.
+	 */
+	public static <T> LinkedList<T> addAllToList(Collection<T> collection) {
+		return addAllToList(collection.iterator());
+	}
+
+	/**
 	 * Adds all elements of iterator's range to a new array list.
 	 * 
 	 * @param i
@@ -1148,7 +1163,7 @@ public class Util {
 	 * @param <T>
 	 *            the type of the elements iterated over.
 	 */
-	public static <T> ArrayList<T> arrayListFrom(Iterator<T> iterator) {
+	public static <T> ArrayList<T> arrayListFrom(Iterator<? extends T> iterator) {
 		ArrayList<T> result = new ArrayList<T>();
 		while (iterator.hasNext()) {
 			result.add(iterator.next());
@@ -1165,7 +1180,7 @@ public class Util {
 	 * @param <T>
 	 *            the type of the elements in the collection.
 	 */
-	public static <T> ArrayList<T> arrayListFrom(Collection<T> collection) {
+	public static <T> ArrayList<T> arrayListFrom(Collection<? extends T> collection) {
 		return arrayListFrom(collection.iterator());
 	}
 
@@ -2037,7 +2052,7 @@ public class Util {
 	 * @param <T>
 	 *            the type of the elements to collect.
 	 */
-	public static <T> ArrayList<T> collectToArrayList(Collection<T> collection, Predicate<T> predicate) {
+	public static <T> ArrayList<T> collectToArrayList(Collection<? extends T> collection, Predicate<T> predicate) {
 		return (ArrayList<T>) collect(collection, predicate, new ArrayList<T>());
 	}
 
@@ -6181,5 +6196,57 @@ public class Util {
 		String objectString = object.toString();
 		boolean result = thereExists(strings, s -> objectString.equals(s));
 		return result;
+	}
+
+	/**
+	 * While a condition applies to elements in an iterator's range, applies an action to them.
+	 * @param iterator
+	 * @param condition
+	 * @param action
+	 */
+	public static <T> void whileDo(Iterator<? extends T> iterator, Predicate<T> condition, Procedure<T> action) {
+		while (iterator.hasNext()) {
+			T element = iterator.next();
+			if ( ! condition.apply(element)) {
+				break;
+			}
+			action.apply(element);
+		}
+	}
+
+	/**
+	 * While a condition applies to elements in collection, applies an action to them.
+	 * @param iterator
+	 * @param condition
+	 * @param action
+	 */
+	public static <T> void whileDo(Collection<? extends T> collection, Predicate<T> condition, Procedure<T> action) {
+		whileDo(collection.iterator(), condition, action);
+	}
+
+	/**
+	 * While a nullary condition applies to elements in an iterator's range, applies an action to them.
+	 * @param iterator
+	 * @param condition
+	 * @param action
+	 */
+	public static <T> void whileDo(Iterator<? extends T> iterator, NullaryPredicate condition, Procedure<T> action) {
+		while (iterator.hasNext()) {
+			T element = iterator.next();
+			if ( ! condition.apply()) {
+				break;
+			}
+			action.apply(element);
+		}
+	}
+
+	/**
+	 * While a nullary condition applies to elements in collection, applies an action to them.
+	 * @param iterator
+	 * @param whileCondition
+	 * @param action
+	 */
+	public static <T> void whileDo(Collection<? extends T> collection, NullaryPredicate condition, Procedure<T> action) {
+		whileDo(collection.iterator(), condition, action);
 	}
 }
