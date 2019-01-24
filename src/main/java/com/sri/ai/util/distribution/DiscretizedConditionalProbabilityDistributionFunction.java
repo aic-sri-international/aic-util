@@ -91,9 +91,13 @@ public class DiscretizedConditionalProbabilityDistributionFunction extends Abstr
 		return getSetOfInputVariables().getVariables();
 	}
 
+	private Variable getQueryVariable() {
+		return getVariables().get(getQueryVariableIndex());
+	}
+
 	@Override
 	public String getName() {
-		return "P(" + getSetOfInputVariables().getVariables().get(getQueryVariableIndex()).getName() + " | ...)";
+		return "Probability of " + getQueryVariable().getName();
 	}
 
 }

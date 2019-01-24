@@ -6173,6 +6173,13 @@ public class Util {
 		}
 	}
 
+	/** Executes a given {@link NullaryProcedure} a given number of times. */
+	public static void repeat(int n, Procedure<Integer> procedure) {
+		for (int i = 0; i != n; i++) {
+			procedure.apply(i);
+		}
+	}
+
 	public static boolean containsAllCaseInsensitive(String string, String... subStrings) {
 		return containsAllCaseInsensitive(string, Arrays.asList(subStrings));
 	}
@@ -6248,5 +6255,17 @@ public class Util {
 	 */
 	public static <T> void whileDo(Collection<? extends T> collection, NullaryPredicate condition, Procedure<T> action) {
 		whileDo(collection.iterator(), condition, action);
+	}
+
+	/**
+	 * Return 0.0 if value is -0.0 or value itself otherwise.
+	 * @param value
+	 * @return
+	 */
+	public static double normalizeDoubleZeroToPositiveZero(double value) {
+		if (value == -0.0) {
+			return 0.0;
+		}
+		return value;
 	}
 }

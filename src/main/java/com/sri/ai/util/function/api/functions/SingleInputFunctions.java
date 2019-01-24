@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.sri.ai.util.function.api.variables.SetOfVariables;
 import com.sri.ai.util.function.api.variables.Variable;
+import com.sri.ai.util.function.core.functions.DefaultSingleInputFunctions;
 
 /**
  * An extension of {@link Functions} containing {@link SingleInputFunction}s only.

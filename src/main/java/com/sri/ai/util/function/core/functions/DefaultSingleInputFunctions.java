@@ -1,7 +1,10 @@
-package com.sri.ai.util.function.api.functions;
+package com.sri.ai.util.function.core.functions;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.sri.ai.util.function.api.functions.SingleInputFunction;
+import com.sri.ai.util.function.api.functions.SingleInputFunctions;
 
 public class DefaultSingleInputFunctions implements SingleInputFunctions {
   private List<? extends SingleInputFunction> functions = new ArrayList<>();

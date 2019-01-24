@@ -5,6 +5,7 @@ import com.sri.ai.util.function.api.variables.Assignment;
 import com.sri.ai.util.function.api.variables.SetOfVariables;
 import com.sri.ai.util.function.api.variables.Variable;
 import com.sri.ai.util.function.core.functions.DefaultFunction;
+import com.sri.ai.util.function.core.functions.DefaultProjectionSingleInputFunction;
 import com.sri.ai.util.function.core.functions.JavaFunction;
 
 /**
@@ -39,7 +40,7 @@ public interface Function {
 	 * @return
 	 */
 	default SingleInputFunction project(Variable variable, Assignment assignmentToRemainingVariables) {
-		return new ProjectionSingleInputFunction(this, variable, assignmentToRemainingVariables);
+		return new DefaultProjectionSingleInputFunction(this, variable, assignmentToRemainingVariables);
 	}
 
 }
