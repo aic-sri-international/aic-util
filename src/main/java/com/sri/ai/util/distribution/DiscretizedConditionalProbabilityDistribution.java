@@ -10,7 +10,25 @@ import com.sri.ai.util.function.api.variables.SetOfVariables;
 import com.sri.ai.util.function.api.variables.Variable;
 import com.sri.ai.util.function.core.values.DefaultValue;
 
+/**
+ * A class that takes list of objects, discretizes them according to a given discretizer,
+ * and keeps a conditional probability normalized for one of the dimensions, indicated as the query.
+ * <p>
+ * The class provides a method {@link #beforeFirstUseOfUnderlyingDistribution()}
+ * which is invoked when the underlying distribution is first used.
+ * By default, this method does nothing, but
+ * it may be useful for extending classes for generating a first batch of values to be registered
+ * but only when they are to be used.
+ * 
+ * @author braz
+ *
+ */
 public class DiscretizedConditionalProbabilityDistribution implements java.util.function.Function<ArrayList<Object>, Value> {
+
+	protected void beforeFirstUseOfUnderlyingDistribution() {
+	}
+	
+	//////////////////////////////
 
 	protected ConditionalDiscretizer discretizer;
 	protected WeightedFrequencyArrayConditionalDistribution conditionalDistribution;
@@ -19,7 +37,7 @@ public class DiscretizedConditionalProbabilityDistribution implements java.util.
 
 	protected DiscretizedConditionalProbabilityDistribution(SetOfVariables setOfVariablesWithRange, int queryVariableIndex) {
 		this.discretizer = new ConditionalDiscretizer(setOfVariablesWithRange, queryVariableIndex);
-		this.conditionalDistribution = makeConditionalDistribution(setOfVariablesWithRange, queryVariableIndex);
+		this.conditionalDistribution = null; // lazy
 	}
 
 	//////////////////////////////
@@ -32,8 +50,16 @@ public class DiscretizedConditionalProbabilityDistribution implements java.util.
 		return discretizer.getQueryVariableIndex();
 	}
 
+	public WeightedFrequencyArrayConditionalDistribution getConditionalDistribution() {
+		if (conditionalDistribution == null) {
+			conditionalDistribution = makeConditionalDistribution(getSetOfVariablesWithRange(), getQueryVariableIndex());
+			beforeFirstUseOfUnderlyingDistribution();
+		}
+		return conditionalDistribution;
+	}
+
 	public double getTotalWeight() {
-		return conditionalDistribution.getTotalWeight();
+		return getConditionalDistribution().getTotalWeight();
 	}
 
 	//////////////////////////////
@@ -44,7 +70,7 @@ public class DiscretizedConditionalProbabilityDistribution implements java.util.
 		Integer queryValueIndex = valueIndices.first;
 		ArrayList<Integer> second = valueIndices.second;
 		if (queryValueIndex != -1) { // query value is in range
-			conditionalDistribution.register(queryValueIndex, second, weight);
+			getConditionalDistribution().register(queryValueIndex, second, weight);
 		}
 	}
 
@@ -64,7 +90,7 @@ public class DiscretizedConditionalProbabilityDistribution implements java.util.
 		Pair<Integer, ArrayList<Integer>> valueIndices = discretizer.getValueIndices(getValueObjectsForDiscretizer(valueObjects));
 		int queryValueIndex = valueIndices.first;
 		ArrayList<Integer> nonQueryValueIndices = valueIndices.second;
-		double probability = conditionalDistribution.getProbability(queryValueIndex, nonQueryValueIndices);
+		double probability = getConditionalDistribution().getProbability(queryValueIndex, nonQueryValueIndices);
 		return new DefaultValue(probability);
 	}
 
@@ -80,6 +106,6 @@ public class DiscretizedConditionalProbabilityDistribution implements java.util.
 
 	@Override
 	public String toString() {
-		return conditionalDistribution.toString();
+		return getConditionalDistribution().toString();
 	}
 }

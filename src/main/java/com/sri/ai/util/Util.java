@@ -1487,6 +1487,34 @@ public class Util {
 	}
 
 	/**
+	 * Returns an array list containing the results of applying a given function to the integers from an integer iterator.
+	 * @param indicesIterator
+	 * @param function
+	 * @return
+	 */
+	public static <T> ArrayList<T> mapIntegersIntoArrayList(Iterator<? extends Integer> indicesIterator, Function<Integer, T> function) {
+		ArrayList<T> result = new ArrayList<T>();
+		for (int i : in(indicesIterator)) {
+			result.add(function.apply(i));
+		}
+		return result;
+	}
+
+	/**
+	 * Returns an array list containing the results of applying a given function to the integers from an integer collection.
+	 * @param indices
+	 * @param function
+	 * @return
+	 */
+	public static <T> ArrayList<T> mapIntegersIntoArrayList(Collection<? extends Integer> indices, Function<Integer, T> function) {
+		ArrayList<T> result = new ArrayList<T>();
+		for (int i : indices) {
+			result.add(function.apply(i));
+		}
+		return result;
+	}
+
+	/**
 	 * Returns an array containing the results of applying a given function to the integers from 0 to <code>lastExclusive - 1</code>.
 	 * @param lastExclusive
 	 * @param function

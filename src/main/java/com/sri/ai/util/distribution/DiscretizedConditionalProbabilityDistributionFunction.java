@@ -74,7 +74,7 @@ public class DiscretizedConditionalProbabilityDistributionFunction extends Abstr
 	@Override
 	public Value evaluate(Assignment assignmentToInputVariables) {
 		ArrayList<Object> valueObjects = getValues(assignmentToInputVariables);
-		return conditionalDistribution.apply(valueObjects);
+		return apply(valueObjects);
 	}
 	
 	@Override

@@ -23,6 +23,8 @@ public interface Assignment {
 	static Assignment assignment(SetOfVariables variables, ArrayList<? extends Value> values) {
 		return new DefaultAssignment(variables, values);
 	}
+	
+	Assignment remove(Variable variableToRemove);
 
 	SetOfVariables getSetOfVariables();
 	
