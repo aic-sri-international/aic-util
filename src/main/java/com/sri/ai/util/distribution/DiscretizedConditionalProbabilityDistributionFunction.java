@@ -59,6 +59,14 @@ public class DiscretizedConditionalProbabilityDistributionFunction extends Abstr
 		return conditionalDistribution;
 	}
 	
+	public boolean averageWeightIsZero() {
+		return conditionalDistribution.averageWeightIsZero();
+	}
+
+	public int getNumberOfSamples() {
+		return conditionalDistribution.getNumberOfSamples();
+	}
+
 	public double getTotalWeight() {
 		return conditionalDistribution.getTotalWeight();
 	}

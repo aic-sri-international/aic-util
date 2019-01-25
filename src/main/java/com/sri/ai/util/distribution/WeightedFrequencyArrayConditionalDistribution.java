@@ -19,6 +19,7 @@ public class WeightedFrequencyArrayConditionalDistribution {
 
 	private int numberOfMainVariableValues; 
 	
+	private int numberOfSamples = 0;
 	private double totalWeight = 0;
 
 	public WeightedFrequencyArrayConditionalDistribution(int numberOfMainVariableValues) {
@@ -29,6 +30,7 @@ public class WeightedFrequencyArrayConditionalDistribution {
 		myAssert(isValid(mainValue), () -> getClass() + " received main value " + mainValue + " out of range 0.." + (numberOfMainVariableValues - 1));
 		WeightedFrequencyArrayDistribution distribution = getDistributionOnMainVariableGivenRemainingValues(remainingValues);
 		distribution.add(mainValue, weight);
+		numberOfSamples++;
 		totalWeight += weight;
 	}
 
@@ -45,6 +47,17 @@ public class WeightedFrequencyArrayConditionalDistribution {
 						remainingValues, 
 						key -> new WeightedFrequencyArrayDistribution(numberOfMainVariableValues, 0.0));
 		return result;
+	}
+
+	public boolean averageWeightIsZero() {
+		return 
+				getNumberOfSamples() != 0 
+				&& 
+				getTotalWeight() == 0.0;
+	}
+	
+	public int getNumberOfSamples() {
+		return numberOfSamples;
 	}
 
 	public double getTotalWeight() {

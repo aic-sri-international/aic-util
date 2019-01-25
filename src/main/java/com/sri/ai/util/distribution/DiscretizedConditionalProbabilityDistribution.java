@@ -57,6 +57,14 @@ public class DiscretizedConditionalProbabilityDistribution implements java.util.
 		}
 		return conditionalDistribution;
 	}
+	
+	public boolean averageWeightIsZero() {
+		return getConditionalDistribution().averageWeightIsZero();
+	}
+
+	public int getNumberOfSamples() {
+		return getConditionalDistribution().getNumberOfSamples();
+	}
 
 	public double getTotalWeight() {
 		return getConditionalDistribution().getTotalWeight();
