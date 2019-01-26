@@ -54,6 +54,7 @@ import java.io.PrintStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
@@ -6313,6 +6314,9 @@ public class Util {
 	 * receiving exactly the same arguments as this method receives
 	 * after the target interface argument.
 	 * </ul>
+	 * If the handler class has a "proxy" field, the method stores
+	 * the proxy in the handler's field.
+	 * <p>
 	 * The class loader used for the proxy is the same as the
 	 * first argument after the target interface.
 	 * @param targetInterface
@@ -6323,12 +6327,26 @@ public class Util {
 	
 			Object wrappedObject = args[0];
 			InvocationHandler handler = makeInvocationHandler(targetInterface, args);
-			return 
+			T proxy = 
 					targetInterface.cast(
 							newProxyInstance(
 									wrappedObject.getClass().getClassLoader(),
 									new Class[] { targetInterface },
 									handler));
+
+			tryToStoreProxyInHandler(handler, proxy);
+			
+			return proxy;
+	}
+
+	private static <T> void tryToStoreProxyInHandler(InvocationHandler handler, T proxy) throws Error {
+		Field handlerProxyField;
+		try {
+			Class<? extends InvocationHandler> handlerClass = handler.getClass();
+			handlerProxyField = handlerClass.getField("proxy");
+			handlerProxyField.set(handler, proxy);
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+		}
 	}
 
 	/**
