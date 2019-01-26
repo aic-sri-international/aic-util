@@ -2046,8 +2046,7 @@ public class Util {
 	 * @param <T>
 	 *            the type of the elements to collect.
 	 */
-	public static <T> List<T> collectToList(Collection<? extends T> collection,
-			Predicate<T> predicate) {
+	public static <T> List<T> collectToList(Collection<? extends T> collection, Predicate<T> predicate) {
 		return (List<T>) collect(collection, predicate, new LinkedList<T>());
 	}
 
