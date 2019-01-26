@@ -40,6 +40,7 @@ package com.sri.ai.util;
 import static com.sri.ai.util.base.PairOf.makePairOf;
 import static com.sri.ai.util.collect.FunctionIterator.functionIterator;
 import static com.sri.ai.util.collect.PredicateIterator.predicateIterator;
+import static java.lang.reflect.Proxy.newProxyInstance;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -53,6 +54,8 @@ import java.io.PrintStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -3138,6 +3141,10 @@ public class Util {
 	public static <E> E getFirstSatisfyingPredicateOrNull(
 			Collection<? extends E> c, Predicate<E> p) {
 		return getFirstSatisfyingPredicateOrNull(c.iterator(), p);
+	}
+
+	public static <E> E getFirstSatisfyingPredicateOrNull(E[] array, Predicate<E> p) {
+		return getFirstSatisfyingPredicateOrNull(Arrays.asList(array), p);
 	}
 
 	/**
@@ -6295,5 +6302,67 @@ public class Util {
 			return 0.0;
 		}
 		return value;
+	}
+
+	/**
+	 * Convenience method for making a proxy for a target interface.
+	 * This makes the following assumptions:
+	 * <ul>
+	 * <li> the target interface defines an {@link InvocationHandler} class
+	 * <li> the {@link InvocationHandler} class has a single constructor
+	 * receiving exactly the same arguments as this method receives
+	 * after the target interface argument.
+	 * </ul>
+	 * The class loader used for the proxy is the same as the
+	 * first argument after the target interface.
+	 * @param targetInterface
+	 * @param args
+	 * @return
+	 */
+	public static <T> T makeProxy(Class<T> targetInterface, Object... args) {
+	
+			Object wrappedObject = args[0];
+			InvocationHandler handler = makeInvocationHandler(targetInterface, args);
+			return 
+					targetInterface.cast(
+							newProxyInstance(
+									wrappedObject.getClass().getClassLoader(),
+									new Class[] { targetInterface },
+									handler));
+	}
+
+	/**
+	 * Convenience method for making an {@link InvocationHandler} for a proxy for a target interface.
+	 * This makes the following assumptions:
+	 * <ul>
+	 * <li> the target interface defines an {@link InvocationHandler} class
+	 * <li> the {@link InvocationHandler} class has a single constructor
+	 * receiving exactly the same arguments as this method receives
+	 * after the target interface argument.
+	 * </ul>
+	 * @param targetInterface
+	 * @param args
+	 * @return
+	 */
+	public static InvocationHandler makeInvocationHandler(Class targetInterface, Object... args) {
+		try {
+	
+			InvocationHandler handler;
+	
+			Class<?>[] classes = targetInterface.getClasses();
+			
+			Class handlerClass = 
+					getFirstSatisfyingPredicateOrNull(
+							classes,
+							c -> InvocationHandler.class.isAssignableFrom(c));
+	
+			handler = (InvocationHandler) handlerClass.getConstructors()[0].newInstance(args);
+			
+			return handler;
+			
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| SecurityException e) {
+			throw new Error(e);
+		}
 	}
 }
