@@ -74,7 +74,7 @@ public class ConditionalDiscretizer {
 	}
 
 	private ArrayList<Integer> getNonQueryValueIndices(ArrayList<Object> valueObjects) {
-		ArrayList<Integer> result = arrayList(numberOfVariables() - 1);
+		ArrayList<Integer> result = new ArrayList<>(numberOfVariables() - 1);
 		for (int i = 0; i != numberOfVariables(); i++) {
 			if (i != queryVariableIndex) {
 				int indexOfValueOfIthVariable = getIndexOfValueOfVariableAt(i, valueObjects);

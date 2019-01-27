@@ -540,10 +540,6 @@ public class Util {
 		return new ArrayList<T>(Arrays.asList(elements));
 	}
 	
-	public static <T> ArrayList<T> arrayList(int size) {
-		return new ArrayList<T>(size);
-	}
-
 	/**
 	 * @return an empty stack of the given type.
 	 * @param <T>
