@@ -1,5 +1,6 @@
 package com.sri.ai.util.graph2d.core;
 
+import com.sri.ai.util.function.core.values.DefaultSetOfValues;
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -12,6 +13,7 @@ import com.sri.ai.util.function.api.variables.Variable;
 import com.sri.ai.util.graph2d.api.GraphPlot;
 import com.sri.ai.util.graph2d.core.jfreechart.LineChartFactory;
 import com.sri.ai.util.graph2d.core.jfreechart.LineChartFactory.SeriesEntry;
+import java.util.function.Function;
 
 public class DefaultLineGraphPlotter extends AbstractExternalGraphPlotter {
 
@@ -20,8 +22,10 @@ public class DefaultLineGraphPlotter extends AbstractExternalGraphPlotter {
     Map<String, Number[][]> nameToCoordinates = new LinkedHashMap<>();
 
     Variable xVariable = getSingleInputFunctionsVariable();
-    SetOfValues setOfValuesForX = setOfValuesForVariable.apply(xVariable);
+    final SetOfValues setOfValuesForX = setOfValuesForVariable.apply(xVariable);
 
+    Function<Value, Double> xValueToDouble = value -> (setOfValuesForX instanceof DefaultSetOfValues)
+        ? (double) setOfValuesForX.getIndexOf(value) : value.doubleValue();
 
     Variable yOutputVariable = null;
 
@@ -36,7 +40,7 @@ public class DefaultLineGraphPlotter extends AbstractExternalGraphPlotter {
       for (Value xValue : setOfValuesForX) {
         Assignment assignment = yFunction.makeAssignmentToInputVariable(xValue);
         Value yValue = yFunction.evaluate(assignment);
-        coordinates[x][0] = xValue.doubleValue();
+        coordinates[x][0] = xValueToDouble.apply(xValue);
         coordinates[x][1] = yValue.doubleValue();
         ++x;
       }
