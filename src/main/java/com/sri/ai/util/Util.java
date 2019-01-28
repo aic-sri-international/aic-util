@@ -6378,4 +6378,29 @@ public class Util {
 			throw new Error(e);
 		}
 	}
+
+	/**
+	 * Returns the first string of the form <code>base + i</code> where <code>i</code> is
+	 * an integer greater than 0 and less than <code>Integer.MAX_VALUE</code>
+	 * that satisfies a given predicate,
+	 * or throws an error if there isn't any.
+	 * @param base
+	 * @param isNew
+	 * @return
+	 */
+	public static String makeNewIdentifier(String base, Predicate<String> isNew) {
+		String candidate;
+		int i = 1;
+		boolean foundNew = false;
+		do {
+			candidate = base + i++;
+			foundNew = isNew.apply(candidate);
+		} while (!foundNew && i != Integer.MAX_VALUE);
+		if (foundNew) {
+			return candidate;
+		}
+		else {
+			throw new Error("Searching for new interpreter with base " + base + " but all completions with natural numbers up to Integer.MAX_VALUE are taken");
+		}
+	}
 }

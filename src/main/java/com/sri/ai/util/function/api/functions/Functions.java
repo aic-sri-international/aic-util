@@ -1,9 +1,11 @@
 package com.sri.ai.util.function.api.functions;
 
+import static com.sri.ai.util.Util.myAssert;
 import static com.sri.ai.util.function.api.functions.SingleInputFunctions.singleInputFunctions;
 
 import java.util.List;
 
+import com.sri.ai.util.Enclosing;
 import com.sri.ai.util.function.api.variables.Assignment;
 import com.sri.ai.util.function.api.variables.SetOfVariables;
 import com.sri.ai.util.function.api.variables.Variable;
@@ -31,6 +33,8 @@ public interface Functions {
 	 * @return
 	 */
 	default SingleInputFunctions project(Variable variable, Assignment assignmentToRemainingVariables) {
+		myAssert(assignmentToRemainingVariables.get(variable) == null, () -> (new Enclosing() {}).methodName() + " got request to create a projection on " + variable + " but assignment on \"other\" variables includes this variable: " + assignmentToRemainingVariables);
+		myAssert(assignmentToRemainingVariables.size() == getAllInputVariables().size() - 1, () -> (new Enclosing() {}).methodName() + " must receive an assignment on all input variables " + getAllInputVariables() + " excluuding " + variable + ", but got an assignment on " + assignmentToRemainingVariables.getSetOfVariables() + " instead");
 		SingleInputFunctions result = singleInputFunctions();
 		for (Function function: getFunctions()) {
 			SingleInputFunction functionOnVariableGivenFixedAssignmentForRemainingVariables = 
