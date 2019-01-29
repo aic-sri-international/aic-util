@@ -5112,6 +5112,33 @@ public class Util {
 			return map;
 		}
 	}
+	
+	/**
+	 * Creates a new map with same keys and values equal to the application of a function to the original values.
+	 * @param map
+	 * @param function
+	 * @return
+	 */
+	public static <K, V1, V2> Map<K, V2> mapValues(Map<K, V1> map, Function<V1, V2> function) {
+		Map<K, V2> result = map();
+		for (Map.Entry<K, V1> entry : map.entrySet()) {
+			result.put(entry.getKey(), function.apply(entry.getValue()));
+		}
+		return result;
+	}
+	
+	public static <K, V> Map<K, V> mapIntoMap(Iterator<? extends K> iterator, Function<K, V> function) {
+		Map<K, V> result = map();
+		while (iterator.hasNext()) {
+			K key = iterator.next();
+			result.put(key, function.apply(key));
+		}
+		return result;
+	}
+
+	public static <K, V> Map<K, V> mapIntoMap(Iterable<? extends K> iterable, Function<K, V> function) {
+		return mapIntoMap(iterable.iterator(), function);
+	}
 
 	/**
 	 * Iterates over all elements in iterator's range and picks one with uniform probability.
