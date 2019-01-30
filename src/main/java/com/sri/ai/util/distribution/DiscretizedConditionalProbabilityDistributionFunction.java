@@ -11,7 +11,7 @@ import com.sri.ai.util.function.api.variables.Assignment;
 import com.sri.ai.util.function.api.variables.SetOfVariables;
 import com.sri.ai.util.function.api.variables.Unit;
 import com.sri.ai.util.function.api.variables.Variable;
-import com.sri.ai.util.function.core.functions.AbstractFunction;
+import com.sri.ai.util.function.core.functions.AbstractConcreteFieldsFunction;
 import com.sri.ai.util.function.core.functions.DefaultProjectionSingleInputFunction;
 import com.sri.ai.util.function.core.variables.RealVariable;
 
@@ -21,7 +21,7 @@ import com.sri.ai.util.function.core.variables.RealVariable;
  * @author braz
  *
  */
-public class DiscretizedConditionalProbabilityDistributionFunction extends AbstractFunction implements java.util.function.Function<ArrayList<Object>, Value> {
+public class DiscretizedConditionalProbabilityDistributionFunction extends AbstractConcreteFieldsFunction implements java.util.function.Function<ArrayList<Object>, Value> {
 
 	protected DiscretizedConditionalProbabilityDistribution conditionalDistribution;
 	
@@ -88,7 +88,7 @@ public class DiscretizedConditionalProbabilityDistributionFunction extends Abstr
 	}
 	
 	@Override
-	public SingleInputFunction project(Variable variable, Assignment assignmentToRemainingVariables) {
+	protected SingleInputFunction projectIfNeeded(Variable variable, Assignment assignmentToRemainingVariables) {
 		return new DefaultProjectionSingleInputFunction(this, variable, assignmentToRemainingVariables);
 	}
 

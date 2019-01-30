@@ -6,7 +6,7 @@ import com.sri.ai.util.function.api.variables.Assignment;
 import com.sri.ai.util.function.api.variables.SetOfVariables;
 import com.sri.ai.util.function.api.variables.Variable;
 
-public class DefaultFunction extends AbstractFunction {
+public class DefaultFunction extends AbstractConcreteFieldsFunction {
 	
 	private String name;
 	private java.util.function.Function<Assignment, Value> javaFunction;
@@ -28,7 +28,7 @@ public class DefaultFunction extends AbstractFunction {
 	}
 
 	@Override
-	public SingleInputFunction project(Variable variable, Assignment assignmentToRemainingVariables) {
+	protected SingleInputFunction projectIfNeeded(Variable variable, Assignment assignmentToRemainingVariables) {
 		return new DefaultProjectionSingleInputFunction(this, variable, assignmentToRemainingVariables);
 	}
 }

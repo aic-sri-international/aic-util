@@ -37,7 +37,7 @@ import com.sri.ai.util.function.core.variables.DefaultSetOfVariables;
  * @author braz
  *
  */
-public class AggregatorFunction implements Function {
+public class AggregatorFunction extends AbstractFunction {
 	
 	private SetOfVariables x;
 	private SetOfVariables others;
@@ -144,7 +144,7 @@ public class AggregatorFunction implements Function {
 	}
 
 	@Override
-	public SingleInputFunction project(Variable variable, Assignment assignmentToRemainingVariables) {
+	protected SingleInputFunction projectIfNeeded(Variable variable, Assignment assignmentToRemainingVariables) {
 		// for projections, we must be sure to project subfunctions with the same assignment when we created them with.
 		// Originally, we were using a default 'project' implementation that simply kept the original
 		// AggregatorFunction and conditioned at evaluate-time.

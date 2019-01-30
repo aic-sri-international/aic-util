@@ -9,7 +9,7 @@ import com.sri.ai.util.function.api.variables.Assignment;
 import com.sri.ai.util.function.api.variables.SetOfVariables;
 import com.sri.ai.util.function.api.variables.Variable;
 
-public class FunctionToSingleInputFunctionAdapter implements SingleInputFunction {
+public class FunctionToSingleInputFunctionAdapter extends AbstractFunction implements SingleInputFunction {
 
 	private Function base;
 	
@@ -43,7 +43,7 @@ public class FunctionToSingleInputFunctionAdapter implements SingleInputFunction
 	}
 	
 	@Override
-	public SingleInputFunction project(Variable variable, Assignment assignmentToRemainingVariables) {
+	protected SingleInputFunction projectIfNeeded(Variable variable, Assignment assignmentToRemainingVariables) {
 		throw new Error("Cannot project a function to one variable that already has only one variable");
 	}
 

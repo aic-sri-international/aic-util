@@ -13,7 +13,7 @@ import com.sri.ai.util.function.api.variables.Assignment;
 import com.sri.ai.util.function.api.variables.SetOfVariables;
 import com.sri.ai.util.function.api.variables.Variable;
 
-public abstract class AbstractProjectionSingleInputFunction implements SingleInputFunction {
+public abstract class AbstractProjectionSingleInputFunction extends AbstractFunction implements SingleInputFunction {
 
 	@Override
 	public abstract Value evaluate(Assignment inputVariableValue);
@@ -86,7 +86,7 @@ public abstract class AbstractProjectionSingleInputFunction implements SingleInp
 	////////////////////// REMAINING METHODS ARE NOT SUPPORTED
 
 	@Override
-	public SingleInputFunction project(Variable variable, Assignment assignmentToRemainingVariables) {
+	protected SingleInputFunction projectIfNeeded(Variable variable, Assignment assignmentToRemainingVariables) {
 		throw new Error("Cannot project " + getClass());
 	}
 

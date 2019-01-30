@@ -20,7 +20,7 @@ import com.sri.ai.util.function.api.variables.Variable;
 import com.sri.ai.util.function.core.variables.DefaultAssignment;
 import com.sri.ai.util.function.core.variables.DefaultSetOfVariables;
 
-public class VariablesMaskingFunction implements Function {
+public class VariablesMaskingFunction extends AbstractFunction {
 
 	private Function baseFunction;
 
@@ -103,7 +103,7 @@ public class VariablesMaskingFunction implements Function {
 	///////////////////////
 	
 	@Override
-	public SingleInputFunction project(Variable variable, Assignment assignmentToRemainingVariables) {
+	protected SingleInputFunction projectIfNeeded(Variable variable, Assignment assignmentToRemainingVariables) {
 		SingleInputFunction baseProjection = baseFunction.project(variable, assignmentToRemainingVariables);
 		Function maskedBasedProjection = new VariablesMaskingFunction(baseProjection, newToOldVariables);
 		SingleInputFunction maskedBaseProjectionSingleInputFunction = new FunctionToSingleInputFunctionAdapter(maskedBasedProjection);
