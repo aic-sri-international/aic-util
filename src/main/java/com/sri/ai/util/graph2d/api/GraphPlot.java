@@ -5,6 +5,7 @@ import java.io.File;
 import com.sri.ai.util.function.api.functions.Functions;
 import com.sri.ai.util.function.api.functions.SingleInputFunctions;
 import com.sri.ai.util.graph2d.core.DefaultGraphPlot;
+import java.util.Map;
 
 /**
  * An interface for objects containing a 2D graph plot image and whatever other useful information is associated with it,
@@ -17,7 +18,11 @@ import com.sri.ai.util.graph2d.core.DefaultGraphPlot;
  */
 public interface GraphPlot {
 
+  Map<String, Double> getRegionToValue();
+
+  GraphPlot setMapRegionNameToValue(Map<String, Double> mapRegionNameToValue);
+
   File getImageFile();
 
-  DefaultGraphPlot setImageFile(File imageFile);
+  GraphPlot setImageFile(File imageFile);
 }

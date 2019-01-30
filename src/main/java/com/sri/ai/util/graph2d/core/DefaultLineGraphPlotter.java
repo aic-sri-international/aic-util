@@ -59,9 +59,9 @@ public class DefaultLineGraphPlotter extends AbstractExternalGraphPlotter {
     File imageFile = createFileForImage();
     lineChartFactory.generate(imageFile);
 
-    DefaultGraphPlot defaultGraphPlot = new DefaultGraphPlot().setImageFile(imageFile);
+    GraphPlot graphPlot = new DefaultGraphPlot().setImageFile(imageFile);
 
-    return defaultGraphPlot;
+    return graphPlot;
   }
 
 }

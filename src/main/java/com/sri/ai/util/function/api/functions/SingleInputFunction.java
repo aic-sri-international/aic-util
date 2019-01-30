@@ -35,4 +35,8 @@ public interface SingleInputFunction extends Function {
 		Assignment result = assignment(variables, values);
 		return result;
 	}
+
+	default Value evaluate(Value inputVariableValue) {
+		return evaluate(makeAssignmentToInputVariable(inputVariableValue));
+	}
 }
