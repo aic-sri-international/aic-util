@@ -3,13 +3,6 @@ package com.sri.ai.util.graph2d.api;
 import static com.sri.ai.util.Util.join;
 import static com.sri.ai.util.graph2d.api.ExternalGraphPlotter.externalGraphMaker;
 
-import com.sri.ai.util.Util;
-import com.sri.ai.util.function.api.functions.Function;
-import com.sri.ai.util.function.api.values.Value;
-import com.sri.ai.util.function.core.values.SetOfEnumValues;
-import com.sri.ai.util.graph2d.core.DefaultExternalGeoMapPlotter;
-import com.sri.ai.util.graph2d.core.DefaultGraphPlot;
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,6 +14,7 @@ import com.sri.ai.util.function.api.variables.Assignment;
 import com.sri.ai.util.function.api.variables.SetOfValues;
 import com.sri.ai.util.function.api.variables.SetOfVariables;
 import com.sri.ai.util.function.api.variables.Variable;
+import com.sri.ai.util.graph2d.core.DefaultExternalGeoMapPlotter;
 import com.sri.ai.util.graph2d.core.DefaultGraphSetMaker;
 import com.sri.ai.util.graph2d.core.jfreechart.GraphSettings;
 
@@ -96,8 +90,10 @@ public interface GraphSetMaker {
 				.map(f -> f.getOutputVariable().getName())
 				.collect(Collectors.joining(delimiter));
 
-		String inputVariableName = singleInputFunctionsToBePlotted.getInputVariable().getName();
-		String xAxisDescription = inputVariableName.length() > 1? " by " + inputVariableName : "";
+//		String inputVariableName = singleInputFunctionsToBePlotted.getInputVariable().getName();
+//		String xAxisDescription = inputVariableName.length() > 1? " by " + inputVariableName : "";
+//      usually in the output variable name already anyway 
+		String xAxisDescription = "";
 		
 		int numberOfRemainingVariables = assignmentToNonAxisVariables.size();
 		String remainingVariablesDescription = numberOfRemainingVariables > 0? " for " + assignmentToNonAxisVariables.toDisplayFormat() : "";

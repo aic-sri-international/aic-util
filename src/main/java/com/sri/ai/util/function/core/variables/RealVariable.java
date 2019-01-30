@@ -2,7 +2,9 @@ package com.sri.ai.util.function.core.variables;
 
 import java.math.BigDecimal;
 
+import com.sri.ai.util.function.api.variables.SetOfValues;
 import com.sri.ai.util.function.api.variables.Unit;
+import com.sri.ai.util.function.api.variables.Variable;
 import com.sri.ai.util.function.core.values.SetOfRealValues;
 
 public class RealVariable extends AbstractVariable {
@@ -31,6 +33,15 @@ public class RealVariable extends AbstractVariable {
 		super(name, unit, new SetOfRealValues(first, step, last));
 	}
 	
+	public RealVariable(String name, Unit unit, SetOfValues setOfValues) {
+		super(name, unit, setOfValues);
+	}
+	
+	@Override
+	public Variable copyWithNewName(String newName) {
+		return new RealVariable(newName, getUnit(), getSetOfValuesOrNull());
+	}
+
 	@Override
 	public String toString() {
 		return "RealVariable [getName()=" + getName() + ", getUnit()=" + getUnit() + ", getSetOfValuesOrNull()="

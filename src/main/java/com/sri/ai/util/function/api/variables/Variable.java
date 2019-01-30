@@ -19,6 +19,8 @@ public interface Variable {
 	
 	SetOfValues getSetOfValuesOrNull();
 	
+	Variable copyWithNewName(String newName);
+	
 	public static EnumVariable enumVariable(String name, String... values) {
 		return new EnumVariable(name, values);
 	}

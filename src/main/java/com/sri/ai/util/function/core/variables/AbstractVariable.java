@@ -45,4 +45,41 @@ public abstract class AbstractVariable implements Variable {
 				", setOfValuesOrNull=" + setOfValuesOrNull +
 				'}';
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((setOfValuesOrNull == null) ? 0 : setOfValuesOrNull.hashCode());
+		result = prime * result + ((unit == null) ? 0 : unit.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AbstractVariable other = (AbstractVariable) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (setOfValuesOrNull == null) {
+			if (other.setOfValuesOrNull != null)
+				return false;
+		} else if (!setOfValuesOrNull.equals(other.setOfValuesOrNull))
+			return false;
+		if (unit == null) {
+			if (other.unit != null)
+				return false;
+		} else if (!unit.equals(other.unit))
+			return false;
+		return true;
+	}
 }

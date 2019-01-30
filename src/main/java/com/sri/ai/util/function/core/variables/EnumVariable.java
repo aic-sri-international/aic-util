@@ -1,6 +1,7 @@
 package com.sri.ai.util.function.core.variables;
 
 import com.sri.ai.util.function.api.variables.Unit;
+import com.sri.ai.util.function.api.variables.Variable;
 import com.sri.ai.util.function.core.values.SetOfEnumValues;
 
 public class EnumVariable extends AbstractVariable {
@@ -16,5 +17,10 @@ public class EnumVariable extends AbstractVariable {
 	@Override
 	public SetOfEnumValues getSetOfValuesOrNull() {
 		return (SetOfEnumValues) super.getSetOfValuesOrNull();
+	}
+
+	@Override
+	public Variable copyWithNewName(String newName) {
+		return new EnumVariable(newName, getSetOfValuesOrNull());
 	}
 }

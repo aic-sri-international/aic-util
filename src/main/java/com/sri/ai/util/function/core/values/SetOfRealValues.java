@@ -273,4 +273,61 @@ public class SetOfRealValues implements SetOfValues {
 						: getClass().getSimpleName() + " from " + first + " to " + last + ", step " + step + ", lower bound " + lowerBoundForDiscretizedValue + ", upperBoundForDiscretizedValue " + upperBoundForDiscretizedValue;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((first == null) ? 0 : first.hashCode());
+		result = prime * result + ((halfStep == null) ? 0 : halfStep.hashCode());
+		result = prime * result + ((last == null) ? 0 : last.hashCode());
+		result = prime * result
+				+ ((lowerBoundForDiscretizedValue == null) ? 0 : lowerBoundForDiscretizedValue.hashCode());
+		result = prime * result + ((step == null) ? 0 : step.hashCode());
+		result = prime * result
+				+ ((upperBoundForDiscretizedValue == null) ? 0 : upperBoundForDiscretizedValue.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SetOfRealValues other = (SetOfRealValues) obj;
+		if (first == null) {
+			if (other.first != null)
+				return false;
+		} else if (!first.equals(other.first))
+			return false;
+		if (halfStep == null) {
+			if (other.halfStep != null)
+				return false;
+		} else if (!halfStep.equals(other.halfStep))
+			return false;
+		if (last == null) {
+			if (other.last != null)
+				return false;
+		} else if (!last.equals(other.last))
+			return false;
+		if (lowerBoundForDiscretizedValue == null) {
+			if (other.lowerBoundForDiscretizedValue != null)
+				return false;
+		} else if (!lowerBoundForDiscretizedValue.equals(other.lowerBoundForDiscretizedValue))
+			return false;
+		if (step == null) {
+			if (other.step != null)
+				return false;
+		} else if (!step.equals(other.step))
+			return false;
+		if (upperBoundForDiscretizedValue == null) {
+			if (other.upperBoundForDiscretizedValue != null)
+				return false;
+		} else if (!upperBoundForDiscretizedValue.equals(other.upperBoundForDiscretizedValue))
+			return false;
+		return true;
+	}
+
 }

@@ -2,6 +2,7 @@ package com.sri.ai.util.function.core.variables;
 
 import com.sri.ai.util.function.api.variables.SetOfValues;
 import com.sri.ai.util.function.api.variables.Unit;
+import com.sri.ai.util.function.api.variables.Variable;
 import com.sri.ai.util.function.core.values.SetOfIntegerValues;
 
 public class IntegerVariable extends AbstractVariable {
@@ -21,5 +22,10 @@ public class IntegerVariable extends AbstractVariable {
 	@Override
 	public SetOfIntegerValues getSetOfValuesOrNull() {
 		return (SetOfIntegerValues) setOfValuesOrNull;
+	}
+
+	@Override
+	public Variable copyWithNewName(String newName) {
+		return new IntegerVariable(newName, getUnit(), getSetOfValuesOrNull());
 	}
 }
