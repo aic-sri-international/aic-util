@@ -1,6 +1,7 @@
 package com.sri.ai.util.function.core.variables;
 
 import static com.sri.ai.util.Util.getByExplicitlyIterating;
+import static com.sri.ai.util.Util.join;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,14 +62,37 @@ public class DefaultSetOfVariables implements SetOfVariables {
 
   @Override
   public String toString() {
-    return "DefaultSetOfVariables{" +
-        "variables=" + variables +
-        '}';
+    return "{" + join(variables) + "}";
   }
 
   @Override
   public Variable get(int i) {
 	  return getByExplicitlyIterating(variables, i);
   }
+
+@Override
+public int hashCode() {
+	final int prime = 31;
+	int result = 1;
+	result = prime * result + ((variables == null) ? 0 : variables.hashCode());
+	return result;
+}
+
+@Override
+public boolean equals(Object obj) {
+	if (this == obj)
+		return true;
+	if (obj == null)
+		return false;
+	if (getClass() != obj.getClass())
+		return false;
+	DefaultSetOfVariables other = (DefaultSetOfVariables) obj;
+	if (variables == null) {
+		if (other.variables != null)
+			return false;
+	} else if (!variables.equals(other.variables))
+		return false;
+	return true;
+}
 
 }

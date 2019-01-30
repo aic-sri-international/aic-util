@@ -39,11 +39,7 @@ public abstract class AbstractVariable implements Variable {
 
 	@Override
 	public String toString() {
-		return "AbstractVariable{" +
-				"name='" + name + '\'' +
-				", unit=" + unit +
-				", setOfValuesOrNull=" + setOfValuesOrNull +
-				'}';
+		return name;
 	}
 
 	@Override

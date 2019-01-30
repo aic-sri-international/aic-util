@@ -43,12 +43,6 @@ public class RealVariable extends AbstractVariable {
 	}
 
 	@Override
-	public String toString() {
-		return "RealVariable [getName()=" + getName() + ", getUnit()=" + getUnit() + ", getSetOfValuesOrNull()="
-				+ getSetOfValuesOrNull() + "]";
-	}
-
-	@Override
 	public SetOfRealValues getSetOfValuesOrNull() {
 		return (SetOfRealValues) setOfValuesOrNull;
 	}

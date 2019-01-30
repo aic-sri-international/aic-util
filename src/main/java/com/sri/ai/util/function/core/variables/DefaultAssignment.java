@@ -1,5 +1,8 @@
 package com.sri.ai.util.function.core.variables;
 
+import static com.sri.ai.util.Util.join;
+import static com.sri.ai.util.Util.map;
+
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -47,6 +50,17 @@ public class DefaultAssignment implements Assignment {
 	@Override
 	public SetOfVariables getSetOfVariables() {
 		return setOfVariables;
+	}
+
+	@Override
+	public Assignment exclude(SetOfVariables setOfVariables) {
+		Map<Variable, Value> newMap = map();
+		for (Map.Entry<Variable, Value> entry : variableToValue.entrySet()) {
+			if ( ! setOfVariables.getVariables().contains(entry.getKey())) {
+				newMap.put(entry.getKey(), entry.getValue());
+			}
+		}
+		return new DefaultAssignment(newMap);
 	}
 
 	@Override
@@ -104,9 +118,7 @@ public class DefaultAssignment implements Assignment {
 
 	@Override
 	public String toString() {
-		return "DefaultAssignment{" +
-				"variableToValue=" + variableToValue +
-				'}';
+		return "{" + join(variableToValue.entrySet()) + "}";
 	}
 
 	@Override

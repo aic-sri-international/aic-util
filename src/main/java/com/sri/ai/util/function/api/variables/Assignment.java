@@ -105,4 +105,11 @@ public interface Assignment {
 		return new DefaultAssignment(fromVariableToValues);
 	}
 
+	/**
+	 * Returns this a new assignment that does not include assignments to variables in the given set of variables.
+	 * @param setOfVariables
+	 * @return
+	 */
+	Assignment exclude(SetOfVariables setOfVariables);
+
 }
