@@ -35,6 +35,10 @@ public class DefaultAssignment implements Assignment {
 		}
 	}
 
+	public DefaultAssignment(Map<Variable, Value> variableToValue) {
+		this(new DefaultSetOfVariables(variableToValue.keySet()), variableToValue);
+	}
+
 	private DefaultAssignment(SetOfVariables setOfVariables, Map<Variable, Value> variableToValue) {
 		this.setOfVariables = setOfVariables;
 		this.variableToValue = variableToValue;
@@ -103,5 +107,36 @@ public class DefaultAssignment implements Assignment {
 		return "DefaultAssignment{" +
 				"variableToValue=" + variableToValue +
 				'}';
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((setOfVariables == null) ? 0 : setOfVariables.hashCode());
+		result = prime * result + ((variableToValue == null) ? 0 : variableToValue.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		DefaultAssignment other = (DefaultAssignment) obj;
+		if (setOfVariables == null) {
+			if (other.setOfVariables != null)
+				return false;
+		} else if (!setOfVariables.equals(other.setOfVariables))
+			return false;
+		if (variableToValue == null) {
+			if (other.variableToValue != null)
+				return false;
+		} else if (!variableToValue.equals(other.variableToValue))
+			return false;
+		return true;
 	}
 }

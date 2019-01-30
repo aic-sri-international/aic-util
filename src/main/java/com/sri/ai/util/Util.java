@@ -98,6 +98,8 @@ import com.sri.ai.util.base.TernaryFunction;
 import com.sri.ai.util.collect.EZIterator;
 import com.sri.ai.util.collect.IntegerIterator;
 import com.sri.ai.util.collect.NestedIterator;
+import com.sri.ai.util.collect.ReverseIterator;
+import com.sri.ai.util.collect.ReverseListIterator;
 import com.sri.ai.util.math.Rational;
 
 /**
@@ -2956,6 +2958,25 @@ public class Util {
 	}
 	
 	/**
+	 * Returns a fresh LinkedHashSet with all elements from iterables in a collection.
+	 * @param collectionOfIterables
+	 * @return
+	 */
+	public static <E> LinkedHashSet<E> union(Collection<Iterable<? extends E>> collectionOfIterables) {
+		return union(collectionOfIterables.iterator());
+	}
+	
+	/**
+	 * Returns a fresh LinkedHashSet with all elements from iterables in a collection.
+	 * @param arrayOfIterables
+	 * @return
+	 */
+	@SafeVarargs
+	public static <E> LinkedHashSet<E> union(Iterable<? extends E>... arrayOfIterables) {
+		return union(Arrays.asList(arrayOfIterables).iterator());
+	}
+	
+	/**
 	 * Adds all elements in a given iterable to a given collection (generalizes {@link Collection#addAll(Collection)} to {@link Iterable}.
 	 * @param collection
 	 * @param iterable
@@ -4903,6 +4924,22 @@ public class Util {
 	}
 
 	/**
+	 * A java <code>assert</code> substitute that, unlike the standard one, is on by default and
+	 * can be turned off by setting any value to property {@link #MY_ASSERT_OFF}.
+	 * It throws an {@link AssertionError} with the given message.
+	 * @param test
+	 *        result of the test
+	 * @param the object whose class is requiring the condition; the class name is added to the beginning of the message, separated by a space
+	 * @param message
+	 *        message to display if test failed.
+	 */
+	public static void myAssert(boolean test, Object requirer, NullaryFunction<String> message) {
+		if ( ! test && System.getProperty(MY_ASSERT_OFF) == null) {
+			throw new AssertionError(requirer.getClass() + " " + message.apply());
+		}
+	}
+
+	/**
 	 * Similar to {@link #myAssert(boolean, NullaryFunction)}, but takes nullary functions
 	 * for the test and the error message, and only executes them if property {@link #MY_ASSERT_OFF} is null,
 	 * thus maximizing performance when it <i>isn't</i> null.
@@ -6429,5 +6466,44 @@ public class Util {
 		else {
 			throw new Error("Searching for new interpreter with base " + base + " but all completions with natural numbers up to Integer.MAX_VALUE are taken");
 		}
+	}
+
+	/** Returns a {@link ListIterator} positioned at the very end of a given list. */
+	public static <T> ListIterator<T> backIterator(List<T> list) {
+		return list.listIterator(list.size());
+	}
+
+	/** 
+	 * Returns a {@link ListIterator} that iterates in reverse direction from a list.
+	 * Note that this is <b>not</not> a {@link ListIterator} to be iterated with {@link ListIterator#previous()};
+	 * iterating it with {@link Iterator#next()} will move on the list from last to first.
+	 * Likewise, using {@link ListIterator#previous()} will move it forward in the list.
+	 * This is achieved by using {@link ReverseListIterator} and its purpose is the same,
+	 * namely to be able to use methods using regular iterators with {@link Iterator#next()},
+	 * but going backwards.
+	 */
+	public static <T> ListIterator<T> reverseListIterator(List<T> list) {
+		return new ReverseListIterator<T>(backIterator(list));
+	}
+
+	/** 
+	 * Returns an {@link Iterator} that iterates in reverse direction from a list.
+	 * Note that this is <b>not</not> a {@link ListIterator} to be iterated with {@link ListIterator#previous()};
+	 * iterating it with {@link Iterator#next()} will move on the list from last to first.
+	 * This is achieved by using {@link ReverseIterator} and its purpose is the same,
+	 * namely to be able to use methods using regular iterators with {@link Iterator#next()},
+	 * but going backwards.
+	 */
+	public static <T> ReverseIterator<T> reverseIterator(List<T> list) {
+		return new ReverseIterator<T>(backIterator(list));
+	}
+
+	/** 
+	 * Returns an {@link Iterator} that iterates an iterator in the reverse direction.
+	 * This can only be achieved by storing the iterated elements in a list, though, so
+	 * the iterator must have a finite range.
+	 */
+	public static <T> ReverseIterator<T> reverse(Iterator<T> iterator) {
+		return new ReverseIterator<T>(backIterator(addAllToList(iterator)));
 	}
 }

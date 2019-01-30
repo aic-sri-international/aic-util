@@ -10,7 +10,9 @@ import static com.sri.ai.util.collect.FunctionIterator.functionIterator;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.sri.ai.util.base.NullaryFunction;
 import com.sri.ai.util.collect.CartesianProductIterator;
@@ -91,6 +93,16 @@ public interface Assignment {
 		ArrayList<? extends Variable> variables = getSetOfVariables().getVariables();
 		ArrayList<Integer> result = mapIntoArrayList(variables, v -> setOfValuesForVariable.apply(v).getIndexOf(get(v)));
 		return result;
+	}
+	
+	default Assignment get(SetOfVariables setOfVariables) {
+		Map<Variable, Value> fromVariableToValues = 
+				setOfVariables
+				.getVariables()
+				.stream()
+				.filter(v -> get(v) != null)
+				.collect(Collectors.toMap(v -> v, v -> get(v)));
+		return new DefaultAssignment(fromVariableToValues);
 	}
 
 }

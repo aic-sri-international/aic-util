@@ -3,6 +3,7 @@ package com.sri.ai.util.function.core.variables;
 import static com.sri.ai.util.Util.getByExplicitlyIterating;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -19,17 +20,21 @@ public class DefaultSetOfVariables implements SetOfVariables {
   private final Set<? extends Variable> variables;
 
   public DefaultSetOfVariables(List<? extends Variable> variables) {
-	    this(new LinkedHashSet<>(variables));
-	  }
+	  this(new LinkedHashSet<>(variables));
+  }
 
   public DefaultSetOfVariables(Variable variable) {
-    Validate.notNull(variable, "Variable cannot be null");
-    variables = Collections.unmodifiableSet(Collections.singleton(variable));
+	  Validate.notNull(variable, "Variable cannot be null");
+	  variables = Collections.unmodifiableSet(Collections.singleton(variable));
   }
 
-  private DefaultSetOfVariables(LinkedHashSet<? extends Variable> variables) {
-    this.variables = Collections.unmodifiableSet(variables);
-  }
+  public DefaultSetOfVariables(LinkedHashSet<? extends Variable> variables) {
+	    this.variables = Collections.unmodifiableSet(variables);
+	  }
+
+  public DefaultSetOfVariables(Collection<? extends Variable> variables) {
+	    this(new LinkedHashSet<>(variables));
+	  }
 
   @Override
   public ArrayList<? extends Variable> getVariables() {
