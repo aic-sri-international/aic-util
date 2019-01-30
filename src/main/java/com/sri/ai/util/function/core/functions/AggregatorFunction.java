@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import com.sri.ai.util.function.api.functions.Function;
+import com.sri.ai.util.function.api.functions.SingleInputFunction;
 import com.sri.ai.util.function.api.values.Value;
 import com.sri.ai.util.function.api.variables.Assignment;
 import com.sri.ai.util.function.api.variables.SetOfValues;
@@ -24,12 +25,12 @@ import com.sri.ai.util.function.core.variables.DefaultSetOfVariables;
  * More formally, given:
  * <ol>
  * <li> a {@link SetOfVariables} <code>X</code>
- * <li> a {@link java.util.function.Function} <code>maker</code> mapping assignment in <code>X</code>
+ * <li> a {@link java.util.function.Function} <code>subFunctionMaker</code> mapping assignment in <code>X</code>
  * to some {@link Function} on a set of variable <code>Others</code> with output variable <code>Output</code>,
  * </ol>
  * this is a {@link Function} on <code>X union Others</code>
  * that maps an assignment <code>{X -> x, Others -> others}</code>
- * to <code>maker(x).evaluate(others)</code>.
+ * to <code>subFunctionMaker(x).evaluate(others)</code>.
  * <p>
  * The function for each assignment of <code>X</code> is made only once, and cached.
  * 
@@ -41,16 +42,16 @@ public class AggregatorFunction implements Function {
 	private SetOfVariables x;
 	private SetOfVariables others;
 	private Variable output;
-	private java.util.function.Function<Assignment, Function> maker;
+	private java.util.function.Function<Assignment, Function> subFunctionMaker;
 
 	////////////////////////
 	
 	public AggregatorFunction(
 			SetOfVariables x, 
-			java.util.function.Function<Assignment, Function> maker) {
+			java.util.function.Function<Assignment, Function> subFunctionMaker) {
 		
 		this.x = x;
-		this.maker = maker;
+		this.subFunctionMaker = subFunctionMaker;
 	}
 
 	////////////////////////
@@ -99,7 +100,7 @@ public class AggregatorFunction implements Function {
 	////////////////////////
 	
 	private Function make(Assignment xValues) {
-		Function function = maker.apply(xValues);
+		Function function = subFunctionMaker.apply(xValues);
 		return function;
 	}
 
@@ -129,7 +130,7 @@ public class AggregatorFunction implements Function {
 		return getAnyAssignment(setOfVariables);
 	}
 
-	public static Assignment getAnyAssignment(SetOfVariables setOfVariables) {
+	private static Assignment getAnyAssignment(SetOfVariables setOfVariables) {
 		Map<Variable, Value> anyAssignment = map();
 		for (Variable inX : setOfVariables.getVariables()) {
 			SetOfValues setOfValuesOrNull = inX.getSetOfValuesOrNull();
@@ -150,6 +151,56 @@ public class AggregatorFunction implements Function {
 		myAssert(!intersect(others.getVariables(), x.getVariables()), this, () -> "requires variables X (" + x + ") not to intersect Other variables " + others);
 		myAssert(!others.getVariables().contains(output), this, () -> "requires output variable (" + output + ") not to be in Other variables " + others);
 		myAssert(!x.getVariables().contains(output), this, () -> "requires variable X (" + x + ") not to contain the output variable " + output);
+	}
+
+	@Override
+	public SingleInputFunction project(Variable variable, Assignment assignmentToRemainingVariables) {
+		// for projections, we must be sure to project subfunctions with the same assignment when we create them.
+		// Originally, we were using a default 'project' implementation that simply kept the original
+		// AggregatorFunction and conditioned at evaluate-time.
+		// However, some Functions have efficient project methods that change the way they are evaluate,
+		// so it is important to invoke their 'project' methods.
+
+		if (x.getVariables().contains(variable)) {
+			return makeProjectionOnX(variable, assignmentToRemainingVariables);
+		}
+		else {
+			return makeProjectionInOthers(variable, assignmentToRemainingVariables);
+		}
+	}
+
+	private SingleInputFunction makeProjectionOnX(Variable variable, Assignment assignmentToRemainingVariables) {
+		// safe to use default approach here since the subfunctions are not being projected
+		return new DefaultProjectionSingleInputFunction(this, variable, assignmentToRemainingVariables);
+	}
+
+	private SingleInputFunction makeProjectionInOthers(Variable variable, Assignment assignmentToRemainingVariables) {
+		
+		java.util.function.Function<Assignment, Function> newSubFunctionMaker = 
+				makeNewSubFunctionMaker(variable, assignmentToRemainingVariables);
+		
+		SingleInputFunction singleInputProjectedAggregator = 
+				makeSingleInputProjectedAggregator(newSubFunctionMaker);
+		
+		return singleInputProjectedAggregator;
+	}
+
+	private java.util.function.Function<Assignment, Function> makeNewSubFunctionMaker(Variable variable, Assignment assignmentToRemainingVariables) {
+		return a -> makeProjectedSubFunction(a, variable, assignmentToRemainingVariables);
+	}
+
+	private Function makeProjectedSubFunction(Assignment assignmentToX, Variable variable, Assignment assignmentToRemainingVariables) {
+		Function newSubFunction = subFunctionMaker.apply(assignmentToX);
+		myAssert(newSubFunction.getSetOfInputVariables().getVariables().contains(variable), this, () -> " requires projection onto a variable not in X to be in Others, but " + variable + " is not in Others from just-created sub-function " + newSubFunction);
+		return newSubFunction.project(variable, assignmentToRemainingVariables);
+	}
+
+	private SingleInputFunction makeSingleInputProjectedAggregator(
+			java.util.function.Function<Assignment, Function> newSubFunctionMaker) {
+		
+		AggregatorFunction projectedAggregator = new AggregatorFunction(x, newSubFunctionMaker);
+		SingleInputFunction singleInputProjectedAggregator = new FunctionToSingleInputFunctionAdapter(projectedAggregator);
+		return singleInputProjectedAggregator;
 	}
 
 }

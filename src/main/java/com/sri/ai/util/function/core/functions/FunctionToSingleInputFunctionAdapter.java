@@ -41,5 +41,10 @@ public class FunctionToSingleInputFunctionAdapter implements SingleInputFunction
 	public Value evaluate(Assignment assignmentToInputVariables) {
 		return base.evaluate(assignmentToInputVariables);
 	}
+	
+	@Override
+	public SingleInputFunction project(Variable variable, Assignment assignmentToRemainingVariables) {
+		throw new Error("Cannot project a function to one variable that already has only one variable");
+	}
 
 }

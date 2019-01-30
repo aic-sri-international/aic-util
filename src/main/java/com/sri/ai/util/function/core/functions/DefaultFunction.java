@@ -1,5 +1,6 @@
 package com.sri.ai.util.function.core.functions;
 
+import com.sri.ai.util.function.api.functions.SingleInputFunction;
 import com.sri.ai.util.function.api.values.Value;
 import com.sri.ai.util.function.api.variables.Assignment;
 import com.sri.ai.util.function.api.variables.SetOfVariables;
@@ -26,4 +27,8 @@ public class DefaultFunction extends AbstractFunction {
 		return javaFunction.apply(inputVariableValues);
 	}
 
+	@Override
+	public SingleInputFunction project(Variable variable, Assignment assignmentToRemainingVariables) {
+		return new DefaultProjectionSingleInputFunction(this, variable, assignmentToRemainingVariables);
+	}
 }

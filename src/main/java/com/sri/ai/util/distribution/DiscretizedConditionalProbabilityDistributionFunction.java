@@ -5,12 +5,14 @@ import static com.sri.ai.util.Util.mapIntoArrayList;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sri.ai.util.function.api.functions.SingleInputFunction;
 import com.sri.ai.util.function.api.values.Value;
 import com.sri.ai.util.function.api.variables.Assignment;
 import com.sri.ai.util.function.api.variables.SetOfVariables;
 import com.sri.ai.util.function.api.variables.Unit;
 import com.sri.ai.util.function.api.variables.Variable;
 import com.sri.ai.util.function.core.functions.AbstractFunction;
+import com.sri.ai.util.function.core.functions.DefaultProjectionSingleInputFunction;
 import com.sri.ai.util.function.core.variables.RealVariable;
 
 /**
@@ -85,6 +87,11 @@ public class DiscretizedConditionalProbabilityDistributionFunction extends Abstr
 		return apply(valueObjects);
 	}
 	
+	@Override
+	public SingleInputFunction project(Variable variable, Assignment assignmentToRemainingVariables) {
+		return new DefaultProjectionSingleInputFunction(this, variable, assignmentToRemainingVariables);
+	}
+
 	@Override
 	public Value apply(ArrayList<Object> values) {
 		return conditionalDistribution.apply(values);

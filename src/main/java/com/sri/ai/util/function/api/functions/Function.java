@@ -5,7 +5,6 @@ import com.sri.ai.util.function.api.variables.Assignment;
 import com.sri.ai.util.function.api.variables.SetOfVariables;
 import com.sri.ai.util.function.api.variables.Variable;
 import com.sri.ai.util.function.core.functions.DefaultFunction;
-import com.sri.ai.util.function.core.functions.DefaultProjectionSingleInputFunction;
 import com.sri.ai.util.function.core.functions.JavaFunction;
 
 /**
@@ -39,8 +38,11 @@ public interface Function {
 	 * @param assignmentToRemainingVariables
 	 * @return
 	 */
-	default SingleInputFunction project(Variable variable, Assignment assignmentToRemainingVariables) {
-		return new DefaultProjectionSingleInputFunction(this, variable, assignmentToRemainingVariables);
-	}
+	SingleInputFunction project(Variable variable, Assignment assignmentToRemainingVariables);
+	// This used to be a default method using {@link DefaultProjectionSingleInputFunction},
+	// but it turned out to be a pitfall since some functions need more efficient implementations,
+	// and the proxies to them may end up with a default version that does not delegate
+	// to their efficient implementations.
+	// By not letting it be a default, we force users to really think about how they need to project.
 
 }
