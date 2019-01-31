@@ -124,7 +124,7 @@ public interface GraphSetMaker {
 	}
 	
 	default GraphPlot plot(String title, SingleInputFunctions singleInputFunctionsToBePlotted, Assignment assignment) {
-		SetOfValues setOfValues = singleInputFunctionsToBePlotted.getInputVariable().getSetOfValuesOrNull();
+		SetOfValues setOfValues = getValuesForVariable(singleInputFunctionsToBePlotted.getInputVariable());
 		DefaultExternalGeoMapPlotter externalGeoMapPlotter = new DefaultExternalGeoMapPlotter(setOfValues);
 		if (externalGeoMapPlotter.isValid()) {
 			return externalGeoMapPlotter.plotGeoMap(singleInputFunctionsToBePlotted);
