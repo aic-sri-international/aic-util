@@ -47,8 +47,6 @@ public abstract class AbstractVariable implements Variable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((setOfValuesOrNull == null) ? 0 : setOfValuesOrNull.hashCode());
-		result = prime * result + ((unit == null) ? 0 : unit.hashCode());
 		return result;
 	}
 
