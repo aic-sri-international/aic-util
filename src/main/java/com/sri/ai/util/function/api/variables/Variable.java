@@ -45,4 +45,10 @@ public interface Variable {
 		return new RealVariable(name, unit);
 	}
 	
+	/**
+	 * Returns string describing object's full details, including all fields. Intended for debugging and testing. 
+	 * @return
+	 */
+	String toFullString();
+	
 }

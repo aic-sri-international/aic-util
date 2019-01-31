@@ -66,4 +66,9 @@ public abstract class AbstractVariable implements Variable {
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toFullString() {
+		return getClass().getSimpleName() + " [name=" + name + ", unit=" + unit + ", setOfValuesOrNull=" + setOfValuesOrNull + "]";
+	}
 }
