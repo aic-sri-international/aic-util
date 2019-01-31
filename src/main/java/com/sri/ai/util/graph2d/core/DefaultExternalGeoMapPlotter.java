@@ -39,8 +39,8 @@ public class DefaultExternalGeoMapPlotter implements ExternalGeoMapPlotter {
 			if ((!counties.isEmpty() || !states.isEmpty()) && !other.isEmpty()) {
 				throw new IllegalArgumentException(
 						String.format(
-								"Unrecognized state or country: %s, States: %s Counties: %s",
-								other, states, counties));
+								"Unrecognized state or county: States: %s Counties: %s Other: %s",
+								states, counties, other));
 			}
 
 			if ((!counties.isEmpty() && !states.isEmpty())) {
