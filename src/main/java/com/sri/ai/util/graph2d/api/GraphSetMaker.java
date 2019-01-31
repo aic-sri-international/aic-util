@@ -40,6 +40,9 @@ public interface GraphSetMaker {
 
 	Map<Variable, SetOfValues> getFromVariableToSetOfValues();
 	void setFromVariableToSetOfValues(Map<Variable, SetOfValues> fromVariableToSetOfValues);
+	
+	SetOfValues getValuesForVariable(Variable variable);
+	void setValuesForVariable(Variable variable, SetOfValues setOfValues);
 
 	/** 
 	 * The base for the file pathnames to use for each plot; 
@@ -49,7 +52,6 @@ public interface GraphSetMaker {
 	String getFilePathnameBase();
 	void setFilePathnameBase(String filePathname);
 
-	SetOfValues valuesForVariable(Variable variable);
 	
 	Iterable<Assignment> assignments(SetOfVariables setOfVariables);
 
@@ -77,9 +79,27 @@ public interface GraphSetMaker {
 		SingleInputFunctions singleInputFunctionsToBePlotted
 				= getFunctions().project(xAxisVariable, assignmentToNonAxisVariables);
 
-		String title = buildTitle(assignmentToNonAxisVariables, singleInputFunctionsToBePlotted);
-		return plot(title, singleInputFunctionsToBePlotted, assignmentToNonAxisVariables);
+		SetOfValues oldXAxisSetOfValues = useValuesFromCurrentlyGivenXAxisVariableIfProvidedEvenIfDifferentFromOriginalVariable(xAxisVariable);
 		
+		String title = buildTitle(assignmentToNonAxisVariables, singleInputFunctionsToBePlotted);
+		
+		GraphPlot result = plot(title, singleInputFunctionsToBePlotted, assignmentToNonAxisVariables);
+		
+		setValuesForVariable(xAxisVariable, oldXAxisSetOfValues);
+		
+		return result;
+		
+	}
+
+	default SetOfValues useValuesFromCurrentlyGivenXAxisVariableIfProvidedEvenIfDifferentFromOriginalVariable(Variable currentXAxisVariable) {
+		// this method covers the case in which a variable is specified for the x-axis
+		// that has the same name as the variable in the function, but a different set of values
+		SetOfValues old = getValuesForVariable(currentXAxisVariable);
+		SetOfValues currentXAxisVariableSetOfValuesOrNull = currentXAxisVariable.getSetOfValuesOrNull();
+		if (currentXAxisVariableSetOfValuesOrNull != null) {
+			setValuesForVariable(currentXAxisVariable, currentXAxisVariableSetOfValuesOrNull);
+		}
+		return old;
 	}
 	
 	default String buildTitle(Assignment assignmentToNonAxisVariables,
@@ -114,7 +134,7 @@ public interface GraphSetMaker {
 	}
 
 	default GraphPlot plotLineChart(String title, SingleInputFunctions singleInputFunctionsToBePlotted, Assignment assignment) {
-    ExternalGraphPlotter graphMaker = externalGraphMaker(this::valuesForVariable);
+    ExternalGraphPlotter graphMaker = externalGraphMaker(this::getValuesForVariable);
     graphMaker.setGraphSettings(getGraphSettings());
     graphMaker.setTitle(title);
     graphMaker.setFunctions(singleInputFunctionsToBePlotted);
@@ -124,7 +144,7 @@ public interface GraphSetMaker {
       filePathname = "";
     }
     else {
-      String assignmentInFileName = join("", assignment.indices(this::valuesForVariable));
+      String assignmentInFileName = join("", assignment.indices(this::getValuesForVariable));
       filePathname = getFilePathnameBase() + assignmentInFileName;
     }
     graphMaker.setFilePathname(filePathname);

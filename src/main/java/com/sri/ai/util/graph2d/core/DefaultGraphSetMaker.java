@@ -1,5 +1,6 @@
 package com.sri.ai.util.graph2d.core;
 
+import static com.sri.ai.util.Util.map;
 import static com.sri.ai.util.Util.myAssert;
 
 import java.util.Map;
@@ -49,7 +50,7 @@ public class DefaultGraphSetMaker implements GraphSetMaker {
 	}
 
 	@Override
-	public SetOfValues valuesForVariable(Variable variable) {
+	public SetOfValues getValuesForVariable(Variable variable) {
 		// If a set of values have been defined in the GraphSetMaker for the variable, use them,
 		// else use the set of values defined in the variable itself.
 		SetOfValues setOfValues
@@ -62,12 +63,21 @@ public class DefaultGraphSetMaker implements GraphSetMaker {
 		if (setOfValues == null) {
 			throw new Error("Need values for " + variable + " but that is not defined either by the variable itself or by the functions " + this);
 		}
+		
 		return setOfValues;
 	}
 
 	@Override
+	public void setValuesForVariable(Variable variable, SetOfValues setOfValues) {
+		if (fromVariableToSetOfValues == null) {
+			fromVariableToSetOfValues = map();
+		}
+		fromVariableToSetOfValues.put(variable, setOfValues);
+	}
+
+	@Override
 	public Iterable<Assignment> assignments(SetOfVariables setOfVariables) {
-		return Assignment.assignments(setOfVariables, this::valuesForVariable);
+		return Assignment.assignments(setOfVariables, this::getValuesForVariable);
 	}
 	
 	private String filePathnameBase = "";
