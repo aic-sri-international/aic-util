@@ -1,6 +1,7 @@
 package com.sri.ai.util.graph2d.api;
 
 import static com.sri.ai.util.Util.join;
+import static com.sri.ai.util.Util.println;
 import static com.sri.ai.util.graph2d.api.ExternalGraphPlotter.externalGraphMaker;
 
 import java.util.List;
@@ -59,6 +60,7 @@ public interface GraphSetMaker {
 		SetOfVariables nonAxisVariables = getNonAxisVariables(xAxisVariable);
 		
 		for (Assignment assignmentToNonAxisVariables: assignments(nonAxisVariables)) {
+			println(assignmentToNonAxisVariables);
 			GraphPlot plot = plot(assignmentToNonAxisVariables, xAxisVariable);
 			graphSet.add(plot);
 		}

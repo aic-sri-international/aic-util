@@ -66,16 +66,6 @@ public abstract class AbstractVariable implements Variable {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (setOfValuesOrNull == null) {
-			if (other.setOfValuesOrNull != null)
-				return false;
-		} else if (!setOfValuesOrNull.equals(other.setOfValuesOrNull))
-			return false;
-		if (unit == null) {
-			if (other.unit != null)
-				return false;
-		} else if (!unit.equals(other.unit))
-			return false;
 		return true;
 	}
 }
