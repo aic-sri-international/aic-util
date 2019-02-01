@@ -4923,6 +4923,12 @@ public class Util {
 		}
 	}
 
+	public static void assertOrThrow(boolean test, NullaryFunction<Error> errorMaker) {
+		if ( ! test && System.getProperty(MY_ASSERT_OFF) == null) {
+			throw errorMaker.apply();
+		}
+	}
+
 	/**
 	 * A java <code>assert</code> substitute that, unlike the standard one, is on by default and
 	 * can be turned off by setting any value to property {@link #MY_ASSERT_OFF}.
