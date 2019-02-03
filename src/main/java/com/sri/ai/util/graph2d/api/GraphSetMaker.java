@@ -2,8 +2,10 @@ package com.sri.ai.util.graph2d.api;
 
 import static com.sri.ai.util.Util.join;
 import static com.sri.ai.util.Util.println;
-import static com.sri.ai.util.graph2d.api.ExternalGraphPlotter.externalGraphMaker;
+import static com.sri.ai.util.graph2d.api.ExternalGraphPlotter.externalBarGraphMaker;
+import static com.sri.ai.util.graph2d.api.ExternalGraphPlotter.externalLineGraphMaker;
 
+import com.sri.ai.util.function.core.values.SetOfEnumValues;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -18,6 +20,7 @@ import com.sri.ai.util.function.api.variables.Variable;
 import com.sri.ai.util.graph2d.core.DefaultExternalGeoMapPlotter;
 import com.sri.ai.util.graph2d.core.DefaultGraphSetMaker;
 import com.sri.ai.util.graph2d.core.jfreechart.GraphSettings;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * An interface for classes generating sets of {@link GraphSet}s from {@link Functions}.
@@ -126,28 +129,40 @@ public interface GraphSetMaker {
 	default GraphPlot plot(String title, SingleInputFunctions singleInputFunctionsToBePlotted, Assignment assignment) {
 		SetOfValues setOfValues = getValuesForVariable(singleInputFunctionsToBePlotted.getInputVariable());
 		DefaultExternalGeoMapPlotter externalGeoMapPlotter = new DefaultExternalGeoMapPlotter(setOfValues);
+
+		GraphPlot graphPlot = null;
+		ExternalGraphPlotter graphMaker = null;
+
 		if (externalGeoMapPlotter.isValid()) {
-			return externalGeoMapPlotter.plotGeoMap(singleInputFunctionsToBePlotted);
+			graphPlot = externalGeoMapPlotter.plotGeoMap(singleInputFunctionsToBePlotted);
+		} else if (setOfValues instanceof SetOfEnumValues) {
+			graphMaker = externalBarGraphMaker(this::getValuesForVariable);
 		} else {
-			return plotLineChart(title, singleInputFunctionsToBePlotted, assignment);
+			graphMaker = externalLineGraphMaker(this::getValuesForVariable);
 		}
+
+		if (graphMaker != null) {
+			graphPlot = plotChart(graphMaker, title, singleInputFunctionsToBePlotted, assignment);
+		}
+
+		return graphPlot;
 	}
 
-	default GraphPlot plotLineChart(String title, SingleInputFunctions singleInputFunctionsToBePlotted, Assignment assignment) {
-    ExternalGraphPlotter graphMaker = externalGraphMaker(this::getValuesForVariable);
-    graphMaker.setGraphSettings(getGraphSettings());
-    graphMaker.setTitle(title);
-    graphMaker.setFunctions(singleInputFunctionsToBePlotted);
-    graphMaker.setFromVariableToSetOfValues(getFromVariableToSetOfValues());
-    String filePathname;
-    if (getFilePathnameBase() == "") {
-      filePathname = "";
-    }
-    else {
-      String assignmentInFileName = join("", assignment.indices(this::getValuesForVariable));
-      filePathname = getFilePathnameBase() + assignmentInFileName;
-    }
-    graphMaker.setFilePathname(filePathname);
-    return graphMaker.plot();
-  }
+	default GraphPlot plotChart(ExternalGraphPlotter graphMaker,
+			String title, SingleInputFunctions singleInputFunctionsToBePlotted, Assignment assignment) {
+		graphMaker.setGraphSettings(getGraphSettings());
+		graphMaker.setTitle(title);
+		graphMaker.setFunctions(singleInputFunctionsToBePlotted);
+		graphMaker.setFromVariableToSetOfValues(getFromVariableToSetOfValues());
+		String filePathname;
+		if (StringUtils.trimToNull(getFilePathnameBase()) == null) {
+			filePathname = "";
+		}
+		else {
+			String assignmentInFileName = join("", assignment.indices(this::getValuesForVariable));
+			filePathname = getFilePathnameBase() + assignmentInFileName;
+		}
+		graphMaker.setFilePathname(filePathname);
+		return graphMaker.plot();
+	}
 }

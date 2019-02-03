@@ -1,5 +1,6 @@
 package com.sri.ai.util.graph2d.api;
 
+import com.sri.ai.util.graph2d.core.DefaultBarGraphPlotter;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -11,6 +12,7 @@ import com.sri.ai.util.function.api.variables.Variable;
 import com.sri.ai.util.graph2d.core.AbstractExternalGraphPlotter;
 import com.sri.ai.util.graph2d.core.DefaultLineGraphPlotter;
 import com.sri.ai.util.graph2d.core.jfreechart.GraphSettings;
+import org.apache.commons.lang3.StringUtils;
 
 /** 
  * Interface for external libraries making images of graph plots.
@@ -21,8 +23,13 @@ import com.sri.ai.util.graph2d.core.jfreechart.GraphSettings;
  *
  */
 public interface ExternalGraphPlotter {
-	static ExternalGraphPlotter externalGraphMaker(Function<Variable, SetOfValues> setOfValuesForVariable) {
+	static ExternalGraphPlotter externalLineGraphMaker(Function<Variable, SetOfValues> setOfValuesForVariable) {
 		AbstractExternalGraphPlotter abstractExternalGraphPlotter = new DefaultLineGraphPlotter();
+		abstractExternalGraphPlotter.setSetOfValuesForVariable(setOfValuesForVariable);
+		return abstractExternalGraphPlotter;
+	}
+	static ExternalGraphPlotter externalBarGraphMaker(Function<Variable, SetOfValues> setOfValuesForVariable) {
+		AbstractExternalGraphPlotter abstractExternalGraphPlotter = new DefaultBarGraphPlotter();
 		abstractExternalGraphPlotter.setSetOfValuesForVariable(setOfValuesForVariable);
 		return abstractExternalGraphPlotter;
 	}
@@ -51,7 +58,7 @@ public interface ExternalGraphPlotter {
 
 	default File createFileForImage() {
 		File imageFile;
-		if (getFilePathname() == null || getFilePathname() == "") {
+		if (StringUtils.trimToNull(getFilePathname()) == null) {
 			try {
 				imageFile = File.createTempFile("graph2d-", ".png");
 			} catch (IOException e) {
