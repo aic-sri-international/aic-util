@@ -5,10 +5,11 @@ import static com.sri.ai.util.Util.println;
 import static com.sri.ai.util.graph2d.api.ExternalGraphPlotter.externalBarGraphMaker;
 import static com.sri.ai.util.graph2d.api.ExternalGraphPlotter.externalLineGraphMaker;
 
-import com.sri.ai.util.function.core.values.SetOfEnumValues;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.sri.ai.util.function.api.functions.Functions;
 import com.sri.ai.util.function.api.functions.SingleInputFunction;
@@ -17,10 +18,10 @@ import com.sri.ai.util.function.api.variables.Assignment;
 import com.sri.ai.util.function.api.variables.SetOfValues;
 import com.sri.ai.util.function.api.variables.SetOfVariables;
 import com.sri.ai.util.function.api.variables.Variable;
+import com.sri.ai.util.function.core.values.SetOfEnumValues;
 import com.sri.ai.util.graph2d.core.DefaultExternalGeoMapPlotter;
 import com.sri.ai.util.graph2d.core.DefaultGraphSetMaker;
 import com.sri.ai.util.graph2d.core.jfreechart.GraphSettings;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * An interface for classes generating sets of {@link GraphSet}s from {@link Functions}.
@@ -82,6 +83,8 @@ public interface GraphSetMaker {
 		SingleInputFunctions singleInputFunctionsToBePlotted
 				= getFunctions().project(xAxisVariable, assignmentToNonAxisVariables);
 
+		println("Set of x-axis values for plotting: " + join(xAxisVariable.getSetOfValuesOrNull().iterator()));
+		
 		SetOfValues oldXAxisSetOfValues = useValuesFromCurrentlyGivenXAxisVariableIfProvidedEvenIfDifferentFromOriginalVariable(xAxisVariable);
 		
 		String title = buildTitle(assignmentToNonAxisVariables, singleInputFunctionsToBePlotted);
