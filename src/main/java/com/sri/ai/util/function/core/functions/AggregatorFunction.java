@@ -151,14 +151,31 @@ public class AggregatorFunction extends AbstractFunction {
 		// However, some Functions have efficient project methods that change the way they are evaluated,
 		// so it is important to invoke their 'project' methods.
 
-		myAssert(!x.getVariables().contains(variable), this, () -> " does not yet support projection on one of its keys, but got asked to project to " + variable);
-		myAssert(assignmentToRemainingVariables.getSetOfVariables().getVariables().containsAll(x.getVariables()), this, () -> " projection currently only supports projections given assignments on at least all keys, but got assignment " + assignmentToRemainingVariables + " when the keys are " + x);
+		if (x.getVariables().contains(variable)) {
+			return projectIfNeededOnOneOfX(variable, assignmentToRemainingVariables);
+		}
+		else {
+			return projectIfNeededOnOneOfOthers(variable, assignmentToRemainingVariables);
+		}
+	}
+
+	public SingleInputFunction projectIfNeededOnOneOfX(Variable variable, Assignment assignmentToRemainingVariables) {
+		// we can use the default projection here because the default projection is only wasteful if the inner function is
+		// more profitably computed taking into account the projecting assignment, but this is not the case here
+		// because the sub functions do not even know about the keys.
+		return new DefaultProjectionSingleInputFunction(this, variable, assignmentToRemainingVariables);
+	}
+
+	public SingleInputFunction projectIfNeededOnOneOfOthers(Variable variable, Assignment assignmentToRemainingVariables) {
+		// here we do not use the default projection because the sub-functions may have a more efficient projection method.
+		
+		myAssert(assignmentToRemainingVariables.getSetOfVariables().getVariables().containsAll(x.getVariables()), this, () -> " only supports projections on a key (one of " + x + ") or, if not on a key, then given assignment must assign values to all keys, but got assignment " + assignmentToRemainingVariables + " when the keys are " + x);
 
 		Function subFunctionForX = getSubFunction(assignmentToRemainingVariables.get(x));
-		
+
 		Assignment assignmentToRemainingVariablesMinusX = assignmentToRemainingVariables.exclude(x);
-		
-		return subFunctionForX.project(variable, assignmentToRemainingVariablesMinusX); 
+
+		return subFunctionForX.project(variable, assignmentToRemainingVariablesMinusX);
 	}
 
 	////////////////////////
