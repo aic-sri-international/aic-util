@@ -5,6 +5,7 @@ import static com.sri.ai.util.Util.println;
 import static com.sri.ai.util.graph2d.api.ExternalGraphPlotter.externalBarGraphMaker;
 import static com.sri.ai.util.graph2d.api.ExternalGraphPlotter.externalLineGraphMaker;
 
+import com.sri.ai.util.function.core.values.SetOfIntegerValues;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -138,7 +139,7 @@ public interface GraphSetMaker {
 
 		if (externalGeoMapPlotter.isValid()) {
 			graphPlot = externalGeoMapPlotter.plotGeoMap(singleInputFunctionsToBePlotted);
-		} else if (setOfValues instanceof SetOfEnumValues) {
+		} else if (setOfValues instanceof SetOfEnumValues || setOfValues instanceof SetOfIntegerValues) {
 			graphMaker = externalBarGraphMaker(this::getValuesForVariable);
 		} else {
 			graphMaker = externalLineGraphMaker(this::getValuesForVariable);
