@@ -6512,4 +6512,23 @@ public class Util {
 	public static <T> ReverseIterator<T> reverse(Iterator<T> iterator) {
 		return new ReverseIterator<T>(backIterator(addAllToList(iterator)));
 	}
+
+	/**
+	 * Gets the index-th elements in iterator's range
+	 * @param iterator
+	 * @param index
+	 * @return
+	 */
+	public static <T> T get(Iterator<? extends T> iterator, int index) {
+		while (iterator.hasNext()) {
+			if (index-- == 0) {
+				return iterator.next();
+			}
+		}
+		return null;
+	}
+
+	public static <T> Predicate<? extends T> notContainedBy(Collection<? extends T> collection) {
+		return t -> ! collection.contains(t);
+	}
 }
