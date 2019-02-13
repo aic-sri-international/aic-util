@@ -6521,8 +6521,9 @@ public class Util {
 	 */
 	public static <T> T get(Iterator<? extends T> iterator, int index) {
 		while (iterator.hasNext()) {
+			T next = iterator.next();
 			if (index-- == 0) {
-				return iterator.next();
+				return next;
 			}
 		}
 		return null;
