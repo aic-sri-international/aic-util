@@ -31,6 +31,7 @@ public class ConditionalDiscretizer {
 	protected ConditionalDiscretizer(SetOfVariables setOfVariablesWithRange, int queryVariableIndex) {
 		
 		assertVariablesAllHaveADefinedSetOfValues(setOfVariablesWithRange);
+		assertQueryVariableIndexIsInRange(setOfVariablesWithRange, queryVariableIndex);
 		
 		this.setOfVariablesWithRange = setOfVariablesWithRange;
 		this.queryVariable = getVariables().get(queryVariableIndex);
@@ -124,6 +125,10 @@ public class ConditionalDiscretizer {
 		if (withoutSetOfValues != null) {
 			throw new Error(getClass() + " requires that all variables have a defined set of values, but " + withoutSetOfValues + " does not");
 		}
+	}
+
+	private void assertQueryVariableIndexIsInRange(SetOfVariables setOfVariablesWithRange, int queryVariableIndex) {
+		myAssert(queryVariableIndex < setOfVariablesWithRange.size(), this, () -> "received query variable index " + queryVariableIndex + " but there are only " + setOfVariablesWithRange.size() + " given variables: " + setOfVariablesWithRange);
 	}
 
 }

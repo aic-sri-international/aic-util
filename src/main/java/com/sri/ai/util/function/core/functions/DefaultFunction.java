@@ -6,7 +6,7 @@ import com.sri.ai.util.function.api.variables.Assignment;
 import com.sri.ai.util.function.api.variables.SetOfVariables;
 import com.sri.ai.util.function.api.variables.Variable;
 
-public class DefaultFunction extends AbstractConcreteFieldsFunction {
+public class DefaultFunction extends AbstractFunctionWithVariablesProvidedByConstructor {
 	
 	private String name;
 	private java.util.function.Function<Assignment, Value> javaFunction;

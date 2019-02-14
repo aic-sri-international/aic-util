@@ -8,16 +8,16 @@ import com.sri.ai.util.function.api.variables.Variable;
  * An abstract implementation for {@link Function} that takes care of storing
  * input and output variables received at construction (as opposed to generating them in some other way).
  * 
- * @author E26638
+ * @author braz
  *
  */
-public abstract class AbstractConcreteFieldsFunction extends AbstractFunction {
+public abstract class AbstractFunctionWithVariablesProvidedByConstructor extends AbstractFunction {
 	
 	protected Variable outputVariable;
 	
 	protected SetOfVariables setOfInputVariables;
 	
-	public AbstractConcreteFieldsFunction(Variable outputVariable, SetOfVariables inputVariables) {
+	public AbstractFunctionWithVariablesProvidedByConstructor(Variable outputVariable, SetOfVariables inputVariables) {
 		this.outputVariable = outputVariable;
 		this.setOfInputVariables = inputVariables;
 	}
