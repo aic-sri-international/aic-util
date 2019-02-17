@@ -1,7 +1,6 @@
 package com.sri.ai.util.function.core.functions;
 
 import static com.sri.ai.util.Util.getFirst;
-import static com.sri.ai.util.Util.getFirstSatisfyingPredicateOrNull;
 import static com.sri.ai.util.Util.mapIntoList;
 import static com.sri.ai.util.Util.myAssert;
 import static com.sri.ai.util.Util.thereExists;
@@ -204,9 +203,9 @@ public class VariablesMaskingFunction extends AbstractFunction {
 	}
 
 	private static void checkOneToOne(ManyToManyRelation<Variable, Variable> newToOldVariables) {
-		Variable faultyA = getFirstSatisfyingPredicateOrNull(newToOldVariables.getAs(), a -> newToOldVariables.getBsOfA(a).size() != 1);
+		Variable faultyA = getFirst(newToOldVariables.getAs(), a -> newToOldVariables.getBsOfA(a).size() != 1);
 		myAssert(faultyA == null, () -> VariablesMaskingFunction.class + " requires a one-to-one relationship between new and old variables, but found " + faultyA + " with correspondents " + newToOldVariables.getBsOfA(faultyA));
-		Variable faultyB = getFirstSatisfyingPredicateOrNull(newToOldVariables.getBs(), b -> newToOldVariables.getAsOfB(b).size() != 1);
+		Variable faultyB = getFirst(newToOldVariables.getBs(), b -> newToOldVariables.getAsOfB(b).size() != 1);
 		myAssert(faultyA == null, () -> VariablesMaskingFunction.class + " requires a one-to-one relationship between new and old variables, but found " + faultyB + " with correspondents " + newToOldVariables.getAsOfB(faultyB));
 	}
 

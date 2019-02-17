@@ -128,7 +128,7 @@ public abstract class AbstractFunctionalSequence<T, V> extends EZIterator<T>
 	 */
 	protected Iterator<V> nextArgumentToUpdate() {
 		Set<Iterator<V>> arguments = fromArgumentsToArgumentValues.keySet();
-		Iterator<V> result = Util.getFirstSatisfyingPredicateOrNull(arguments,
+		Iterator<V> result = Util.getFirst(arguments,
 				HAS_NEXT);
 		return result;
 	}

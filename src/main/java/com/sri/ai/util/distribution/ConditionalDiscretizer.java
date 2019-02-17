@@ -1,7 +1,7 @@
 package com.sri.ai.util.distribution;
 
 import static com.sri.ai.util.Util.arrayList;
-import static com.sri.ai.util.Util.getFirstSatisfyingPredicateOrNull;
+import static com.sri.ai.util.Util.getFirst;
 import static com.sri.ai.util.Util.myAssert;
 
 import java.util.ArrayList;
@@ -121,7 +121,7 @@ public class ConditionalDiscretizer {
 
 	private void assertVariablesAllHaveADefinedSetOfValues(SetOfVariables inputVariablesWithRange) throws Error {
 		List<? extends Variable> variables = inputVariablesWithRange.getVariables();
-		Variable withoutSetOfValues = getFirstSatisfyingPredicateOrNull(variables, v -> v.getSetOfValuesOrNull() == null);
+		Variable withoutSetOfValues = getFirst(variables, v -> v.getSetOfValuesOrNull() == null);
 		if (withoutSetOfValues != null) {
 			throw new Error(getClass() + " requires that all variables have a defined set of values, but " + withoutSetOfValues + " does not");
 		}

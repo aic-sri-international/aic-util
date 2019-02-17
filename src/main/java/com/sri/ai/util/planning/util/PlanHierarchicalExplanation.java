@@ -6,7 +6,7 @@ import com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger;
 import com.sri.ai.util.planning.api.Plan;
 import com.sri.ai.util.planning.core.AbstractCompoundPlan;
 
-public class PlanExplanation {
+public class PlanHierarchicalExplanation {
 
 	public static void explain(Plan plan) {
 		if (ThreadExplanationLogger.getThreadExplanationLogger().isActive()) {
@@ -25,5 +25,10 @@ public class PlanExplanation {
 		else {
 			ThreadExplanationLogger.explain(plan);
 		}
+	}
+
+	public static void explainResultingPlan(Plan plan) {
+		ThreadExplanationLogger.explain("Resulting plan:");
+		explain(plan);
 	}
 }

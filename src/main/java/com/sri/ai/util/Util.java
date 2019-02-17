@@ -3155,13 +3155,13 @@ public class Util {
 		return null;
 	}
 
-	public static <E> E getFirstSatisfyingPredicateOrNull(
+	public static <E> E getFirst(
 			Collection<? extends E> c, Predicate<E> p) {
 		return getFirstSatisfyingPredicateOrNull(c.iterator(), p);
 	}
 
 	public static <E> E getFirstSatisfyingPredicateOrNull(E[] array, Predicate<E> p) {
-		return getFirstSatisfyingPredicateOrNull(Arrays.asList(array), p);
+		return getFirst(Arrays.asList(array), p);
 	}
 
 	/**
@@ -4163,7 +4163,7 @@ public class Util {
 		boolean removed;
 		do {
 			removed = false;
-			E element = getFirstSatisfyingPredicateOrNull(set, predicate);
+			E element = getFirst(set, predicate);
 			if (element != null) {
 				set.remove(element);
 				removed = true;
@@ -5181,6 +5181,15 @@ public class Util {
 
 	public static <K, V> Map<K, V> mapIntoMap(Iterable<? extends K> iterable, Function<K, V> function) {
 		return mapIntoMap(iterable.iterator(), function);
+	}
+
+	public static <K, V> Map<K, V> mapIntegersIntoMap(int firstInclusive, int lastExclusive, Function<Integer, Pair<K, V>> function) {
+		Map<K,V> result = map();
+		for (int i = firstInclusive; i != lastExclusive; i++) {
+			Pair<K, V> entry = function.apply(i);
+			result.put(entry.first, entry.second);
+		}
+		return result;
 	}
 
 	/**
