@@ -1,6 +1,5 @@
 package com.sri.ai.util.planning.core;
 
-import static com.sri.ai.util.Util.join;
 import static com.sri.ai.util.Util.list;
 import static com.sri.ai.util.Util.min;
 import static com.sri.ai.util.Util.thereExists;
@@ -69,11 +68,6 @@ public class SequentialPlan extends AbstractCompoundPlan {
 
 	private FunctionIterator<? extends Plan, Double> subPlanEstimatedSuccessWeights() {
 		return functionIterator(getSubPlans(), s -> s.getEstimatedSuccessWeight());
-	}
-
-	@Override
-	public String toString() {
-		return "SequentialPlan(" + join(getSubPlans()) + ")";
 	}
 
 	@Override

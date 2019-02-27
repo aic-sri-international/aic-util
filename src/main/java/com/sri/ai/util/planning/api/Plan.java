@@ -1,6 +1,8 @@
 package com.sri.ai.util.planning.api;
 
-import com.google.common.base.Strings;
+import static com.sri.ai.util.tree.TreeUtil.indentedString;
+
+import com.sri.ai.util.tree.Tree;
 
 public interface Plan {
 
@@ -26,11 +28,9 @@ public interface Plan {
 	
 	void reward(double reward);
 
+	Tree<String> stringTree();
+	
 	default String nestedString() {
-		return nestedString(0);
-	}
-
-	default String nestedString(int level) {
-		return Strings.padStart("", level*4, ' ') + toString();
+		return indentedString(stringTree(), 0, 4);
 	}
 }

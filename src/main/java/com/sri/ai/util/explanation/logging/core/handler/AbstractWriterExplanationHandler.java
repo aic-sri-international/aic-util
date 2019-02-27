@@ -50,7 +50,7 @@ public abstract class AbstractWriterExplanationHandler implements ExplanationHan
 		addObjects(builder, record);
 		addTimestampIfNeeded(builder, record);
 		addBlockTimeIfNeeded(builder, record);
-		write(builder);
+		write(builder, record);
 	}
 
 	private void addNesting(StringBuilder builder, ExplanationRecord record) {
@@ -93,13 +93,23 @@ public abstract class AbstractWriterExplanationHandler implements ExplanationHan
 		}
 	}
 
-	private void write(StringBuilder builder) throws Error {
+	private void write(StringBuilder builder, ExplanationRecord record) throws Error {
 		try {
-			writer.write(builder.toString() + "\n");
-			writer.flush();
+			String string = builder.toString();
+			if (!isEmptyEndOfBlock(string, record)) {
+				writer.write(string + "\n");
+				writer.flush();
+			}
 		} catch (IOException e) {
 			throw new Error(e);
 		}
+	}
+
+	private boolean isEmptyEndOfBlock(String string, ExplanationRecord record) {
+		return 
+				record.isEndOfBlock() 
+				&& 
+				string.equals(nesting.getNestingString(record.getNestingDepth()));
 	}
 	
 	public Nesting getNesting() {
@@ -147,26 +157,32 @@ public abstract class AbstractWriterExplanationHandler implements ExplanationHan
 		return writer;
 	}
 
+	@Override
 	public boolean getIncludeTimestamp() {
 		return includeTimestamp;
 	}
 
+	@Override
 	public void setIncludeTimestamp(boolean includeTimestamp) {
 		this.includeTimestamp = includeTimestamp;
 	}
 
+	@Override
 	public boolean getIncludeBlockTime() {
 		return includeBlockTime;
 	}
 
+	@Override
 	public void setIncludeBlockTime(boolean includeBlockTime) {
 		this.includeBlockTime = includeBlockTime;
 	}
 
+	@Override
 	public boolean getIncludeRecordId() {
 		return includeRecordId;
 	}
 
+	@Override
 	public void setIncludeRecordId(boolean includeRecordId) {
 		this.includeRecordId = includeRecordId;
 	}

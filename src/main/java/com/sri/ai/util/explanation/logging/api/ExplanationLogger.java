@@ -1,11 +1,14 @@
 package com.sri.ai.util.explanation.logging.api;
 
+import static com.sri.ai.util.Util.in;
+
 import java.util.Collection;
 
 import com.sri.ai.util.base.NullaryFunction;
 import com.sri.ai.util.base.NullaryProcedure;
 import com.sri.ai.util.explanation.logging.core.ExplanationBlock;
 import com.sri.ai.util.explanation.logging.core.ExplanationBlock.Code;
+import com.sri.ai.util.tree.Tree;
 
 /**
  * An {@link ExplanationLogger} receives indented information about an algorithm's execution and passes it on to {@link ExplanationHandler}s
@@ -147,4 +150,31 @@ public interface ExplanationLogger {
 		explain(1.0, objects);
 	}
 	
+	/**
+	 * Generates explanation for a hierarchical object (a tree) using multiple levels.
+	 * Requires the object as well as functions for generating explanations for its tree
+	 * (begin and end, that is, opening and closing the block),
+	 * and well as a function for generating an iterator for the children of a tree.
+	 * If the object has children trees, starts a block;
+	 * otherwise, uses rootBeginExplainer to generate a single explanation for it.
+	 * @param tree
+	 * @param rootBeginExplainer
+	 * @param rootEndExplainer
+	 * @param childrenMaker
+	 */
+	default <T> void explanationTree(Tree<? extends String> tree) {
+		if (isActive()) {
+			boolean compound = tree.getChildren().hasNext();
+			if (compound) {
+				start(tree.getInformation());
+				for (Tree<? extends String> child : in(tree.getChildren())) {
+					explanationTree(child);
+				}
+				end();
+			}
+			else {
+				explain(tree.getInformation());
+			}
+		}
+	}
 }

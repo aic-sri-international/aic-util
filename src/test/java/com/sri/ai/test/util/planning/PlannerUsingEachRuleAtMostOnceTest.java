@@ -389,7 +389,7 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 		runTest();
 	}
 
-	@Test
+	//@Test
 	public void basicContingentGoalsTest() {
 		
 		allRules = arrayList(
@@ -467,7 +467,7 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 		
 	}
 
-	@Test
+	//@Test
 	public void threeLevelContingentGoalsTest() {
 		
 		allRules = arrayList(
@@ -497,7 +497,7 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 		
 	}
 
-	@Test
+	//@Test
 	public void twoContingentGoalsInDifferentRulesTest() {
 		
 		allRules = arrayList(

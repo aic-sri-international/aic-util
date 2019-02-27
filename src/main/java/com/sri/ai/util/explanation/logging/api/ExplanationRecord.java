@@ -18,6 +18,8 @@ public interface ExplanationRecord {
 	
 	long getRecordId();
 	
+	boolean isEndOfBlock();
+	
 	static Wrapper<Long> counter = new Wrapper<>(0L);
 
 }

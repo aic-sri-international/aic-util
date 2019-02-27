@@ -5,6 +5,8 @@ import static com.sri.ai.util.Util.list;
 import com.sri.ai.util.planning.api.ContingentGoal;
 import com.sri.ai.util.planning.api.Plan;
 import com.sri.ai.util.planning.api.State;
+import com.sri.ai.util.tree.DefaultTree;
+import com.sri.ai.util.tree.Tree;
 
 /**
  * A {@link Plan} that tests, during execution, whether a {@link ContingentGoal} is satisfied
@@ -66,7 +68,15 @@ public class ContingentPlan extends AbstractCompoundPlan {
 
 	@Override
 	public String operatorName() {
-		return "contingent[" + contingentGoal + "]";
+		return "if (" + contingentGoal + ")";
+	}
+
+	@Override
+	public Tree<String> stringTree() {
+		Tree<String> thenTree = new DefaultTree<>("then", list(thenBranch.stringTree()));
+		Tree<String> elseTree = new DefaultTree<>("else", list(elseBranch.stringTree()));
+		Tree<String> result = new DefaultTree<String>(operatorName(), list(thenTree, elseTree));
+		return result;
 	}
 
 }

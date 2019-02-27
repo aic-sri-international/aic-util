@@ -1,34 +1,46 @@
 package com.sri.ai.util.planning.util;
 
-import static com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger.code;
+import static com.sri.ai.util.Util.collectProperties;
+import static com.sri.ai.util.Util.restoreProperties;
+import static com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger.getThreadExplanationLogger;
 
+import java.util.Collection;
+import java.util.IdentityHashMap;
+
+import com.sri.ai.util.explanation.logging.api.ExplanationHandler;
 import com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger;
 import com.sri.ai.util.planning.api.Plan;
-import com.sri.ai.util.planning.core.AbstractCompoundPlan;
 
 public class PlanHierarchicalExplanation {
-
-	public static void explain(Plan plan) {
-		if (ThreadExplanationLogger.getThreadExplanationLogger().isActive()) {
-			explainIfActive(plan);
-		}
-	}
-
-	private static void explainIfActive(Plan plan) {
-		if (plan instanceof AbstractCompoundPlan) {
-			ThreadExplanationLogger.explanationBlock(((AbstractCompoundPlan) plan).operatorName(), code(() -> {
-				for (Plan subPlan : ((AbstractCompoundPlan) plan).getSubPlans()) {
-					explainIfActive(subPlan);
-				}
-			}));
-		}
-		else {
-			ThreadExplanationLogger.explain(plan);
-		}
-	}
 
 	public static void explainResultingPlan(Plan plan) {
 		ThreadExplanationLogger.explain("Resulting plan:");
 		explain(plan);
+	}
+
+	public static void explain(Plan plan) {
+		if (getThreadExplanationLogger().isActive()) {
+			
+			Collection<? extends ExplanationHandler> handlers = getThreadExplanationLogger().getHandlers();
+
+			IdentityHashMap<? extends ExplanationHandler, Boolean> blockTimeProperty = 
+					collectProperties(handlers, ExplanationHandler::getIncludeBlockTime);
+			IdentityHashMap<? extends ExplanationHandler, Boolean> recordIdProperty = 
+					collectProperties(handlers, ExplanationHandler::getIncludeRecordId);
+			IdentityHashMap<? extends ExplanationHandler, Boolean> timestampProperty = 
+					collectProperties(handlers, ExplanationHandler::getIncludeTimestamp);
+			
+			for (ExplanationHandler handler : handlers) {
+				handler.setIncludeBlockTime(false);
+				handler.setIncludeRecordId(false);
+				handler.setIncludeTimestamp(false);
+			}
+			
+			getThreadExplanationLogger().explanationTree(plan.stringTree());
+			
+			restoreProperties(blockTimeProperty, (h, v) -> h.setIncludeBlockTime(v));
+			restoreProperties(recordIdProperty, (h, v) -> h.setIncludeRecordId(v));
+			restoreProperties(timestampProperty, (h, v) -> h.setIncludeTimestamp(v));
+		}
 	}
 }

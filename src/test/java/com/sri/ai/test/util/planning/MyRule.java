@@ -10,6 +10,8 @@ import java.util.List;
 import com.sri.ai.util.planning.api.Goal;
 import com.sri.ai.util.planning.api.Rule;
 import com.sri.ai.util.planning.api.State;
+import com.sri.ai.util.tree.DefaultTree;
+import com.sri.ai.util.tree.Tree;
 
 public class MyRule implements Rule<Goal> {
 
@@ -20,10 +22,9 @@ public class MyRule implements Rule<Goal> {
 		this.consequents = consequents;
 		this.antecedents = antecedents;
 	}
-
-	@Override
-	public String toString() {
-		return join(consequents) + " <= " + join(antecedents);
+	
+	public static Rule<Goal> rule(LinkedList<? extends Goal> consequent, LinkedList<? extends Goal> antecedent) {
+		return new MyRule(consequent, antecedent);
 	}
 
 	@Override
@@ -86,7 +87,13 @@ public class MyRule implements Rule<Goal> {
 		return true;
 	}
 
-	public static Rule<Goal> rule(LinkedList<? extends Goal> consequent, LinkedList<? extends Goal> antecedent) {
-		return new MyRule(consequent, antecedent);
+	@Override
+	public String toString() {
+		return join(consequents) + " <= " + join(antecedents);
+	}
+
+	@Override
+	public Tree<String> stringTree() {
+		return new DefaultTree<String>(toString());
 	}
 }

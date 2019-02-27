@@ -202,7 +202,7 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 	private ExplanationRecord makeRecord(Number importance, Object[] objects) {
 		long timestamp = System.currentTimeMillis();
 		Number adjustedImportance = calculateAdjustedImportance(importance);
-		ExplanationRecord record = new DefaultExplanationRecord(importance, adjustedImportance, nestingDepth, timestamp, objects);
+		ExplanationRecord record = new DefaultExplanationRecord(importance, adjustedImportance, nestingDepth, timestamp, objects, false /* isEndOfBlock -- use makeEndRecord for that */);
 		return record;
 	}
 	
@@ -211,7 +211,7 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 		Number importance = getLastStartImportance();
 		Number adjustedImportance = importanceMultiplier;
 		long blocktime = timestamp - getLastStartTime();
-		ExplanationRecord record = new DefaultExplanationRecord(importance, adjustedImportance, nestingDepth - 1, timestamp, objects, blocktime);
+		ExplanationRecord record = new DefaultExplanationRecord(importance, adjustedImportance, nestingDepth - 1, timestamp, objects, blocktime, true /* isEndOfBlock */);
 		return record;
 	}
 	

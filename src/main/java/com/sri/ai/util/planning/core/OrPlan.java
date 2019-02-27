@@ -2,10 +2,8 @@ package com.sri.ai.util.planning.core;
 
 import static com.sri.ai.util.Util.fill;
 import static com.sri.ai.util.Util.increment;
-import static com.sri.ai.util.Util.join;
 import static com.sri.ai.util.Util.mapIntoArrayList;
 import static com.sri.ai.util.Util.myAssert;
-import static com.sri.ai.util.collect.FunctionIterator.functionIterator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,7 +14,6 @@ import java.util.function.Function;
 
 import com.google.common.base.Predicate;
 import com.sri.ai.util.Util;
-import com.sri.ai.util.collect.IntegerIterator;
 import com.sri.ai.util.distribution.WeightedFrequencyArrayDistribution;
 import com.sri.ai.util.planning.api.Plan;
 import com.sri.ai.util.planning.api.State;
@@ -148,17 +145,6 @@ public class OrPlan extends AbstractCompoundPlan {
 	
 	public List<Integer> getNumberOfSubPlanExecutions() {
 		return Collections.unmodifiableList(numberOfSubPlanExecutions);
-	}
-
-	@Override
-	public String nestedString(int level) {
-		return 
-				padding(level) + operatorName() + "(\n"
-				+ join("\n", functionIterator(new IntegerIterator(0, getSubPlans().size()), subPlanNestedString(level))) + ")"; 
-	}
-
-	private com.google.common.base.Function<Integer, String> subPlanNestedString(int level) {
-		return i -> getSubPlans().get(i).nestedString(level + 1) + " with probability " + getDistribution().getProbabilities().get(i);
 	}
 
 }

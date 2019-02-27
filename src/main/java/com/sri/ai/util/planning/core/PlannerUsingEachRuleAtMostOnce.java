@@ -187,6 +187,20 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 		}));
 	}
 
+	private Plan planIfThereIsAtLeastOneUnsatisfiedRequiredGoalStartingAtRuleWithIndexWhichIsKnownToHaveAtLeastAllEffectivelyStaticAntecedentsAllSatisfied(R rule, int i) {
+		return explanationBlock("Finding plan using ", rule, " known to have all effectively static antecedents satisfied", code(() -> {
+
+		List<Plan> alternativeRulePlansUnderThisCase = list();
+		considerRuleWithAtLeastEffectivelyStaticAntecedentsAllSatisfied(rule, i, alternativeRulePlansUnderThisCase);
+		Plan result = OrPlan.or(alternativeRulePlansUnderThisCase);
+
+		explainResultingPlan(result);
+
+		return result;
+
+		}));
+	}
+
 	private void attemptToUseRule(int i, List<Plan> alternativePlansStartingWithRule) {
 		explanationBlock("Attempting rule ", state.rules.get(i), code(() -> {
 
@@ -238,36 +252,36 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 		return result;
 	}
 
-	private void considerRuleWithAtLeastEffectivelyStaticAntecedentsAllSatisfied(R rule, int i, List<Plan> alternativeRulePlans) {
+	private void considerRuleWithAtLeastEffectivelyStaticAntecedentsAllSatisfied(R rule, int i, List<Plan> alternativePlansStartingWithRule) {
 		explanationBlock("Considering rule with all static antecedents satisfied: ", rule, code(() -> {
 
-			ContingentGoal negatedContingentGoal = negatedContingentGoal(rule);
-			if (negatedContingentGoal == null) {
-				considerRuleWithAtLeastEffectivelyAntecedentsAllSatisfiedAndNoContingentGoalsNegated(rule, i, alternativeRulePlans);
+			ContingentGoal contingentGoalNegatedByState = contingentGoalNegatedByState(rule);
+			if (contingentGoalNegatedByState == null) {
+				considerRuleWithAtLeastEffectivelyStaticAntecedentsAllSatisfiedAndNoContingentGoalsNegatedByState(rule, i, alternativePlansStartingWithRule);
 			}
 			else {
-				explain("Rule does not apply because ", negatedContingentGoal, " is already negated");
+				explain("Rule does not apply because ", contingentGoalNegatedByState, " is already negated");
 			}
 			
 	}));
 }
 
-	private void considerRuleWithAtLeastEffectivelyAntecedentsAllSatisfiedAndNoContingentGoalsNegated(R rule, int i, List<Plan> alternativeRulePlans) {
-		explanationBlock("Considering rule with all static antecedents satisfied and no contingent goals negated: ", rule, code(() -> {
+	private void considerRuleWithAtLeastEffectivelyStaticAntecedentsAllSatisfiedAndNoContingentGoalsNegatedByState(R rule, int i, List<Plan> alternativePlansStartingWithRule) {
+		explanationBlock("Considering rule with all static antecedents satisfied and no contingent goals negated by state: ", rule, code(() -> {
 
 			ContingentGoal contingentGoalNotYetDefined = contingentGoalNotYetDefined(rule);
 			if (contingentGoalNotYetDefined != null) {
-				considerBothPossibilitiesForContingentGoal(rule, i, contingentGoalNotYetDefined, alternativeRulePlans);
+				considerBothPossibilitiesForContingentGoal(rule, i, contingentGoalNotYetDefined, alternativePlansStartingWithRule);
 			}
 			else {
-				findPlansStartingWithRule(rule, i, alternativeRulePlans);
+				findPlansStartingWithRule(rule, i, alternativePlansStartingWithRule);
 			}
 
 		}));
 	}
 
-	private ContingentGoal negatedContingentGoal(R rule) {
-		ContingentGoal unsatisfiedStaticAntecendent = 
+	private ContingentGoal contingentGoalNegatedByState(R rule) {
+		ContingentGoal effectivelyContingentAntecendentNegatedByState = 
 				(ContingentGoal) 
 				getFirst(
 						rule.getAntecendents(), 
@@ -275,22 +289,27 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 						!isEffectivelyStatic(a)
 						&& 
 						state.negatedEffectivelyContingentGoals.contains(a));
-		return unsatisfiedStaticAntecendent;
+		return effectivelyContingentAntecendentNegatedByState;
 	}
 
-	private void considerBothPossibilitiesForContingentGoal(R rule, int i, ContingentGoal contingentGoal, List<Plan> alternativeRulePlans) {
+	private void considerBothPossibilitiesForContingentGoal(R rule, int i, ContingentGoal contingentGoal, List<Plan> alternativePlansStartingWithRule) {
 		explanationBlock("Considering both possibilities for contingent ", contingentGoal, code(() -> {
 
 			Plan thenBranch = considerContingentGoalSatisfied(rule, i, contingentGoal);
-			Plan elseBranch = considerContingentGoalUnsatisfied(rule, i, contingentGoal);
+			Plan elseBranch = considerContingentGoalNegated(rule, i, contingentGoal);
 			Plan result;
 			if ( ! thenBranch.isFailedPlan() && ! elseBranch.isFailedPlan()) {
 				result = new ContingentPlan(contingentGoal, thenBranch, elseBranch);
-				alternativeRulePlans.add(result);
+				alternativePlansStartingWithRule.add(result);
 			}
+			// both branches must be guaranteed to be successful since we cannot tell in advance which one will be used
 
 		}));
 	}
+	
+	// TODO:
+	// Structures of then and else methods are confusingly different.
+	// then branch saves goals but not else branch. Make else branch save goals just for completeness.
 
 	@SuppressWarnings("unchecked")
 	private Plan considerContingentGoalSatisfied(R rule, int i, ContingentGoal contingentGoal) {
@@ -298,9 +317,7 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 
 			Set<G> satisfiedGoalsBeforeRule = new LinkedHashSet<>(state.satisfiedGoals);
 			state.satisfiedGoals.add((G) contingentGoal);
-			List<Plan> alternativeRulePlansUnderThisCase = list();
-			considerRuleWithAtLeastEffectivelyStaticAntecedentsAllSatisfied(rule, i, alternativeRulePlansUnderThisCase);
-			Plan thenBranch = OrPlan.or(alternativeRulePlansUnderThisCase);
+			Plan thenBranch = planIfThereIsAtLeastOneUnsatisfiedRequiredGoalStartingAtRuleWithIndexWhichIsKnownToHaveAtLeastAllEffectivelyStaticAntecedentsAllSatisfied(rule, i);
 			state.satisfiedGoals = satisfiedGoalsBeforeRule;
 			return thenBranch;
 
@@ -308,11 +325,13 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 	}
 
 	@SuppressWarnings("unchecked")
-	private Plan considerContingentGoalUnsatisfied(R rule, int i, ContingentGoal contingentGoal) {
+	private Plan considerContingentGoalNegated(R rule, int i, ContingentGoal contingentGoal) {
 		return explanationBlock("Assuming contingent ", contingentGoal, " is false", code(() -> {
 
+			Set<G> negatedGoalsBeforeRule = new LinkedHashSet<>(state.negatedEffectivelyContingentGoals);
 			state.negatedEffectivelyContingentGoals.add((G) contingentGoal);
 			Plan elseBranch = planIfThereIsAtLeastOneUnsatisfiedRequiredGoalStartingAtRuleWithIndex(i + 1);
+			state.negatedEffectivelyContingentGoals = negatedGoalsBeforeRule;
 			return elseBranch;
 			// Note that there is no state saving in the else branch, as opposed to the then branch.
 			// This is because the then branch needs to preserve the state so that the else branch

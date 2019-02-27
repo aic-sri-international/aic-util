@@ -3,13 +3,17 @@ package com.sri.ai.util.planning.core;
 import static com.sri.ai.util.Util.fill;
 import static com.sri.ai.util.Util.join;
 import static com.sri.ai.util.Util.list;
-import static com.sri.ai.util.collect.FunctionIterator.functionIterator;
+import static com.sri.ai.util.Util.mapIntoArrayList;
+import static com.sri.ai.util.tree.TreeUtil.addAtTheVeryEnd;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
 import com.sri.ai.util.planning.api.Plan;
+import com.sri.ai.util.tree.DefaultTree;
+import com.sri.ai.util.tree.Tree;
 
 public abstract class AbstractCompoundPlan implements Plan {
 	
@@ -56,10 +60,19 @@ public abstract class AbstractCompoundPlan implements Plan {
 	}
 
 	@Override
-	public String nestedString(int level) {
-		return 
-				padding(level) + operatorName() + "(\n"
-				+ join("\n", functionIterator(getSubPlans(), s -> s.nestedString(level + 1))) + ")"; 
+	public Tree<String> stringTree() {
+		ArrayList<Tree<String>> children = mapIntoArrayList(getSubPlans(), Plan::stringTree);
+		for (int i = 0; i != children.size(); i++) {
+			String suffix;
+			if (i != children.size() - 1) {
+				suffix = ",";
+			}
+			else {
+				suffix = ")";
+			}
+			children.set(i, addAtTheVeryEnd(children.get(i), suffix));
+		}
+		return new DefaultTree<String>(operatorName() + "(", children);
 	}
 
 	public String padding(int level) {

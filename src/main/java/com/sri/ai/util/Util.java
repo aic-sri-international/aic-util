@@ -63,6 +63,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -86,6 +87,7 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.sri.ai.util.base.BinaryFunction;
 import com.sri.ai.util.base.BinaryPredicate;
+import com.sri.ai.util.base.BinaryProcedure;
 import com.sri.ai.util.base.Equals;
 import com.sri.ai.util.base.IndexingFunction;
 import com.sri.ai.util.base.NullaryFunction;
@@ -1147,7 +1149,7 @@ public class Util {
 	 * @param <T>
 	 *            the type of the elements iterated over.
 	 */
-	public static <T> List<T> listFrom(Iterator<T> iterator) {
+	public static <T> List<T> listFrom(Iterator<? extends T> iterator) {
 		LinkedList<T> result = new LinkedList<T>();
 		while (iterator.hasNext()) {
 			result.add(iterator.next());
@@ -6540,5 +6542,34 @@ public class Util {
 
 	public static <T> Predicate<? extends T> notContainedBy(Collection<? extends T> collection) {
 		return t -> ! collection.contains(t);
+	}
+	
+	/**
+	 * Given an iterable, returns a {@link IdentityHashMap} mapping
+	 * elements in the iterable to the results of a given function applied to the elements.
+	 * This is useful for example for collecting a given common property from a collection of objects.
+	 * @param iterable
+	 * @param property
+	 * @return
+	 */
+	public static <T, P> IdentityHashMap<T, P> collectProperties(Iterable<? extends T> iterable, Function<T, P> property) {
+		IdentityHashMap<T, P> result = new IdentityHashMap<>();
+		for (T t : iterable) {
+			result.put(t, property.apply(t));
+		}
+		return result;
+	}
+	
+	/**
+	 * Given an {@link IdentityHashMap} from objects to the values of a certain common property,
+	 * and a binary procedure for setting the property of an object,
+	 * this method sets the property for every key in the map.
+	 * @param properties
+	 * @param setProperty
+	 */
+	public static <T, P> void restoreProperties(IdentityHashMap<T, P> properties, BinaryProcedure<T, P> setProperty) {
+		for (Map.Entry<T, P> entry : properties.entrySet()) {
+			setProperty.apply(entry.getKey(), entry.getValue());
+		}
 	}
 }

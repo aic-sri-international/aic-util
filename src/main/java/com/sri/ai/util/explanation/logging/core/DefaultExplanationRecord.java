@@ -13,8 +13,9 @@ public class DefaultExplanationRecord implements ExplanationRecord {
 	final Object[] objects;					// objects that were recorded from the explanation
 	final long blockTime;                   // -1 if this is not from an block end record, otherwise the difference in time between this record's timestamp and its block start timestamp
 	final long recordId;                    // a global record id based on order of construction
+	final boolean isEndOfBlock;             // whether this explanation is the ending of a block
 	
-	public DefaultExplanationRecord(Number importance, Number adjustedImportance, int nestingDepth, long timestamp, Object[] objects, long blockTime) {
+	public DefaultExplanationRecord(Number importance, Number adjustedImportance, int nestingDepth, long timestamp, Object[] objects, long blockTime, boolean isEndOfBlock) {
 		this.importance = importance;
 		this.adjustedImportance = adjustedImportance;
 		this.nestingDepth = nestingDepth;
@@ -22,10 +23,11 @@ public class DefaultExplanationRecord implements ExplanationRecord {
 		this.objects = objects;
 		this.blockTime = blockTime;
 		this.recordId = ExplanationRecord.counter.value++;
+		this.isEndOfBlock = isEndOfBlock;
 	}
 	
-	public DefaultExplanationRecord(Number importance, Number adjustedImportance, int nestingDepth, long timestamp, Object[] objects) {
-		this(importance, adjustedImportance, nestingDepth, timestamp, objects, UNDEFINEDBLOCKTIME);
+	public DefaultExplanationRecord(Number importance, Number adjustedImportance, int nestingDepth, long timestamp, Object[] objects, boolean isEndOfBlock) {
+		this(importance, adjustedImportance, nestingDepth, timestamp, objects, UNDEFINEDBLOCKTIME, isEndOfBlock);
 	}
 
 	@Override
@@ -61,6 +63,11 @@ public class DefaultExplanationRecord implements ExplanationRecord {
 	@Override
 	public long getRecordId() {
 		return recordId;
+	}
+
+	@Override
+	public boolean isEndOfBlock() {
+		return isEndOfBlock;
 	}
 
 }
