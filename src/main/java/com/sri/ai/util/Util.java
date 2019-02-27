@@ -5806,10 +5806,21 @@ public class Util {
 	 * @param <T> the type
 	 * @return the value or a freshly made default
 	 */
-	public static <T> T valueOrMakeDefaultIfNull(T value, NullaryFunction<T> defaultMaker) {
+	public static <T> T valueOrDefaultIfNull(T value, NullaryFunction<T> defaultMaker) {
 		T result;
 		if (value == null) {
 			result = defaultMaker.apply();
+		}
+		else {
+			result = value;
+		}
+		return result;
+	}
+	
+	public static <T> T valueOrDefaultIfNull(T value, T defaultValue) {
+		T result;
+		if (value == null) {
+			result = defaultValue;
 		}
 		else {
 			result = value;

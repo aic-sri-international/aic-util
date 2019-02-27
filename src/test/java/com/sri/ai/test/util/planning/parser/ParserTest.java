@@ -1,0 +1,206 @@
+package com.sri.ai.test.util.planning.parser;
+
+import static com.sri.ai.util.Util.println;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import java.util.function.Function;
+
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.junit.Test;
+
+import com.sri.ai.util.planning.test.MyRuleAndPlansLexer;
+import com.sri.ai.util.planning.test.MyRuleAndPlansParser;
+
+public class ParserTest {
+
+	@Test
+	public void test() {
+		Function<MyRuleAndPlansParser, ParseTree> ruleInvocation;
+		String string;
+
+		ruleInvocation = p -> p.goal();
+		string = "contingent a";
+        runTest(string, ruleInvocation);
+
+		ruleInvocation = p -> p.goal();
+		string = "b";
+        runTest(string, ruleInvocation);
+
+		ruleInvocation = p -> p.myRule();
+		string = "b <= contingent a";
+        runTest(string, ruleInvocation);
+
+		ruleInvocation = p -> p.myRule();
+		string = "b <= ";
+        runTest(string, ruleInvocation);
+
+		ruleInvocation = p -> p.myRule();
+		string = "contingent a <= ";
+        runTest(string, ruleInvocation);
+
+		ruleInvocation = p -> p.plan();
+		string = "if (contingent a) then b <= contingent a else b <= a";
+        runTest(string, ruleInvocation);
+
+		ruleInvocation = p -> p.plan();
+		string = "if (contingent a) then b <= else b <=";
+        runTest(string, ruleInvocation);
+
+		ruleInvocation = p -> p.plan();
+		string = "or(if (contingent a) then b <= else b <=, a <= b)";
+        runTest(string, ruleInvocation);
+
+		ruleInvocation = p -> p.plan();
+		string = "or()";
+        runTest(string, ruleInvocation);
+
+		ruleInvocation = p -> p.plan();
+		string = "and(if (contingent a) then b <= else b <=, a <= b)";
+        runTest(string, ruleInvocation);
+
+		ruleInvocation = p -> p.plan();
+		string = "and()";
+        runTest(string, ruleInvocation);
+
+		ruleInvocation = p -> p.plan();
+		string = "and(or(a <= contingent b, a <= a, b, c), if (contingent a) then b <= else b <=, a <= b)";
+        runTest(string, ruleInvocation);
+	}
+
+	@Test
+	public void errorsTest() {
+		Function<MyRuleAndPlansParser, ParseTree> ruleInvocation;
+		String string;
+		String errorMessage;
+
+		ruleInvocation = p -> p.goal();
+		string = "contingent";
+		errorMessage = "line 1:10 missing Identifier at '<EOF>'";
+		runErrorTest(string, ruleInvocation, errorMessage);
+		
+		ruleInvocation = p -> p.goal();
+		string = "b x";
+		errorMessage = "Parser has not parsed the entire input";
+		runErrorTest(string, ruleInvocation, errorMessage);
+
+		ruleInvocation = p -> p.myRule();
+		string = "<= contingent a";
+		errorMessage = "line 1:0 extraneous input '<=' expecting {'contingent', Identifier}";
+		runErrorTest(string, ruleInvocation, errorMessage);
+
+		ruleInvocation = p -> p.myRule();
+		string = "b <= 10";
+		errorMessage = "line 1:5 token recognition error at: '1'";
+		runErrorTest(string, ruleInvocation, errorMessage);
+
+		ruleInvocation = p -> p.myRule();
+		string = "contingent <= ";
+		errorMessage = "line 1:11 missing Identifier at '<='";
+		runErrorTest(string, ruleInvocation, errorMessage);
+
+		ruleInvocation = p -> p.plan();
+		string = "if (contingent a) then b <= contingent a /* else */ b <= a";
+		errorMessage = "line 1:52 missing 'else' at 'b'";
+		runErrorTest(string, ruleInvocation, errorMessage);
+
+		ruleInvocation = p -> p.plan();
+		string = "if contingent a) then b <= else b <=";
+		errorMessage = "line 1:3 missing '(' at 'contingent'";
+		runErrorTest(string, ruleInvocation, errorMessage);
+
+		ruleInvocation = p -> p.plan();
+		string = "or(if (contingent a) then b <= else b <=, a <= b, )";
+		errorMessage = "line 1:50 mismatched input ')' expecting {'and', 'or', 'if', 'contingent', Identifier}";
+		runErrorTest(string, ruleInvocation, errorMessage);
+
+		ruleInvocation = p -> p.plan();
+		string = "or(";
+		errorMessage = "line 1:3 mismatched input '<EOF>' expecting {'and', ')', 'or', 'if', 'contingent', Identifier}";
+		runErrorTest(string, ruleInvocation, errorMessage);
+
+		ruleInvocation = p -> p.plan();
+		string = "and(if (contingent a),  then b <= else b <=, a <= b)";
+		errorMessage = "line 1:21 extraneous input ',' expecting 'then'";
+		runErrorTest(string, ruleInvocation, errorMessage);
+
+		ruleInvocation = p -> p.plan();
+		string = "and)";
+		errorMessage = "line 1:3 missing '(' at ')'";
+		runErrorTest(string, ruleInvocation, errorMessage);
+
+		ruleInvocation = p -> p.plan();
+		string = "(and)";
+		errorMessage = "line 1:0 extraneous input '(' expecting {'and', 'or', 'if', 'contingent', Identifier}";
+		runErrorTest(string, ruleInvocation, errorMessage);
+	}
+
+	private void runErrorTest(
+			String string, 
+			Function<MyRuleAndPlansParser, ParseTree> ruleInvocation,
+			String errorMessage) {
+		
+		println("-----------");
+		println(string);
+		println("-----------");
+		boolean error = false;
+		try {
+			runTest(string, ruleInvocation);
+		}
+        catch (Error e) {
+        	println(e.getMessage());
+        	assertEquals(errorMessage, e.getMessage());
+        	error = true;
+        }
+		if (!error) {
+			println("Expected error with message: " + errorMessage);
+			fail("Expected error with message: " + errorMessage);
+		}
+	}
+
+	private void runTest(String string, Function<MyRuleAndPlansParser, ParseTree> ruleInvocation) {
+		Object object = parse(string, ruleInvocation);
+        println("Goal: " + object);
+        assertEquals(string.trim(), object.toString().trim());
+	}
+
+	private Object parse(String string, Function<MyRuleAndPlansParser, ParseTree> ruleInvocation) {
+		// create a CharStream that reads from standard input
+        CharStream input = CharStreams.fromString(string);
+
+        // create a lexer that feeds off of input CharStream
+        MyRuleAndPlansLexer lexer = new MyRuleAndPlansLexer(input);
+
+        // create a buffer of tokens pulled from the lexer
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+
+        // create a parser that feeds off the tokens buffer
+        MyRuleAndPlansParser parser = new MyRuleAndPlansParser(tokens);
+        
+        lexer.removeErrorListeners();
+        lexer.addErrorListener(new TestErrorListener());
+
+        parser.removeErrorListeners();
+        parser.addErrorListener(new TestErrorListener());
+
+        println("Parsing:");
+        println(string);
+        ParseTree tree = ruleInvocation.apply(parser);
+        
+        int position = parser.getCurrentToken().getCharPositionInLine();
+		println("Position: " + position);
+		if (position != string.length()) {
+        	throw new Error("Parser has not parsed the entire input");
+        }
+
+        println(tree.toStringTree(parser)); // print LISP-style tree	}
+        
+        MyRuleAndPlansVisitor visitor = new MyRuleAndPlansVisitor();
+        
+        Object value = visitor.visit(tree);
+		return value;
+	}
+}

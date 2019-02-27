@@ -89,7 +89,7 @@ public class MyRule implements Rule<Goal> {
 
 	@Override
 	public String toString() {
-		return join(consequents) + " <= " + join(antecedents);
+		return join(consequents) + " <=" + (antecedents.isEmpty()? "" : (" " + join(antecedents)));
 	}
 
 	@Override

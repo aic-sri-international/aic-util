@@ -70,6 +70,11 @@ public class ContingentPlan extends AbstractCompoundPlan {
 	public String operatorName() {
 		return "if (" + contingentGoal + ")";
 	}
+	
+	@Override
+	public String toString() {
+		return operatorName() + " then " + thenBranch + " else " + elseBranch;
+	}
 
 	@Override
 	public Tree<String> stringTree() {
