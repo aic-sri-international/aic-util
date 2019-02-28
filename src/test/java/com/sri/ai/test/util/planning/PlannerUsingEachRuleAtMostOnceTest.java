@@ -389,7 +389,7 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 		runTest();
 	}
 
-	//@Test
+	@Test
 	public void basicContingentGoalsTest() {
 		
 		allRules = arrayList(

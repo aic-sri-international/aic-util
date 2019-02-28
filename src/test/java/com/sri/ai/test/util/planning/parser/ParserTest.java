@@ -1,17 +1,21 @@
 package com.sri.ai.test.util.planning.parser;
 
+import static com.sri.ai.test.util.antlr.AntlrBundle.antlrBundle;
+import static com.sri.ai.util.Util.list;
 import static com.sri.ai.util.Util.println;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.Collection;
 import java.util.function.Function;
 
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ANTLRErrorListener;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.junit.Test;
 
+import com.sri.ai.test.util.antlr.AntlrBundle;
 import com.sri.ai.util.planning.test.MyRuleAndPlansLexer;
 import com.sri.ai.util.planning.test.MyRuleAndPlansParser;
 
@@ -167,39 +171,48 @@ public class ParserTest {
         assertEquals(string.trim(), object.toString().trim());
 	}
 
-	private Object parse(String string, Function<MyRuleAndPlansParser, ParseTree> ruleInvocation) {
-		// create a CharStream that reads from standard input
-        CharStream input = CharStreams.fromString(string);
+	private Object parse(
+			String string, 
+			Function<MyRuleAndPlansParser, ParseTree> ruleInvocation) {
 
-        // create a lexer that feeds off of input CharStream
-        MyRuleAndPlansLexer lexer = new MyRuleAndPlansLexer(input);
-
-        // create a buffer of tokens pulled from the lexer
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-
-        // create a parser that feeds off the tokens buffer
-        MyRuleAndPlansParser parser = new MyRuleAndPlansParser(tokens);
+		Collection<? extends ANTLRErrorListener> errorListeners = list(new TestErrorListener());
+		boolean requireEntireStringToBeParsed = true;
+		
+		ParseTree tree = 
+				parse(string, ruleInvocation, errorListeners, requireEntireStringToBeParsed);
         
-        lexer.removeErrorListeners();
-        lexer.addErrorListener(new TestErrorListener());
-
-        parser.removeErrorListeners();
-        parser.addErrorListener(new TestErrorListener());
-
-        println("Parsing:");
-        println(string);
-        ParseTree tree = ruleInvocation.apply(parser);
+        Object result = visit(tree);
         
-        int position = parser.getCurrentToken().getCharPositionInLine();
-		println("Position: " + position);
-		if (position != string.length()) {
-        	throw new Error("Parser has not parsed the entire input");
-        }
+		return result;
+	}
 
-        println(tree.toStringTree(parser)); // print LISP-style tree	}
-        
-        MyRuleAndPlansVisitor visitor = new MyRuleAndPlansVisitor();
-        
+	private ParseTree parse(String string, Function<MyRuleAndPlansParser, ParseTree> ruleInvocation,
+			Collection<? extends ANTLRErrorListener> errorListeners, boolean requireEntireStringToBeParsed) {
+
+		println("Parsing:");
+		println(string);
+		
+		Reader reader = new StringReader(string);
+
+		AntlrBundle<MyRuleAndPlansLexer, MyRuleAndPlansParser> 
+		bundle = 
+		antlrBundle(reader, MyRuleAndPlansLexer.class, MyRuleAndPlansParser.class, errorListeners);
+		
+		ParseTree tree = bundle.parse(ruleInvocation);
+		
+		if (requireEntireStringToBeParsed) {
+			int position = bundle.getParser().getCurrentToken().getCharPositionInLine();
+			if (position != string.length()) {
+				throw new Error("Parser has not parsed the entire input");
+			}
+		}
+		
+		println(tree.toStringTree(bundle.getParser())); // print LISP-style tree	}
+        return tree;
+	}
+
+	private Object visit(ParseTree tree) {
+		MyRuleAndPlansVisitor visitor = new MyRuleAndPlansVisitor();
         Object value = visitor.visit(tree);
 		return value;
 	}
