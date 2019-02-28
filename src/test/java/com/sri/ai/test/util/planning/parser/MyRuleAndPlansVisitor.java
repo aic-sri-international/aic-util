@@ -5,6 +5,7 @@ import static com.sri.ai.util.Util.mapIntoList;
 
 import java.util.List;
 
+import com.sri.ai.test.util.planning.JoinLinkedList;
 import com.sri.ai.test.util.planning.MyContingentGoal;
 import com.sri.ai.test.util.planning.MyGoal;
 import com.sri.ai.test.util.planning.MyRule;
@@ -18,7 +19,9 @@ import com.sri.ai.util.planning.test.MyRuleAndPlansParser.ContingentGoalContext;
 import com.sri.ai.util.planning.test.MyRuleAndPlansParser.ContingentPlanContext;
 import com.sri.ai.util.planning.test.MyRuleAndPlansParser.GoalContext;
 import com.sri.ai.util.planning.test.MyRuleAndPlansParser.GoalListContext;
+import com.sri.ai.util.planning.test.MyRuleAndPlansParser.GoalListPlusContext;
 import com.sri.ai.util.planning.test.MyRuleAndPlansParser.MyRuleContext;
+import com.sri.ai.util.planning.test.MyRuleAndPlansParser.MyRuleListContext;
 import com.sri.ai.util.planning.test.MyRuleAndPlansParser.OrContext;
 import com.sri.ai.util.planning.test.MyRuleAndPlansParser.PlainGoalContext;
 import com.sri.ai.util.planning.test.MyRuleAndPlansParser.PlanContext;
@@ -57,14 +60,26 @@ public class MyRuleAndPlansVisitor extends com.sri.ai.util.planning.test.MyRuleA
 	}
 
 	@Override
-	public Object visitMyRule(MyRuleContext ctx) {
-		return new MyRule(visitGoalList(ctx.goalList(0)), visitGoalList(ctx.goalList(1)));
+	public JoinLinkedList<MyRule> visitMyRuleList(MyRuleListContext ctx) {
+		List<MyRuleContext> rules = ctx == null? list() : ctx.myRule();
+		return new JoinLinkedList<MyRule>("; ", mapIntoList(rules, r -> visitMyRule(r)));
 	}
 
 	@Override
-	public List<MyGoal> visitGoalList(GoalListContext ctx) {
+	public Object visitMyRule(MyRuleContext ctx) {
+		return new MyRule(visitGoalListPlus(ctx.goalListPlus()), visitGoalList(ctx.goalList()));
+	}
+
+	@Override
+	public JoinLinkedList<MyGoal> visitGoalListPlus(GoalListPlusContext ctx) {
 		List<GoalContext> goals = ctx == null? list() : ctx.goal();
-		return mapIntoList(goals, g -> (MyGoal) visitGoal(g));
+		return new JoinLinkedList<MyGoal>(", ", mapIntoList(goals, g -> (MyGoal) visitGoal(g)));
+	}
+
+	@Override
+	public JoinLinkedList<MyGoal> visitGoalList(GoalListContext ctx) {
+		List<GoalContext> goals = ctx == null? list() : ctx.goal();
+		return new JoinLinkedList<MyGoal>(", ", mapIntoList(goals, g -> (MyGoal) visitGoal(g)));
 	}
 
 	@Override

@@ -22,13 +22,21 @@ contingentPlan
 planList
     :   plan (',' plan)*
     ;
-    
+
+myRuleList
+    :   myRule (';' myRule)*
+    ;
+        
 myRule
-	: goalList '<=' goalList?
+	: goalListPlus '<=' goalList
 	;
 
-goalList
+goalListPlus
     :   goal (',' goal)*
+    ;
+    
+goalList
+    :   ( goal (',' goal)* )?
     ;
     
 goal

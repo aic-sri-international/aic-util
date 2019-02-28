@@ -61,6 +61,21 @@ public abstract class AbstractCompoundPlan implements Plan {
 
 	@Override
 	public Tree<String> stringTree() {
+		DefaultTree<String> result;
+		if (getSubPlans().isEmpty()) {
+			result = stringTreeIfThereAreNoSubPlans();
+		}
+		else {
+			result = stringTreeIfThereAreSubPlans();
+		}
+		return result;
+	}
+
+	private DefaultTree<String> stringTreeIfThereAreNoSubPlans() {
+		return new DefaultTree<String>(operatorName() + "()", list());
+	}
+
+	private DefaultTree<String> stringTreeIfThereAreSubPlans() {
 		ArrayList<Tree<String>> children = mapIntoArrayList(getSubPlans(), Plan::stringTree);
 		for (int i = 0; i != children.size(); i++) {
 			String suffix;
@@ -72,7 +87,8 @@ public abstract class AbstractCompoundPlan implements Plan {
 			}
 			children.set(i, addAtTheVeryEnd(children.get(i), suffix));
 		}
-		return new DefaultTree<String>(operatorName() + "(", children);
+		DefaultTree<String> result = new DefaultTree<String>(operatorName() + "(", children);
+		return result;
 	}
 
 	public String padding(int level) {

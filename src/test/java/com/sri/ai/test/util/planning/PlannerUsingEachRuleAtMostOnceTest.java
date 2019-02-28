@@ -12,17 +12,23 @@ import static com.sri.ai.util.planning.core.SequentialPlan.and;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.junit.Test;
 
+import com.sri.ai.test.util.antlr.AntlrBundle;
+import com.sri.ai.test.util.planning.parser.MyRuleAndPlansVisitor;
 import com.sri.ai.util.Util;
 import com.sri.ai.util.planning.api.ContingentGoal;
 import com.sri.ai.util.planning.api.Goal;
 import com.sri.ai.util.planning.api.Plan;
 import com.sri.ai.util.planning.api.Rule;
 import com.sri.ai.util.planning.core.PlannerUsingEachRuleAtMostOnce;
+import com.sri.ai.util.planning.test.MyRuleAndPlansLexer;
+import com.sri.ai.util.planning.test.MyRuleAndPlansParser;
 
 public class PlannerUsingEachRuleAtMostOnceTest {
 	
@@ -392,29 +398,33 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 	@Test
 	public void basicContingentGoalsTest() {
 		
-		allRules = arrayList(
-				rule(list(b), list(ca)),
-				rule(list(b), list(a)),
-				rule(list(a), list())
-				);
+		allRules = rules(
+				"b <= contingent ca;" +
+				"b <= a;" +
+				"a <= ");
 
-		allRequiredGoals = list(b);
+		allRequiredGoals = goals("b");
 		
-		satisfiedGoals = list();
+		satisfiedGoals = goals("");
 		
-		expected = 
-				or(
-						contingent(
-								ca, 
-								rule(list(b), list(ca)), 
-								and(
-										rule(list(a), list()), 
-										rule(list(b), list(a)))),
-						and(
-								rule(list(a), list()),
-								or(
-										rule(list(b), list(a)))));
-						
+		expected = plan(
+				"or(" + 
+				"    if (contingent ca)" + 
+				"        then" + 
+				"            b <= contingent ca" + 
+				"        else" + 
+				"            and(" + 
+				"                a <=," + 
+				"                b <= a)," + 
+				"    and(" + 
+				"        a <=," + 
+				"        or(" + 
+				"            if (contingent ca)" + 
+				"                then" + 
+				"                    b <= contingent ca" + 
+				"                else" + 
+				"                    b <= a," + 
+				"            b <= a)))");
 														
 		runTest();
 		
@@ -467,61 +477,73 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 		
 	}
 
-	//@Test
+	@Test
 	public void threeLevelContingentGoalsTest() {
 		
-		allRules = arrayList(
-				rule(list(c), list(b, ca)),
-				rule(list(b), list(ca)),
-				rule(list(b), list(a)),
-				rule(list(a), list())
-				);
+		allRules = rules(
+				"c <= b, "
+				+ "contingent ca; "
+				+ "b <= contingent ca; "
+				+ "b <= a; "
+				+ "a <=");
 
-		allRequiredGoals = list(b);
+		allRequiredGoals = goals("b");
 		
-		satisfiedGoals = list();
+		satisfiedGoals = goals("");
 		
-		expected = 
-				or(
-						contingent(
-								ca,
-								rule(list(b), list(ca)),
-								and(
-										rule(list(a), list()), 
-										rule(list(b), list(a)))),
-						and(
-								rule(list(a), list()),
-								rule(list(b), list(a))));
+		expected = plan("or(" + 
+				"    if (contingent ca)" + 
+				"        then" + 
+				"            b <= contingent ca" + 
+				"        else" + 
+				"            and(" + 
+				"                a <=," + 
+				"                b <= a)," + 
+				"    and(" + 
+				"        a <=," + 
+				"        or(" + 
+				"            if (contingent ca)" + 
+				"                then" + 
+				"                    b <= contingent ca" + 
+				"                else" + 
+				"                    b <= a," + 
+				"            b <= a)))");
 														
 		runTest();
 		
 	}
 
-	//@Test
+	@Test
 	public void twoContingentGoalsInDifferentRulesTest() {
 		
-		allRules = arrayList(
-				rule(list(b), list(ca)),
-				rule(list(b), list(cb)),
-				rule(list(b), list())
-				);
+		allRules = rules(
+				"b <= contingent ca;" +
+				"b <= contingent cb;" +
+				"b <= ");
 
-		allRequiredGoals = list(b);
+		allRequiredGoals = goals("b");
 		
-		satisfiedGoals = list();
+		satisfiedGoals = goals("");
 		
-		expected = 
-				or(
-						contingent(
-								ca, 
-								rule(list(b), list(ca)),
-								or(
-										contingent(
-												cb,
-												rule(list(b), list(cb)),
-												rule(list(b), list())),
-										rule(list(b), list()))),
-						rule(list(b), list()));
+		expected = plan(
+				"or(" + 
+				"    if (contingent ca)" + 
+				"        then" + 
+				"            b <= contingent ca" + 
+				"        else" + 
+				"            or(" + 
+				"                if (contingent cb)" + 
+				"                    then" + 
+				"                        b <= contingent cb" + 
+				"                    else" + 
+				"                        b <=," + 
+				"                b <=)," + 
+				"    if (contingent cb)" + 
+				"        then" + 
+				"            b <= contingent cb" + 
+				"        else" + 
+				"            b <=," + 
+				"    b <=)");
 														
 		runTest();
 		
@@ -685,12 +707,32 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 		actual = planner.plan();
 		println("Goals: " + allRequiredGoals);
 		println("Rules:\n" + join("\n", allRules));
-		println("Plan: " + actual);
+		println("Computed plan:\n" + actual.nestedString());
 		if (!Util.equals(expected, actual)) {
 			println("Failure!");
 			println("Expected:\n" + expected.nestedString());
 			println("Actual:\n" + (actual == null? null : actual.nestedString()));
 		}
 		assertEquals(expected, actual);
+	}
+	
+	private static Plan plan(String string) {
+		return (Plan) makeBundle(string).visit(p -> p.plan());
+	}
+
+	@SuppressWarnings("unchecked")
+	private static LinkedList<Goal> goals(String string) {
+		return new LinkedList<>((List<Goal>) makeBundle(string).visit(p -> p.goalList()));
+	}
+
+	@SuppressWarnings("unchecked")
+	private static ArrayList<MyRule> rules(String string) {
+		return new ArrayList<>((List<MyRule>) makeBundle(string).visit(p -> p.myRuleList()));
+	}
+
+	private static AntlrBundle<MyRuleAndPlansLexer, MyRuleAndPlansParser, MyRuleAndPlansVisitor> makeBundle(String string) {
+		AntlrBundle<MyRuleAndPlansLexer, MyRuleAndPlansParser, MyRuleAndPlansVisitor> bundle = 
+				AntlrBundle.antlrBundle(new StringReader(string), MyRuleAndPlansLexer.class, MyRuleAndPlansParser.class, MyRuleAndPlansVisitor.class);
+		return bundle;
 	}
 }

@@ -19,7 +19,7 @@ import com.sri.ai.test.util.antlr.AntlrBundle;
 import com.sri.ai.util.planning.test.MyRuleAndPlansLexer;
 import com.sri.ai.util.planning.test.MyRuleAndPlansParser;
 
-public class ParserTest {
+public class MyRuleAndPlansParserTest {
 
 	@Test
 	public void test() {
@@ -72,6 +72,14 @@ public class ParserTest {
 
 		ruleInvocation = p -> p.plan();
 		string = "and(or(a <= contingent b, a <= a, b, c), if (contingent a) then b <= else b <=, a <= b)";
+        runTest(string, ruleInvocation);
+
+		ruleInvocation = p -> p.myRuleList();
+		string = "a <= contingent b; a <= a";
+        runTest(string, ruleInvocation);
+
+		ruleInvocation = p -> p.goalList();
+		string = "a, contingent b";
         runTest(string, ruleInvocation);
 	}
 
@@ -140,6 +148,21 @@ public class ParserTest {
 		string = "(and)";
 		errorMessage = "line 1:0 extraneous input '(' expecting {'and', 'or', 'if', 'contingent', Identifier}";
 		runErrorTest(string, ruleInvocation, errorMessage);
+
+		ruleInvocation = p -> p.myRuleList();
+		string = "(and)";
+		errorMessage = "line 1:0 mismatched input '(' expecting {'contingent', Identifier}";
+		runErrorTest(string, ruleInvocation, errorMessage);
+
+		ruleInvocation = p -> p.myRuleList();
+		string = "a <= contingent b, a <= a";
+		errorMessage = "Parser has not parsed the entire input";
+        runErrorTest(string, ruleInvocation, errorMessage);
+
+		ruleInvocation = p -> p.goalList();
+		string = "a; contingent b";
+		errorMessage = "Parser has not parsed the entire input";
+        runErrorTest(string, ruleInvocation, errorMessage);
 	}
 
 	private void runErrorTest(
@@ -194,9 +217,9 @@ public class ParserTest {
 		
 		Reader reader = new StringReader(string);
 
-		AntlrBundle<MyRuleAndPlansLexer, MyRuleAndPlansParser> 
+		AntlrBundle<MyRuleAndPlansLexer, MyRuleAndPlansParser, MyRuleAndPlansVisitor> 
 		bundle = 
-		antlrBundle(reader, MyRuleAndPlansLexer.class, MyRuleAndPlansParser.class, errorListeners);
+		antlrBundle(reader, errorListeners, MyRuleAndPlansLexer.class, MyRuleAndPlansParser.class, MyRuleAndPlansVisitor.class);
 		
 		ParseTree tree = bundle.parse(ruleInvocation);
 		
