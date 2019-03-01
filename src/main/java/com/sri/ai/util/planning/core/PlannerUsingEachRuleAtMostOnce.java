@@ -162,20 +162,8 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 	private Plan planIfThereIsAtLeastOneUnsatisfiedRequiredGoal() {
 		return explanationBlock("There are still unsatisfied required goals", code(() -> {
 			
-			Plan result = planIfThereIsAtLeastOneUnsatisfiedRequiredGoalStartingAtRuleWithIndex(0);
-			
-			explainResultingPlan(result);
-
-			return result;
-
-		}));
-	}
-
-	private Plan planIfThereIsAtLeastOneUnsatisfiedRequiredGoalStartingAtRuleWithIndex(int initialRuleIndex) {
-		return explanationBlock("Finding plan using ", lazy(() -> (initialRuleIndex == 0? "all rules" : "rules " + initialRuleIndex + " and later only")), code(() -> {
-
 			List<Plan> alternativePlansStartingWithRule = list();
-			for (int i = initialRuleIndex; i != state.rules.size(); i++) {
+			for (int i = 0; i != state.rules.size(); i++) {
 				attemptToUseRule(i, alternativePlansStartingWithRule);
 			}
 			Plan result = OrPlan.or(alternativePlansStartingWithRule);
@@ -183,20 +171,6 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 			explainResultingPlan(result);
 
 			return result;
-
-		}));
-	}
-
-	private Plan planIfThereIsAtLeastOneUnsatisfiedRequiredGoalStartingAtRuleWithIndexWhichIsKnownToHaveAtLeastAllEffectivelyStaticAntecedentsAllSatisfied(R rule, int i) {
-		return explanationBlock("Finding plan using ", rule, " known to have all effectively static antecedents satisfied", code(() -> {
-
-		List<Plan> alternativeRulePlansUnderThisCase = list();
-		considerRuleWithAtLeastEffectivelyStaticAntecedentsAllSatisfied(rule, i, alternativeRulePlansUnderThisCase);
-		Plan result = OrPlan.or(alternativeRulePlansUnderThisCase);
-
-		explainResultingPlan(result);
-
-		return result;
 
 		}));
 	}
@@ -217,12 +191,16 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 				explain("Rule has been used already");
 			}
 			
-			explain("Alternative plans:");
-			for (Plan alternativeRulePlan : alternativePlansStartingWithRule) {
-				PlanHierarchicalExplanation.explain(alternativeRulePlan);
-			}
+			explainCurrentAlternativePlans(alternativePlansStartingWithRule);
 
 		}));
+	}
+
+	private void explainCurrentAlternativePlans(List<Plan> alternativePlansStartingWithRule) {
+		explain("Alternative plans:");
+		for (Plan alternativeRulePlan : alternativePlansStartingWithRule) {
+			PlanHierarchicalExplanation.explain(alternativeRulePlan);
+		}
 	}
 
 	private void considerRule(R rule, int i, List<Plan> alternativePlansStartingWithRule) {
@@ -250,6 +228,20 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 				&& 
 				!state.satisfiedGoals.contains(goal);
 		return result;
+	}
+
+	private Plan planIfThereIsAtLeastOneUnsatisfiedRequiredGoalStartingAtRuleWithIndexWhichIsKnownToHaveAtLeastAllEffectivelyStaticAntecedentsAllSatisfied(R rule, int i) {
+		return explanationBlock("Finding plan using ", rule, " known to have all effectively static antecedents satisfied", code(() -> {
+
+			List<Plan> alternativeRulePlansUnderThisCase = list();
+			considerRuleWithAtLeastEffectivelyStaticAntecedentsAllSatisfied(rule, i, alternativeRulePlansUnderThisCase);
+			Plan result = OrPlan.or(alternativeRulePlansUnderThisCase);
+
+			explainResultingPlan(result);
+
+			return result;
+
+		}));
 	}
 
 	private void considerRuleWithAtLeastEffectivelyStaticAntecedentsAllSatisfied(R rule, int i, List<Plan> alternativePlansStartingWithRule) {
@@ -296,7 +288,7 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 		explanationBlock("Considering both possibilities for contingent ", contingentGoal, code(() -> {
 
 			Plan thenBranch = considerContingentGoalSatisfied(rule, i, contingentGoal);
-			Plan elseBranch = considerContingentGoalNegated(rule, i, contingentGoal);
+			Plan elseBranch = considerContingentGoalNegated(rule, contingentGoal);
 			Plan result;
 			if ( ! thenBranch.isFailedPlan() && ! elseBranch.isFailedPlan()) {
 				result = new ContingentPlan(contingentGoal, thenBranch, elseBranch);
@@ -307,10 +299,6 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 		}));
 	}
 	
-	// TODO:
-	// Structures of then and else methods are confusingly different.
-	// then branch saves goals but not else branch. Make else branch save goals just for completeness.
-
 	@SuppressWarnings("unchecked")
 	private Plan considerContingentGoalSatisfied(R rule, int i, ContingentGoal contingentGoal) {
 		return explanationBlock("Assuming contingent ", contingentGoal, " is true", code(() -> {
@@ -325,20 +313,14 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 	}
 
 	@SuppressWarnings("unchecked")
-	private Plan considerContingentGoalNegated(R rule, int i, ContingentGoal contingentGoal) {
+	private Plan considerContingentGoalNegated(R rule, ContingentGoal contingentGoal) {
 		return explanationBlock("Assuming contingent ", contingentGoal, " is false", code(() -> {
 
 			Set<G> negatedGoalsBeforeRule = new LinkedHashSet<>(state.negatedEffectivelyContingentGoals);
 			state.negatedEffectivelyContingentGoals.add((G) contingentGoal);
-			Plan elseBranch = planIfThereIsAtLeastOneUnsatisfiedRequiredGoalStartingAtRuleWithIndex(i + 1);
+			Plan elseBranch = planIfThereIsAtLeastOneUnsatisfiedRequiredGoal();
 			state.negatedEffectivelyContingentGoals = negatedGoalsBeforeRule;
 			return elseBranch;
-			// Note that there is no state saving in the else branch, as opposed to the then branch.
-			// This is because the then branch needs to preserve the state so that the else branch
-			// can start at the same point
-			// Once we compute the else branch, though, we are done, because both branches
-			// provide complete plans involving all remaining rules
-			// After we compute the else branch, no rule is available anymore and we will come to an end.
 
 		}), "Assuming contingent: ", contingentGoal, " is false, plan is ", RESULT);
 	}

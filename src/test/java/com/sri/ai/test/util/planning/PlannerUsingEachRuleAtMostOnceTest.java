@@ -542,7 +542,13 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 				"        then" + 
 				"            b <= contingent cb" + 
 				"        else" + 
-				"            b <=," + 
+				"            or(" + 
+				"                if (contingent ca)" + 
+				"                    then" + 
+				"                        b <= contingent ca" + 
+				"                    else" + 
+				"                        b <=," + 
+				"                b <=)," + 
 				"    b <=)");
 														
 		runTest();
