@@ -54,9 +54,9 @@ public abstract class FilterIterator<E> implements Iterator<E> {
 
 	private E next;
 	private boolean onNext = false;
-	protected Iterator<E> base;
+	protected Iterator<? extends E> base;
 	
-	public FilterIterator(Iterator<E> base) {
+	public FilterIterator(Iterator<? extends E> base) {
 		this.base = base;
 	}
 

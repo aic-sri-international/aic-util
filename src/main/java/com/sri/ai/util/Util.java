@@ -6551,7 +6551,7 @@ public class Util {
 		return null;
 	}
 
-	public static <T> Predicate<? extends T> notContainedBy(Collection<? extends T> collection) {
+	public static <T> Predicate<? super T> notContainedBy(Collection<? extends T> collection) {
 		return t -> ! collection.contains(t);
 	}
 	

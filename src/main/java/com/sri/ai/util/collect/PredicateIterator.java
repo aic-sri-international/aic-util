@@ -52,56 +52,56 @@ import com.google.common.base.Predicate;
 @Beta
 public class PredicateIterator<E> extends FilterIterator<E> {
 
-	protected Predicate<E> predicate;
+	protected Predicate<? super E> predicate;
 
-	public PredicateIterator(Predicate<E> predicate, Iterator<E> base) {
+	public PredicateIterator(Predicate<? super E> predicate, Iterator<? extends E> base) {
 		super(base);
 		this.predicate = predicate;
 	}
 
-	public PredicateIterator(Iterator<E> base, Predicate<E> predicate) {
+	public PredicateIterator(Iterator<? extends E> base, Predicate<? super E> predicate) {
 		super(base);
 		this.predicate = predicate;
 	}
 
-	public PredicateIterator(Collection<E> collection, Predicate<E> predicate) {
+	public PredicateIterator(Collection<? extends E> collection, Predicate<? super E> predicate) {
 		this(collection.iterator(), predicate);
 	}
 
-	public PredicateIterator(Predicate<E> predicate, Collection<E> collection) {
+	public PredicateIterator(Predicate<? super E> predicate, Collection<? extends E> collection) {
 		this(collection.iterator(), predicate);
 	}
 
-	public static <E> PredicateIterator<E> make(Predicate<E> predicate, Iterator<E> base) {
+	public static <E> PredicateIterator<E> make(Predicate<? super E> predicate, Iterator<? extends E> base) {
 		return new PredicateIterator<E>(predicate, base);
 	}
 
-	public static <E> PredicateIterator<E> make(Iterator<E> base, Predicate<E> predicate) {
+	public static <E> PredicateIterator<E> make(Iterator<? extends E> base, Predicate<? super E> predicate) {
 		return new PredicateIterator<E>(predicate, base);
 	}
 
-	public static <E> PredicateIterator<E> make(Collection<E> collection, Predicate<E> predicate) {
+	public static <E> PredicateIterator<E> make(Collection<? extends E> collection, Predicate<? super E> predicate) {
 		return new PredicateIterator<E>(predicate, collection.iterator());
 	}
 
-	public static <E> PredicateIterator<E> make(Predicate<E> predicate, Collection<E> collection) {
+	public static <E> PredicateIterator<E> make(Predicate<? super E> predicate, Collection<? extends E> collection) {
 		return new PredicateIterator<E>(predicate, collection.iterator());
 	}
 
 
-	public static <E> PredicateIterator<E> predicateIterator(Predicate<E> predicate, Iterator<E> base) {
+	public static <E> PredicateIterator<E> predicateIterator(Predicate<? super E> predicate, Iterator<? extends E> base) {
 		return new PredicateIterator<E>(predicate, base);
 	}
 
-	public static <E> PredicateIterator<E> predicateIterator(Iterator<E> base, Predicate<E> predicate) {
+	public static <E> PredicateIterator<E> predicateIterator(Iterator<? extends E> base, Predicate<? super E> predicate) {
 		return new PredicateIterator<E>(predicate, base);
 	}
 
-	public static <E> PredicateIterator<E> predicateIterator(Collection<E> collection, Predicate<E> predicate) {
+	public static <E> PredicateIterator<E> predicateIterator(Collection<? extends E> collection, Predicate<? super E> predicate) {
 		return new PredicateIterator<E>(predicate, collection.iterator());
 	}
 
-	public static <E> PredicateIterator<E> predicateIterator(Predicate<E> predicate, Collection<E> collection) {
+	public static <E> PredicateIterator<E> predicateIterator(Predicate<? super E> predicate, Collection<? extends E> collection) {
 		return new PredicateIterator<E>(predicate, collection.iterator());
 	}
 
