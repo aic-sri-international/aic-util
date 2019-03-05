@@ -45,6 +45,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import com.google.common.annotations.Beta;
 import com.sri.ai.util.Util;
@@ -63,6 +64,23 @@ public class DefaultManyToManyRelation<A,B> implements ManyToManyRelation<A, B> 
 	private Map<B, Collection<A>> fromBToItsAs = new LinkedHashMap<B, Collection<A>>();
 	
 	public DefaultManyToManyRelation() {
+	}
+	
+	/**
+	 * Given an iterable <code>as</code> of <code>A1</code>s and a function <code>bsOfAMaker</code> providing an iterable to <code>B1</code>s corresponding to a given <code>A1</code>,
+	 * return a {@link ManyToManyRelation} between each element in <code>as</code> and its corresponding <code>B1</code> instances.
+	 * @param as
+	 * @param bsOfAMaker
+	 * @return 
+	 */
+	public static <A1, B1> ManyToManyRelation<A1, B1> manyToManyRelation(Iterable<? extends A1> as, Function<? super A1, Iterable<? extends B1>> bsOfAMaker) {
+		ManyToManyRelation<A1, B1> result = new DefaultManyToManyRelation<A1, B1>();
+		for (A1 a : as) {
+			for (B1 b : bsOfAMaker.apply(a)) {
+				result.add(a, b);
+			}
+		}
+		return result;
 	}
 
 	@Override

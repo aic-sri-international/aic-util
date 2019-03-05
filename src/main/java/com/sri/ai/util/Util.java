@@ -3146,8 +3146,7 @@ public class Util {
 		return getRest(c.iterator());
 	}
 
-	public static <E> E getFirstSatisfyingPredicateOrNull(
-			Iterator<? extends E> i, Predicate<E> p) {
+	public static <E> E getFirstSatisfyingPredicateOrNull(Iterator<? extends E> i, Predicate<E> p) {
 		while (i.hasNext()) {
 			E o = i.next();
 			if (p.apply(o)) {
@@ -3157,6 +3156,10 @@ public class Util {
 		return null;
 	}
 
+	public static <E> E getFirstSatisfyingPredicateOrNull(Iterable<? extends E> iterable, Predicate<E> p) {
+		return getFirstSatisfyingPredicateOrNull(iterable.iterator(), p);
+	}
+	
 	public static <E> E getFirst(
 			Collection<? extends E> c, Predicate<E> p) {
 		return getFirstSatisfyingPredicateOrNull(c.iterator(), p);
@@ -3185,8 +3188,7 @@ public class Util {
 	 *            the result type of applying the given function to an element
 	 *            in the given collection.
 	 */
-	public static <A, R> R getFirstNonNullResultOrNull(Collection<A> c,
-			Function<A, R> f) {
+	public static <A, R> R getFirstNonNullResultOrNull(Collection<? extends A> c, Function<? super A, R> f) {
 		R result = null;
 		Optional<R> first = c.stream().map(a -> f.apply(a))
 				.filter(r -> r != null).findFirst();
