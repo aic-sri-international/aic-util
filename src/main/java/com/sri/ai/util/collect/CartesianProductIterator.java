@@ -58,27 +58,27 @@ import com.sri.ai.util.base.NullaryFunction;
 @Beta
 public class CartesianProductIterator<E> extends EZIterator<ArrayList<E>> {
 
-	private List<NullaryFunction<Iterator<E>>> iteratorMakers;
-	private List<Iterator<E>> iterators;
+	private List<NullaryFunction<Iterator<? extends E>>> iteratorMakers;
+	private List<Iterator<? extends E>> iterators;
 	
 	/**
 	 * Constructs a Cartesian product iterator given a sequence of iterator makers (one per dimension).
 	 * @param iteratorMakers iterator makers
 	 */
 	@SafeVarargs
-	public CartesianProductIterator(NullaryFunction<Iterator<E>>... iteratorMakers) {
+	public CartesianProductIterator(NullaryFunction<Iterator<? extends E>>... iteratorMakers) {
 		this(Arrays.asList(iteratorMakers));
 	}
 	
-	public CartesianProductIterator(List<NullaryFunction<Iterator<E>>> iteratorMakers) {
+	public CartesianProductIterator(List<NullaryFunction<Iterator<? extends E>>> iteratorMakers) {
 		this.iteratorMakers = iteratorMakers;
-		this.iterators = new ArrayList<Iterator<E>>(iteratorMakers.size());
-		for (NullaryFunction<Iterator<E>> maker : iteratorMakers) {
+		this.iterators = new ArrayList<Iterator<? extends E>>(iteratorMakers.size());
+		for (NullaryFunction<Iterator<? extends E>> maker : iteratorMakers) {
 			iterators.add(maker.apply());
 		}
 		
 		next = new ArrayList<E>(iterators.size());
-		for (Iterator<E> iterator : iterators) {
+		for (Iterator<? extends E> iterator : iterators) {
 			if (iterator.hasNext()) {
 				next.add(iterator.next());
 			}
@@ -98,7 +98,7 @@ public class CartesianProductIterator<E> extends EZIterator<ArrayList<E>> {
 			// we iterate backwards to make the rightmost iterator the least significant one,
 			// which is arguably the more standard way to do it because rightmost digits are the least significant ones.
 			int index = indexPlusOne - 1;
-			Iterator<E> iterator = iterators.get(index);
+			Iterator<? extends E> iterator = iterators.get(index);
 			if (iterator.hasNext()) {
 				next.set(index, iterator.next());
 				iterated = true;

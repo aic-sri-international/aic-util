@@ -56,7 +56,7 @@ public class CartesianProductIteratorTest {
 
 	@Test
 	public void test() {
-		ArrayList<NullaryFunction<Iterator<String>>> iteratorMakers;
+		ArrayList<NullaryFunction<Iterator<? extends String>>> iteratorMakers;
 		String expected;
 
 		iteratorMakers =
@@ -138,7 +138,7 @@ public class CartesianProductIteratorTest {
 	 * @param iteratorMakers
 	 * @param expected
 	 */
-	protected void runTest(ArrayList<NullaryFunction<Iterator<String>>> iteratorMakers, String expected) {
+	protected void runTest(ArrayList<NullaryFunction<Iterator<? extends String>>> iteratorMakers, String expected) {
 		Iterator<ArrayList<String>> iterator;
 		ArrayList<ArrayList<String>> list;
 		String actual;

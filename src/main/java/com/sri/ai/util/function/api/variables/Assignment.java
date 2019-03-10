@@ -69,11 +69,11 @@ public interface Assignment {
 	 */
 	static Iterable<Assignment> assignments(SetOfVariables setOfVariables, Function<Variable, SetOfValues> valuesForVariable) {
 
-		com.google.common.base.Function<Variable, NullaryFunction<Iterator<Value>>> makeIteratorMaker = v -> () -> valuesForVariable.apply(v).iterator();
+		com.google.common.base.Function<Variable, NullaryFunction<Iterator<? extends Value>>> makeIteratorMaker = v -> () -> valuesForVariable.apply(v).iterator();
 
-		List<NullaryFunction<Iterator<Value>>> iteratorMakers = mapIntoList(setOfVariables.getVariables(), makeIteratorMaker);
+		List<NullaryFunction<Iterator<? extends Value>>> iteratorMakers = mapIntoList(setOfVariables.getVariables(), makeIteratorMaker);
 
-		Iterator<ArrayList<Value>> cartesianProductIterator = new CartesianProductIterator<>(iteratorMakers);
+		Iterator<ArrayList<Value>> cartesianProductIterator = new CartesianProductIterator<Value>(iteratorMakers);
 
 		Iterator<Assignment> assignmentsIterator = functionIterator(cartesianProductIterator, valuesArray -> assignment(setOfVariables, valuesArray));
 

@@ -59,11 +59,11 @@ public class CartesianProductOnIntegersIterator extends CartesianProductIterator
 		super(makeIteratorMakers(integers));
 	}
 
-	private static List<NullaryFunction<Iterator<Integer>>> makeIteratorMakers(List<Integer> integers) {
+	private static List<NullaryFunction<Iterator<? extends Integer>>> makeIteratorMakers(List<Integer> integers) {
 		return mapIntegersIntoArrayList(integers.size(), dimension -> makeIteratorMaker(integers, dimension));
 	}
 
-	private static NullaryFunction<Iterator<Integer>> makeIteratorMaker(List<Integer> integers, Integer dimension) {
+	private static NullaryFunction<Iterator<? extends Integer>> makeIteratorMaker(List<Integer> integers, Integer dimension) {
 		return () -> new IntegerIterator(0, integers.get(dimension));
 	}
 }

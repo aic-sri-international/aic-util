@@ -1,5 +1,6 @@
 package com.sri.ai.util.planning.core;
 
+import static com.sri.ai.util.Util.arrayListFrom;
 import static com.sri.ai.util.Util.collectThoseWhoseIndexSatisfyArrayList;
 import static com.sri.ai.util.Util.forAll;
 import static com.sri.ai.util.Util.getFirst;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import com.sri.ai.util.base.Wrapper;
 import com.sri.ai.util.planning.api.ContingentGoal;
 import com.sri.ai.util.planning.api.Goal;
 import com.sri.ai.util.planning.api.Plan;
@@ -77,7 +79,7 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 			Collection<? extends G1> satisfiedGoals,
 			Collection<? extends G1> negatedEffectiveContingentGoals,
 			Predicate<G1> isEffectivelyStaticGoal, 
-			ArrayList<? extends R1> rules) {
+			Collection<? extends R1> rules) {
 		
 		return planUsingEachRuleAtMostOnceAndIfSuccessfulApplyingSequelPlan(
 				allRequiredGoals, 
@@ -95,7 +97,7 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 			Collection<? extends G1> satisfiedGoals, 
 			Collection<? extends G1> negatedEffectiveContingentGoals,
 			Predicate<G1> isEffectivelyStaticGoal, 
-			ArrayList<? extends R1> rules, 
+			Collection<? extends R1> rules, 
 			Planner<R1, G1> sequel) {
 		
 		PlannerUsingEachRuleAtMostOnce planner = new PlannerUsingEachRuleAtMostOnce<R1, G1>(allRequiredGoals, satisfiedGoals, negatedEffectiveContingentGoals, isEffectivelyStaticGoal, rules, sequel);
@@ -109,12 +111,13 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 	
 	private Planner<R, G> sequel;
 	
-	public PlannerUsingEachRuleAtMostOnce(Collection<? extends G> allRequiredGoals, Collection<? extends G> satisfiedGoals, Collection<? extends G> negatedEffectiveContingentGoals, Predicate<G> isEffectivelyStaticGoal, ArrayList<? extends R> rules) {
+	public PlannerUsingEachRuleAtMostOnce(Collection<? extends G> allRequiredGoals, Collection<? extends G> satisfiedGoals, Collection<? extends G> negatedEffectiveContingentGoals, Predicate<G> isEffectivelyStaticGoal, Collection<? extends R> rules) {
 		this(allRequiredGoals, satisfiedGoals, negatedEffectiveContingentGoals, isEffectivelyStaticGoal, rules, new PlannerThatDoesNothing<R, G>());
 	}
 	
-	public PlannerUsingEachRuleAtMostOnce(Collection<? extends G> allRequiredGoals, Collection<? extends G> satisfiedGoals, Collection<? extends G> negatedEffectiveContingentGoals, Predicate<G> isEffectivelyStaticGoal, ArrayList<? extends R> rules, Planner<R, G> sequel) {
-		this.state = new PlanningState<>(allRequiredGoals, satisfiedGoals, negatedEffectiveContingentGoals, rules);
+	public PlannerUsingEachRuleAtMostOnce(Collection<? extends G> allRequiredGoals, Collection<? extends G> satisfiedGoals, Collection<? extends G> negatedEffectiveContingentGoals, Predicate<G> isEffectivelyStaticGoal, Collection<? extends R> rules, Planner<R, G> sequel) {
+		ArrayList<? extends R> arrayListOfSamplingRules = (rules instanceof ArrayList)? (ArrayList<? extends R>) rules : arrayListFrom(rules);
+		this.state = new PlanningState<>(allRequiredGoals, satisfiedGoals, negatedEffectiveContingentGoals, arrayListOfSamplingRules);
 		this.isEffectivelyStaticGoal = isEffectivelyStaticGoal;
 		this.sequel = sequel;
 		myAssert(forAll(allRequiredGoals, g -> isEffectivelyStatic(g)), () -> "Required goals cannot contain contingent goals.");
@@ -162,6 +165,8 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 	private Plan planIfThereIsAtLeastOneUnsatisfiedRequiredGoal() {
 		return explanationBlock("There are still unsatisfied required goals", code(() -> {
 			
+			explainUnsatisfiedRequiredGoals();
+			
 			List<Plan> alternativePlansStartingWithRule = list();
 			for (int i = 0; i != state.rules.size(); i++) {
 				attemptToUseRule(i, alternativePlansStartingWithRule);
@@ -172,6 +177,16 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 
 			return result;
 
+		}));
+	}
+
+	private void explainUnsatisfiedRequiredGoals() {
+		explanationBlock("Unsatisfied goals: ", code(() -> {
+			for (Goal requiredGoal : state.allRequiredGoals) {
+				if (!state.satisfiedGoals.contains(requiredGoal)) {
+					explain(requiredGoal);
+				}
+			}
 		}));
 	}
 
@@ -358,22 +373,35 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 	}
 
 	private ContingentGoal contingentGoalNotYetDefined(R rule) {
-		ContingentGoal contingentGoalNotYetSatisfied = 
-				(ContingentGoal) 
-				getFirst(
-						rule.getAntecendents(), 
-						a -> isContingentGoalNotDefinedByPlanningState(a));
-		return contingentGoalNotYetSatisfied;
+		return explanationBlock("Looking for contingent goal not yet defined in rule ", rule, code(() -> {
+			
+			ContingentGoal contingentGoalNotYetSatisfied = 
+					(ContingentGoal) 
+					getFirst(
+							rule.getAntecendents(), 
+							a -> isContingentGoalNotDefinedByPlanningState(a));
+			return contingentGoalNotYetSatisfied;
+			
+		}), "Contingent goal not yet defined: ", RESULT);
 	}
 
 	private boolean isContingentGoalNotDefinedByPlanningState(G a) {
-		boolean result = 
-				!isEffectivelyStatic(a) 
-				&& 
-				!state.satisfiedGoals.contains(a)
-				&& 
-				!state.negatedEffectivelyContingentGoals.contains(a);
-		return result;
+		Wrapper<Boolean> result = new Wrapper<>(true);
+		return explanationBlock("Checking if antecendent is contingent goal not defined by planning state: ", a, code(() -> {
+			
+			explain("Is not effectively static       : ", !isEffectivelyStatic(a));
+			explain("Is not in satisfied goals       : ", !state.satisfiedGoals.contains(a));
+			explain("Is not negated by planning state: ", !state.negatedEffectivelyContingentGoals.contains(a));
+			
+			result.value =
+					!isEffectivelyStatic(a) 
+					&& 
+					!state.satisfiedGoals.contains(a)
+					&& 
+					!state.negatedEffectivelyContingentGoals.contains(a);
+			return result.value;
+
+		}), "Antecedent ", (result.value? "IS" : "IS NOT"), " contingent goal not defined by planning state");
 	}
 
 	private boolean isEffectivelyStatic(G a) {

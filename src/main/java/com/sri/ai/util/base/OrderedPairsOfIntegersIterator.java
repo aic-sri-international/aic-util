@@ -49,7 +49,7 @@ import com.sri.ai.util.collect.EZIterator;
  * <p>
  * If <code>n</code> is 0 or 1, no pairs are provided (naturally).
  * <p>
- * If <code>n</code> is 2 or greater but the initial indices don't lead to the create of ordered pairs, no pairs are provided.
+ * If <code>n</code> is 2 or greater but the initial indices don't lead to the creation of ordered pairs, no pairs are provided.
  * 
  * @author braz
  *
