@@ -1157,6 +1157,10 @@ public class Util {
 		return result;
 	}
 
+	public static <T> List<T> listFrom(Iterable<? extends T> iterable) {
+		return listFrom(iterable.iterator());
+	}
+
 	/**
 	 * Stores iterator's range in a new, empty array list and returns it.
 	 * 
