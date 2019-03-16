@@ -50,7 +50,7 @@ public class DefaultValue implements Value {
         if (classType.equals(Double.class)) {
           result = (T) number;
         } else {
-          result = (T) new Integer(number.intValue());
+          result = (T) Integer.valueOf(number.intValue());
         }
       } catch(NumberFormatException e) {
         String message

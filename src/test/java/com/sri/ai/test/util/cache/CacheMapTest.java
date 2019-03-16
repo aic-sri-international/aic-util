@@ -37,15 +37,14 @@
  */
 package com.sri.ai.test.util.cache;
 
-import static org.junit.Assert.assertTrue;
+import static com.sri.ai.util.Util.println;
 
-import java.util.Iterator;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.sri.ai.util.base.Mutable;
-import com.sri.ai.util.base.NullaryFunction;
 import com.sri.ai.util.cache.CacheMap;
 import com.sri.ai.util.cache.DefaultCacheMap;
 import com.sri.ai.util.collect.EZIterator;
@@ -64,48 +63,58 @@ public class CacheMapTest {
 		Runtime.getRuntime().gc();
 		System.out.println("Free memory in the beginning                      : " + Runtime.getRuntime().freeMemory());
 
-		CacheMap<Integer, String> cache1;
-		CacheMap<Integer, Integer> cache2;
-		
+		Map<Integer, String> cache1;
+		Map<Integer, Integer> cache2;
+
 		final Mutable<Integer> counter = new Mutable<Integer>(0);
-		
-		cache1 = new DefaultCacheMap<Integer, String>(CacheMap.NO_MAXIMUM_SIZE, new NullaryFunction<Iterator<Integer>>() { @Override
-		public Iterator<Integer> apply() { return new EvenIntegerIterator(counter.value.intValue()); }}, GARBAGE_COLLECTION_PERIOD);
-		cache2 = new DefaultCacheMap<Integer, Integer>(CacheMap.NO_MAXIMUM_SIZE, new NullaryFunction<Iterator<Integer>>() { @Override
-		public Iterator<Integer> apply() { return new EvenIntegerIterator(counter.value.intValue()); }}, GARBAGE_COLLECTION_PERIOD);
-		
-		long mem1;
-		long mem2;
-		long mem3;
-		
-		Runtime.getRuntime().gc();
-		System.out.println("Free memory before storage                        : " + Runtime.getRuntime().freeMemory());
+
+		cache1 = new DefaultCacheMap<Integer, String>(
+				CacheMap.NO_MAXIMUM_SIZE,
+				() -> new EvenIntegerIterator(counter.value.intValue()),
+				GARBAGE_COLLECTION_PERIOD);
+
+		cache2 = new DefaultCacheMap<Integer, Integer>(
+				CacheMap.NO_MAXIMUM_SIZE,
+				() -> new EvenIntegerIterator(counter.value.intValue()),
+				GARBAGE_COLLECTION_PERIOD);
+
+		System.out.println("Free memory  after first garbage collection       : " + Runtime.getRuntime().freeMemory());
 
 		for (int i = 0; i != GARBAGE_COLLECTION_PERIOD - 1; i++) {
 			counter.value = i;
 			cache1.put(i, Integer.toString(i));
 			cache2.put(i, i);
 		}
-		
+
+		println("Free memory after filling in maps                 : " + Runtime.getRuntime().freeMemory());
+
 		Runtime.getRuntime().gc();
-		System.out.println("Free memory before CacheMap.put garbage collection: " + (mem1 = Runtime.getRuntime().freeMemory()));
+
+		long freeMemoryBeforeCacheMapGarbageCollection = Runtime.getRuntime().freeMemory();
+		println("Free memory after filling in maps and gc'ing      : " + freeMemoryBeforeCacheMapGarbageCollection);
 
 		cache1.put(GARBAGE_COLLECTION_PERIOD, Integer.toString(GARBAGE_COLLECTION_PERIOD));
 		cache2.put(GARBAGE_COLLECTION_PERIOD, GARBAGE_COLLECTION_PERIOD);
 
 		Runtime.getRuntime().gc();
-		System.out.println("Free memory  after CacheMap.put garbage collection: " + (mem2 = Runtime.getRuntime().freeMemory()));
-		
+		long freeMemoryAfterCacheMapGarbageCollection = Runtime.getRuntime().freeMemory();
+		println("Free memory after  CacheMap.put garbage collection: " + freeMemoryAfterCacheMapGarbageCollection);
+
 		cache1.clear();
 		cache2.clear();
 
 		Runtime.getRuntime().gc();
-		System.out.println("Free memory  after clearing caches                : " + (mem3 = Runtime.getRuntime().freeMemory()));
+		long freeMemoryAfterClearingCaches = Runtime.getRuntime().freeMemory();
+		println("Free memory after  clearing caches                : " + freeMemoryAfterClearingCaches);
 
-		assertTrue(mem1 < mem2);
-		assertTrue(mem2 < mem3);
+		// Deactivating these tests because JDK 11's GC behaves a lot more unpredictably,
+		// returning and taking memory to the OS apparently, so these are now hard to ensure
+		// TODO: create tests for DefaultCacheMap
+		
+		// assertTrue(freeMemoryBeforeCacheMapGarbageCollection <= freeMemoryAfterCacheMapGarbageCollection);
+		// assertTrue(freeMemoryAfterCacheMapGarbageCollection <= freeMemoryAfterClearingCaches);
 	}
-	
+
 	public static class EvenIntegerIterator extends EZIterator<Integer> {
 
 		int i = 0;

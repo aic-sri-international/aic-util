@@ -37,6 +37,9 @@
  */
 package com.sri.ai.util.cache;
 
+import static com.sri.ai.util.Util.println;
+
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -48,7 +51,6 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheStats;
 import com.google.common.collect.ForwardingMap;
-import com.google.common.collect.Sets;
 import com.sri.ai.util.AICUtilConfiguration;
 import com.sri.ai.util.base.NullaryFunction;
 
@@ -148,11 +150,7 @@ public class DefaultCacheMap<K, V> extends ForwardingMap<K, V> implements CacheM
 		if (reachableObjectsIterator != null && garbageCollectLock.tryLock()) {
 			try {
 				if (isGarbageCollection() && numberOfPutsSinceLastGarbageCollection >= getGarbageCollectionPeriod()) {
-					
-					Set<K> reachableObjects = makeTempKeySet();
-					while (reachableObjectsIterator.hasNext()) {
-						reachableObjects.add(reachableObjectsIterator.next());	
-					}
+					Set<K> reachableObjects = setFrom(reachableObjectsIterator);
 					delegate.keySet().retainAll(reachableObjects);
 					storage.cleanUp();
 					numberOfPutsSinceLastGarbageCollection = 0;
@@ -161,6 +159,14 @@ public class DefaultCacheMap<K, V> extends ForwardingMap<K, V> implements CacheM
 				garbageCollectLock.unlock();
 			}
 		}
+	}
+
+	private HashSet<K> setFrom(Iterator<K> reachableObjectsIterator) {
+		HashSet<K> reachableObjects = new HashSet<>();
+		while (reachableObjectsIterator.hasNext()) {
+			reachableObjects.add(reachableObjectsIterator.next());
+		}
+		return reachableObjects;
 	}
 
 	@Override
@@ -219,8 +225,11 @@ public class DefaultCacheMap<K, V> extends ForwardingMap<K, V> implements CacheM
 			cb.recordStats();
 		}
 		
+		println("Free memory before building cache                 : " + Runtime.getRuntime().freeMemory());
 		storage  = cb.build();
+		println("Free memory  after building cache                 : " + Runtime.getRuntime().freeMemory());
 		delegate = storage.asMap();
+		println("Free memory  after building map                   : " + Runtime.getRuntime().freeMemory());
 	}
 	
 	private void checkDoGarbageCollect() {
@@ -231,10 +240,5 @@ public class DefaultCacheMap<K, V> extends ForwardingMap<K, V> implements CacheM
 	
 	private boolean isGarbageCollection() {
 		return getGarbageCollectionPeriod() != NO_GARBAGE_COLLECTION && reachableObjectIteratorMaker != null;
-	}
-	
-	private Set<K> makeTempKeySet() {
-		Set<K> keys = Sets.newHashSet();
-		return keys;
 	}
 }

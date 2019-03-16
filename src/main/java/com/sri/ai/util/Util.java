@@ -63,6 +63,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -648,11 +649,9 @@ public class Util {
 		C c = mapToCollections.get(key);
 		if (c == null) {
 			try {
-				c = (C) newCollectionClass.newInstance();
+				c = (C) newCollectionClass.getDeclaredConstructor().newInstance();
 				mapToCollections.put(key, c);
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
+			} catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 				e.printStackTrace();
 			}
 		}
@@ -681,11 +680,9 @@ public class Util {
 		Collection c = (Collection) mapToCollections.get(key);
 		if (c == null) {
 			try {
-				c = (Collection) newCollectionClass.newInstance();
+				c = (Collection) newCollectionClass.getDeclaredConstructor().newInstance();
 				mapToCollections.put(key, c);
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
+			} catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 				e.printStackTrace();
 			}
 		}
@@ -956,11 +953,8 @@ public class Util {
 		V value = map.get(key);
 		if (value == null) {
 			try {
-				value = (V) newValueClass.newInstance();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-				System.exit(-1);
-			} catch (IllegalAccessException e) {
+				value = (V) newValueClass.getDeclaredConstructor().newInstance();
+			} catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 				e.printStackTrace();
 				System.exit(-1);
 			}
@@ -1211,6 +1205,14 @@ public class Util {
 	
 	public static <T> LinkedHashSet<T> setFrom(Iterator<? extends T> iterator) {
 		LinkedHashSet<T> result = set();
+		while (iterator.hasNext()) {
+			result.add(iterator.next());
+		}
+		return result;
+	}
+
+	public static <T> HashSet<T> hashSetFrom(Iterator<? extends T> iterator) {
+		HashSet<T> result = new HashSet<>();
 		while (iterator.hasNext()) {
 			result.add(iterator.next());
 		}
@@ -2205,7 +2207,7 @@ public class Util {
 		if (Math.floor(number) == number) {
 			return Integer.valueOf((int) number);
 		}
-		return new Double(number);
+		return Double.valueOf(number);
 	}
 
 	public static <T extends Number> Number sum(Iterator<T> numbersIt) {
@@ -4334,7 +4336,7 @@ public class Util {
 
 		if (average.size() == 0) {
 			for (int i = 0; i != newItems.size(); i++) {
-				average.add(new Double(0));
+				average.add(Double.valueOf(0));
 			}
 		}
 
@@ -4342,7 +4344,7 @@ public class Util {
 			double currentAverage = ((Double) average.get(i)).doubleValue();
 			double newItem = ((Double) newItems.get(i)).doubleValue();
 			double newAverage = (currentAverage * n + newItem) / (n + 1);
-			average.set(i, new Double(newAverage));
+			average.set(i, Double.valueOf(newAverage));
 		}
 
 		return average;

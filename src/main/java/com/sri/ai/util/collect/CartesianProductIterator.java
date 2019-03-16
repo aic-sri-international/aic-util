@@ -58,7 +58,7 @@ import com.sri.ai.util.base.NullaryFunction;
 @Beta
 public class CartesianProductIterator<E> extends EZIterator<ArrayList<E>> {
 
-	private List<NullaryFunction<Iterator<? extends E>>> iteratorMakers;
+	private List<? extends NullaryFunction<Iterator<? extends E>>> iteratorMakers;
 	private List<Iterator<? extends E>> iterators;
 	
 	/**
@@ -70,7 +70,7 @@ public class CartesianProductIterator<E> extends EZIterator<ArrayList<E>> {
 		this(Arrays.asList(iteratorMakers));
 	}
 	
-	public CartesianProductIterator(List<NullaryFunction<Iterator<? extends E>>> iteratorMakers) {
+	public CartesianProductIterator(List<? extends NullaryFunction<Iterator<? extends E>>> iteratorMakers) {
 		this.iteratorMakers = iteratorMakers;
 		this.iterators = new ArrayList<Iterator<? extends E>>(iteratorMakers.size());
 		for (NullaryFunction<Iterator<? extends E>> maker : iteratorMakers) {

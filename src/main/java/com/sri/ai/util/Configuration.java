@@ -93,7 +93,7 @@ import com.google.common.annotations.Beta;
  * <pre>
  * public class MyProjectConfiguration extends Configuration {
  *     public static final String  KEY_PROPERTY_ONE      = "my.project.property.1";
- *     public static final Integer DEFAULT_PROPERTY_ONE  = new Integer(0);
+ *     public static final Integer DEFAULT_PROPERTY_ONE  = Integer.valueOf(0);
  *     ...
  * 
  *     public static int getProperyOne() {
@@ -158,7 +158,7 @@ public class Configuration {
 		I result = null;
 		try {
 			Class<?> clazz = Class.forName(className);
-			result = (I) clazz.newInstance();
+			result = (I) clazz.getDeclaredConstructor().newInstance();
 		} catch (Exception ex) {
 			// Things are incorrectly configured if get an exception here,
 			// best to exit.

@@ -63,10 +63,10 @@ public class AICUtilConfiguration extends Configuration {
 	public static final Boolean DEFAULT_VALUE_BRANCH_AND_MERGE_USE_NUMBER_PROCESSORS_FOR_THREAD_POOL_SIZE = Boolean.TRUE;
 	// 
 	public static final String  KEY_BRANCH_AND_MERGE_DELTA_NUMBER_PROCESSORS_FOR_THREAD_POOL_SIZE         = "aic.util.branch.and.merge.delta.number.processors.for.thread.pool.size";
-	public static final Integer DEFAULT_VALUE_DELTA_NUMBER_PROCESSORS_FOR_THREAD_POOL_SIZE                = new Integer(0);
+	public static final Integer DEFAULT_VALUE_DELTA_NUMBER_PROCESSORS_FOR_THREAD_POOL_SIZE                = Integer.valueOf(0);
 	// Used if BRANCH_AND_MERGE_USE_NUMBER_PROCESSORS_FOR_THREAD_POOL_SIZE is false
 	public static final String  KEY_BRANCH_AND_MERGE_FIXED_THREAD_POOL_SIZE                               = "aic.util.branch.and.merge.fixed.thread.pool.size";
-	public static final Integer DEFAULT_VALUE_BRANCH_AND_MERGE_FIXED_THREAD_POOL_SIZE                     = new Integer(10);
+	public static final Integer DEFAULT_VALUE_BRANCH_AND_MERGE_FIXED_THREAD_POOL_SIZE                     = Integer.valueOf(10);
 	// Note: < 0 means no limit, 0 means no caching, > 0 means cache to that size.
 	public static final String  KEY_DEFAULT_CACHE_MAP_MAXIMUM_SIZE                                        = "aic.util.cache.map.default.maximum.size";
 	public static final Long    DEFAULT_VALUE_DEFAULT_CACHE_MAP_MAXIMUM_SIZE                              = CacheMap.NO_MAXIMUM_SIZE;

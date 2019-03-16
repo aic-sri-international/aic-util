@@ -67,8 +67,8 @@ import com.sri.ai.util.base.NullaryFunction;
 @Beta
 public interface CacheMap<K, V> extends Map<K, V> {
 	
-	Long     NO_MAXIMUM_SIZE       = new Long(-1L);
-	Integer  NO_GARBAGE_COLLECTION = new Integer(-1);
+	Long     NO_MAXIMUM_SIZE       = Long.valueOf(-1L);
+	Integer  NO_GARBAGE_COLLECTION = Integer.valueOf(-1);
 
 	/**
 	 * Performs garbage collection by going over iterator range and considering

@@ -86,10 +86,10 @@ public class StackedMapTest {
 		AbstractStackedMap<String, Integer> map  = new StackedHashMap<String, Integer>(base);
 		map.put("def", 456);
 		Assert.assertSame(map.getBase(), base);
-		Assert.assertEquals(map.get("abc"), new Integer(123));
-		Assert.assertEquals(map.get("def"), new Integer(456));
-		map.put("abc", new Integer(789));
-		Assert.assertEquals(map.get("abc"), new Integer(789));
+		Assert.assertEquals(map.get("abc"), Integer.valueOf(123));
+		Assert.assertEquals(map.get("def"), Integer.valueOf(456));
+		map.put("abc", Integer.valueOf(789));
+		Assert.assertEquals(map.get("abc"), Integer.valueOf(789));
 		base.put("ghi", null);
 		Assert.assertSame(map.get("ghi"), null);
 		Assert.assertTrue(map.containsKey("ghi"));

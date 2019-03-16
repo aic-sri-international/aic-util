@@ -1255,15 +1255,15 @@ public class RationalTest {
 
 		// following tests address things that changed from earlier version;
 		// i.e. will fail with that version
-		Assert.assertTrue(!Rational.ZERO.equals(new Integer(0)));
-		Assert.assertTrue(!(new Rational(3)).equals(new Integer(3)));
-		Assert.assertTrue(!Rational.ZERO.equals(new Long(0)));
-		Assert.assertTrue(!(new Rational(3)).equals(new Long(3)));
+		Assert.assertTrue(!Rational.ZERO.equals(Integer.valueOf(0)));
+		Assert.assertTrue(!(new Rational(3)).equals(Integer.valueOf(3)));
+		Assert.assertTrue(!Rational.ZERO.equals(Long.valueOf(0)));
+		Assert.assertTrue(!(new Rational(3)).equals(Long.valueOf(3)));
 		Assert.assertTrue(!Rational.ZERO.equals("0"));
 		Assert.assertTrue(!(new Rational(3)).equals("3"));
 
-		Assert.assertTrue(!(new Integer(0)).equals(Rational.ZERO));
-		Assert.assertTrue(!(new Long(0)).equals(Rational.ZERO));
+		Assert.assertTrue(!(Integer.valueOf(0)).equals(Rational.ZERO));
+		Assert.assertTrue(!(Long.valueOf(0)).equals(Rational.ZERO));
 		Assert.assertTrue(!(new String("0")).equals(Rational.ZERO));
 
 		Assert.assertTrue(!Rational.ONE.equals(new Object()));
@@ -1309,9 +1309,9 @@ public class RationalTest {
 		Assert.assertTrue((new Rational(0)).compareTo(0) == 0);
 		Assert.assertTrue((new Rational(1)).compareTo(1) == 0);
 		Assert.assertTrue((new Rational(2)).compareTo(2) == 0);
-		Assert.assertTrue((new Rational(3, 5)).compareTo(new Long(0)) != 0);
-		Assert.assertTrue((new Rational(1)).compareTo(new Long(1)) == 0);
-		Assert.assertTrue((new Rational(1)).compareTo(new Integer(1)) == 0);
+		Assert.assertTrue((new Rational(3, 5)).compareTo(Long.valueOf(0)) != 0);
+		Assert.assertTrue((new Rational(1)).compareTo(Long.valueOf(1)) == 0);
+		Assert.assertTrue((new Rational(1)).compareTo(Integer.valueOf(1)) == 0);
 
 		// "Rational long/int value"
 		Assert.assertTrue((new Rational(7)).longValue() == 7);
