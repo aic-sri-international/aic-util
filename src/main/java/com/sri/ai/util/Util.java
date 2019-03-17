@@ -6591,4 +6591,18 @@ public class Util {
 			setProperty.apply(entry.getKey(), entry.getValue());
 		}
 	}
+
+	/**
+	 * A better estimate of free memory than {@link Runtime#freeMemory()} that works
+	 * even if the current garbage collector changes the amount of memory currently allocated to the JVM process.
+	 * This is based on <a href="https://stackoverflow.com/a/55198260/3358488">a Stack Overflow answer</a>.
+	 * @return
+	 */
+	public static long actualFreeMemory() {
+		Runtime r = Runtime.getRuntime();
+		long freeMemoryNotCurrentlyAvailableToTheProcess = r.maxMemory() - r.totalMemory();
+		long freeMemoryCurrentlyAvailableToTheProcess = r.freeMemory();
+		long actualFreeMemory = freeMemoryNotCurrentlyAvailableToTheProcess + freeMemoryCurrentlyAvailableToTheProcess;
+		return actualFreeMemory;
+	}
 }

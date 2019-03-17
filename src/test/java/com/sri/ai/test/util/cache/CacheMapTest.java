@@ -38,12 +38,14 @@
 package com.sri.ai.test.util.cache;
 
 import static com.sri.ai.util.Util.println;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import com.sri.ai.util.Util;
 import com.sri.ai.util.base.Mutable;
 import com.sri.ai.util.cache.CacheMap;
 import com.sri.ai.util.cache.DefaultCacheMap;
@@ -61,7 +63,7 @@ public class CacheMapTest {
 		final int GARBAGE_COLLECTION_PERIOD = 200000;
 
 		Runtime.getRuntime().gc();
-		System.out.println("Free memory in the beginning                      : " + Runtime.getRuntime().freeMemory());
+		System.out.println("Free memory in the beginning                      : " + Util.actualFreeMemory());
 
 		Map<Integer, String> cache1;
 		Map<Integer, Integer> cache2;
@@ -78,7 +80,7 @@ public class CacheMapTest {
 				() -> new EvenIntegerIterator(counter.value.intValue()),
 				GARBAGE_COLLECTION_PERIOD);
 
-		System.out.println("Free memory  after first garbage collection       : " + Runtime.getRuntime().freeMemory());
+		System.out.println("Free memory  after first garbage collection       : " + Util.actualFreeMemory());
 
 		for (int i = 0; i != GARBAGE_COLLECTION_PERIOD - 1; i++) {
 			counter.value = i;
@@ -86,33 +88,29 @@ public class CacheMapTest {
 			cache2.put(i, i);
 		}
 
-		println("Free memory after filling in maps                 : " + Runtime.getRuntime().freeMemory());
+		println("Free memory after filling in maps                 : " + Util.actualFreeMemory());
 
 		Runtime.getRuntime().gc();
 
-		long freeMemoryBeforeCacheMapGarbageCollection = Runtime.getRuntime().freeMemory();
+		long freeMemoryBeforeCacheMapGarbageCollection = Util.actualFreeMemory();
 		println("Free memory after filling in maps and gc'ing      : " + freeMemoryBeforeCacheMapGarbageCollection);
 
 		cache1.put(GARBAGE_COLLECTION_PERIOD, Integer.toString(GARBAGE_COLLECTION_PERIOD));
 		cache2.put(GARBAGE_COLLECTION_PERIOD, GARBAGE_COLLECTION_PERIOD);
 
 		Runtime.getRuntime().gc();
-		long freeMemoryAfterCacheMapGarbageCollection = Runtime.getRuntime().freeMemory();
+		long freeMemoryAfterCacheMapGarbageCollection = Util.actualFreeMemory();
 		println("Free memory after  CacheMap.put garbage collection: " + freeMemoryAfterCacheMapGarbageCollection);
 
 		cache1.clear();
 		cache2.clear();
 
 		Runtime.getRuntime().gc();
-		long freeMemoryAfterClearingCaches = Runtime.getRuntime().freeMemory();
+		long freeMemoryAfterClearingCaches = Util.actualFreeMemory();
 		println("Free memory after  clearing caches                : " + freeMemoryAfterClearingCaches);
 
-		// Deactivating these tests because JDK 11's GC behaves a lot more unpredictably,
-		// returning and taking memory to the OS apparently, so these are now hard to ensure
-		// TODO: create tests for DefaultCacheMap
-		
-		// assertTrue(freeMemoryBeforeCacheMapGarbageCollection <= freeMemoryAfterCacheMapGarbageCollection);
-		// assertTrue(freeMemoryAfterCacheMapGarbageCollection <= freeMemoryAfterClearingCaches);
+		 assertTrue(freeMemoryBeforeCacheMapGarbageCollection <= freeMemoryAfterCacheMapGarbageCollection);
+		 assertTrue(freeMemoryAfterCacheMapGarbageCollection <= freeMemoryAfterClearingCaches);
 	}
 
 	public static class EvenIntegerIterator extends EZIterator<Integer> {

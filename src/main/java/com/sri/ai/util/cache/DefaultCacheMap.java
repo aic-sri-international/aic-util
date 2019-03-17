@@ -37,8 +37,6 @@
  */
 package com.sri.ai.util.cache;
 
-import static com.sri.ai.util.Util.println;
-
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -225,11 +223,8 @@ public class DefaultCacheMap<K, V> extends ForwardingMap<K, V> implements CacheM
 			cb.recordStats();
 		}
 		
-		println("Free memory before building cache                 : " + Runtime.getRuntime().freeMemory());
 		storage  = cb.build();
-		println("Free memory  after building cache                 : " + Runtime.getRuntime().freeMemory());
 		delegate = storage.asMap();
-		println("Free memory  after building map                   : " + Runtime.getRuntime().freeMemory());
 	}
 	
 	private void checkDoGarbageCollect() {
