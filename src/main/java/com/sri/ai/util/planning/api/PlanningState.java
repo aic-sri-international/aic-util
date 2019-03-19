@@ -21,18 +21,18 @@ public class PlanningState<R extends Rule<G>, G extends Goal> {
 	
 	public Set<G> satisfiedGoals;
 	
-	public Set<G> negatedEffectivelyContingentGoals;
+	public Set<G> negatedContingentGoals;
 	
 	public PlanningState(
 			Collection<? extends G> allRequiredGoals, 
 			Collection<? extends G> satisfiedGoals, 
-			Collection<? extends G> negatedEffectivelyContingentGoals, 
+			Collection<? extends G> negatedContingentGoals, 
 			ArrayList<? extends R> rules) {
 		
 		this.allRequiredGoals = allRequiredGoals;
 		this.rules = rules;
 		this.satisfiedGoals = new LinkedHashSet<>(satisfiedGoals);
-		this.negatedEffectivelyContingentGoals = new LinkedHashSet<>(negatedEffectivelyContingentGoals);
+		this.negatedContingentGoals = new LinkedHashSet<>(negatedContingentGoals);
 		this.ruleIsAvailable = fill(rules.size(), true);
 	}
 
@@ -42,7 +42,7 @@ public class PlanningState<R extends Rule<G>, G extends Goal> {
 		this.allRequiredGoals = another.allRequiredGoals;
 		this.rules = another.rules;
 		this.satisfiedGoals = new LinkedHashSet<>(another.satisfiedGoals);
-		this.negatedEffectivelyContingentGoals = new LinkedHashSet<>(another.negatedEffectivelyContingentGoals);
+		this.negatedContingentGoals = new LinkedHashSet<>(another.negatedContingentGoals);
 		this.ruleIsAvailable = new ArrayList<>(another.ruleIsAvailable);
 	}
 

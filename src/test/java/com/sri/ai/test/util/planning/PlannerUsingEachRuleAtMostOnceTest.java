@@ -670,7 +670,7 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 		satisfiedGoals = list();
 		
 		try {
-			new PlannerUsingEachRuleAtMostOnce<Rule<Goal>, Goal>(allRequiredGoals, satisfiedGoals, list(), g -> false, allRules);
+			new PlannerUsingEachRuleAtMostOnce<Rule<Goal>, Goal>(allRequiredGoals, satisfiedGoals, list(), allRules);
 		} catch (Error e) {
 			if (containsAllCaseInsensitive(e.getMessage(), "required", "contingent")) {
 				println(e.getMessage());
@@ -695,7 +695,7 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 		satisfiedGoals = list();
 		
 		try {
-			new PlannerUsingEachRuleAtMostOnce<Rule<Goal>, Goal>(allRequiredGoals, satisfiedGoals, list(), g -> false, allRules);
+			new PlannerUsingEachRuleAtMostOnce<Rule<Goal>, Goal>(allRequiredGoals, satisfiedGoals, list(), allRules);
 		} catch (Error e) {
 			if (containsAllCaseInsensitive(e.getMessage(), "consequents", "contingent")) {
 				println(e.getMessage());
@@ -709,7 +709,7 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 	}
 
 	public void runTest() {
-		planner = new PlannerUsingEachRuleAtMostOnce<Rule<Goal>, Goal>(allRequiredGoals, satisfiedGoals, list(), g -> false, allRules);
+		planner = new PlannerUsingEachRuleAtMostOnce<Rule<Goal>, Goal>(allRequiredGoals, satisfiedGoals, list(), allRules);
 		actual = planner.plan();
 		println("Goals: " + allRequiredGoals);
 		println("Rules:\n" + join("\n", allRules));

@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
 
 import com.sri.ai.util.base.Wrapper;
 import com.sri.ai.util.planning.api.ContingentGoal;
@@ -33,42 +32,29 @@ import com.sri.ai.util.planning.api.Rule;
 import com.sri.ai.util.planning.util.PlanHierarchicalExplanation;
 
 /**
- * A planner based on a set of rules and a <code>isEffectivelyStaticGoal</code> predicate.
+ * A planner based on a set of rules that, given a set of <i>antecedent</i> goals,
+ * achieves a set of <i>consequent</i> goals.
+ * 
+ * The planner creates a {@link Plan} in which each rule is used at most once in order
+ * to guarantee achievement of a given set of <i>required</i> goals.
  * <p>
- * A goal is <i>effectively static</i> if its truth value can be perfectly known during static planning time,
- * that is, if it becomes satisfied only by action of a rule with it in its consequents.
+ * The antecedents of a rule can be of two different types:
  * <p>
- * A <i>contingent</i> goal may become true as a result to a change in the execution-time state
+ * A <i>contingent</i> goal (implementing interface {@link ContingentGoal})
+ * may become true as a result to a change in the execution-time state
  * even if it were not in the consequents of any applied rule.
  * <p>
- * The interface {@link ContingentGoal} has been provided to help mark goals as contingent,
- * but this does not depend only on the interface a goal object implements, but also
- * on how it is used in the rules, so users must be careful about this.
+ * A goal is <i>static</i> (not implementing interface {@link ContingentGoal})
+ * if its truth value can be perfectly known during static planning time,
+ * that is, if it becomes satisfied only by action of a rule with it in its consequents.
  * <p>
- * For example, if a a goal is contingent but does not implement {@link ContingentGoal},
- * the planner and plans will not have a way of knowing whether it has become satisfied
- * by means other than rule application.
- * <p>
- * Likewise, a goal implementing {@link ContingentGoal} that only changes as a result
- * of rule application is an <i>effectively static goal</i>.
- * If the planner does not know that such a goal is effectively static,
- * it will create larger plans than necessary that go through the trouble
- * of checking whether the goal has become satisfied even if no rule producing it has been applied.
- * For this reason, the planner's API provides a means for the user to specify that knowledge as one of its arguments.
- * <p>
- * The planner also makes the assumption that once a contingent goal is either satisfied or fails during execution,
- * it stays that way permanently.
- * <p>
- * Note that it would not make sense to check if goals <i>not</i> implementing {@link ContingentGoal}
- * are "effectively contingent", because the only way of checking for their satisfiability during
- * execution time is through the method {@link ContingentGoal#isSatisfied(com.sri.ai.util.planning.api.State)}.
- * Note also that this interface does not provide a method for checking whether a goal has been negated
- * because rules only depend on whether a goal is satisfied, not on whether its negation is satisfied.
+ * The planner makes the assumption that once a contingent goal is either satisfied or fails during execution,
+ * it stays that way permanently even after other rules are applied.
  * 
  * @author braz
  *
- * @param <R>
- * @param <G>
+ * @param <R> the type of rules used
+ * @param <G> the type of goals used
  */
 public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> implements Planner<R, G> {
 	
@@ -77,15 +63,13 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 	planUsingEachRuleAtMostOnce(
 			Collection<? extends G1> allRequiredGoals, 
 			Collection<? extends G1> satisfiedGoals,
-			Collection<? extends G1> negatedEffectiveContingentGoals,
-			Predicate<G1> isEffectivelyStaticGoal, 
+			Collection<? extends G1> negatedContingentGoals,
 			Collection<? extends R1> rules) {
 		
 		return planUsingEachRuleAtMostOnceAndIfSuccessfulApplyingSequelPlan(
 				allRequiredGoals, 
 				satisfiedGoals, 
-				negatedEffectiveContingentGoals,
-				isEffectivelyStaticGoal, 
+				negatedContingentGoals,
 				rules, 
 				new PlannerThatDoesNothing<R1, G1>());
 	}
@@ -95,33 +79,29 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 	planUsingEachRuleAtMostOnceAndIfSuccessfulApplyingSequelPlan(
 			Collection<? extends G1> allRequiredGoals, 
 			Collection<? extends G1> satisfiedGoals, 
-			Collection<? extends G1> negatedEffectiveContingentGoals,
-			Predicate<G1> isEffectivelyStaticGoal, 
+			Collection<? extends G1> negatedContingentGoals,
 			Collection<? extends R1> rules, 
 			Planner<R1, G1> sequel) {
 		
-		PlannerUsingEachRuleAtMostOnce planner = new PlannerUsingEachRuleAtMostOnce<R1, G1>(allRequiredGoals, satisfiedGoals, negatedEffectiveContingentGoals, isEffectivelyStaticGoal, rules, sequel);
+		PlannerUsingEachRuleAtMostOnce planner = new PlannerUsingEachRuleAtMostOnce<R1, G1>(allRequiredGoals, satisfiedGoals, negatedContingentGoals, rules, sequel);
 		Plan plan = planner.plan();
 		return plan;
 	}
 
 	private PlanningState<R, G> state;
 	
-	private Predicate<G> isEffectivelyStaticGoal;
-	
 	private Planner<R, G> sequel;
 	
-	public PlannerUsingEachRuleAtMostOnce(Collection<? extends G> allRequiredGoals, Collection<? extends G> satisfiedGoals, Collection<? extends G> negatedEffectiveContingentGoals, Predicate<G> isEffectivelyStaticGoal, Collection<? extends R> rules) {
-		this(allRequiredGoals, satisfiedGoals, negatedEffectiveContingentGoals, isEffectivelyStaticGoal, rules, new PlannerThatDoesNothing<R, G>());
+	public PlannerUsingEachRuleAtMostOnce(Collection<? extends G> allRequiredGoals, Collection<? extends G> satisfiedGoals, Collection<? extends G> negatedContingentGoals, Collection<? extends R> rules) {
+		this(allRequiredGoals, satisfiedGoals, negatedContingentGoals, rules, new PlannerThatDoesNothing<R, G>());
 	}
 	
-	public PlannerUsingEachRuleAtMostOnce(Collection<? extends G> allRequiredGoals, Collection<? extends G> satisfiedGoals, Collection<? extends G> negatedEffectiveContingentGoals, Predicate<G> isEffectivelyStaticGoal, Collection<? extends R> rules, Planner<R, G> sequel) {
+	public PlannerUsingEachRuleAtMostOnce(Collection<? extends G> allRequiredGoals, Collection<? extends G> satisfiedGoals, Collection<? extends G> negatedContingentGoals, Collection<? extends R> rules, Planner<R, G> sequel) {
 		ArrayList<? extends R> arrayListOfSamplingRules = (rules instanceof ArrayList)? (ArrayList<? extends R>) rules : arrayListFrom(rules);
-		this.state = new PlanningState<>(allRequiredGoals, satisfiedGoals, negatedEffectiveContingentGoals, arrayListOfSamplingRules);
-		this.isEffectivelyStaticGoal = isEffectivelyStaticGoal;
+		this.state = new PlanningState<>(allRequiredGoals, satisfiedGoals, negatedContingentGoals, arrayListOfSamplingRules);
 		this.sequel = sequel;
-		myAssert(forAll(allRequiredGoals, g -> isEffectivelyStatic(g)), () -> "Required goals cannot contain contingent goals.");
-		myAssert(forAll(rules, r -> forAll(r.getConsequents(), c -> isEffectivelyStatic(c))), () -> "Rules consequents cannot contain contingent goals.");
+		myAssert(forAll(allRequiredGoals, g -> isStatic(g)), () -> "Required goals cannot contain contingent goals.");
+		myAssert(forAll(rules, r -> forAll(r.getConsequents(), c -> isStatic(c))), () -> "Rules consequents cannot contain contingent goals.");
 	}
 
 	@Override
@@ -221,35 +201,35 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 	private void considerRule(R rule, int i, List<Plan> alternativePlansStartingWithRule) {
 		explanationBlock("Considering available rule ",  rule, code(() -> {
 
-			Goal unsatisfiedEffectivelyStaticAntecedent = getUnsatisfiedEffectivelyStaticAntecedent(rule);
-			if (unsatisfiedEffectivelyStaticAntecedent == null) {
-				considerRuleWithAtLeastEffectivelyStaticAntecedentsAllSatisfied(rule, i, alternativePlansStartingWithRule);
+			Goal unsatisfiedStaticAntecedent = getUnsatisfiedStaticAntecedent(rule);
+			if (unsatisfiedStaticAntecedent == null) {
+				considerRuleWithAtLeastStaticAntecedentsAllSatisfied(rule, i, alternativePlansStartingWithRule);
 			}
 			else {
-				explain("Rule does not apply because ", unsatisfiedEffectivelyStaticAntecedent, " is unsatisfied");
+				explain("Rule does not apply because ", unsatisfiedStaticAntecedent, " is unsatisfied");
 			}
 
 		}));
 	}
 
-	private Goal getUnsatisfiedEffectivelyStaticAntecedent(R rule) {
-		Goal unsatisfiedStaticAntecendent = getFirst(rule.getAntecendents(), a -> isEffectivelyStaticAndUnsatisfied(a));
+	private Goal getUnsatisfiedStaticAntecedent(R rule) {
+		Goal unsatisfiedStaticAntecendent = getFirst(rule.getAntecendents(), a -> isStaticAndUnsatisfied(a));
 		return unsatisfiedStaticAntecendent;
 	}
 
-	private boolean isEffectivelyStaticAndUnsatisfied(G goal) {
+	private boolean isStaticAndUnsatisfied(G goal) {
 		boolean result = 
-				isEffectivelyStatic(goal)
+				isStatic(goal)
 				&& 
 				!state.satisfiedGoals.contains(goal);
 		return result;
 	}
 
-	private Plan planIfThereIsAtLeastOneUnsatisfiedRequiredGoalStartingAtRuleWithIndexWhichIsKnownToHaveAtLeastAllEffectivelyStaticAntecedentsAllSatisfied(R rule, int i) {
-		return explanationBlock("Finding plan using ", rule, " known to have all effectively static antecedents satisfied", code(() -> {
+	private Plan planIfThereIsAtLeastOneUnsatisfiedRequiredGoalStartingAtRuleWithIndexWhichIsKnownToHaveAtLeastAllStaticAntecedentsAllSatisfied(R rule, int i) {
+		return explanationBlock("Finding plan using ", rule, " known to have all static antecedents satisfied", code(() -> {
 
 			List<Plan> alternativeRulePlansUnderThisCase = list();
-			considerRuleWithAtLeastEffectivelyStaticAntecedentsAllSatisfied(rule, i, alternativeRulePlansUnderThisCase);
+			considerRuleWithAtLeastStaticAntecedentsAllSatisfied(rule, i, alternativeRulePlansUnderThisCase);
 			Plan result = OrPlan.or(alternativeRulePlansUnderThisCase);
 
 			explainResultingPlan(result);
@@ -259,12 +239,12 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 		}));
 	}
 
-	private void considerRuleWithAtLeastEffectivelyStaticAntecedentsAllSatisfied(R rule, int i, List<Plan> alternativePlansStartingWithRule) {
+	private void considerRuleWithAtLeastStaticAntecedentsAllSatisfied(R rule, int i, List<Plan> alternativePlansStartingWithRule) {
 		explanationBlock("Considering rule with all static antecedents satisfied: ", rule, code(() -> {
 
 			ContingentGoal contingentGoalNegatedByState = contingentGoalNegatedByState(rule);
 			if (contingentGoalNegatedByState == null) {
-				considerRuleWithAtLeastEffectivelyStaticAntecedentsAllSatisfiedAndNoContingentGoalsNegatedByState(rule, i, alternativePlansStartingWithRule);
+				considerRuleWithAtLeastStaticAntecedentsAllSatisfiedAndNoContingentGoalsNegatedByState(rule, i, alternativePlansStartingWithRule);
 			}
 			else {
 				explain("Rule does not apply because ", contingentGoalNegatedByState, " is already negated");
@@ -273,7 +253,7 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 	}));
 }
 
-	private void considerRuleWithAtLeastEffectivelyStaticAntecedentsAllSatisfiedAndNoContingentGoalsNegatedByState(R rule, int i, List<Plan> alternativePlansStartingWithRule) {
+	private void considerRuleWithAtLeastStaticAntecedentsAllSatisfiedAndNoContingentGoalsNegatedByState(R rule, int i, List<Plan> alternativePlansStartingWithRule) {
 		explanationBlock("Considering rule with all static antecedents satisfied and no contingent goals negated by state: ", rule, code(() -> {
 
 			ContingentGoal contingentGoalNotYetDefined = contingentGoalNotYetDefined(rule);
@@ -288,15 +268,15 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 	}
 
 	private ContingentGoal contingentGoalNegatedByState(R rule) {
-		ContingentGoal effectivelyContingentAntecendentNegatedByState = 
+		ContingentGoal contingentAntecendentNegatedByState = 
 				(ContingentGoal) 
 				getFirst(
 						rule.getAntecendents(), 
 						a -> 
-						!isEffectivelyStatic(a)
+						!isStatic(a)
 						&& 
-						state.negatedEffectivelyContingentGoals.contains(a));
-		return effectivelyContingentAntecendentNegatedByState;
+						state.negatedContingentGoals.contains(a));
+		return contingentAntecendentNegatedByState;
 	}
 
 	private void considerBothPossibilitiesForContingentGoal(R rule, int i, ContingentGoal contingentGoal, List<Plan> alternativePlansStartingWithRule) {
@@ -320,7 +300,7 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 
 			Set<G> satisfiedGoalsBeforeRule = new LinkedHashSet<>(state.satisfiedGoals);
 			state.satisfiedGoals.add((G) contingentGoal);
-			Plan thenBranch = planIfThereIsAtLeastOneUnsatisfiedRequiredGoalStartingAtRuleWithIndexWhichIsKnownToHaveAtLeastAllEffectivelyStaticAntecedentsAllSatisfied(rule, i);
+			Plan thenBranch = planIfThereIsAtLeastOneUnsatisfiedRequiredGoalStartingAtRuleWithIndexWhichIsKnownToHaveAtLeastAllStaticAntecedentsAllSatisfied(rule, i);
 			state.satisfiedGoals = satisfiedGoalsBeforeRule;
 			return thenBranch;
 
@@ -331,10 +311,10 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 	private Plan considerContingentGoalNegated(R rule, ContingentGoal contingentGoal) {
 		return explanationBlock("Assuming contingent ", contingentGoal, " is false", code(() -> {
 
-			Set<G> negatedGoalsBeforeRule = new LinkedHashSet<>(state.negatedEffectivelyContingentGoals);
-			state.negatedEffectivelyContingentGoals.add((G) contingentGoal);
+			Set<G> negatedGoalsBeforeRule = new LinkedHashSet<>(state.negatedContingentGoals);
+			state.negatedContingentGoals.add((G) contingentGoal);
 			Plan elseBranch = planIfThereIsAtLeastOneUnsatisfiedRequiredGoal();
-			state.negatedEffectivelyContingentGoals = negatedGoalsBeforeRule;
+			state.negatedContingentGoals = negatedGoalsBeforeRule;
 			return elseBranch;
 
 		}), "Assuming contingent: ", contingentGoal, " is false, plan is ", RESULT);
@@ -389,26 +369,23 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 		Wrapper<Boolean> result = new Wrapper<>(true);
 		return explanationBlock("Checking if antecendent is contingent goal not defined by planning state: ", a, code(() -> {
 			
-			explain("Is not effectively static       : ", !isEffectivelyStatic(a));
+			explain("Is not static                   : ", !isStatic(a));
 			explain("Is not in satisfied goals       : ", !state.satisfiedGoals.contains(a));
-			explain("Is not negated by planning state: ", !state.negatedEffectivelyContingentGoals.contains(a));
+			explain("Is not negated by planning state: ", !state.negatedContingentGoals.contains(a));
 			
 			result.value =
-					!isEffectivelyStatic(a) 
+					!isStatic(a) 
 					&& 
 					!state.satisfiedGoals.contains(a)
 					&& 
-					!state.negatedEffectivelyContingentGoals.contains(a);
+					!state.negatedContingentGoals.contains(a);
 			return result.value;
 
 		}), "Antecedent ", (result.value? "IS" : "IS NOT"), " contingent goal not defined by planning state");
 	}
 
-	private boolean isEffectivelyStatic(G a) {
-		boolean result = 
-				!(a instanceof ContingentGoal)
-				||
-				isEffectivelyStaticGoal.test(a);
+	private boolean isStatic(G a) {
+		boolean result = !(a instanceof ContingentGoal);
 		return result;
 	}
 
