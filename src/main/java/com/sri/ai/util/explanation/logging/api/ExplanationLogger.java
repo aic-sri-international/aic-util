@@ -1,6 +1,7 @@
 package com.sri.ai.util.explanation.logging.api;
 
 import static com.sri.ai.util.Util.in;
+import static com.sri.ai.util.tree.DefaultTree.treeOneLevel;
 
 import java.util.Collection;
 
@@ -162,13 +163,13 @@ public interface ExplanationLogger {
 	 * @param rootEndExplainer
 	 * @param childrenMaker
 	 */
-	default <T> void explanationTree(Tree<? extends String> tree) {
+	default <T> void explainTree(Tree<?> tree) {
 		if (isActive()) {
 			boolean compound = tree.getChildren().hasNext();
 			if (compound) {
 				start(tree.getInformation());
-				for (Tree<? extends String> child : in(tree.getChildren())) {
-					explanationTree(child);
+				for (Tree<?> child : in(tree.getChildren())) {
+					explainTree(child);
 				}
 				end();
 			}
@@ -176,5 +177,14 @@ public interface ExplanationLogger {
 				explain(tree.getInformation());
 			}
 		}
+	}
+	
+	/**
+	 * Generates a block with a header and the items in a given collection inside it.
+	 * @param header
+	 * @param collection
+	 */
+	default void explainList(Object header, Collection<?> collection) {
+		explainTree(treeOneLevel(header, collection));
 	}
 }

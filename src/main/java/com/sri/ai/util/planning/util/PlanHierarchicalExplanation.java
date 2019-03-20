@@ -36,7 +36,7 @@ public class PlanHierarchicalExplanation {
 				handler.setIncludeTimestamp(false);
 			}
 			
-			getThreadExplanationLogger().explanationTree(plan.stringTree());
+			getThreadExplanationLogger().explainTree(plan.stringTree());
 			
 			restoreProperties(blockTimeProperty, (h, v) -> h.setIncludeBlockTime(v));
 			restoreProperties(recordIdProperty, (h, v) -> h.setIncludeRecordId(v));

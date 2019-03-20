@@ -14,6 +14,7 @@ import com.sri.ai.util.explanation.logging.core.handler.FileExplanationHandler;
 import com.sri.ai.util.explanation.logging.helper.ExplanationLoggerForFileForThisThread;
 import com.sri.ai.util.explanation.logging.helper.ExplanationLoggerToConsole;
 import com.sri.ai.util.explanation.logging.helper.ExplanationLoggerToFile;
+import com.sri.ai.util.tree.Tree;
 
 /**
  * A class with public static methods for accessing and using a thread-wide {@link ExplanationLogger}.
@@ -154,6 +155,16 @@ public class ThreadExplanationLogger {
 	
 	
 	 
+	public static void explainTree(Tree<?> tree) {
+		getThreadExplanationLogger().explainTree(tree);
+	}
+	
+	public static void explainList(Object header, Collection<?> collection) {
+		getThreadExplanationLogger().explainList(header, collection);
+	}
+
+	
+	
 	public static void start(Number importance, Object... objects) {
 		getThreadExplanationLogger().start(importance, objects);
 	}
