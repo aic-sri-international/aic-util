@@ -19,9 +19,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.sri.ai.test.util.antlr.AntlrBundle;
 import com.sri.ai.test.util.planning.parser.MyRuleAndPlansVisitor;
 import com.sri.ai.util.Util;
+import com.sri.ai.util.antlr.AntlrBundle;
 import com.sri.ai.util.planning.api.ContingentGoal;
 import com.sri.ai.util.planning.api.Goal;
 import com.sri.ai.util.planning.api.Plan;

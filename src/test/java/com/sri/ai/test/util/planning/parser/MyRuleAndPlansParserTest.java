@@ -1,8 +1,8 @@
 package com.sri.ai.test.util.planning.parser;
 
-import static com.sri.ai.test.util.antlr.AntlrBundle.antlrBundle;
 import static com.sri.ai.util.Util.list;
 import static com.sri.ai.util.Util.println;
+import static com.sri.ai.util.antlr.AntlrBundle.antlrBundle;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -15,7 +15,7 @@ import org.antlr.v4.runtime.ANTLRErrorListener;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.junit.Test;
 
-import com.sri.ai.test.util.antlr.AntlrBundle;
+import com.sri.ai.util.antlr.AntlrBundle;
 import com.sri.ai.util.planning.test.MyRuleAndPlansLexer;
 import com.sri.ai.util.planning.test.MyRuleAndPlansParser;
 

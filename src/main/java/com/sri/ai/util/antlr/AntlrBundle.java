@@ -1,4 +1,4 @@
-package com.sri.ai.test.util.antlr;
+package com.sri.ai.util.antlr;
 
 import java.io.Reader;
 import java.util.Collection;
@@ -19,8 +19,10 @@ public class AntlrBundle<L extends Lexer, P extends Parser, V extends ParseTreeV
 	private P parser;
 	private V visitor;
 	
-	public static <L1 extends Lexer, P1 extends Parser, V1 extends ParseTreeVisitor> 
-	AntlrBundle<L1, P1, V1> antlrBundle(
+	public static
+	<L1 extends Lexer, P1 extends Parser, V1 extends ParseTreeVisitor> 
+	AntlrBundle<L1, P1, V1> 
+	antlrBundle(
 			Reader reader, 
 			Class<L1> lexerClass, 
 			Class<P1> parserClass,
@@ -29,8 +31,10 @@ public class AntlrBundle<L extends Lexer, P extends Parser, V extends ParseTreeV
 		return new AntlrBundle<L1, P1, V1>(reader, lexerClass, parserClass, visitorClass);
 	}
 	
-	public static <L1 extends Lexer, P1 extends Parser, V1 extends ParseTreeVisitor> 
-	AntlrBundle<L1, P1, V1> antlrBundle(
+	public static 
+	<L1 extends Lexer, P1 extends Parser, V1 extends ParseTreeVisitor> 
+	AntlrBundle<L1, P1, V1> 
+	antlrBundle(
 			Reader reader, 
 			Collection<? extends ANTLRErrorListener> errorListeners, 
 			Class<L1> lexerClass,
