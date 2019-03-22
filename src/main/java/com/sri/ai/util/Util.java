@@ -2946,7 +2946,7 @@ public class Util {
 	 * @param iterator
 	 * @return
 	 */
-	public static <E> ArrayList<E> unionArrayList(Iterator<Iterable<? extends E>> iterator) {
+	public static <E> ArrayList<E> unionArrayList(Iterator<? extends Iterable<? extends E>> iterator) {
 		Set<E> set = union(iterator);
 		ArrayList<E> arrayList = new ArrayList<>(set);
 		return arrayList;
@@ -2957,7 +2957,7 @@ public class Util {
 	 * @param iteratorOfIterables
 	 * @return
 	 */
-	public static <E> LinkedHashSet<E> union(Iterator<Iterable<? extends E>> iteratorOfIterables) {
+	public static <E> LinkedHashSet<E> union(Iterator<? extends Iterable<? extends E>> iteratorOfIterables) {
 		LinkedHashSet<E> result = new LinkedHashSet<>();
 		for (Iterable<? extends E> iterable : in(iteratorOfIterables)) {
 			addAll(result, iterable);

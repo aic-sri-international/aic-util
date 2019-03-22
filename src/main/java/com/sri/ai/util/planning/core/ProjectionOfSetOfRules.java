@@ -2,10 +2,10 @@ package com.sri.ai.util.planning.core;
 
 import static com.sri.ai.util.Util.mapIntoSet;
 import static com.sri.ai.util.Util.set;
+import static com.sri.ai.util.Util.setFrom;
 import static java.util.Collections.unmodifiableSet;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -50,8 +50,29 @@ public class ProjectionOfSetOfRules<R extends Rule<G>, G extends Goal> {
 	private DNFProjectorPlanner<R, G> projector;
 	
 	///////////////////////////////
+
+	/**
+	 * Computes the projection of a set of rules into a set of projected goals,
+	 * making new rules with a given factory object.
+	 * @param rules
+	 * @param projectedGoals
+	 * @param ruleFactory
+	 * @return
+	 */
+	public static 
+	<R1 extends Rule<G1>, G1 extends Goal> 
+	Set<? extends R1> 
+	project(
+			List<? extends R1> rules, 
+			Collection<? extends G1> projectedGoals,
+			BinaryFunction<G1, Set<? extends G1>, R1> ruleFactory) {
+		var projection = new ProjectionOfSetOfRules<R1, G1>(rules, projectedGoals, ruleFactory);
+		return projection.getProjectedSetOfRules();
+	}
 	
-	public ProjectionOfSetOfRules(
+	///////////////////////////////
+	
+	private ProjectionOfSetOfRules(
 			List<? extends R> rules, 
 			Collection<? extends G> projectedGoals,
 			BinaryFunction<G, Set<? extends G>, R> ruleFactory) {
@@ -65,7 +86,7 @@ public class ProjectionOfSetOfRules<R extends Rule<G>, G extends Goal> {
 
 	/////////////////////////////// Projection
 	
-	public Set<? extends R> getProjectedSetOfRules() {
+	private Set<? extends R> getProjectedSetOfRules() {
 		if (projectedRules == null) {
 			computeProjectedRules();
 		}
@@ -92,7 +113,7 @@ public class ProjectionOfSetOfRules<R extends Rule<G>, G extends Goal> {
 	}
 
 	private R makeRuleForGoalWithGivenCondition(G projectedGoal, ConjunctiveClause<G> conjunction) {
-		Set<? extends G> antecendents = new LinkedHashSet<>(conjunction.getLiterals());
+		var antecendents = setFrom(conjunction.getLiterals());
 		R rule = ruleFactory.apply(projectedGoal, antecendents);
 		return rule;
 	}

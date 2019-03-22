@@ -7,6 +7,7 @@ import static com.sri.ai.util.Util.list;
 import static com.sri.ai.util.Util.println;
 import static com.sri.ai.util.Util.set;
 import static com.sri.ai.util.Util.subtract;
+import static com.sri.ai.util.planning.core.ProjectionOfSetOfRules.project;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
@@ -19,7 +20,6 @@ import org.junit.Test;
 import com.sri.ai.util.base.BinaryFunction;
 import com.sri.ai.util.planning.api.Goal;
 import com.sri.ai.util.planning.api.Rule;
-import com.sri.ai.util.planning.core.ProjectionOfSetOfRules;
 
 public class ProjectionOfSetOfRulesTest {
 	
@@ -227,9 +227,7 @@ public class ProjectionOfSetOfRulesTest {
 		
 		List<Goal> projectedGoals = getProjectedGoals();
 		
-		ProjectionOfSetOfRules<Rule<Goal>, Goal> marginalizer = new ProjectionOfSetOfRules<>(allRules, projectedGoals, ruleFactory);
-
-		actual = marginalizer.getProjectedSetOfRules();
+		actual = project(allRules, projectedGoals, ruleFactory);
 		
 		println("Expected rules: " + join(expected));
 		println("Actual rules: " + join(actual));
