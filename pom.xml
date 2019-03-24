@@ -214,7 +214,7 @@
 				<configuration>
 					<skipTests>${skipUnitTests}</skipTests>
 					<testFailureIgnore>false</testFailureIgnore>
-					<forkCount>1.0C</forkCount>
+					<forkCount>0.5C</forkCount>
 					<reuseForks>true</reuseForks>
 					<argLine>-Xms256m -Xmx1028m</argLine>
 					<reportFormat>plain</reportFormat>
