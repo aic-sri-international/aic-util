@@ -38,6 +38,7 @@
 package com.sri.ai.test.util;
 
 import static com.sri.ai.util.Util.myAssert;
+import static com.sri.ai.util.Util.println;
 import static org.junit.Assert.fail;
 
 import org.junit.After;
@@ -63,26 +64,30 @@ public class MyAssertTest {
 
 	private void regular() {
 		try {
+			println("System.getProperty(Util.MY_ASSERT_OFF): " + System.getProperty(Util.MY_ASSERT_OFF));
 			myAssert(() -> true,  () -> "error message 1");
 			myAssert(() -> false, () -> "error message 2");
 			if (System.getProperty(Util.MY_ASSERT_OFF) == null) {
+				println("Should have thrown an AssertionError but did not. System.getProperty(Util.MY_ASSERT_OFF) = " + System.getProperty(Util.MY_ASSERT_OFF));
 				fail("Should have thrown an AssertionError but did not. System.getProperty(Util.MY_ASSERT_OFF) = " + System.getProperty(Util.MY_ASSERT_OFF));
 			}
 		}
 		catch (AssertionError error) {
 			if (error.getMessage().equals("error message 2")) {
 				if (System.getProperty(Util.MY_ASSERT_OFF) == null) {
-					// good, passed the unit test
+					println("Good, passed the unit test");
 				}
 				else {
+					println("Threw assertion error when it should not have.");
 					fail("Threw assertion error when it should not have.");
 				}
 			}
 			else {
+				println("Threw the wrong assertion error.");
 				fail("Threw the wrong assertion error.");
 			}
 		}
-		// good, passed the unit test
+		println("Good, passed the unit test");
 	}
 
 	@Test
@@ -95,26 +100,31 @@ public class MyAssertTest {
 
 	private void nullary() {
 		try {
+			println("nullary");
+			println("System.getProperty(Util.MY_ASSERT_OFF): " + System.getProperty(Util.MY_ASSERT_OFF));
 			Util.myAssert(() -> true , () -> "error message 1");
 			Util.myAssert(() -> false, () -> "error message 2");
 			if (System.getProperty(Util.MY_ASSERT_OFF) == null) {
+				println("Should have thrown an AssertionError but did not. System.getProperty(Util.MY_ASSERT_OFF) = " + System.getProperty(Util.MY_ASSERT_OFF));
 				fail("Should have thrown an AssertionError but did not. System.getProperty(Util.MY_ASSERT_OFF) = " + System.getProperty(Util.MY_ASSERT_OFF));
 			}
 		}
 		catch (AssertionError error) {
 			if (error.getMessage().equals("error message 2")) {
 				if (System.getProperty(Util.MY_ASSERT_OFF) == null) {
-					// good, passed the unit test
+					println("Good, passed the unit test");
 				}
 				else {
+					println("Threw assertion error when it should not have.");
 					fail("Threw assertion error when it should not have.");
 				}
 			}
 			else {
+				println("Threw the wrong assertion error.");
 				fail("Threw the wrong assertion error.");
 			}
 		}
-		// good, passed the unit test
+		println("Good, passed the unit test");
 	}
 
 	@Test
@@ -127,25 +137,30 @@ public class MyAssertTest {
 
 	private void nullaryAndString() {
 		try {
+			println("nullaryAndString");
+			println("System.getProperty(Util.MY_ASSERT_OFF): " + System.getProperty(Util.MY_ASSERT_OFF));
 			myAssert(() -> true , () -> "error message 1");
 			myAssert(() -> false, () -> "error message 2");
 			if (System.getProperty(Util.MY_ASSERT_OFF) == null) {
+				println("Should have thrown an AssertionError but did not. System.getProperty(Util.MY_ASSERT_OFF) = " + System.getProperty(Util.MY_ASSERT_OFF));
 				fail("Should have thrown an AssertionError but did not. System.getProperty(Util.MY_ASSERT_OFF) = " + System.getProperty(Util.MY_ASSERT_OFF));
 			}
 		}
 		catch (AssertionError error) {
 			if (error.getMessage().equals("error message 2")) {
 				if (System.getProperty(Util.MY_ASSERT_OFF) == null) {
-					// good, passed the unit test
+					println("Good, passed the unit test");
 				}
 				else {
+					println("Threw assertion error when it should not have.");
 					fail("Threw assertion error when it should not have.");
 				}
 			}
 			else {
+				println("Threw the wrong assertion error.");
 				fail("Threw the wrong assertion error.");
 			}
 		}
-		// good, passed the unit test
+		println("Good, passed the unit test");
 	}
 }
