@@ -2,6 +2,7 @@ package com.sri.ai.util.function.core.variables;
 
 import static com.sri.ai.util.Util.join;
 import static com.sri.ai.util.Util.map;
+import static com.sri.ai.util.function.api.values.Value.value;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -47,6 +48,15 @@ public class DefaultAssignment implements Assignment {
 		this.variableToValue = variableToValue;
 	}
 
+	public static DefaultAssignment assignment(Object... variablesAndValues) {
+		for (int i = 1; i != variablesAndValues.length + 1; i += 2) { // NOTE: unusual for loop over odd positions only
+			Object object = variablesAndValues[i];
+			variablesAndValues[i] = (object instanceof Value)? object : value(object);
+		}
+		DefaultAssignment result = new DefaultAssignment(map(variablesAndValues));
+		return result;
+	}
+	
 	@Override
 	public SetOfVariables getSetOfVariables() {
 		return setOfVariables;

@@ -26,6 +26,10 @@ public interface Assignment {
 		return new DefaultAssignment(variables, values);
 	}
 	
+	static DefaultAssignment assignment(Object... variablesAndValues) {
+		return DefaultAssignment.assignment(variablesAndValues);
+	}
+	
 	Assignment remove(Variable variableToRemove);
 
 	SetOfVariables getSetOfVariables();
