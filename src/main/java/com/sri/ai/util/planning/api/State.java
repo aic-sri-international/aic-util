@@ -4,6 +4,8 @@ import java.util.Random;
 
 public interface State {
 	
+	public final static State FAILED = FailedState.FAILED;
+	
 	Random getRandom();
 	
 }
