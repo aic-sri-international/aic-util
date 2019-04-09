@@ -14,6 +14,8 @@ public interface ExplanationRecord {
 
 	Object[] getObjects();
 
+	String getOriginalObjectsString();
+
 	long getBlockTime();
 	
 	long getRecordId();

@@ -1,5 +1,7 @@
 package com.sri.ai.util.explanation.logging.core;
 
+import static com.sri.ai.util.Util.join;
+
 import com.sri.ai.util.explanation.logging.api.ExplanationRecord;
 
 public class DefaultExplanationRecord implements ExplanationRecord {
@@ -14,6 +16,8 @@ public class DefaultExplanationRecord implements ExplanationRecord {
 	final long blockTime;                   // -1 if this is not from an block end record, otherwise the difference in time between this record's timestamp and its block start timestamp
 	final long recordId;                    // a global record id based on order of construction
 	final boolean isEndOfBlock;             // whether this explanation is the ending of a block
+
+	private String originalObjectsString;
 	
 	public DefaultExplanationRecord(Number importance, Number adjustedImportance, int nestingDepth, long timestamp, Object[] objects, long blockTime, boolean isEndOfBlock) {
 		this.importance = importance;
@@ -21,6 +25,7 @@ public class DefaultExplanationRecord implements ExplanationRecord {
 		this.nestingDepth = nestingDepth;
 		this.timestamp = timestamp;
 		this.objects = objects;
+		this.originalObjectsString = join("", objects); // DEBUGGING
 		this.blockTime = blockTime;
 		this.recordId = ExplanationRecord.counter.value++;
 		this.isEndOfBlock = isEndOfBlock;
@@ -56,6 +61,11 @@ public class DefaultExplanationRecord implements ExplanationRecord {
 	}
 
 	@Override
+	public String getOriginalObjectsString() {
+		return originalObjectsString;
+	}
+
+	@Override
 	public long getBlockTime() {
 		return blockTime;
 	}
@@ -68,6 +78,11 @@ public class DefaultExplanationRecord implements ExplanationRecord {
 	@Override
 	public boolean isEndOfBlock() {
 		return isEndOfBlock;
+	}
+	
+	@Override
+	public String toString() {
+		return join("", getObjects());
 	}
 
 }

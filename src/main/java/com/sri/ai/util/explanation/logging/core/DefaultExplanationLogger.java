@@ -1,6 +1,7 @@
 package com.sri.ai.util.explanation.logging.core;
 
 import static com.sri.ai.util.Util.myAssert;
+import static com.sri.ai.util.Util.println;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -128,11 +129,20 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 	}
 
 	@Override
-	public void end(Object... objects) {
+	public void end(String startObjectsString, Object... objects) {
 
 		if (!isActive()) return;
 		
 	    if (!insideIgnoredBlock()) {
+	    	if (startRecords.isEmpty()) {
+	    		println("Explanation start records is empty but should not be");
+	    		//System.exit(-1);
+	    	}
+	    	if (!startObjectsString.equals("") && !startObjectsString.equals(startRecords.peek().getOriginalObjectsString())) {
+	    		println("Top start record is " + startRecords.peek().getOriginalObjectsString());
+	    		println("but expecting       " + startObjectsString);
+	    		//System.exit(-1);
+	    	}
 	    	exitBlock(objects);
 	    }
 	    else {
@@ -227,11 +237,17 @@ public class DefaultExplanationLogger implements ExplanationLogger {
 	
 	private void pushNewStartRecord(ExplanationRecord record) {
 		startRecords.push(record);
+//		println("Pushed record: " + record);
+//		println("Current Start records:\n" + join("\n", startRecords));
+//		println();
 	}
 
 	private ExplanationRecord popStartRecord() {
 		myAssert(!startRecords.isEmpty(), () -> "Trying to pop an explanation level but we are at the top level already.");
 		ExplanationRecord lastStartRecord = startRecords.pop();
+//		println("Popped record: " + lastStartRecord);
+//		println("Current Start records:\n" + join("\n", startRecords));
+//		println();
 		return lastStartRecord;
 	}
 	

@@ -4951,7 +4951,7 @@ public class Util {
 	 */
 	public static void myAssert(boolean test, Object requirer, NullaryFunction<String> message) {
 		if ( ! test && System.getProperty(MY_ASSERT_OFF) == null) {
-			throw new AssertionError(requirer.getClass() + " " + message.apply());
+			throw new AssertionError(requirer.getClass().getSimpleName() + " " + message.apply());
 		}
 	}
 

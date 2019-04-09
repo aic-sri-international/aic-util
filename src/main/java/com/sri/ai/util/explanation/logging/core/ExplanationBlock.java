@@ -1,11 +1,13 @@
 package com.sri.ai.util.explanation.logging.core;
 
 import static com.sri.ai.util.Util.getIndexOfFirstSatisfyingPredicateOrMinusOne;
+import static com.sri.ai.util.Util.join;
 import static com.sri.ai.util.Util.myAssert;
 import static java.util.Arrays.copyOfRange;
 
 import com.sri.ai.util.base.NullaryFunction;
 import com.sri.ai.util.base.NullaryProcedure;
+import com.sri.ai.util.base.Procedure;
 import com.sri.ai.util.explanation.logging.api.ExplanationLogger;
 
 public class ExplanationBlock<T> {
@@ -71,14 +73,15 @@ public class ExplanationBlock<T> {
 		T result;
 		
 		logger.start(importance, startArguments);
-		
+		String startObjectsString = join("", startArguments);
 		try {
 			result = code.apply();
 			Object[] endArgumentsWithActualResult = replaceRESULTByResult(endArguments, result);
-			logger.end(endArgumentsWithActualResult);
+			logger.end(startObjectsString, endArgumentsWithActualResult);
 		}
 		catch (Throwable throwable) {
-			logger.end("Throwable thrown: ", throwable);
+			// println("ExplanationBlock: Going to end block that started with arguments " + join("", startArguments));
+			logger.end(startObjectsString, "Throwable thrown: ", throwable);
 			throw throwable;
 		}
 		

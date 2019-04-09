@@ -119,7 +119,7 @@ public class ExplanationLoggerTest {
 			logger.start("Starting block ", 1);
 			logger.explain("I'm explanation 1.1");
 			logger.explain("I'm explanation 1.2");
-			logger.end("End of block ", 1);
+			logger.end("", "End of block ", 1);
 			expected =
 					nesting.getNestingString(0) + "Starting block 1\n" + 
 							nesting.getNestingString(1) + "I'm explanation 1.1\n" + 
@@ -141,9 +141,9 @@ public class ExplanationLoggerTest {
 			logger.explain("I'm explanation 1.1.1");
 			logger.explain("I'm explanation 1.1.2");
 			logger.explain("I'm explanation 1.1.3");
-			logger.end("End of block 1.1");
+			logger.end("", "End of block 1.1");
 			logger.explain("I'm explanation 1.2");
-			logger.end("End of block ", 1);
+			logger.end("", "End of block ", 1);
 			expected =
 					nesting.getNestingString(0) + "Starting block 1\n" + 
 							nesting.getNestingString(1) + "I'm explanation 1.1\n" + 
@@ -173,13 +173,14 @@ public class ExplanationLoggerTest {
 		logger.start("Starting block ", 1);
 		logger.explain("I'm explanation 1.1");
 		logger.explain("I'm explanation 1.2");
-		logger.end("End of block ", 1);
+		logger.end("", "End of block ", 1);
 		try {
-			logger.end("End of block ", 0);
+			logger.end("", "End of block ", 0);
 			fail("Should have thrown an error by closing inexisting block.");
 		}
 		catch(Throwable t) {
-			
+			println("Ended non-existing explanation block, which correctly generated throwable " + t);
+			t.printStackTrace();
 		}
 
 		logger = new DefaultExplanationLogger();
@@ -187,20 +188,23 @@ public class ExplanationLoggerTest {
 		logger.addHandler(stringHandler);
 		logger.explain("I'm an explanation");
 		try {
-			logger.end("End of block ", 0);
+			logger.end("", "End of block ", 0);
 			fail("Should have thrown an error by closing inexisting block.");
 		}
 		catch(Throwable t) {
-			
+			println("Ended non-existing explanation block, which correctly generated throwable " + t);
+			t.printStackTrace();
 		}
 
 		logger = new DefaultExplanationLogger();
 		stringHandler = new StringExplanationHandler();
 		try {
-			logger.end("End of block ", 0);
+			logger.end("", "End of block ", 0);
 			fail("Should have thrown an error by closing inexisting block.");
 		}
 		catch(Throwable t) {
+			println("Ended non-existing explanation block, which correctly generated throwable " + t);
+			t.printStackTrace();
 			
 		}
 	}
@@ -224,7 +228,7 @@ public class ExplanationLoggerTest {
 			logger.start("Starting block ", 1);
 			logger.explain("I'm explanation 1.1");
 			logger.explain("I'm explanation 1.2");
-			logger.end("End of block ", 1);
+			logger.end("", "End of block ", 1);
 			expected = "";
 			println("expected:\n" + expected);
 			println("actual  :\n" + stringHandler);
@@ -245,17 +249,17 @@ public class ExplanationLoggerTest {
 			logger.explain(1000, "I'm explanation 1.1.1.1");
 			logger.explain(1000, "I'm explanation 1.1.1.2");
 			logger.explain(1000, "I'm explanation 1.1.1.3");
-			logger.end("End of block 1.1.1");
+			logger.end("", "End of block 1.1.1");
 			logger.explain(1000, "I'm explanation 1.1.2");
 			logger.explain(1000, "I'm explanation 1.1.3");
-			logger.end("End of block 1.1");
+			logger.end("", "End of block 1.1");
 			logger.start(0.9, "Starting block 1.2");
 			logger.explain(1000, "I'm explanation 1.2.1");
 			logger.explain(1000, "I'm explanation 1.2.2");
 			logger.explain(1000, "I'm explanation 1.2.3");
-			logger.end("End of block 1.2");
+			logger.end("", "End of block 1.2");
 			logger.explain("I'm explanation 1.2");
-			logger.end("End of block ", 1);
+			logger.end("", "End of block ", 1);
 			expected =
 					nesting.getNestingString(0) + "Starting block 1\n" + 
 							nesting.getNestingString(1) + "Starting block 1.2\n" + 
@@ -301,19 +305,19 @@ public class ExplanationLoggerTest {
 			logger.explain("I'm explanation 1.1.1.1.1");
 			logger.explain("I'm explanation 1.1.1.1.2");
 			logger.explain("I'm explanation 1.1.1.1.3");
-			logger.end("End of block 1.1.1.1");
+			logger.end("", "End of block 1.1.1.1");
 			logger.explain("I'm explanation 1.1.1.3");
-			logger.end("End of block 1.1.1");
+			logger.end("", "End of block 1.1.1");
 			logger.explain("I'm explanation 1.1.2");
 			logger.explain("I'm explanation 1.1.3");
-			logger.end("End of block 1.1");
+			logger.end("", "End of block 1.1");
 			logger.start("Starting block 1.2");
 			logger.explain("I'm explanation 1.2.1");
 			logger.explain("I'm explanation 1.2.2");
 			logger.explain("I'm explanation 1.2.3");
-			logger.end("End of block 1.2");
+			logger.end("", "End of block 1.2");
 			logger.explain("I'm explanation 1.2");
-			logger.end("End of block ", 1);
+			logger.end("", "End of block ", 1);
 			expected =
 					nesting.getNestingString(0) + "Starting block 1\n" + 
 							nesting.getNestingString(1) + "I'm explanation 1.1\n" + 
@@ -595,11 +599,11 @@ public class ExplanationLoggerTest {
 		wasteTime();
 		logger.explain("I'm explanation 1.1.3");
 		wasteTime();
-		logger.end("End of block 1.1");
+		logger.end("", "End of block 1.1");
 		wasteTime();
 		logger.explain("I'm explanation 1.2");
 		wasteTime();
-		logger.end("End of block ", 1);
+		logger.end("", "End of block ", 1);
 		println("blocks and times  :\n" + stringHandler);
 		println();
 		

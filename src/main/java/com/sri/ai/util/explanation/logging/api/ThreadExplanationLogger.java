@@ -141,17 +141,17 @@ public class ThreadExplanationLogger {
 	
 
 	
-	public static void start(Object... objects) {
-		getThreadExplanationLogger().start(objects);
-	}
+//	public static void start(Object... objects) {
+//		getThreadExplanationLogger().start(objects);
+//	}
 	
 	public static void explain(Object... objects) {
 		getThreadExplanationLogger().explain(objects);
 	}
 	
-	public static void end(Object... objects) {
-		getThreadExplanationLogger().end(objects);
-	}
+//	public static void end(Object... objects) {
+//		getThreadExplanationLogger().end(objects);
+//	}
 	
 	
 	 

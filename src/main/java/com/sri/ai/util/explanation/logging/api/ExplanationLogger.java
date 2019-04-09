@@ -15,14 +15,14 @@ import com.sri.ai.util.tree.Tree;
  * An {@link ExplanationLogger} receives indented information about an algorithm's execution and passes it on to {@link ExplanationHandler}s
  * with specific functionalities.
  * <p>
- * Each invocation of {@link #start(Object...)}, {@link #explain(Object...)} and {@link #end(Object...)} create an {@link ExplanationRecord}
+ * Each invocation of {@link #start(Object...)}, {@link #explain(Object...)} and {@link #end(String, Object...)} create an {@link ExplanationRecord}
  * passed on to {@link #explain(ExplanationRecord)}.
  * <p>
  * {@link ExplanationLogger} is similar to regular logging (and handlers may resort to regular logging as one way to handle explanations),
  * but adds the abilities to:
  * <ul>
  * <li> indicate nesting (an unbounded non-negative integer), so that viewers can exhibit explanations in a top-down level and avoid overwhelming the user;
- * nesting is controlled by {@link #start(Object...)} and {@link #end(Object...)} methods;
+ * nesting is controlled by {@link #start(Object...)} and {@link #end(String, Object...)} methods;
  * <li> receive Java objects without necessarily converting them to text, so that viewers can manipulate those objects in any way they want.
  * <li> exhibit or omit amounts of detail according to the user specifications. This is done as follows:
  * explanations records have an importance weight (with default 1). 
@@ -131,7 +131,13 @@ public interface ExplanationLogger {
 	
 	void explain(Number importance, Object... objects);
 	
-	void end(Object... objects);
+	/**
+	 * Ends an explanation block; current startObjectsString parameter is temporary and meant for debugging
+	 * mismatched block ends to their starts
+	 * @param startObjectsString
+	 * @param objects
+	 */
+	void end(String startObjectsString, Object... objects);
 	
 	
 	
@@ -171,7 +177,7 @@ public interface ExplanationLogger {
 				for (Tree<?> child : in(tree.getChildren())) {
 					explainTree(child);
 				}
-				end();
+				end(tree.getInformation().toString());
 			}
 			else {
 				explain(tree.getInformation());
