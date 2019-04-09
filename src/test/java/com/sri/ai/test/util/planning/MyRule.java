@@ -38,8 +38,9 @@ public class MyRule implements Rule<Goal> {
 	}
 
 	@Override
-	public void execute(State state) {
+	public State execute(State state) {
 		println(this);
+		return state;
 	}
 
 	@Override

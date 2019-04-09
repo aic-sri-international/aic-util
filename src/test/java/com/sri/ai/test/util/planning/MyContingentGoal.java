@@ -1,5 +1,8 @@
 package com.sri.ai.test.util.planning;
 
+import static com.sri.ai.util.Util.pair;
+
+import com.sri.ai.util.base.Pair;
 import com.sri.ai.util.planning.api.ContingentGoal;
 import com.sri.ai.util.planning.api.State;
 
@@ -9,9 +12,12 @@ public class MyContingentGoal extends MyGoal implements ContingentGoal {
 		super(name);
 	}
 
+	/**
+	 * Always returns the given state since {@link MyContingentGoal} is not meant to be used at plan execution time.
+	 */
 	@Override
-	public boolean isSatisfied(State state) {
-		return false;
+	public Pair<Boolean, State> isSatisfied(State state) {
+		return pair(false, state);
 	}
 	
 	@Override

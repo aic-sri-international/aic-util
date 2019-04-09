@@ -24,7 +24,7 @@ public interface Plan {
 	 */
 	boolean isFailedPlan();
 	
-	void execute(State state);
+	State execute(State state);
 	
 	void reward(double reward);
 

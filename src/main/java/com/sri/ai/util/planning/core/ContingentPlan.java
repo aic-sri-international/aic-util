@@ -2,6 +2,7 @@ package com.sri.ai.util.planning.core;
 
 import static com.sri.ai.util.Util.list;
 
+import com.sri.ai.util.base.Pair;
 import com.sri.ai.util.planning.api.ContingentGoal;
 import com.sri.ai.util.planning.api.Plan;
 import com.sri.ai.util.planning.api.State;
@@ -50,13 +51,14 @@ public class ContingentPlan extends AbstractCompoundPlan {
 	}
 
 	@Override
-	public void execute(State state) {
-		if (contingentGoal.isSatisfied(state)) {
-			thenBranch.execute(state);
-		}
-		else { 
-			elseBranch.execute(state);
-		}
+	public State execute(State state) {
+		State result;
+		Pair<Boolean, State> isSatisfiedAndstateAfterCheckingIfGoalIsSatisfied = contingentGoal.isSatisfied(state);
+		Boolean isSatisfied = isSatisfiedAndstateAfterCheckingIfGoalIsSatisfied.first;
+		State stateAfterSatisfiabilityDecision = isSatisfiedAndstateAfterCheckingIfGoalIsSatisfied.second;
+		Plan branchToFollow = isSatisfied? thenBranch : elseBranch;
+		result = branchToFollow.execute(stateAfterSatisfiabilityDecision);
+		return result;
 	}
 
 	@Override

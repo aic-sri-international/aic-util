@@ -46,10 +46,12 @@ public class SequentialPlan extends AbstractCompoundPlan {
 	}
 
 	@Override
-	public void execute(State state) {
+	public State execute(State state) {
+		State currentState = state;
 		for (Plan executer : getSubPlans()) {
-			executer.execute(state);
+			currentState = executer.execute(currentState);
 		}
+		return currentState;
 	}
 
 	@Override

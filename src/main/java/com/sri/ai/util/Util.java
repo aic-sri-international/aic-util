@@ -4181,8 +4181,8 @@ public class Util {
 		} while (removed);
 	}
 
-	public static <T> Pair<T, T> pair(T first, T second) {
-		return new Pair<T, T>(first, second);
+	public static <T1, T2> Pair<T1, T2> pair(T1 first, T2 second) {
+		return new Pair<T1, T2>(first, second);
 	}
 
 	/**
