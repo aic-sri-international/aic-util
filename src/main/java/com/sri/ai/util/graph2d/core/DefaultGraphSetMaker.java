@@ -12,11 +12,13 @@ import com.sri.ai.util.function.api.variables.SetOfVariables;
 import com.sri.ai.util.function.api.variables.Variable;
 import com.sri.ai.util.graph2d.api.GraphSetMaker;
 import com.sri.ai.util.graph2d.core.jfreechart.GraphSettings;
+import java.util.function.Function;
 
 public class DefaultGraphSetMaker implements GraphSetMaker {
 	private GraphSettings graphSettings = new GraphSettings();
 	private Functions functions;
 	private Map<Variable, SetOfValues> fromVariableToSetOfValues;
+	private Function<Double, String> decimalFormatter = Object::toString;
 
 	@Override
 	public GraphSettings getGraphSettings() {
@@ -38,7 +40,7 @@ public class DefaultGraphSetMaker implements GraphSetMaker {
 	public void setFunctions(Functions functions) {
 		this.functions = functions;
 	}
-	
+
 	@Override
 	public Map<Variable, SetOfValues> getFromVariableToSetOfValues() {
 		return fromVariableToSetOfValues;
@@ -63,7 +65,7 @@ public class DefaultGraphSetMaker implements GraphSetMaker {
 		if (setOfValues == null) {
 			throw new Error("Need values for " + variable + " but that is not defined either by the variable itself or by the functions " + this);
 		}
-		
+
 		return setOfValues;
 	}
 
@@ -79,9 +81,9 @@ public class DefaultGraphSetMaker implements GraphSetMaker {
 	public Iterable<Assignment> assignments(SetOfVariables setOfVariables) {
 		return Assignment.assignments(setOfVariables, this::getValuesForVariable);
 	}
-	
+
 	private String filePathnameBase = "";
-	
+
 	@Override
 	public String getFilePathnameBase() {
 		return filePathnameBase;
@@ -91,5 +93,14 @@ public class DefaultGraphSetMaker implements GraphSetMaker {
 	public void setFilePathnameBase(String filePathnameBase) {
 		this.filePathnameBase = filePathnameBase;
 	}
-	
+
+	@Override
+	public Function<Double, String> getDecimalFormatter() {
+		return decimalFormatter;
+	}
+
+	@Override
+	public void setDecimalFormatter(Function<Double, String> decimalFormatter) {
+		this.decimalFormatter = decimalFormatter;
+	}
 }

@@ -25,15 +25,15 @@ public interface Assignment {
 	static Assignment assignment(SetOfVariables variables, ArrayList<? extends Value> values) {
 		return new DefaultAssignment(variables, values);
 	}
-	
+
 	static DefaultAssignment assignment(Object... variablesAndValues) {
 		return DefaultAssignment.assignment(variablesAndValues);
 	}
-	
+
 	Assignment remove(Variable variableToRemove);
 
 	SetOfVariables getSetOfVariables();
-	
+
 	default int size() {
 		return getSetOfVariables().size();
 	}
@@ -50,9 +50,10 @@ public interface Assignment {
 	/**
 	 * Returns a text string that contains each variable name and its associated string value
 	 * formatted so that it is suitable to be used as part of the graph's title.
+	 * @param decimalFormatter used to format doubles
 	 * @return formatted text
 	 */
-	String toDisplayFormat();
+	String toDisplayFormat(Function<Double, String> decimalFormatter);
 
 	/**
 	 * Returns an iterable to all assignments to given variables, requiring that they all have defined values.
@@ -98,9 +99,9 @@ public interface Assignment {
 		ArrayList<Integer> result = mapIntoArrayList(variables, v -> setOfValuesForVariable.apply(v).getIndexOf(get(v)));
 		return result;
 	}
-	
+
 	default Assignment get(SetOfVariables setOfVariables) {
-		Map<Variable, Value> fromVariableToValues = 
+		Map<Variable, Value> fromVariableToValues =
 				setOfVariables
 				.getVariables()
 				.stream()

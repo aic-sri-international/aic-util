@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import java.util.function.Function;
 import org.apache.commons.lang3.Validate;
 
 import com.sri.ai.util.function.api.values.Value;
@@ -56,7 +57,7 @@ public class DefaultAssignment implements Assignment {
 		DefaultAssignment result = new DefaultAssignment(map(variablesAndValues));
 		return result;
 	}
-	
+
 	@Override
 	public SetOfVariables getSetOfVariables() {
 		return setOfVariables;
@@ -102,7 +103,7 @@ public class DefaultAssignment implements Assignment {
 
 	@Override
 	public Assignment remove(Variable variableToRemove) {
-		
+
 		Map<Variable, Value> variableToValue = new LinkedHashMap<>(this.variableToValue);
 		variableToValue.remove(variableToRemove);
 
@@ -115,13 +116,21 @@ public class DefaultAssignment implements Assignment {
 	}
 
 	@Override
-	public String toDisplayFormat() {
+	public String toDisplayFormat(Function<Double, String> decimalFormatter) {
 		StringBuilder sb = new StringBuilder();
+
 		variableToValue.forEach((variable,value)-> {
 			if (sb.length() > 0) {
 				sb.append(", ");
 			}
-			sb.append(variable.getName()).append('=').append(value.stringValue());
+
+			sb.append(variable.getName()).append('=');
+
+			if (variable instanceof RealVariable) {
+				sb.append(decimalFormatter.apply(value.doubleValue()));
+			} else {
+				sb.append(value.stringValue());
+			}
 		});
 		return sb.toString();
 	}

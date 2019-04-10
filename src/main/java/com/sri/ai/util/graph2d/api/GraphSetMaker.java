@@ -8,6 +8,7 @@ import static com.sri.ai.util.graph2d.api.ExternalGraphPlotter.externalLineGraph
 import com.sri.ai.util.function.core.values.SetOfIntegerValues;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -26,12 +27,12 @@ import com.sri.ai.util.graph2d.core.jfreechart.GraphSettings;
 
 /**
  * An interface for classes generating sets of {@link GraphSet}s from {@link Functions}.
- * 
+ *
  * @author braz
  *
  */
 public interface GraphSetMaker {
-	
+
 	static GraphSetMaker graphSetMaker() {
 		return new DefaultGraphSetMaker();
 	}
@@ -45,36 +46,38 @@ public interface GraphSetMaker {
 
 	Map<Variable, SetOfValues> getFromVariableToSetOfValues();
 	void setFromVariableToSetOfValues(Map<Variable, SetOfValues> fromVariableToSetOfValues);
-	
+
 	SetOfValues getValuesForVariable(Variable variable);
 	void setValuesForVariable(Variable variable, SetOfValues setOfValues);
 
-	/** 
-	 * The base for the file pathnames to use for each plot; 
+	/**
+	 * The base for the file pathnames to use for each plot;
 	 * the actual pathname will be the concatenation of the base and the plot's title.
 	 * If not provided, temp files will be created.
 	 */
 	String getFilePathnameBase();
 	void setFilePathnameBase(String filePathname);
 
-	
+	Function<Double, String> getDecimalFormatter();
+	void setDecimalFormatter(Function<Double, String> decimalFormatter);
+
 	Iterable<Assignment> assignments(SetOfVariables setOfVariables);
 
 	default GraphSet make(Variable xAxisVariable) {
-		
+
 		GraphSet graphSet = GraphSet.graphSet(getFunctions());
-		
+
 		SetOfVariables nonAxisVariables = getNonAxisVariables(xAxisVariable);
-		
+
 		for (Assignment assignmentToNonAxisVariables: assignments(nonAxisVariables)) {
 			println(assignmentToNonAxisVariables);
 			GraphPlot plot = plot(assignmentToNonAxisVariables, xAxisVariable);
 			graphSet.add(plot);
 		}
-		
+
 		return graphSet;
 	}
-	
+
 	default SetOfVariables getNonAxisVariables(Variable xAxisVariable) {
 		SetOfVariables nonAxisVariables = getFunctions().getAllInputVariables().minus(xAxisVariable);
 		return nonAxisVariables;
@@ -85,17 +88,17 @@ public interface GraphSetMaker {
 				= getFunctions().project(xAxisVariable, assignmentToNonAxisVariables);
 
 		println("Set of x-axis values for plotting: " + join(xAxisVariable.getSetOfValuesOrNull().iterator()));
-		
+
 		SetOfValues oldXAxisSetOfValues = useValuesFromCurrentlyGivenXAxisVariableIfProvidedEvenIfDifferentFromOriginalVariable(xAxisVariable);
-		
+
 		String title = buildTitle(assignmentToNonAxisVariables, singleInputFunctionsToBePlotted);
-		
+
 		GraphPlot result = plot(title, singleInputFunctionsToBePlotted, assignmentToNonAxisVariables);
-		
+
 		setValuesForVariable(xAxisVariable, oldXAxisSetOfValues);
-		
+
 		return result;
-		
+
 	}
 
 	default SetOfValues useValuesFromCurrentlyGivenXAxisVariableIfProvidedEvenIfDifferentFromOriginalVariable(Variable currentXAxisVariable) {
@@ -108,7 +111,7 @@ public interface GraphSetMaker {
 		}
 		return old;
 	}
-	
+
 	default String buildTitle(Assignment assignmentToNonAxisVariables,
 														SingleInputFunctions singleInputFunctionsToBePlotted) {
 		List<? extends SingleInputFunction> singleInputFunctions
@@ -121,15 +124,16 @@ public interface GraphSetMaker {
 
 //		String inputVariableName = singleInputFunctionsToBePlotted.getInputVariable().getName();
 //		String xAxisDescription = inputVariableName.length() > 1? " by " + inputVariableName : "";
-//      usually in the output variable name already anyway 
+//      usually in the output variable name already anyway
 		String xAxisDescription = "";
-		
+
 		int numberOfRemainingVariables = assignmentToNonAxisVariables.size();
-		String remainingVariablesDescription = numberOfRemainingVariables > 0? " for " + assignmentToNonAxisVariables.toDisplayFormat() : "";
-		
+		String remainingVariablesDescription = numberOfRemainingVariables > 0? " for "
+				+ assignmentToNonAxisVariables.toDisplayFormat(getDecimalFormatter()) : "";
+
 		return names + xAxisDescription + remainingVariablesDescription;
 	}
-	
+
 	default GraphPlot plot(String title, SingleInputFunctions singleInputFunctionsToBePlotted, Assignment assignment) {
 		SetOfValues setOfValues = getValuesForVariable(singleInputFunctionsToBePlotted.getInputVariable());
 		DefaultExternalGeoMapPlotter externalGeoMapPlotter = new DefaultExternalGeoMapPlotter(setOfValues);
