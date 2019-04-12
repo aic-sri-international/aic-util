@@ -40,6 +40,7 @@ public class DefaultBarGraphPlotter extends AbstractExternalGraphPlotter {
 
     final BarChartFactory barChartFactory = new BarChartFactory()
         .setTitle(getTitle())
+        .setxAxisLabel(xVariable.getName())
         .setyAxisLabel(formatVariable(yOutputVariable, false));
 
     chartRowToColumns.forEach((rowKey, columnToValue) -> columnToValue

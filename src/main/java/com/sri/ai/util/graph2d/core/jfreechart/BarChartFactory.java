@@ -29,6 +29,7 @@ public class BarChartFactory {
 
     new BarChartFactory()
         .setTitle("Average Income & Expense by Continent For Age 20")
+        .setxAxisLabel("Country")
         .setyAxisLabel("$")
         .addValue(21000, income, europe)
         .addValue(16000, expense, europe)
