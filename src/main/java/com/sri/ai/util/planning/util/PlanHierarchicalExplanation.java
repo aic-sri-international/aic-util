@@ -8,15 +8,9 @@ import java.util.Collection;
 import java.util.IdentityHashMap;
 
 import com.sri.ai.util.explanation.logging.api.ExplanationHandler;
-import com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger;
 import com.sri.ai.util.planning.api.Plan;
 
 public class PlanHierarchicalExplanation {
-
-	public static void explainResultingPlan(Plan plan) {
-		ThreadExplanationLogger.explain("Resulting plan:");
-		explain(plan);
-	}
 
 	public static void explain(Plan plan) {
 		if (getThreadExplanationLogger().isActive()) {
