@@ -273,18 +273,17 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 	private Plan considerAvailableAndUsefulRule(R rule, int i) {
 		return explanationBlock("Considering available and useful rule ",  rule, code(() -> {
 
-			List<Plan> alternativePlansStartingWithRule = list();
-
+			Plan result;
+			
 			Goal unsatisfiedStaticAntecedent = findUnsatisfiedStaticAntecedent(rule);
 			if (unsatisfiedStaticAntecedent == null) {
-				considerRuleWithAtLeastStaticAntecedentsAllSatisfied(rule, i, alternativePlansStartingWithRule);
+				result = considerRuleWithAtLeastStaticAntecedentsAllSatisfied(rule, i);
 			}
 			else {
 				explain("Rule does not apply because ", unsatisfiedStaticAntecedent, " is unsatisfied");
+				result = OrPlan.or();
 			}
 
-			Plan result = OrPlan.or(alternativePlansStartingWithRule);
-			
 			explainResultingPlan(result);
 			
 			return result;
@@ -305,16 +304,23 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 		return result;
 	}
 
-	private void considerRuleWithAtLeastStaticAntecedentsAllSatisfied(R rule, int i, List<Plan> alternativePlansStartingWithRule) {
-		explanationBlock("Considering rule with all static antecedents satisfied: ", rule, code(() -> {
+	private Plan considerRuleWithAtLeastStaticAntecedentsAllSatisfied(R rule, int i) {
+		return explanationBlock("Considering rule with all static antecedents satisfied: ", rule, code(() -> {
 
+			Plan result;
+			
 			ContingentGoal contingentGoalNegatedByState = findContingentGoalNegatedByState(rule);
 			if (contingentGoalNegatedByState == null) {
-				considerRuleWithAtLeastStaticAntecedentsAllSatisfiedAndNoContingentGoalsNegatedByState(rule, i, alternativePlansStartingWithRule);
+				result = considerRuleWithAtLeastStaticAntecedentsAllSatisfiedAndNoContingentGoalsNegatedByState(rule, i);
 			}
 			else {
 				explain("Rule does not apply because ", contingentGoalNegatedByState, " is already negated");
+				result = OrPlan.or();
 			}
+			
+			explainResultingPlan(result);
+
+			return result;
 
 		}));
 	}
@@ -331,32 +337,40 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 		return contingentAntecendentNegatedByState;
 	}
 
-	private void considerRuleWithAtLeastStaticAntecedentsAllSatisfiedAndNoContingentGoalsNegatedByState(R rule, int i, List<Plan> alternativePlansStartingWithRule) {
-		explanationBlock("Considering rule with all static antecedents satisfied and no contingent goals negated by state: ", rule, code(() -> {
+	private Plan considerRuleWithAtLeastStaticAntecedentsAllSatisfiedAndNoContingentGoalsNegatedByState(R rule, int i) {
+		return explanationBlock("Considering rule with all static antecedents satisfied and no contingent goals negated by state: ", rule, code(() -> {
 
+			Plan result;
+			
 			ContingentGoal contingentGoalNotYetDefined = findContingentGoalNotYetDefined(rule);
 			if (contingentGoalNotYetDefined != null) {
-				considerBothPossibilitiesForContingentGoal(rule, i, contingentGoalNotYetDefined, alternativePlansStartingWithRule);
+				result = considerBothPossibilitiesForContingentGoal(rule, i, contingentGoalNotYetDefined);
 			}
 			else {
-				recordPlanStartingWithRuleIfSuccessful(rule, i, alternativePlansStartingWithRule);
+				result = findPlanStartingWithRule(rule, i);
 			}
+			
+			return result;
 
 		}));
 	}
 
-	private void considerBothPossibilitiesForContingentGoal(R rule, int i, ContingentGoal contingentGoal, List<Plan> alternativePlansStartingWithRule) {
-		explanationBlock("Considering both possibilities for contingent ", contingentGoal, code(() -> {
+	private Plan considerBothPossibilitiesForContingentGoal(R rule, int i, ContingentGoal contingentGoal) {
+		return explanationBlock("Considering both possibilities for contingent ", contingentGoal, code(() -> {
 
 			Plan thenBranch = considerContingentGoalSatisfied(rule, i, contingentGoal);
 			Plan elseBranch = considerContingentGoalNegated(rule, contingentGoal);
 			Plan result;
 			if ( ! thenBranch.isFailedPlan() && ! elseBranch.isFailedPlan()) {
 				result = new ContingentPlan(contingentGoal, thenBranch, elseBranch);
-				alternativePlansStartingWithRule.add(result);
+			}
+			else {
+				result = OrPlan.or();
 			}
 			// both branches must be guaranteed to be successful since we cannot tell in advance which one will be used
 
+			return result;
+			
 		}));
 	}
 	
@@ -366,25 +380,11 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 
 			Set<G> satisfiedGoalsBeforeRule = new LinkedHashSet<>(state.satisfiedGoals);
 			state.satisfiedGoals.add((G) contingentGoal);
-			Plan thenBranch = planIfThereIsAtLeastOneUnsatisfiedRequiredGoalStartingAtRuleWithIndexWhichIsKnownToHaveAtLeastAllStaticAntecedentsAllSatisfied(rule, i);
+			Plan thenBranch = considerRuleWithAtLeastStaticAntecedentsAllSatisfied(rule, i);
 			state.satisfiedGoals = satisfiedGoalsBeforeRule;
 			return thenBranch;
 
 		}), "Assuming contingent: ", contingentGoal, " is true, plan is ", RESULT);
-	}
-
-	private Plan planIfThereIsAtLeastOneUnsatisfiedRequiredGoalStartingAtRuleWithIndexWhichIsKnownToHaveAtLeastAllStaticAntecedentsAllSatisfied(R rule, int i) {
-		return explanationBlock("Finding plan using ", rule, " known to have all static antecedents satisfied", code(() -> {
-	
-			List<Plan> alternativeRulePlansUnderThisCase = list();
-			considerRuleWithAtLeastStaticAntecedentsAllSatisfied(rule, i, alternativeRulePlansUnderThisCase);
-			Plan result = OrPlan.or(alternativeRulePlansUnderThisCase);
-	
-			explainResultingPlan(result);
-	
-			return result;
-	
-		}));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -398,13 +398,6 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 			return elseBranch;
 
 		}), "Assuming contingent: ", contingentGoal, " is false, plan is ", RESULT);
-	}
-
-	private void recordPlanStartingWithRuleIfSuccessful(R rule, int i, List<Plan> alternativeRulePlans) {
-		Plan planStartingWithRule = findPlanStartingWithRule(rule, i);
-		if ( ! planStartingWithRule.isFailedPlan()) {
-			alternativeRulePlans.add(planStartingWithRule);
-		}
 	}
 
 	private Plan findPlanStartingWithRule(R rule, int i) {
