@@ -107,20 +107,21 @@ import com.sri.ai.util.planning.util.PlanHierarchicalExplanation;
  * 
  * Plan(R, H) (isContingent and G are fixed)
  *     Epsilon, if H implies G
- *     Disjunction_{r in R : cons(r) not satisfied by H (i.e., it's useful)} ConsiderAvailableAndUsefulRule(r, R \ {r}, H) otherwise
+ *     PlanIfThereAreUnsatisfiedRequiredGoals(R, H), otherwise
  *     
+ * PlanIfThereAreUnsatisfiedRequiredGoals(R, H)
+ *     Disjunction_{r in R : isEligibleRule(r, H)} PlanContingentlyStartingWithRuleOfIndex(r, R, H)
  *  
- * ConsiderAvailableAndUsefulRule(r, R, H)
- *     if not staticAntecendentsAllSatisfied(r, H) or thereIsContigentAntecedentNegatedBy(r, H)
- *        return or() (failed plan)
- *     else if there is C : isContigentAntecedentNotSatisfiedByH(r, C, H)
- *        return if C then ConsiderAvailableAndUsefulRule(r, H union C) else ConsiderAvailableAndUsefulRule(r, H union not C)
+ * PlanContingentlyStartingWithRuleOfIndex(r, R, H)
+ *     if there is C : isContigentAntecedentNotYetDefinedByH(r, C, H)
+ *        return if C then PlanContingentlyStartingWithRuleOfIndex(r, R, H union C) else PlanIfThereAreUnsatisfiedRequiredGoals(R \ {r}, H union not C)
  *     else
  *        return sequence(r, Plan(R, H union cons(r)))
  * 
+ * isEligibleRule(r, H) = isUseful(r, H) and staticAntecendentsAllSatisfied(r, H) and not thereIsContigentAntecedentNegatedBy(r, H) 
  * staticAntecendentsAllSatisfied(r, H) = for all a in ant(r) : !isContingent(a) => a is satisfied by H
  * thereIsContigentAntecedentNegatedBy(r, H) = there is a in ant(r) : isContingent(a) and H implies negation of a
- * isContigentAntecedentNotSatisfiedByH(r, C, H) = C in ant(r) and isContingent(C) and C isn't satisfied by H
+ * isContigentAntecedentNotYetDefinedByH(r, C, H) = C in ant(r) and isContingent(C) and C isn't satisfied by H
  * sequence(r, p) = if p is failed return failed else return sequence r, p
  * </pre>
  * 
