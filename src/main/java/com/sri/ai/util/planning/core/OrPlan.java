@@ -28,11 +28,11 @@ public class OrPlan extends AbstractCompoundPlan {
 	
 	private ArrayList<Integer> numberOfSubPlanExecutions;
 	
-	public static Plan or(Plan... subPlans) {
-		return or(Arrays.asList(subPlans));
+	public static Plan orPlan(Plan... subPlans) {
+		return orPlan(Arrays.asList(subPlans));
 	}
 
-	public static Plan or(List<? extends Plan> subPlans) {
+	public static Plan orPlan(List<? extends Plan> subPlans) {
 		List<? extends Plan> flattenedSubPlans = AbstractCompoundPlan.flatten(subPlans, OrPlan.class, getSubItems());
 		if (flattenedSubPlans.size() == 1) {
 			return flattenedSubPlans.get(0);

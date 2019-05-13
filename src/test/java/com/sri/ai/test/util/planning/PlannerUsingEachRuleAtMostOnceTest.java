@@ -7,7 +7,7 @@ import static com.sri.ai.util.Util.join;
 import static com.sri.ai.util.Util.list;
 import static com.sri.ai.util.Util.println;
 import static com.sri.ai.util.planning.core.ContingentPlan.contingent;
-import static com.sri.ai.util.planning.core.OrPlan.or;
+import static com.sri.ai.util.planning.core.OrPlan.orPlan;
 import static com.sri.ai.util.planning.core.SequentialPlan.and;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -96,7 +96,7 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 		satisfiedGoals = list();
 		
 		expected = 
-				or(
+				orPlan(
 						and(
 								rule(list(b), list()),
 								rule(list(d), list()),
@@ -104,7 +104,7 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 								rule(list(a), list(b, c))),
 						and(
 								rule(list(d), list()),
-								or(
+								orPlan(
 										and(
 												rule(list(b), list(d)),
 												rule(list(c), list(b, d)),
@@ -153,15 +153,15 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 		satisfiedGoals = list();
 		
 		expected = 
-				or(
+				orPlan(
 						and(
 								rule(list(a), list()), 
-								or(
+								orPlan(
 										rule(list(b), list()),
 										rule(list(b), list(a)))),
 						and(
 								rule(list(b), list()),
-								or(
+								orPlan(
 										rule(list(a), list()),
 										rule(list(a), list(b)))));				
 
@@ -185,29 +185,29 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 		satisfiedGoals = list();
 		
 		expected = 
-		or(
+		orPlan(
 				and(
 						rule(list(a), list()), 
-						or(
+						orPlan(
 								and(
 										rule(list(b), list(a)),
 										rule(list(c), list())),
 								and(
 										rule(list(c), list()),
-										or(
+										orPlan(
 												rule(list(b), list(c)),
 												rule(list(b), list(a)))))),
 				and(
 						rule(list(c), list()), 
-						or(
+						orPlan(
 								and(
 										rule(list(a), list()),
-										or(
+										orPlan(
 												rule(list(b), list(c)),
 												rule(list(b), list(a)))),
 								and(
 										rule(list(b), list(c)),
-										or(
+										orPlan(
 												rule(list(a), list()),
 												rule(list(a), list(b)))))));
 														
@@ -258,7 +258,7 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 		
 		satisfiedGoals = list();
 		
-		expected = or(); // empty plan
+		expected = orPlan(); // empty plan
 														
 		runTest();
 	}
@@ -279,7 +279,7 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 		
 		satisfiedGoals = list();
 		
-		expected = or(); // empty plan
+		expected = orPlan(); // empty plan
 														
 		runTest();
 	}
@@ -313,7 +313,7 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 		
 		satisfiedGoals = list();
 		
-		expected = or(); // empty plan
+		expected = orPlan(); // empty plan
 														
 		runTest();
 	}
@@ -377,10 +377,10 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 		satisfiedGoals = list(b, c, d);
 		
 		expected = 
-				or(
+				orPlan(
 						and(
 								rule(list(e), list(d)),
-								or(
+								orPlan(
 										and(
 												rule(list(f), list(e)),
 												rule(list(a), list())),
@@ -442,7 +442,7 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 		
 		satisfiedGoals = list();
 		
-		expected = or(); 
+		expected = orPlan(); 
 														
 		runTest();
 		
@@ -462,12 +462,12 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 		satisfiedGoals = list();
 		
 		expected = 
-				or(
+				orPlan(
 						contingent(
 								ca, 
 								and(
 										rule(list(a), list(ca)),
-										or(
+										orPlan(
 												rule(list(b), list(a, ca)),
 												rule(list(b), list()))),
 								rule(list(b), list())),
@@ -567,7 +567,7 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 		
 		satisfiedGoals = list();
 		
-		expected = or();
+		expected = orPlan();
 														
 		runTest();
 		
@@ -608,10 +608,10 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 		satisfiedGoals = list();
 		
 		expected = 
-				or(
+				orPlan(
 						and(
 								rule(list(a), list()),
-								or(
+								orPlan(
 										contingent(
 												ca, 
 												contingent(
@@ -640,14 +640,14 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 		satisfiedGoals = list();
 		
 		expected = 
-				or(
+				orPlan(
 						contingent(
 								ca, 
 								contingent(
 										cb, 
 										and(
 												rule(list(a), list(ca, cb)),
-												or(
+												orPlan(
 														rule(list(c), list(ca, a, ca, cb, ca, cb, ca)),
 														rule(list(c), list()))),
 										rule(list(c), list())),
