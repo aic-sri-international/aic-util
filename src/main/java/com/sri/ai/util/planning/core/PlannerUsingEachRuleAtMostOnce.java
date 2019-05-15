@@ -259,7 +259,7 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 			
 			if (eligibleRuleIndices.isEmpty()) {
 				explain("No more eligible rules available and not all required goals are satisfied, so planning has failed.");
-				result = orPlan();
+				result = failedPlan();
 			}
 			else {
 				result = planIfThereAreEligibleRules();
@@ -358,7 +358,7 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 			}
 			else {
 				// both branches must be guaranteed to be successful since we cannot tell in advance which one will be used
-				result = OrPlan.orPlan();
+				result = failedPlan();
 			}
 	
 			return result;
@@ -514,7 +514,7 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 
 	private Plan makeSequence(R firstRule, Plan remainingPlan) {
 		if (remainingPlan.isFailedPlan()) {
-			return OrPlan.orPlan();
+			return failedPlan();
 		}
 		else {
 			return and(firstRule, remainingPlan);
@@ -538,6 +538,10 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 				}
 			}
 		}));
+	}
+
+	private Plan failedPlan() {
+		return orPlan();
 	}
 
 	/////////////////////// EXPLANATION METHODS - END
