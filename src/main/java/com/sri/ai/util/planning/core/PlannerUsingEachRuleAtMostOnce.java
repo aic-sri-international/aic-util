@@ -123,6 +123,35 @@ import com.sri.ai.util.planning.util.PlanHierarchicalExplanation;
  * thereIsContigentAntecedentNegatedBy(r, H) = there is a in ant(r) : isContingent(a) and H implies negation of a
  * isContigentAntecedentNotYetDefinedByH(r, C, H) = C in ant(r) and isContingent(C) and C isn't satisfied by H
  * sequence(r, p) = if p is failed return failed else return sequence r, p
+ * 
+ * ======================
+ * 
+ * Theorem: In PlanIfThereAreUnsatisfiedRequiredGoals(R, H),
+ * if there is r in R : isEligibleRule(r, H) and PlanContingentlyStartingWithRuleOfIndex(r, R, H) is the failed plan,
+ * then for all r in R : isEligibleRule(r, H) => PlanContingentlyStartingWithRuleOfIndex(r, R, H) is the failed plan.
+ * 
+ * Proof: Assume there are r1, r2 in R such that isEligibleRule(r1, H) and isEligibleRule(r2, H),
+ * but PlanContingentlyStartingWithRuleOfIndex(r1, R, H) is the failed plan
+ * while PlanContingentlyStartingWithRuleOfIndex(r2, R, H) is a successful plan.
+ * 
+ * If PlanContingentlyStartingWithRuleOfIndex(r2, R, H) is a successful plan,
+ * it may or may not involve r1.
+ * If it does not involve r1, then attempting r1 first would not prevent later finding a successful PlanContingentlyStartingWithRuleOfIndex(r2, R, H)),
+ * because attempting r1 in advance does not prevent any other rules from being used
+ * since the only thing it does is satisfying some goals and we assume all rule antecedents are positive.
+ * Even if r1 has contingent antecedents, attempting it first does limit the planning,
+ * because in the branches that r1 is applied, again the explanation above applies, and it does not limit planning,
+ * and in the branches in which r1 is not applied (because of negated contingent antecedents,
+ * the planner is still able to find PlanContingentlyStartingWithRuleOfIndex(r2, R, H).
+ * 
+ * If PlanContingentlyStartingWithRuleOfIndex(r2, R, H) does involve r1,
+ * we can simply move it first in the plan and again it would be a successful plan
+ * because now at every step we would have the same state spaces with extra goals satisfied (the goals of r1)
+ * in the branches in which it applies (that is, its contingent antecedents were satisfied)
+ * and in the branches in which it does not apply the state space would be identical.
+ *
+ * Therefore, the initial assumption in the proof is false by reductio ad absurdum and the theorem is proven.
+ * 
  * </pre>
  * 
  * @author braz
@@ -227,7 +256,12 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 			for (int i = 0; i != state.rules.size(); i++) {
 				if (ruleIsEligible(i)) {
 					Plan subPlan = planContingentlyStartingWithRuleOfIndex(i);
-					subPlans.add(subPlan);
+					if (subPlan.isFailedPlan()) {
+						break; // see corresponding theorem in documentation
+					}
+					else {
+						subPlans.add(subPlan);
+					}
 				}
 			}
 			
