@@ -442,7 +442,7 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 		
 		satisfiedGoals = list();
 		
-		expected = orPlan(); 
+		expected = plan("if (contingent ca) then b <= contingent ca else or()"); 
 														
 		runTest();
 		
@@ -567,7 +567,14 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 		
 		satisfiedGoals = list();
 		
-		expected = orPlan();
+		expected = plan(
+				"and("
+				+ "a <= , "
+				+ "if (contingent ca) "
+				+ "   then if (contingent cb) "
+				+ "           then c <= a, contingent ca, contingent cb "
+				+ "           else or() "
+				+ "   else or())");
 														
 		runTest();
 		

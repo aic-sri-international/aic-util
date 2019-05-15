@@ -353,12 +353,11 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 			Plan thenBranch = planStartingWithRuleOfIndexAssumingContingentAntecedentIsTrue(rule, i, contingentGoal);
 			Plan elseBranch = planStartingWithRuleOfIndexAssumingContingentAntecedentIsFalse(rule, contingentGoal);
 			Plan result;
-			if ( ! thenBranch.isFailedPlan() && ! elseBranch.isFailedPlan()) {
-				result = new ContingentPlan(contingentGoal, thenBranch, elseBranch);
+			if ( thenBranch.isFailedPlan() && elseBranch.isFailedPlan()) {
+				result = failedPlan();
 			}
 			else {
-				// both branches must be guaranteed to be successful since we cannot tell in advance which one will be used
-				result = failedPlan();
+				result = new ContingentPlan(contingentGoal, thenBranch, elseBranch);
 			}
 	
 			return result;
