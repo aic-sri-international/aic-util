@@ -1,6 +1,7 @@
 package com.sri.ai.util.planning.core;
 
 import static com.sri.ai.util.Util.arrayListFrom;
+import static com.sri.ai.util.Util.collectIntegers;
 import static com.sri.ai.util.Util.collectThoseWhoseIndexSatisfyArrayList;
 import static com.sri.ai.util.Util.forAll;
 import static com.sri.ai.util.Util.getFirst;
@@ -251,30 +252,25 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 		return explanationBlock("There are still unsatisfied required goals", code(() -> {
 			
 			explainUnsatisfiedRequiredGoals();
-			
-			List<Plan> subPlans = list();
-			for (int i = 0; i != state.rules.size(); i++) {
-				if (ruleIsEligible(i)) {
-					Plan subPlan = planContingentlyStartingWithRuleOfIndex(i);
-					if (subPlan.isFailedPlan()) {
-						break; // see corresponding theorem in documentation
-					}
-					else {
-						subPlans.add(subPlan);
-					}
-				}
-			}
-			
-			Plan result = orPlan(subPlans);
 
-			explainResultingPlan(result);
+			Plan result;
+			
+			List<Integer> eligibleRuleIndices = collectIntegers(state.rules.size(), this::isIndexOfEligibleRule);
+			
+			if (eligibleRuleIndices.isEmpty()) {
+				explain("No more eligible rules available and not all required goals are satisfied, so planning has failed.");
+				result = orPlan();
+			}
+			else {
+				result = planIfThereAreEligibleRules();
+			}
 
 			return result;
 
 		}));
 	}
 
-	private boolean ruleIsEligible(int i) {
+	private boolean isIndexOfEligibleRule(int i) {
 		return explanationBlock("Deciding if ", state.rules.get(i), " is eligible", code(() -> {
 			if (state.ruleIsAvailable.get(i)) {
 				explain("Rule has not yet been used");
@@ -306,6 +302,27 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 				return false;
 			}
 		}), "Rule is eligible: ", RESULT);
+	}
+
+	private Plan planIfThereAreEligibleRules() {
+		Plan result;
+		List<Plan> subPlans = list();
+		for (int i = 0; i != state.rules.size(); i++) {
+			if (isIndexOfEligibleRule(i)) {
+				Plan subPlan = planContingentlyStartingWithRuleOfIndex(i);
+				if (subPlan.isFailedPlan()) {
+					break; // see corresponding theorem in documentation
+				}
+				else {
+					subPlans.add(subPlan);
+				}
+			}
+		}
+
+		result = orPlan(subPlans);
+
+		explainResultingPlan(result);
+		return result;
 	}
 
 	private Plan planContingentlyStartingWithRuleOfIndex(int i) {

@@ -103,6 +103,10 @@ public class IntegerIterator extends EZIterator<Integer> {
 		this.increment = 1;
 		this.infinite = true;
 	}
+
+	public static IntegerIterator integerIterator(int start, int end) {
+		return new IntegerIterator(start, end);
+	}
 	
 	public static IntegerIterator fromThisValueOnForever(int start) {
 		return new IntegerIterator(start);

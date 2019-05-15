@@ -2147,6 +2147,14 @@ public class Util {
 		return (LinkedHashSet<T>) collect(collection.iterator(), predicate, new LinkedHashSet<T>());
 	}
 
+	public static List<Integer> collectIntegers(int start, int end, Predicate<Integer> predicate) {
+		return collectToList(IntegerIterator.integerIterator(start, end), predicate);
+	}
+	
+	public static List<Integer> collectIntegers(int end, Predicate<Integer> predicate) {
+		return collectIntegers(0, end, predicate);
+	}
+	
 	/**
 	 * Returns a list containing the elements in collection that satisfy the predicate.
 	 * @param collection
