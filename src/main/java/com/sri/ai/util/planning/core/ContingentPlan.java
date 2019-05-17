@@ -34,7 +34,7 @@ public class ContingentPlan extends AbstractCompoundPlan {
 	}
 
 	@Override
-	public double getEstimatedSuccessWeight() {
+	public double computeEstimatedSuccessWeight() {
 		if (thenBranch.isDeterministic() && elseBranch.isDeterministic()) {
 			return Plan.MAXIMUM_ESTIMATED_SUCCESS_WEIGHT;
 		}

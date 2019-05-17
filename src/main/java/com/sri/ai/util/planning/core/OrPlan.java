@@ -59,7 +59,7 @@ public class OrPlan extends AbstractCompoundPlan {
 	}
 
 	@Override
-	public double getEstimatedSuccessWeight() {
+	public double computeEstimatedSuccessWeight() {
 		// TODO: if we know these are not shared, we can cache them and update incrementally.
 		List<Double> probabilities = getDistribution().getProbabilities();
 		double result = 0;
@@ -74,7 +74,9 @@ public class OrPlan extends AbstractCompoundPlan {
 		if ( ! getSubPlans().isEmpty()) {
 			Random random = state.getRandom();
 			myAssert(random != null, () -> getClass() + " cannot execute without " + State.class.getSimpleName() + " providing it a Random");
+			// println("OrPlan: choosing sub-plan out of " + getSubPlans().size() + " possibilities");
 			int i = getDistribution().sample(random);
+			// println("OrPlan: choice is " + i);
 			State result = getSubPlans().get(i).execute(state);
 			increment(numberOfSubPlanExecutions, i);
 			return result;

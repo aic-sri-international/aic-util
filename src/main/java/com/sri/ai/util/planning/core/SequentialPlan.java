@@ -48,8 +48,10 @@ public class SequentialPlan extends AbstractCompoundPlan {
 	@Override
 	public State execute(State state) {
 		State currentState = state;
-		for (Plan executer : getSubPlans()) {
-			currentState = executer.execute(currentState);
+		// println("SequentialPlan executing " + getSubPlans().size() + " sub-plans");
+		for (Plan subPlan : getSubPlans()) {
+			// println("Subplan: " + subPlan);
+			currentState = subPlan.execute(currentState);
 		}
 		return currentState;
 	}
@@ -63,7 +65,7 @@ public class SequentialPlan extends AbstractCompoundPlan {
 	}
 
 	@Override
-	public double getEstimatedSuccessWeight() {
+	public double computeEstimatedSuccessWeight() {
 		Double result = min(subPlanEstimatedSuccessWeights());
 		return result;
 	}

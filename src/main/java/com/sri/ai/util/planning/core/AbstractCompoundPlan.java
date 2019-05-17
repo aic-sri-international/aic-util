@@ -17,7 +17,11 @@ import com.sri.ai.util.tree.Tree;
 
 public abstract class AbstractCompoundPlan implements Plan {
 	
+	protected abstract double computeEstimatedSuccessWeight();
+
 	public abstract String operatorName();
+	
+	private Double estimatedSuccessWeight = null;
 	
 	private List<? extends Plan> subPlans;
 	
@@ -25,6 +29,14 @@ public abstract class AbstractCompoundPlan implements Plan {
 		this.subPlans = subPlans;
 	}
 
+	@Override
+	public double getEstimatedSuccessWeight() {
+		if (estimatedSuccessWeight == null) {
+			estimatedSuccessWeight = computeEstimatedSuccessWeight();
+		}
+		return estimatedSuccessWeight;
+	}
+	
 	public List<Plan> getSubPlans() {
 		return Collections.unmodifiableList(subPlans);
 	}

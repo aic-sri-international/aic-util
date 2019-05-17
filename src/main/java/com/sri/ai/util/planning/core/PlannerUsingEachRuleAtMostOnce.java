@@ -7,6 +7,7 @@ import static com.sri.ai.util.Util.forAll;
 import static com.sri.ai.util.Util.getFirst;
 import static com.sri.ai.util.Util.list;
 import static com.sri.ai.util.Util.myAssert;
+import static com.sri.ai.util.Util.println;
 import static com.sri.ai.util.Util.subtract;
 import static com.sri.ai.util.Util.thereExists;
 import static com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger.RESULT;
@@ -22,6 +23,8 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.apache.commons.math3.util.CombinatoricsUtils;
 
 import com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger;
 import com.sri.ai.util.planning.api.ContingentGoal;
@@ -188,7 +191,7 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 			Planner<R1, G1> sequel) {
 		
 		PlannerUsingEachRuleAtMostOnce planner = new PlannerUsingEachRuleAtMostOnce<R1, G1>(allRequiredGoals, satisfiedGoals, negatedContingentGoals, rules, sequel);
-		Plan plan = planner.plan();
+		Plan plan = planner.topLevelPlan();
 		return plan;
 	}
 
@@ -211,11 +214,19 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 	@Override
 	public Plan plan(PlanningState<R, G> state) {
 		this.state = state;
-		Plan result = plan();
+		Plan result = topLevelPlan();
 		return result;
 	}
 	
 	/////////////////////// MAIN ALGORITHM - START 
+	
+	public Plan topLevelPlan() {
+		println("Planning from " + state.rules.size() + " rules");
+		println("Maximum number of alternative plans is      : " + CombinatoricsUtils.factorial(state.rules.size()));
+//		println("2-subsampling number of alternative plans is: " + Math.pow(2, state.rules.size()));
+//		println("3-subsampling number of alternative plans is: " + Math.pow(3, state.rules.size()));
+		return plan();
+	}
 	
 	/**
 	 * Returns a plan that is guaranteed to achieve all goals given available rules,
