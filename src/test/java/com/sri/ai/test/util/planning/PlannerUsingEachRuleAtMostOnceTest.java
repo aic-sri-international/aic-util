@@ -717,7 +717,7 @@ public class PlannerUsingEachRuleAtMostOnceTest {
 
 	public void runTest() {
 		planner = new PlannerUsingEachRuleAtMostOnce<Rule<Goal>, Goal>(allRequiredGoals, satisfiedGoals, list(), allRules);
-		actual = planner.plan();
+		actual = planner.topLevelPlan();
 		println("Goals: " + allRequiredGoals);
 		println("Rules:\n" + join("\n", allRules));
 		println("Computed plan:\n" + actual.nestedString());
