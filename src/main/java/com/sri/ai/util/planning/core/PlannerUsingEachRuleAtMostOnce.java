@@ -393,13 +393,57 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 	}
 
 	private List<Integer> selectEligibleRulesToUse(List<Integer> sortedEligibleRuleIndices, int maxLeaves) {
+		return explanationBlock("Selecting from eligible rules", code(() -> {
+
+			List<Integer> result;
+
+			List<Integer> singletonListWithFirstRuleIfDeterministicOrNull = 
+					singletonListWithFirstRuleIfDeterministicOrNull(sortedEligibleRuleIndices);
+
+			if (singletonListWithFirstRuleIfDeterministicOrNull != null) {
+				explain("First rule is deterministic, so selecting singleton with it: " + state.rules.get(singletonListWithFirstRuleIfDeterministicOrNull.get(0)));
+				result = singletonListWithFirstRuleIfDeterministicOrNull;
+			}
+			else {
+				result = selectUpToMaxLeavesSortedEligibleRuleIndices(sortedEligibleRuleIndices, maxLeaves);
+			}
+
+			return result;
+
+		}));
+	}
+	
+	private List<Integer> singletonListWithFirstRuleIfDeterministicOrNull(List<Integer> sortedEligibleRuleIndices) {
+		List<Integer> result;
 		
-		if (sortedEligibleRuleIndices.size() > maxLeaves) {
-			return sortedEligibleRuleIndices.subList(0, maxLeaves);
+		if ( ! sortedEligibleRuleIndices.isEmpty()) {
+			var firstRuleIndex = getFirst(sortedEligibleRuleIndices);
+			R firstRule = state.rules.get(firstRuleIndex);
+			if (firstRule.isDeterministic()) {
+				result = list(firstRuleIndex);
+			}
+			else {
+				result = null;
+			}
 		}
 		else {
-			return sortedEligibleRuleIndices;
+			result = null;
 		}
+		
+		return result;
+	}
+
+	private
+	List<Integer>
+	selectUpToMaxLeavesSortedEligibleRuleIndices(List<Integer> sortedEligibleRuleIndices, int maxLeaves) {
+		return explanationBlock("Selecting maximum of ", maxLeaves, " from eligible rules", code(() -> {
+			if (sortedEligibleRuleIndices.size() > maxLeaves) {
+				return sortedEligibleRuleIndices.subList(0, maxLeaves);
+			}
+			else {
+				return sortedEligibleRuleIndices;
+			}
+		}));
 	}
 
 	private Plan planContingentlyStartingWithRuleOfIndex(int i, int maxLeaves, int level) {
