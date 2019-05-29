@@ -5565,6 +5565,47 @@ public class Util {
 	}
 	
 	/**
+	 * Returns a map containing the union of entries of given maps if shared keys map to the same value,
+	 * or null otherwise.
+	 */
+	@SafeVarargs
+	public static <K,V> Map<K, V> unionOfMapsIfCompatibleOrNull(Map<K, V>... maps) {
+		Map<K,V> result = map();
+		for (Map<K,V> map : maps) {
+			result = putAllIfCompatibleOrNull(result, map);
+			if (result == null) {
+				return null;
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Adds all entries in second map to first map and return first map if all entries
+	 * in second map are new or agree with entries in first map, or null otherwise.
+	 * @param result
+	 * @param map
+	 * @return
+	 */
+	public static <K,V> Map<K, V> putAllIfCompatibleOrNull(Map<K, V> result, Map<K, V> map) {
+		for (Map.Entry<K,V> entry : map.entrySet()) {
+			V valueInResult = result.get(entry.getKey());
+			if (valueInResult != null) {
+				if (valueInResult.equals(entry.getValue())) {
+					// nothing to do; result already contains the entry with the same value
+				}
+				else {
+					return null;
+				}
+			}
+			else {
+				result.put(entry.getKey(), entry.getValue());
+			}
+		}
+		return result;
+	}
+
+	/**
 	 * Creates an array list of size n, filled with a given value.
 	 * @param n the size of the array
 	 * @param value the value to fill the array with
@@ -6397,18 +6438,6 @@ public class Util {
 	}
 
 	/**
-	 * Return 0.0 if value is -0.0 or value itself otherwise.
-	 * @param value
-	 * @return
-	 */
-	public static double normalizeDoubleZeroToPositiveZero(double value) {
-		if (value == -0.0) {
-			return 0.0;
-		}
-		return value;
-	}
-
-	/**
 	 * Convenience method for making a proxy for a target interface.
 	 * This makes the following assumptions:
 	 * <ul>
@@ -6612,5 +6641,38 @@ public class Util {
 		long freeMemoryCurrentlyAvailableToTheProcess = r.freeMemory();
 		long actualFreeMemory = freeMemoryNotCurrentlyAvailableToTheProcess + freeMemoryCurrentlyAvailableToTheProcess;
 		return actualFreeMemory;
+	}
+
+	/**
+	 * Return 0.0 if value is -0.0 or value itself otherwise.
+	 * @param value
+	 * @return
+	 */
+	public static double normalizeDoubleZeroToPositiveZero(double value) {
+		if (value == -0.0) {
+			return 0.0;
+		}
+		return value;
+	}
+
+	public static Double getDoubleValue(Object number) {
+		myAssert(number instanceof Number, () -> (new Enclosing(){}).methodName() + " requires object to be Number but was " + number + " of class " + number.getClass()); 
+		return ((Number) number).doubleValue();
+	}
+
+	public static Double getDoubleValueWithDoubleZeroNormalizedToPositive(Object number) {
+		myAssert(number instanceof Number, () -> (new Enclosing(){}).methodName() + " requires object to be Number but was " + number + " of class " + number.getClass()); 
+		double doubleValue = ((Number) number).doubleValue();
+		double result = normalizeDoubleZeroToPositiveZero(doubleValue);
+		return result;
+	}
+
+	public static Object getDoubleValueWithDoubleZeroNormalizedToPositiveOrSelfOtherwise(Object object) {
+		if (object instanceof Number) {
+			return getDoubleValueWithDoubleZeroNormalizedToPositive(object);
+		}
+		else {
+			return object;
+		}
 	}
 }
