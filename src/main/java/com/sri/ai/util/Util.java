@@ -61,6 +61,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -528,6 +529,11 @@ public class Util {
 	@SafeVarargs
 	public static <T> Iterator<T> iterator(T... elements) {
 		return Arrays.asList(elements).iterator();
+	}
+
+	@SafeVarargs
+	public static <T> Iterator<T> unmodifiableIterator(T... elements) {
+		return Collections.unmodifiableList(Arrays.asList(elements)).iterator();
 	}
 
 	/**
@@ -6673,6 +6679,25 @@ public class Util {
 		}
 		else {
 			return object;
+		}
+	}
+
+	/**
+	 * Returns the longest prefix of a given string up to a given length limit.
+	 */
+	public static String prefix(String string, int limit) {
+		return string.substring(Math.min(limit, string.length()));
+	}
+
+	/**
+	 * Returns the longest postfix of a given string up to a given length limit.
+	 */
+	public static String postfix(String string, int limit) {
+		if (limit > string.length()) {
+			return string;
+		}
+		else {
+			return string.substring(string.length() - limit);
 		}
 	}
 }

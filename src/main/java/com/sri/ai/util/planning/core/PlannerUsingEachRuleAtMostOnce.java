@@ -3,11 +3,11 @@ package com.sri.ai.util.planning.core;
 import static com.sri.ai.util.Util.arrayListFrom;
 import static com.sri.ai.util.Util.collectIntegers;
 import static com.sri.ai.util.Util.collectThoseWhoseIndexSatisfyArrayList;
+import static com.sri.ai.util.Util.count;
 import static com.sri.ai.util.Util.forAll;
 import static com.sri.ai.util.Util.getFirst;
 import static com.sri.ai.util.Util.list;
 import static com.sri.ai.util.Util.myAssert;
-import static com.sri.ai.util.Util.println;
 import static com.sri.ai.util.Util.subtract;
 import static com.sri.ai.util.Util.thereExists;
 import static com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger.RESULT;
@@ -25,9 +25,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.math3.util.CombinatoricsUtils;
-
 import com.sri.ai.util.Enclosing;
+import com.sri.ai.util.Util;
+import com.sri.ai.util.collect.StackedLinkedList;
 import com.sri.ai.util.explanation.logging.api.ThreadExplanationLogger;
 import com.sri.ai.util.planning.api.ContingentGoal;
 import com.sri.ai.util.planning.api.Goal;
@@ -147,7 +147,7 @@ import com.sri.ai.util.planning.util.PlanHierarchicalExplanation;
  * since the only thing it does is satisfying some goals and we assume all rule antecedents are positive.
  * Even if r1 has contingent antecedents, attempting it first does limit the planning,
  * because in the branches that r1 is applied, again the explanation above applies, and it does not limit planning,
- * and in the branches in which r1 is not applied (because of negated contingent antecedents,
+ * and in the branches in which r1 is not applied (because of negated contingent antecedents),
  * the planner is still able to find PlanContingentlyStartingWithRuleOfIndex(r2, R, H).
  * 
  * If PlanContingentlyStartingWithRuleOfIndex(r2, R, H) does involve r1,
@@ -228,19 +228,38 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 	int leafOrder = 0;
 	
 	public Plan topLevelPlan() {
-		println("Planning from " + state.rules.size() + " rules");
-		state.rules.stream().forEach(r -> println(r));
+		
+//		Util.print(".");
+		
+		// println("PlannerUsingEachRuleAtMostOnce: Planning from " + state.rules.size() + " rules");
+//		state.rules.stream().forEach(r -> println(r));
+
+//		println("PlannerUsingEachRuleAtMostOnce: Required goals : " + state.allRequiredGoals);
+//		println("PlannerUsingEachRuleAtMostOnce: Satisfied goals: " + state.satisfiedGoals);
+		
 		if (state.rules.size() > 20) {
-			println("Maximum number of alternative plans is huge");
+			// println("Maximum number of alternative plans is huge");
 		}
 		else {
-			println("Maximum number of alternative plans is: " + CombinatoricsUtils.factorial(state.rules.size()));
+			// println("Maximum number of alternative plans is: " + CombinatoricsUtils.factorial(state.rules.size()));
 		}
-//		println("2-subsampling number of alternative plans is: " + Math.pow(2, state.rules.size()));
-//		println("3-subsampling number of alternative plans is: " + Math.pow(3, state.rules.size()));
-		Plan result = plan(MAX_LEAVES, 0);
-		println("Managed to complete planning");
+		
+		Plan result = plan(MAX_LEAVES, 0, Util.list());
+		
+		// println("Managed to complete planning");
+
 		return result;
+	}
+	
+	static private class Node {
+		public String info;
+		public Node(String info) {
+			this.info = info;
+		}
+		@Override
+		public String toString() {
+			return info;
+		}
 	}
 	
 	/**
@@ -250,7 +269,7 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 	 * @param level the current level of recursion
 	 * @return
 	 */
-	public Plan plan(int maxLeaves, int level) {
+	public Plan plan(int maxLeaves, int level, List<Node> path) {
 		return explanationBlock(
 				"Planning for ", lazy(() -> subtract(state.allRequiredGoals, state.satisfiedGoals)), 
 				" with still unused rules ", lazy(() -> collectThoseWhoseIndexSatisfyArrayList(state.rules, state.ruleIsAvailable)),
@@ -261,13 +280,17 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 
 					Plan result;
 					
+					explain("Planner: level " + level + ", # available rules: " + numberOfAvailableRules() + ", # satisfied req. goals: " + numberOfSatisfiedRequiredGoals());
+					// println("Planner: level " + level + ", # available rules: " + numberOfAvailableRules() + ", # satisfied req. goals: " + numberOfSatisfiedRequiredGoals());
+					// println(join(path));
+					
 					if (allRequiredGoalsAreSatisfied()) {
 						explain("All goals are satisfied, returning sequel plan provided by sequel planner " + sequel.getClass());
 						result = sequel.plan(state);
 						indentedPrintln(level, "Leaf " + leafOrder++);
 					}
 					else {
-						result = planIfThereIsAtLeastOneUnsatisfiedRequiredGoal(maxLeaves, level);
+						result = planIfThereIsAtLeastOneUnsatisfiedRequiredGoal(maxLeaves, level, path);
 					}
 
 					explainResultingPlan(result);
@@ -277,7 +300,15 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 				}));
 	}
 
-	private Plan planIfThereIsAtLeastOneUnsatisfiedRequiredGoal(int maxLeaves, int level) {
+	private String numberOfAvailableRules() {
+		return Integer.toString(count(state.ruleIsAvailable, b -> b));
+	}
+
+	private String numberOfSatisfiedRequiredGoals() {
+		return Integer.toString(subtract(state.allRequiredGoals, state.satisfiedGoals).size());
+	}
+
+	private Plan planIfThereIsAtLeastOneUnsatisfiedRequiredGoal(int maxLeaves, int level, List<Node> path) {
 		return explanationBlock("There are still unsatisfied required goals", code(() -> {
 			
 			explainUnsatisfiedRequiredGoals();
@@ -295,7 +326,7 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 			}
 			else {
 				// Note that the following method requires selectedEligibleRulesToUse.size() <= maxLeaves, which was ensured by the call to selectedEligibleRulesToUse.
-				result = planIfThereAreEligibleRules(selectedEligibleRulesToUse, maxLeaves, level);
+				result = planIfThereAreEligibleRules(selectedEligibleRulesToUse, maxLeaves, level, path);
 			}
 
 			return result;
@@ -349,7 +380,7 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 		}), "Rule is eligible: ", RESULT);
 	}
 
-	private Plan planIfThereAreEligibleRules(List<Integer> selectedEligibleRulesToUse, int maxLeaves, int level) {
+	private Plan planIfThereAreEligibleRules(List<Integer> selectedEligibleRulesToUse, int maxLeaves, int level, List<Node> path) {
 		
 		myAssert(selectedEligibleRulesToUse.size() <= maxLeaves, () -> (new Enclosing(){}).methodName() + " requires the number of selected eligible rules to be at most the maximum number of leaves, but these are " + selectedEligibleRulesToUse.size() + " and " + maxLeaves + " respectively.");
 		
@@ -370,13 +401,14 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 					"Node " + visitingOrder++ + 
 					": option " + optionNumber + 
 					" out of " + selectedEligibleRulesToUse.size() + 
-					" restricted from " + selectedEligibleRulesToUse.size() + 
 					" at level " + level);
 			
 			// We distribute the remainder by adding 1 to the sub maximum of leaves to the first <remainder> sub plans.
 			int subMaxLeaves = baseSubMaxLeaves + (optionNumber <= remainder? 1 : 0);
 			
-			Plan subPlan = planContingentlyStartingWithRuleOfIndex(i, subMaxLeaves, level);
+			List<Node> newPath = new StackedLinkedList<>(new Node(optionNumber + "/" + selectedEligibleRulesToUse.size()), path);
+			
+			Plan subPlan = planContingentlyStartingWithRuleOfIndex(i, subMaxLeaves, level, newPath);
 			if (subPlan.isFailedPlan()) {
 				break; // see corresponding theorem in documentation
 			}
@@ -446,7 +478,7 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 		}));
 	}
 
-	private Plan planContingentlyStartingWithRuleOfIndex(int i, int maxLeaves, int level) {
+	private Plan planContingentlyStartingWithRuleOfIndex(int i, int maxLeaves, int level, List<Node> path) {
 		return explanationBlock("Starting plan with eligible rule ", state.rules.get(i), code(() -> {
 
 			Plan result;
@@ -455,10 +487,10 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 
 			ContingentGoal contingentGoalNotYetDefined = findContingentGoalNotYetDefined(rule);
 			if (contingentGoalNotYetDefined != null) {
-				result = planStartingWithRuleOfIndexContingentlyOnUndefinedContingentAntecedent(rule, i, contingentGoalNotYetDefined, maxLeaves, level);
+				result = planStartingWithRuleOfIndexContingentlyOnUndefinedContingentAntecedent(rule, i, contingentGoalNotYetDefined, maxLeaves, level, path);
 			}
 			else {
-				result = planStartingWithRuleOfIndex(rule, i, maxLeaves, level);
+				result = planStartingWithRuleOfIndex(rule, i, maxLeaves, level, path);
 			}
 
 			explainResultingPlan(result);
@@ -468,11 +500,11 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 		}));
 	}
 
-	private Plan planStartingWithRuleOfIndexContingentlyOnUndefinedContingentAntecedent(R rule, int i, ContingentGoal contingentGoal, int maxLeaves, int level) {
+	private Plan planStartingWithRuleOfIndexContingentlyOnUndefinedContingentAntecedent(R rule, int i, ContingentGoal contingentGoal, int maxLeaves, int level, List<Node> path) {
 		return explanationBlock("Considering both possibilities for contingent ", contingentGoal, code(() -> {
 
-			Plan thenBranch = planStartingWithRuleOfIndexAssumingContingentAntecedentIsTrue(rule, i, contingentGoal, maxLeaves, level);
-			Plan elseBranch = planStartingWithRuleOfIndexAssumingContingentAntecedentIsFalse(rule, contingentGoal, maxLeaves, level);
+			Plan thenBranch = planStartingWithRuleOfIndexAssumingContingentAntecedentIsTrue(rule, i, contingentGoal, maxLeaves, level, path);
+			Plan elseBranch = planStartingWithRuleOfIndexAssumingContingentAntecedentIsFalse(rule, i, contingentGoal, maxLeaves, level, path);
 			Plan result;
 			if ( thenBranch.isFailedPlan() && elseBranch.isFailedPlan()) {
 				result = failedPlan();
@@ -487,12 +519,13 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 	}
 
 	@SuppressWarnings("unchecked")
-	private Plan planStartingWithRuleOfIndexAssumingContingentAntecedentIsTrue(R rule, int i, ContingentGoal contingentGoal, int maxLeaves, int level) {
+	private Plan planStartingWithRuleOfIndexAssumingContingentAntecedentIsTrue(R rule, int i, ContingentGoal contingentGoal, int maxLeaves, int level, List<Node> path) {
 		return explanationBlock("Assuming contingent ", contingentGoal, " is true", code(() -> {
 	
 			Set<G> satisfiedGoalsBeforeRule = new LinkedHashSet<>(state.satisfiedGoals);
 			state.satisfiedGoals.add((G) contingentGoal);
-			Plan thenBranch = planContingentlyStartingWithRuleOfIndex(i, maxLeaves, level);
+			List<Node> newPath = new StackedLinkedList<>(new Node("g. " + i + " then"), path);
+			Plan thenBranch = planContingentlyStartingWithRuleOfIndex(i, maxLeaves, level, newPath);
 			state.satisfiedGoals = satisfiedGoalsBeforeRule;
 			return thenBranch;
 	
@@ -500,25 +533,34 @@ public class PlannerUsingEachRuleAtMostOnce<R extends Rule<G>, G extends Goal> i
 	}
 
 	@SuppressWarnings("unchecked")
-	private Plan planStartingWithRuleOfIndexAssumingContingentAntecedentIsFalse(R rule, ContingentGoal contingentGoal, int maxLeaves, int level) {
+	private Plan planStartingWithRuleOfIndexAssumingContingentAntecedentIsFalse(R rule, int i, ContingentGoal contingentGoal, int maxLeaves, int level, List<Node> path) {
 		return explanationBlock("Assuming contingent ", contingentGoal, " is false", code(() -> {
 	
 			Set<G> negatedGoalsBeforeRule = new LinkedHashSet<>(state.negatedContingentGoals);
 			state.negatedContingentGoals.add((G) contingentGoal);
-			Plan elseBranch = planIfThereIsAtLeastOneUnsatisfiedRequiredGoal(maxLeaves, level + 1); // we know there are unsatisfied goals because there was before considering this rule, and it has not been applied, so nothing changed
+			
+			List<Node> newPath = new StackedLinkedList<>(new Node("g. " + i + " else"), path);
+			Plan elseBranch = planIfThereIsAtLeastOneUnsatisfiedRequiredGoal(maxLeaves, level, newPath);
+			// we know there are unsatisfied goals because there was before considering this rule, and it has not been applied, so nothing changed
+			// Previously, I was passing level + 1 as an argument because of a new recursion level
+			// but later I realized that even though there is recursion, this is not a new *planning level* -- we are still trying to decide
+			// whether to use the same rule or not.
+			// This is important if we want to use level in an inductive termination proof,
+			// for example saying that each planning level always contains one less available rule.
+			
 			state.negatedContingentGoals = negatedGoalsBeforeRule;
 			return elseBranch;
 	
 		}), "Assuming contingent: ", contingentGoal, " is false, plan is ", RESULT);
 	}
 
-	private Plan planStartingWithRuleOfIndex(R rule, int i, int maxLeaves, int level) {
+	private Plan planStartingWithRuleOfIndex(R rule, int i, int maxLeaves, int level, List<Node> path) {
 		
 		return explanationBlock("Finding plans starting with ", rule, code(() -> {
 	
 			Set<G> satisfiedGoalsBeforeRuleApplication = applyRuleAndReturnSatisfiedGoalsAsTheyWereBeforeItWasApplied(rule, i);
 			
-			Plan remainingPlan = plan(maxLeaves, level + 1);
+			Plan remainingPlan = plan(maxLeaves, level + 1, path);
 	
 			Plan planStartingWithRule = makeSequence(rule, remainingPlan);
 	

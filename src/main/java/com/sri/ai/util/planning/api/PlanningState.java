@@ -2,6 +2,7 @@ package com.sri.ai.util.planning.api;
 
 import static com.sri.ai.util.Util.collectThoseWhoseIndexSatisfyArrayList;
 import static com.sri.ai.util.Util.fill;
+import static com.sri.ai.util.Util.join;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,10 +53,14 @@ public class PlanningState<R extends Rule<G>, G extends Goal> {
 
 	@Override
 	public String toString() {
-		return 
+		String allRules = join("\n", rules);
+		String availableRules = join("\n", collectThoseWhoseIndexSatisfyArrayList(rules, ruleIsAvailable));
+		String result =
 				"Planning state with goals " + allRequiredGoals + ", " 
-				+ ", rules " + rules
-				+ ", available rules " + collectThoseWhoseIndexSatisfyArrayList(rules, ruleIsAvailable)
-				+ ", satisfied goals " + satisfiedGoals;
+				+ ", rules " + allRules
+				+ ", available rules " + availableRules
+				+ ", satisfied goals " + satisfiedGoals
+				;
+		return result;
 	}
 }
