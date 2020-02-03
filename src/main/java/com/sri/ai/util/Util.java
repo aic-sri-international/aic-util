@@ -6714,4 +6714,20 @@ public class Util {
 			return string.substring(string.length() - limit);
 		}
 	}
+
+	/**
+	 * Puts all given new (key, value) pairs to a map.
+	 * Keys and values are associated by position in their respective iterables.
+	 * If iterables range over a different number of elements, the larger one's remaining elements are ignored.
+	 * @param map
+	 * @param keys
+	 * @param values
+	 */
+	public static <K, V> void putAll(Map<K, V> map, Iterable<? extends K> keys, Iterable<? extends V> values) {
+		Iterator<? extends K> keyIterator = keys.iterator();
+		Iterator<? extends V> valuesIterator = values.iterator();
+		while (keyIterator.hasNext() && valuesIterator.hasNext()) {
+			map.put(keyIterator.next(), valuesIterator.next());
+		}
+	}
 }
