@@ -5376,6 +5376,11 @@ public class Util {
 		}
 	}
 	
+	/** Picks an int in <code>[minimum, maximum)</code>. */
+	public static int pickInt(int minimum, int maximum, Random random) {
+		return minimum + random.nextInt(maximum - minimum);
+	}
+
 	/**
 	 * Adapts an {@link Iterator} to an {@link Iterable} for use in enhanced for
 	 * loops. If {@link Iterable#iterator()} is invoked more than once, an

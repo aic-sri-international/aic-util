@@ -105,11 +105,11 @@ public class ThreadExplanationLogger {
 	
 	
 	
-	public boolean isActive() {
+	public static boolean isActive() {
 		return getThreadExplanationLogger().isActive();
 	}
 	
-	public void setIsActive(boolean newIsActive) {
+	public static void setIsActive(boolean newIsActive) {
 		getThreadExplanationLogger().setIsActive(newIsActive);
 	}
 

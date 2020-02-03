@@ -18,7 +18,7 @@ public class Nesting {
 
 	public String getNestingString(int nestingLevel) {
 		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i != nestingLevel + 1; i++) {
+		for (int i = 0; i != nestingLevel; i++) {
 			builder.append(nestingStringBlock);
 		}
 		builder.append(nestingStringPostfix);
