@@ -3131,6 +3131,11 @@ public class Util {
 		return getFirst(c.iterator());
 	}
 	
+	public static <T> T getOnlyElement(Collection<T> c) {
+		assert(c.size() == 1);
+		return getFirst(c);
+	}
+	
 	/**
 	 * Return all but the first element in an iterator's range, in a newly made
 	 * list.
@@ -3571,7 +3576,7 @@ public class Util {
 	 * @param <E>
 	 *            the type of the elements.
 	 */
-	public static <E> List<E> setDifference(Collection<E> c1, Collection<E> c2) {
+	public static <E> List<E> setDifference(Collection<? extends E> c1, Collection<? extends E> c2) {
 		return (List<E>) setDifference(c1, c2, new LinkedList<E>());
 	}
 
@@ -3591,6 +3596,10 @@ public class Util {
 	 */
 	public static <E> List<E> subtract(Collection<? extends E> c1, Collection<? extends E> c2) {
 		return (List<E>) setDifference(c1, c2, new LinkedList<E>());
+	}
+
+	public static <E> List<E> subtract(Collection<? extends E> c1, E element) {
+		return setDifference(c1, list(element));
 	}
 
 	public static String camelCaseToSpacedString(String camel) {
