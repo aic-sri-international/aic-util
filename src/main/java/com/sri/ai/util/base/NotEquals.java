@@ -54,6 +54,10 @@ public class NotEquals<T> implements Predicate<T> {
 
 	private T element;
 
+	public static <T1> NotEquals<T1> notEquals(T1 element) {
+		return new NotEquals<T1>(element);
+	}
+	
 	public NotEquals(T element) {
 		this.element = element;
 	}

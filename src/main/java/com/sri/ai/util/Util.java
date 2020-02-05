@@ -2543,7 +2543,7 @@ public class Util {
 	 * or null if collection is empty.
 	 * 
 	 * @param c
-	 *            the collection to find an element with a minimum function value.
+	 *            the iterable to find an element with a minimum function value.
 	 * @param function
 	 *            the function.
 	 * @return the element with a minimum function value,
@@ -2553,7 +2553,7 @@ public class Util {
 	 * @param <R>
 	 * 			  the type of the function's result, must be comparable.
 	 */
-	public static <T, R extends Comparable<R>> T argmin(Collection<? extends T> c, Function<T, R> function) {
+	public static <T, R extends Comparable<R>> T argmin(Iterable<? extends T> c, Function<T, R> function) {
 		R minimum = null;
 		T result = null;
 		for (T element : c) {
