@@ -3555,10 +3555,9 @@ public class Util {
 	 * @param <E>
 	 *            the type of the elements.
 	 */
-	public static <E> Collection<E> setDifference(Collection<? extends E> c1,
-			Collection<? extends E> c2, Collection<E> result) {
+	public static <E, C extends Collection<E>> C setDifference(Collection<? extends E> c1,
+			Collection<? extends E> c2, C result) {
 		c1.stream().filter(e -> !c2.contains(e)).forEach(result::add);
-
 		return result;
 	}
 
@@ -3577,7 +3576,7 @@ public class Util {
 	 *            the type of the elements.
 	 */
 	public static <E> List<E> setDifference(Collection<? extends E> c1, Collection<? extends E> c2) {
-		return (List<E>) setDifference(c1, c2, new LinkedList<E>());
+		return setDifference(c1, c2, new LinkedList<E>());
 	}
 
 	/**
@@ -3595,7 +3594,7 @@ public class Util {
 	 *            the type of the elements.
 	 */
 	public static <E> List<E> subtract(Collection<? extends E> c1, Collection<? extends E> c2) {
-		return (List<E>) setDifference(c1, c2, new LinkedList<E>());
+		return setDifference(c1, c2, new LinkedList<E>());
 	}
 
 	public static <E> List<E> subtract(Collection<? extends E> c1, E element) {
