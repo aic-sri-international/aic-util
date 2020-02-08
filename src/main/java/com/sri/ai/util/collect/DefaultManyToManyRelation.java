@@ -272,4 +272,15 @@ public class DefaultManyToManyRelation<A,B> implements ManyToManyRelation<A, B> 
 		}
 		return list.iterator();
 	}
+	
+	@Override
+	public DefaultManyToManyRelation clone() {
+		DefaultManyToManyRelation result;
+		try {
+			result = (DefaultManyToManyRelation) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new Error(e);
+		}
+		return result;
+	}
 }

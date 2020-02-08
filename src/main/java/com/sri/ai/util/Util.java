@@ -6729,4 +6729,32 @@ public class Util {
 			map.put(keyIterator.next(), valuesIterator.next());
 		}
 	}
+
+	/**
+	 * Compare two iterables of numbers component-wise with a given tolerance for the difference of the ratio of each pair of components to 1.
+	 * An assertion error is thrown if they do not produce the same amount of elements.
+	 * @param c1
+	 * @param c2
+	 */
+	public static void compareNumbersComponentWise(Iterable<? extends Number> c1, Iterable<? extends Number> c2, double maximumRatioDistanceFromOne) {
+		Iterator<? extends Number> iterator1 = c1.iterator();
+		Iterator<? extends Number> iterator2 = c2.iterator();
+		while (iterator1.hasNext() && iterator2.hasNext()) {
+			compareNumbers(iterator1.next(), iterator2.next(), maximumRatioDistanceFromOne);
+		}
+		if (iterator1.hasNext() || iterator2.hasNext()) {
+			throw new AssertionError("Compared iterables do not have the same size.");
+		}
+	}
+
+	/**
+	 * Compares two numbers with a given tolerance for the difference between their ratio and 1.
+	 * @param number1
+	 * @param number2
+	 * @param maximumRatioDistanceFromOne
+	 */
+	public static void compareNumbers(Number number1, Number number2, double maximumRatioDistanceFromOne) {
+		double ratio = Math.abs(number1.doubleValue() / number2.doubleValue() - 1.0);
+		assert(ratio <= maximumRatioDistanceFromOne);
+	}
 }
