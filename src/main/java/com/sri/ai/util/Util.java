@@ -1269,6 +1269,7 @@ public class Util {
 		mapIntoList(collection.iterator(), function, result);
 	}
 
+	
 	/**
 	 * Stores results of applying a function to an iterator's range in a new,
 	 * empty list and returns it.
