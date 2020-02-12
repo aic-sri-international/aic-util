@@ -4754,13 +4754,25 @@ public class Util {
 	 * @param <T2> class type
 	 */
 	public static <T1, T2> T2 castOrThrowError(Class<T2> clazz, T1 object, String messageTemplate) {
+		return castOrThrowError(clazz, object, () -> String.format(messageTemplate, object, clazz.getSimpleName(), object.getClass().getSimpleName()));
+	}
+
+	/**
+	 * A more general version of {@link #castOrThrowError(Class, Object, String)} taking a {@link NullaryFunction} to provide the error string.
+	 * @param clazz the class to be cast to
+	 * @param object the object to be cast
+	 * @param messageMaker a {@link NullaryFunction} generating the error string.
+	 * @return the cast object
+	 * @param <T1> object type
+	 * @param <T2> class type
+	 */
+	public static <T1, T2> T2 castOrThrowError(Class<T2> clazz, T1 object, NullaryFunction<String> messageMaker ) {
 		T2 result;
 		try {
 			result = clazz.cast(object);
 		}
 		catch (ClassCastException e) {
-			String message = String.format(messageTemplate, object, clazz.getSimpleName(), object.getClass().getSimpleName());
-			throw new Error(message);
+			throw new Error(messageMaker.apply());
 		}
 		return result;
 	}
@@ -6757,5 +6769,21 @@ public class Util {
 	public static void compareNumbers(Number number1, Number number2, double maximumRatioDistanceFromOne) {
 		double ratio = Math.abs(number1.doubleValue() / number2.doubleValue() - 1.0);
 		assert(ratio <= maximumRatioDistanceFromOne);
+	}
+
+	/**
+	 * Returns an int array containing the original indices (in an original ArrayList) of the elements in an reindexed Collection.
+	 * @param original
+	 * @param reindexed
+	 * @return an int array containing the original indices (in an original ArrayList) of the elements in an reindexed Collection
+	 */
+	public static <T> int[] indexOf(ArrayList<? extends T> original, Collection<? extends T> reindexed) {
+		int[] result = new int[reindexed.size()];
+		Iterator<? extends T> reindexedIterator = reindexed.iterator();
+		for (int i = 0; i != reindexed.size(); i++) {
+			T reindexedElement = reindexedIterator.next();
+			result[i] = original.indexOf(reindexedElement);
+		}
+		return result;
 	}
 }
