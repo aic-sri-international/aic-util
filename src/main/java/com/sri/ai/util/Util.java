@@ -4615,6 +4615,32 @@ public class Util {
 		return result;
 	}
 
+	public static <E> boolean allEqual(E[] array) {
+		if (array.length == 0) {
+			return true;
+		}
+		E first = array[0];
+		for (int i = 1; i != array.length; i++) {
+			if (array[i] != first) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public static boolean allEqual(double[] array) {
+		if (array.length == 0) {
+			return true;
+		}
+		double first = array[0];
+		for (int i = 1; i != array.length; i++) {
+			if (array[i] != first) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	public static <T> T pickElementInFirstCollectionButNotSecondAndNotEqualTo(
 			Collection<T> collection1, Collection<T> collection2,
 			T valueItMustBeDifferentFrom) {
