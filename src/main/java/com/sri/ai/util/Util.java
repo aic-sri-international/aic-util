@@ -6833,7 +6833,7 @@ public class Util {
 		return result;
 	}
 
-	public static int[] fromIntegerListToIntArray(ArrayList<Integer> integerList) {
+	public static int[] toIntArray(List<Integer> integerList) {
 		return toPrimitive(integerList.toArray(new Integer[integerList.size()]));
 	}
 }
