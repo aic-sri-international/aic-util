@@ -61,6 +61,19 @@ public class CartesianProductIteratorTest {
 
 		iteratorMakers =
 				arrayList(
+						() -> iterator("small", "big"),
+						() -> iterator("red", "green")
+						);
+		expected =
+				"[small, red]; " +
+				"[small, green]; " + 
+				"[big, red]; " + 
+				"[big, green]";
+		runTest(iteratorMakers, expected);
+
+		
+		iteratorMakers =
+				arrayList(
 						() -> iterator("small", "medium", "big"),
 						() -> iterator("red", "green", "blue"),
 						() -> iterator("square", "circle")

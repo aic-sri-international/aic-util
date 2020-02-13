@@ -41,6 +41,7 @@ import static com.sri.ai.util.base.PairOf.makePairOf;
 import static com.sri.ai.util.collect.FunctionIterator.functionIterator;
 import static com.sri.ai.util.collect.PredicateIterator.predicateIterator;
 import static java.lang.reflect.Proxy.newProxyInstance;
+import static org.apache.commons.lang3.ArrayUtils.toPrimitive;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -82,6 +83,8 @@ import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.ArrayUtils;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.Function;
@@ -468,6 +471,22 @@ public class Util {
 	 */
 	public static String join(Map<? extends Object, ? extends Object> map) {
 		return join(", ", " -> ", map);
+	}
+
+	public static String join(int[] array) {
+		return join(", ", ArrayUtils.toObject(array));
+	}
+
+	public static String join(String separator, int[] array) {
+		return join(separator, ArrayUtils.toObject(array));
+	}
+
+	public static String join(double[] array) {
+		return join(", ", ArrayUtils.toObject(array));
+	}
+
+	public static String join(String separator, double[] array) {
+		return join(separator, ArrayUtils.toObject(array));
 	}
 
 	public static List<String> split(String separator, String string) {
@@ -6794,7 +6813,8 @@ public class Util {
 	 */
 	public static void compareNumbers(Number number1, Number number2, double maximumRatioDistanceFromOne) {
 		double ratio = Math.abs(number1.doubleValue() / number2.doubleValue() - 1.0);
-		assert(ratio <= maximumRatioDistanceFromOne);
+		myAssert(ratio <= maximumRatioDistanceFromOne, () -> "Ratio of " + number1 + " and " + number2 + " is greater than " + maximumRatioDistanceFromOne);
+		// TODO: we do not want to use myAssert here if this is being used for testing, since deactiving myAssert may render tests that are not passing silent.
 	}
 
 	/**
@@ -6811,5 +6831,9 @@ public class Util {
 			result[i] = original.indexOf(reindexedElement);
 		}
 		return result;
+	}
+
+	public static int[] fromIntegerListToIntArray(ArrayList<Integer> integerList) {
+		return toPrimitive(integerList.toArray(new Integer[integerList.size()]));
 	}
 }

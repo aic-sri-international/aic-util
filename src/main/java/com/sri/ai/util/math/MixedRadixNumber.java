@@ -100,6 +100,20 @@ public class MixedRadixNumber extends Number {
 	}
 	
 	/**
+	 * Constructs a mixed radix number with a specified value and a specified
+	 * list of radices.
+	 * 
+	 * @param value
+	 *            the (long) value of the mixed radix number
+	 * @param radices
+	 *            the radices used to represent the value of the mixed radix
+	 *            number
+	 */
+	public MixedRadixNumber(long value, List<Integer> radices) {
+		this(BigInteger.valueOf(value), radices);
+	}
+	
+	/**
 	 * Constructs a mixed radix number with a specified array of numerals and a
 	 * specified array of radices.
 	 * 
@@ -208,6 +222,14 @@ public class MixedRadixNumber extends Number {
 				radixValues.length);
 	}
 
+	public boolean incrementIfPossible() {
+		if (canIncrement()) {
+			increment();
+			return true;
+		}
+		return false;
+	}
+	
 	/**
 	 * 
 	 * @return true if you can increment by 1 the current value, false
@@ -251,6 +273,14 @@ public class MixedRadixNumber extends Number {
 		return canIncrement;
 	}
 
+	public boolean decrementIfPossible() {
+		if (canDecrement()) {
+			decrement();
+			return true;
+		}
+		return false;
+	}
+	
 	/**
 	 * 
 	 * @return true if you can decrement by 1 the current value, false
