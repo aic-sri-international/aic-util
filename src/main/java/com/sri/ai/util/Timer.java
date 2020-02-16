@@ -13,7 +13,7 @@ public class Timer {
 		return result;
 	}
 	
-	public static <T> Pair<T,Long> timeAndGetResult(NullaryFunction<T> procedure) {
+	public static <T> Pair<T,Long> getResultAndTime(NullaryFunction<T> procedure) {
 		long initialTime = System.currentTimeMillis();
 		T result = procedure.apply();
 		long finalTime = System.currentTimeMillis();
