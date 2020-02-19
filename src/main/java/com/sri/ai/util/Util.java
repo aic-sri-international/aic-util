@@ -1994,8 +1994,8 @@ public class Util {
 	 *            the type of the elements being collected.
 	 */
 	public static <E> int collect(Iterable<? extends E> iterable,
-			Predicate<E> condition, Collection<E> elementsSatisfyingCondition,
-			Collection<E> remainingElements) {
+			Predicate<? super E> condition, Collection<? super E> elementsSatisfyingCondition,
+			Collection<? super E> remainingElements) {
 		final AtomicInteger i = new AtomicInteger(0);
 		final AtomicInteger result = new AtomicInteger(-1);
 		iterable.forEach(e -> {
