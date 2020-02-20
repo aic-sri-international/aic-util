@@ -2948,7 +2948,7 @@ public class Util {
 	 *            the type of the collections elements.
 	 */
 
-	public static <E> List<E> makeListWithElementsOfTwoCollections(Collection<E> c1, Collection<E> c2) {
+	public static <E> List<E> makeListWithElementsOfTwoCollections(Collection<? extends E> c1, Collection<? extends E> c2) {
 		List<E> result = new LinkedList<E>();
 		result.addAll(c1);
 		result.addAll(c2);
