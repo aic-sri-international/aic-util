@@ -65,6 +65,8 @@ public interface Anytime<T> extends Iterator<Approximation<T>>, NullaryFunction<
 	
 	Approximation<T> getCurrentApproximation();
 
+	void setCurrentApproximation(Approximation<T> newCurrentApproximation);
+
 	@Override
 	default Approximation<T> apply() {
 		while (hasNext()) {
@@ -72,4 +74,23 @@ public interface Anytime<T> extends Iterator<Approximation<T>>, NullaryFunction<
 		}
 		return getCurrentApproximation();
 	}
+
+	/**
+	 * Notifies this {@link Anytime} that it is external context/input (which is assumed to be accessible to it somehow)
+	 * has changed, prompting it to update its current approximation <i>without</i> further advancing its own computation.
+	 * By updating its current approximation, we mean determining it <i>as if</i> it had been computed
+	 * based on the current external context in the first place.
+	 * Naturally, a possible implementation is to just recompute its current approximation from scratch
+	 * using the new external context, but hopefully there will be a more efficient incremental way of doing this.
+	 * <p>
+	 * The reason for the constraint on not advancing its own computation (that is, iterating itself)
+	 * is that that might alter the external context also for other codependent computations, creating an infinite loop.
+	 * An example at the time of this writing is two {@link Anytime}s that are siblings in a computation tree,
+	 * with each sibling's external context depending on the computation of the other.
+	 * In that case, when one of the siblings is iterated, the external context for the other is updated,
+	 * so its current approximation might be needed to be updated too, but we do not want to iterate
+	 * the second sibling because this would prompt the first to be notified and iterated as well,
+	 * causing uncontrolled and exhaustive computation.
+	 */
+	void updateCurrentApproximationGivenThatExternalContextHasChangedButWithoutIteratingItself();
 }

@@ -40,10 +40,13 @@ package com.sri.ai.util.livesets.core.lazy.memoryless;
 import static com.sri.ai.util.Util.list;
 import static com.sri.ai.util.Util.listWithoutElementAt;
 import static com.sri.ai.util.Util.thereExists;
+import static com.sri.ai.util.collect.FunctionIterator.functionIterator;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.google.common.base.Predicate;
+import com.sri.ai.util.Util;
 import com.sri.ai.util.livesets.api.LiveSet;
 
 
@@ -79,5 +82,10 @@ public class Union<T> implements LiveSet<T> {
 	public boolean thereIsAnElementSatisfying(Predicate<T> predicate) {
 		boolean result = thereExists(liveSets, l -> l.thereIsAnElementSatisfying(predicate));
 		return result;
+	}
+
+	@Override
+	public Collection<? extends T> getCurrentElements() {
+		return Util.union(functionIterator(liveSets, LiveSet::getCurrentElements));
 	}
 }

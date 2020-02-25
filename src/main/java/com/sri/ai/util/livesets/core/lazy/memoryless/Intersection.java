@@ -40,9 +40,11 @@ package com.sri.ai.util.livesets.core.lazy.memoryless;
 import static com.sri.ai.util.Util.forAll;
 import static com.sri.ai.util.Util.list;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.google.common.base.Predicate;
+import com.sri.ai.util.Util;
 import com.sri.ai.util.livesets.api.LiveSet;
 
 public class Intersection<T> implements LiveSet<T> {
@@ -71,5 +73,10 @@ public class Intersection<T> implements LiveSet<T> {
 	public boolean thereIsAnElementSatisfying(Predicate<T> predicate) {
 		boolean result = forAll(liveSets, l -> l.thereIsAnElementSatisfying(predicate));
 		return result;
+	}
+
+	@Override
+	public Collection<? extends T> getCurrentElements() {
+		return Util.intersection(liveSets, LiveSet::getCurrentElements);
 	}
 }

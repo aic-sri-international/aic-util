@@ -41,6 +41,7 @@ import static com.sri.ai.util.Util.list;
 import static com.sri.ai.util.Util.thereExists;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import com.google.common.base.Predicate;
 import com.sri.ai.util.livesets.api.LiveSet;
@@ -71,5 +72,10 @@ public class ExtensionalLiveSet<T> implements LiveSet<T> {
 	public boolean thereIsAnElementSatisfying(Predicate<T> predicate) {
 		boolean result = thereExists(elements, predicate);
 		return result;
+	}
+
+	@Override
+	public Collection<? extends T> getCurrentElements() {
+		return Collections.unmodifiableCollection(elements);
 	}
 }

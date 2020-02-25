@@ -49,13 +49,13 @@ import com.sri.ai.util.base.CloneableIterator;
 @Beta
 public class CloneableFunctionIterator<F, T> extends FunctionIterator<F, T> implements CloneableIterator<T> {
 	
-	public CloneableFunctionIterator(CloneableIterator<F> base, Function<F, T> function) {
+	public CloneableFunctionIterator(CloneableIterator<? extends F> base, Function<? super F, ? extends T> function) {
 		super(base, function);
 	}
 
 	@Override
-	public CloneableIterator<F> getBase() {
-		return (CloneableIterator<F>) super.getBase();
+	public CloneableIterator<? extends F> getBase() {
+		return (CloneableIterator<? extends F>) super.getBase();
 	}
 
 	@Override

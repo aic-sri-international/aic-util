@@ -68,6 +68,8 @@ public interface LiveSet<T> {
 	
 	boolean thereIsAnElementSatisfying(Predicate<T> predicate);
 	
+	Collection<? extends T> getCurrentElements();
+	
 	default LiveSet<T> complement() {
 		return Complement.complement(this);
 	}

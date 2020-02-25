@@ -54,96 +54,96 @@ import com.sri.ai.util.Util;
 @Beta
 public class FunctionIterator<F, T> implements LazyIterator<T> {
 
-	private Iterator<F> base;
-	private Function<F, T> function;
+	private Iterator<? extends F> base;
+	private Function<? super F, ? extends T> function;
 
-	public FunctionIterator(Function<F, T> function, Iterator<F> base) {
+	public FunctionIterator(Function<? super F, ? extends T> function, Iterator<? extends F> base) {
 		this.base     = base;
 		this.function = function;
 	}
 
-	public FunctionIterator(Iterator<F> base, Function<F, T> function) {
+	public FunctionIterator(Iterator<? extends F> base, Function<? super F, ? extends T> function) {
 		this.base     = base;
 		this.function = function;
 	}
 
-	public FunctionIterator(Collection<F> base, Function<F, T> function) {
+	public FunctionIterator(Collection<? extends F> base, Function<? super F, ? extends T> function) {
 		this(base.iterator(), function);
 	}
 
-	public FunctionIterator(Function<F, T> function, Collection<F> base) {
+	public FunctionIterator(Function<? super F, ? extends T> function, Collection<? extends F> base) {
 		this(base.iterator(), function);
 	}
 
-	protected Iterator<F> getBase() {
+	protected Iterator<? extends F> getBase() {
 		return base;
 	}
 
-	public Function<F, T> getFunction() {
+	public Function<? super F, ? extends T> getFunction() {
 		return function;
 	}
 
-	public static <F, T> FunctionIterator<F, T> make(Function<F, T> function, Iterator<F> base) {
-		return new FunctionIterator<F, T>(function, base);
+	public static <F1, T1> FunctionIterator<F1, T1> make(Function<? super F1, ? extends T1> function, Iterator<? extends F1> base) {
+		return new FunctionIterator<F1, T1>(function, base);
 	}
 
-	public static <F, T> FunctionIterator<F, T> make(Function<F, T> function, Iterable<F> base) {
+	public static <F, T> FunctionIterator<F, T> make(Function<? super F, ? extends T> function, Iterable<? extends F> base) {
 		return new FunctionIterator<F, T>(function, base.iterator());
 	}
 
-	public static <F, T> FunctionIterator<F, T> make(Function<F, T> function, Collection<F> base) {
+	public static <F, T> FunctionIterator<F, T> make(Function<? super F, ? extends T> function, Collection<F> base) {
 		return new FunctionIterator<F, T>(function, base);
 	}
 
-	public static <F, T> FunctionIterator<F, T> make(Function<F, T> function, F[] base) {
+	public static <F, T> FunctionIterator<F, T> make(Function<? super F, ? extends T> function, F[] base) {
 		return new FunctionIterator<F, T>(function, Arrays.asList(base));
 	}
 
-	public static <F, T> FunctionIterator<F, T> make(Iterator<F> base, Function<F, T> function) {
+	public static <F, T> FunctionIterator<F, T> make(Iterator<? extends F> base, Function<? super F, ? extends T> function) {
 		return new FunctionIterator<F, T>(function, base);
 	}
 
-	public static <F, T> FunctionIterator<F, T> make(Iterable<F> base, Function<F, T> function) {
+	public static <F, T> FunctionIterator<F, T> make(Iterable<? extends F> base, Function<? super F, ? extends T> function) {
 		return new FunctionIterator<F, T>(function, base.iterator());
 	}
 
-	public static <F, T> FunctionIterator<F, T> make(Collection<F> base, Function<F, T> function) {
+	public static <F, T> FunctionIterator<F, T> make(Collection<F> base, Function<? super F, ? extends T> function) {
 		return new FunctionIterator<F, T>(function, base);
 	}
 
-	public static <F, T> FunctionIterator<F, T> make(F[] base, Function<F, T> function) {
+	public static <F, T> FunctionIterator<F, T> make(F[] base, Function<? super F, ? extends T> function) {
 		return new FunctionIterator<F, T>(function, Arrays.asList(base));
 	}
 
-	public static <F, T> FunctionIterator<F, T> functionIterator(Function<F, T> function, Iterator<F> base) {
+	public static <F, T> FunctionIterator<F, T> functionIterator(Function<? super F, ? extends T> function, Iterator<? extends F> base) {
 		return new FunctionIterator<F, T>(function, base);
 	}
 
-	public static <F, T> FunctionIterator<F, T> functionIterator(Function<F, T> function, Iterable<F> base) {
+	public static <F, T> FunctionIterator<F, T> functionIterator(Function<? super F, ? extends T> function, Iterable<? extends F> base) {
 		return new FunctionIterator<F, T>(function, base.iterator());
 	}
 
-	public static <F, T> FunctionIterator<F, T> functionIterator(Function<F, T> function, Collection<F> base) {
+	public static <F, T> FunctionIterator<F, T> functionIterator(Function<? super F, ? extends T> function, Collection<F> base) {
 		return new FunctionIterator<F, T>(function, base);
 	}
 
-	public static <F, T> FunctionIterator<F, T> functionIterator(Function<F, T> function, F[] base) {
+	public static <F, T> FunctionIterator<F, T> functionIterator(Function<? super F, ? extends T> function, F[] base) {
 		return new FunctionIterator<F, T>(function, Arrays.asList(base));
 	}
 
-	public static <F, T> FunctionIterator<F, T> functionIterator(Iterator<F> base, Function<F, T> function) {
+	public static <F, T> FunctionIterator<F, T> functionIterator(Iterator<? extends F> base, Function<? super F, ? extends T> function) {
 		return new FunctionIterator<F, T>(function, base);
 	}
 
-	public static <F, T> FunctionIterator<F, T> functionIterator(Iterable<F> base, Function<F, T> function) {
-		return new FunctionIterator<F, T>(function, base.iterator());
+	public static <F, T> FunctionIterator<F, T> functionIterator(Iterable<? extends F> base, Function<? super F, ? extends T> function) {
+		return new FunctionIterator<>(function, base.iterator());
 	}
 
-	public static <F, T> FunctionIterator<F, T> functionIterator(Collection<F> base, Function<F, T> function) {
+	public static <F, T> FunctionIterator<F, T> functionIterator(Collection<F> base, Function<? super F, ? extends T> function) {
 		return new FunctionIterator<F, T>(function, base);
 	}
 
-	public static <F, T> FunctionIterator<F, T> functionIterator(F[] base, Function<F, T> function) {
+	public static <F, T> FunctionIterator<F, T> functionIterator(F[] base, Function<? super F, ? extends T> function) {
 		return new FunctionIterator<F, T>(function, Arrays.asList(base));
 	}
 

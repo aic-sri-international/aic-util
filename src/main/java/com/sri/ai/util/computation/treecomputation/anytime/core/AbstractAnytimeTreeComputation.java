@@ -149,7 +149,7 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 			result = computeNextBasedOnSubs();
 		}
 		
-		updateCurrentApproximationIfANewValueHasBeenComputed(result);
+		updateCurrentApproximationIfThereWasANextValue(result);
 		
 		return result;
 	}
@@ -158,7 +158,7 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 		return currentApproximation == null;
 	}
 
-	private void updateCurrentApproximationIfANewValueHasBeenComputed(Approximation<T> result) {
+	private void updateCurrentApproximationIfThereWasANextValue(Approximation<T> result) {
 		if (result != null) {
 			currentApproximation = result;
 		}
@@ -166,9 +166,9 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 
 	private Approximation<T> computeNextBasedOnSubs() {
 		Approximation<T> result;
-		boolean subsIteratedToTheirNextApproximation = iterateSubsToTheirNextApproximationIfAny();
+		boolean subsIteratedToTheirNextApproximation = iterateSubsToTheirNextCollectiveApproximationIfAny();
 		if (subsIteratedToTheirNextApproximation) {
-			result = computeApproximationBasedOnSubsApproximation();
+			result = computeApproximationBasedOnSubsCurrentCollectiveApproximation();
 		}
 		else {
 			result = null;
@@ -176,13 +176,13 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 		return result;
 	}
 
-	private boolean iterateSubsToTheirNextApproximationIfAny() {
+	private boolean iterateSubsToTheirNextCollectiveApproximationIfAny() {
 		boolean subsIteratedToTheirNextApproximation;
 		if (subsHaveNotYetBeenMade()) {
 			subsIteratedToTheirNextApproximation = createSubsAndIterateThemToTheirFirstUsefulApproximationIfAny();
 		}
 		else {
-			subsIteratedToTheirNextApproximation = iterateAlreadCreatedSubsToTheirNextApproximationIfAny();
+			subsIteratedToTheirNextApproximation = iterateAlreadCreatedSubsToTheirNextCollectiveApproximationIfAny();
 		}
 		return subsIteratedToTheirNextApproximation;
 	}
@@ -204,29 +204,48 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 		return subs == null;
 	}
 
-	private boolean iterateAlreadCreatedSubsToTheirNextApproximationIfAny() {
-		boolean subsIteratedToTheirNextApproximation;
+	private boolean iterateAlreadCreatedSubsToTheirNextCollectiveApproximationIfAny() {
+		boolean subsIteratedToTheirNextCollectiveApproximation;
 		Anytime<T> nextSub = pickNextSubToIterate();
 		boolean foundSubWithNext = (nextSub != null);
 		if (foundSubWithNext) {
 			nextSub.next();
-			subsIteratedToTheirNextApproximation = true;
+			tellAllOtherSubsThatExternalContextHasChanged(nextSub);
+			// we might want to expand {@link Anytime} to indicate whether its evaluation
+			// has actually changed the external context for the remaining subs
+			// in order to avoid unnecessary rounds of this notification.
+			subsIteratedToTheirNextCollectiveApproximation = true;
 		}
 		else {
-			subsIteratedToTheirNextApproximation = false;
+			subsIteratedToTheirNextCollectiveApproximation = false;
 		}
-		return subsIteratedToTheirNextApproximation;
+		return subsIteratedToTheirNextCollectiveApproximation;
 	}
 
-	private Approximation<T> computeApproximationBasedOnSubsApproximation() {
+	private void tellAllOtherSubsThatExternalContextHasChanged(Anytime<T> someSub) {
+		for (var sub : getSubs()) {
+			if (sub != someSub) {
+				sub.updateCurrentApproximationGivenThatExternalContextHasChangedButWithoutIteratingItself();
+			}
+		}
+	}
+
+	private Approximation<T> computeApproximationBasedOnSubsCurrentCollectiveApproximation() {
 		Approximation<T> result = eval(getSubs());
 		return result;
 	}
 
-	private Approximation<T> eval(ArrayList<? extends Anytime<T>> subs2) {
-		List<Approximation<T>> subsApproximations = mapIntoArrayList(subs2, Anytime::getCurrentApproximation); 
+	private Approximation<T> eval(ArrayList<? extends Anytime<T>> subs) {
+		List<Approximation<T>> subsApproximations = mapIntoArrayList(subs, s -> getCurrentApproximationForSub(s)); 
 		Approximation<T> result = function(subsApproximations);
 		return result;
+	}
+
+	/**
+	 * Hook for when sub computes its current approximation, with a default <code>return sub.getCurrentApproximation();</code>.
+	 */
+	protected Approximation<T> getCurrentApproximationForSub(Anytime<T> sub) {
+		return sub.getCurrentApproximation();
 	}
 
 	public TreeComputation<T> getBase() {
@@ -236,5 +255,10 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 	@Override
 	public Approximation<T> getCurrentApproximation() {
 		return currentApproximation;
+	}
+
+	@Override
+	public void setCurrentApproximation(Approximation<T> newCurrentApproximation) {
+		currentApproximation = newCurrentApproximation;
 	}
 }

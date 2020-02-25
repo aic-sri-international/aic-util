@@ -1236,6 +1236,10 @@ public class Util {
 		return result;
 	}
 
+	public static <T> LinkedHashSet<T> setFrom(Iterable<? extends T> iterable) {
+		return setFrom(iterable.iterator());
+	}
+
 	public static <T> HashSet<T> hashSetFrom(Iterator<? extends T> iterator) {
 		HashSet<T> result = new HashSet<>();
 		while (iterator.hasNext()) {
@@ -1550,6 +1554,27 @@ public class Util {
 		return result;
 	}
 
+	public static <F, T> List<T> mapIntoList(F[] array, Function<F, T> function) {
+		return mapIntoList(Arrays.asList(array), function);
+	}
+
+	/**
+	 * Similar to {@link #mapIntoList(Collection, Function)} but indicating if results are the same as original elements (using {@link Object#equals(Object)}.
+	 * @param iterable
+	 * @param function
+	 * @return
+	 */
+	public static <I, O> Pair<List<O>, Boolean> mapIntoListAndTellIfThereWasChange(Iterable<? extends I> iterable, Function<? super I, O> function) {
+		List<O> list = list();
+		boolean changed = false;
+		for (I element : iterable) {
+			O newElement = function.apply(element);
+			list.add(newElement);
+			changed = changed || !newElement.equals(element);
+		}
+		return pair(list, changed);
+	}
+
 	/**
 	 * Returns an array containing the results of applying a given function to the integers from 0 to <code>lastExclusive - 1</code>.
 	 * @param lastExclusive
@@ -1576,10 +1601,6 @@ public class Util {
 			arrayIndex++;
 		}
 		return result;
-	}
-
-	public static <F, T> List<T> mapIntoList(F[] array, Function<F, T> function) {
-		return mapIntoList(Arrays.asList(array), function);
 	}
 
 	/**
@@ -2028,8 +2049,8 @@ public class Util {
 	 * @param <E>
 	 *            the type of the elements being collected.
 	 */
-	public static <E> Collection<E> collect(Collection<? extends E> collection,
-			Predicate<E> predicate, Collection<E> collected) {
+	public static <E> Collection<? super E> collect(Collection<? extends E> collection,
+			Predicate<? super E> predicate, Collection<? super E> collected) {
 		collection.stream().filter(predicate::apply)
 				.forEach(collected::add);
 		return collected;
@@ -2078,6 +2099,7 @@ public class Util {
 	 * @param <T>
 	 *            the type of the elements to collect.
 	 */
+	@SuppressWarnings("unchecked")
 	public static <T> List<T> collectToList(Collection<? extends T> collection, Predicate<T> predicate) {
 		return (List<T>) collect(collection, predicate, new LinkedList<T>());
 	}
@@ -2115,6 +2137,7 @@ public class Util {
 	 * @param <T>
 	 *            the type of the elements to collect.
 	 */
+	@SuppressWarnings("unchecked")
 	public static <T> ArrayList<T> collectToArrayList(Collection<? extends T> collection, Predicate<T> predicate) {
 		return (ArrayList<T>) collect(collection, predicate, new ArrayList<T>());
 	}
@@ -3019,6 +3042,16 @@ public class Util {
 	}
 	
 	/**
+	 * Computes the union of the iterables computed by a function applied to the elements of a given iterable.
+	 * @param iterable
+	 * @param function
+	 * @return
+	 */
+	public static <E, T> Set<T> union(Iterable<? extends E> iterable, Function<? super E, Iterable<? extends T>> function) {
+		return union(functionIterator(iterable, function));
+	}
+	
+	/**
 	 * Adds all elements in a given iterable to a given collection (generalizes {@link Collection#addAll(Collection)} to {@link Iterable}.
 	 * @param collection
 	 * @param iterable
@@ -3291,12 +3324,39 @@ public class Util {
 		return result;
 	}
 
-	public static <T> Set<T> intersection(Collection<? extends T> c1, Collection<? extends T> c2) {
+	public static <T> Set<T> intersection(Iterable<? extends T> c1, Collection<? extends T> c2) {
 		LinkedHashSet<T> result = new LinkedHashSet<T>();
 		for (T element : c1) {
 			if (c2.contains(element)) {
 				result.add(element);
 			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Returns the intersection of the iterables in the range of an iterator or null if the iterator's range is empty.
+	 */
+	public static <T> Set<T> intersection(Iterable<? extends Iterable<? extends T>> iterableOfIterables) {
+		return intersection(iterableOfIterables.iterator());
+	}
+
+	public static <T> Set<T> intersection(Iterator<? extends Iterable<? extends T>> iteratorOfIterables) {
+		Set<T> result;
+		if (iteratorOfIterables.hasNext()) {
+			result = intersectionGivenIteratorOfIterablesHasAtLeastOneElement(iteratorOfIterables);
+		}
+		else {
+			result = null;
+		}
+		return result;
+	}
+
+	public static <T> Set<T> intersectionGivenIteratorOfIterablesHasAtLeastOneElement(Iterator<? extends Iterable<? extends T>> iteratorOfIterables) {
+		var first = iteratorOfIterables.next();
+		Set<T> result = setFrom(first);
+		while (!result.isEmpty() && iteratorOfIterables.hasNext()) {
+			result = intersection(iteratorOfIterables.next(), result);
 		}
 		return result;
 	}
@@ -3322,6 +3382,16 @@ public class Util {
 		}
 
 		return result;
+	}
+
+	/**
+	 * Computes the intersection of the iterables computed by a function applied to the elements of a given iterable.
+	 * @param iterable
+	 * @param function
+	 * @return
+	 */
+	public static <E, T> Set<T> intersection(Iterable<? extends E> iterable, Function<? super E, Iterable<? extends T>> function) {
+		return intersection(functionIterator(iterable, function));
 	}
 
 	/**
