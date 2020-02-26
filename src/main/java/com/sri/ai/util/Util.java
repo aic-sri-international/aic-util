@@ -1564,7 +1564,11 @@ public class Util {
 	 * @param function
 	 * @return
 	 */
-	public static <I, O> Pair<List<O>, Boolean> mapIntoListAndTellIfThereWasChange(Iterable<? extends I> iterable, Function<? super I, O> function) {
+	@SuppressWarnings("unlikely-arg-type")
+	public static 
+	<I, O> 
+	Pair<List<O>, Boolean> 
+	mapIntoListAndTellIfThereWasChange(Iterable<? extends I> iterable, Function<? super I, ? extends O> function) {
 		List<O> list = list();
 		boolean changed = false;
 		for (I element : iterable) {
@@ -6905,5 +6909,79 @@ public class Util {
 
 	public static int[] toIntArray(List<Integer> integerList) {
 		return toPrimitive(integerList.toArray(new Integer[integerList.size()]));
+	}
+
+	public static boolean ratioisInOnePlusOrMinusEpsilon(double value1, double value2, double epsilon) {
+		boolean areEqual;
+		if (value2 == 0.0 || value2 == -0.0) {
+			if (value1 == 0.0 || value1 == -0.0) {
+				areEqual = true;
+			}
+			else {
+				// value2 is 0, absolute value of value1 must be very small
+				areEqual = Math.abs(value1) < epsilon;
+			}
+		}
+		else if (value1 == 0.0 || value1 == -0.0) {
+			// value1 is 0, absolute value of value2 must be very small
+			areEqual = Math.abs(value2) < epsilon;
+		}
+		else {
+			double ratio = value1 / value2;
+			areEqual = ratio > 1 - epsilon && ratio < 1 + epsilon;
+		}
+		return areEqual;
+	}
+
+	/**
+	 * Returns a {@link ListIterator} that has just provided the first element satisfying a given predicate,
+	 * or <code>null</code> if there are any elements satisfying the predicate.
+	 * @param list
+	 * @param predicate
+	 * @return
+	 */
+	public static <T> ListIterator<T> find(List<T> list, Predicate<? super T> predicate) {
+		var iterator = list.listIterator();
+		while (iterator.hasNext()) {
+			if (predicate.apply(iterator.next())) {
+				return iterator;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Given two collections and an equivalence relation, indicates whether there is a one-to-one matching between them.
+	 */
+	public static <T> boolean thereIsAOneToOneMatching(
+			Collection<? extends T> c1, 
+			Collection<? extends T> c2,
+			BinaryPredicate<? super T, ? super T> equivalenceRelation) {
+		
+		if (c1.size() != c2.size()) {
+			return false;
+		}
+		
+		List<T> l2 = listFrom(c2);
+		Iterator<? extends T> iterator1 = c1.iterator();
+		boolean equivalentSoFar = true;
+		while (equivalentSoFar && iterator1.hasNext()) {
+			T e1 = iterator1.next();
+			var iterator2 = find(l2, e2 -> equivalenceRelation.apply(e1, e2));
+			if (iterator2 != null) {
+				iterator2.remove();
+			}
+			else {
+				equivalentSoFar = false;
+			}
+		}
+		return equivalentSoFar;
+	}
+
+	/**
+	 * Compares two collections regardless of order (by making sets with their elements and comparing them).
+	 */
+	public static <T> boolean unorderedEquals(Collection<? extends T> c1, Collection<? extends T> c2) {
+		return setFrom(c1).equals(setFrom(c2));
 	}
 }

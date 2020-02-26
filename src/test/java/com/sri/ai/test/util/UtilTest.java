@@ -37,10 +37,19 @@
  */
 package com.sri.ai.test.util;
 
+import static com.sri.ai.util.Util.list;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.LinkedList;
+import java.util.ListIterator;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.sri.ai.util.Util;
+import com.sri.ai.util.base.BinaryPredicate;
 
 public class UtilTest {
 
@@ -59,5 +68,63 @@ public class UtilTest {
 		}
 		
 		Assert.fail("Util.castOrThrowError should have throw error when attempting to cast Integer into String but did not.");
+	}
+	
+	@Test
+	public void testFindListIterator() {
+		
+		ListIterator<String> iterator;
+		
+		iterator = Util.find(list("Bob", "Mary", "John"), s -> s.contains("o"));
+		assertTrue(iterator.hasNext());
+		assertEquals("Bob", iterator.previous());
+		
+		iterator = Util.find(list("Bob", "Mary", "John"), s -> s.contains("e"));
+		assertTrue(iterator == null);
+
+		iterator = Util.find(list("Bob", "Mary", "John"), s -> s.contains("John"));
+		assertFalse(iterator.hasNext());
+		assertEquals("John", iterator.previous());
+	}
+	
+	@Test
+	public void testRatioisInOnePlusOrMinusEpsilon() {
+		assertTrue(Util.ratioisInOnePlusOrMinusEpsilon(1, 1, 0.001));
+		assertTrue(Util.ratioisInOnePlusOrMinusEpsilon(1.00001, 1, 0.001));
+		assertTrue(Util.ratioisInOnePlusOrMinusEpsilon(1, 1.000001, 0.001));
+		assertFalse(Util.ratioisInOnePlusOrMinusEpsilon(2, 1, 0.001));
+		assertFalse(Util.ratioisInOnePlusOrMinusEpsilon(1, 2, 0.001));
+
+		assertFalse(Util.ratioisInOnePlusOrMinusEpsilon(0, 2, 0.001));
+		assertFalse(Util.ratioisInOnePlusOrMinusEpsilon(2, 0, 0.001));
+		assertTrue(Util.ratioisInOnePlusOrMinusEpsilon(0, 0.0001, 0.001));
+		assertTrue(Util.ratioisInOnePlusOrMinusEpsilon(0.0001, 0, 0.001));
+	}
+	
+	@Test
+	public void testThereIsAOneToOneMatching() {
+		
+		BinaryPredicate<String, String> sameInitial = (s1, s2) -> s1.startsWith(s2.substring(0, 1));
+
+		runOneToOneMatchingTest(true, list(), list(), sameInitial);
+		runOneToOneMatchingTest(false, list(), list("Mary", "Bob", "Joe"), sameInitial);
+
+		runOneToOneMatchingTest(false, list("Alice", "Finn", "Carl"), list("Mary", "Bob", "Joe"), sameInitial);
+
+		runOneToOneMatchingTest(true, list("John", "Mary", "Bob"),  list("Mary", "Bob", "Joe"), sameInitial);
+		runOneToOneMatchingTest(true, list("John", "Mary", "Joe"),  list("Joe", "Mary", "Joe"), sameInitial);
+		runOneToOneMatchingTest(false, list("John", "Mary", "Joe"), list("Joe", "Mary", "Bob"), sameInitial);
+		runOneToOneMatchingTest(false, list("John", "Mary"),        list("Mary", "Bob", "Joe"), sameInitial);
+		runOneToOneMatchingTest(false, list("John", "Mary", "Bob"), list("Mary", "Bob"), sameInitial);
+	}
+
+	private void runOneToOneMatchingTest(
+			boolean expected,
+			LinkedList<String> list1,
+			LinkedList<String> list2,
+			BinaryPredicate<String, String> sameInitial) {
+		
+		assertEquals(expected, Util.thereIsAOneToOneMatching(list1, list2, sameInitial));
+		assertEquals(expected, Util.thereIsAOneToOneMatching(list2, list1, sameInitial));
 	}
 }
