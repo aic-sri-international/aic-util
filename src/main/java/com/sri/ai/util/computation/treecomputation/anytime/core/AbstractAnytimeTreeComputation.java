@@ -149,7 +149,7 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 			result = computeNextBasedOnSubs();
 		}
 		
-		updateCurrentApproximationIfThereWasANextValue(result);
+		setCurrentApproximationIfThereWasANextValue(result);
 		
 		return result;
 	}
@@ -158,9 +158,9 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 		return currentApproximation == null;
 	}
 
-	private void updateCurrentApproximationIfThereWasANextValue(Approximation<T> result) {
+	private void setCurrentApproximationIfThereWasANextValue(Approximation<T> result) {
 		if (result != null) {
-			currentApproximation = result;
+			setCurrentApproximation(result);
 		}
 	}
 
@@ -211,9 +211,6 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 		if (foundSubWithNext) {
 			nextSub.next();
 			tellAllOtherSubsThatExternalContextHasChanged(nextSub);
-			// we might want to expand {@link Anytime} to indicate whether its evaluation
-			// has actually changed the external context for the remaining subs
-			// in order to avoid unnecessary rounds of this notification.
 			subsIteratedToTheirNextCollectiveApproximation = true;
 		}
 		else {
@@ -228,6 +225,9 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 				sub.updateCurrentApproximationGivenThatExternalContextHasChangedButWithoutIteratingItself();
 			}
 		}
+		// we might want to expand {@link Anytime} to indicate whether its evaluation
+		// has actually changed the external context for the remaining subs
+		// in order to avoid unnecessary rounds of this notification.
 	}
 
 	private Approximation<T> computeApproximationBasedOnSubsCurrentCollectiveApproximation() {

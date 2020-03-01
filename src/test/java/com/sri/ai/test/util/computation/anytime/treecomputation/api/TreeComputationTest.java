@@ -85,6 +85,7 @@ public class TreeComputationTest {
 		public Integer function(List<Integer> subsValues) {
 			return (Integer) Util.sum(subsValues);
 		}
+
 	}
 
 	@Test

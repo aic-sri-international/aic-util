@@ -39,7 +39,7 @@ package com.sri.ai.util.livesets.core.lazy.memoryless;
 
 import static com.sri.ai.util.livesets.core.lazy.memoryless.ExtensionalLiveSet.liveSet;
 
-import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import com.google.common.base.Predicate;
@@ -79,7 +79,7 @@ public class RedirectingLiveSet<T> implements LiveSet<T> {
 	}
 
 	@Override
-	public Collection<? extends T> getCurrentElements() {
-		return liveSet.getCurrentElements();
+	public Iterator<? extends T> iterator() {
+		return liveSet.iterator();
 	}
 }

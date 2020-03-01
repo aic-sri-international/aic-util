@@ -38,6 +38,7 @@
 package com.sri.ai.util.collect;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
@@ -131,11 +132,11 @@ public class NestedIterator<E> extends EZIteratorWithNull<E> {
 
 	@SuppressWarnings("unchecked")
 	public Iterator<E> determineSubIterator(Object element) {
-		if (element instanceof Iterable) {
-			return ((Iterable<E>)element).iterator();
+		if (element instanceof Collection) {
+			return new NestedIterator(((Collection<E>)element).iterator());
 		}
 		else if (element instanceof Iterator) {
-			return (Iterator<E>) element;
+			return new NestedIterator((Iterator<E>) element);
 		}
 		else if (element instanceof NullaryFunction) {
 			return determineSubIterator(((NullaryFunction) element).apply());
@@ -158,7 +159,7 @@ public class NestedIterator<E> extends EZIteratorWithNull<E> {
 				subIterator = null;
 			}
 		}
-		endOfRange(); // EZIteratorWithNull requires calling this method when range is over, as opposed to just retuning null as in EZIterator.
+		endOfRange(); // EZIteratorWithNull requires calling this method when range is over, as opposed to just returning null as in EZIterator.
 		return null;
 	}
 }

@@ -91,6 +91,13 @@ public interface Anytime<T> extends Iterator<Approximation<T>>, NullaryFunction<
 	 * so its current approximation might be needed to be updated too, but we do not want to iterate
 	 * the second sibling because this would prompt the first to be notified and iterated as well,
 	 * causing uncontrolled and exhaustive computation.
+	 * <p>
+	 * The initial motivation for this was from Anytime Exact Belief Propagation.
+	 * A current approximation may be computed assuming that some variables are not external to the branch
+	 * and may be summed out. After further expansion of external branches, these variables may be found,
+	 * in which case they need to be un-summed out.
+	 * In our particular case, the approximation contains all the information for this operation to be performed
+	 * incrementally and cheaply, without having to re-compute the branch.
 	 */
 	void updateCurrentApproximationGivenThatExternalContextHasChangedButWithoutIteratingItself();
 }

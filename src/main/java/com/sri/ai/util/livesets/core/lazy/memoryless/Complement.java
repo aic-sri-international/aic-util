@@ -37,7 +37,7 @@
  */
 package com.sri.ai.util.livesets.core.lazy.memoryless;
 
-import java.util.Collection;
+import java.util.Iterator;
 
 import com.google.common.base.Predicate;
 import com.sri.ai.util.livesets.api.LiveSet;
@@ -67,7 +67,7 @@ public class Complement<T> implements LiveSet<T> {
 	}
 
 	@Override
-	public Collection<? extends T> getCurrentElements() {
+	public Iterator<? extends T> iterator() {
 		throw new Error("Cannot obtain the current elements of a complement live set.");
 	}
 }

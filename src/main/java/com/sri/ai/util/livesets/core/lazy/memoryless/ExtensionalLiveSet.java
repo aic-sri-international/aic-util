@@ -42,6 +42,7 @@ import static com.sri.ai.util.Util.thereExists;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 
 import com.google.common.base.Predicate;
 import com.sri.ai.util.livesets.api.LiveSet;
@@ -75,7 +76,7 @@ public class ExtensionalLiveSet<T> implements LiveSet<T> {
 	}
 
 	@Override
-	public Collection<? extends T> getCurrentElements() {
-		return Collections.unmodifiableCollection(elements);
+	public Iterator<? extends T> iterator() {
+		return Collections.unmodifiableCollection(elements).iterator();
 	}
 }

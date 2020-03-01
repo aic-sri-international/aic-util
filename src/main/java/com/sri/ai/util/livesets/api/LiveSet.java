@@ -37,9 +37,11 @@
  */
 package com.sri.ai.util.livesets.api;
 
+import static com.sri.ai.util.Util.listFrom;
 import static com.sri.ai.util.livesets.core.lazy.memoryless.ExtensionalLiveSet.liveSet;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 import com.google.common.base.Predicate;
 import com.sri.ai.util.livesets.core.lazy.memoryless.Complement;
@@ -68,7 +70,11 @@ public interface LiveSet<T> {
 	
 	boolean thereIsAnElementSatisfying(Predicate<T> predicate);
 	
-	Collection<? extends T> getCurrentElements();
+	Iterator<? extends T> iterator();
+	
+	default Collection<? extends T> getCurrentElements() {
+		return listFrom(iterator());
+	}
 	
 	default LiveSet<T> complement() {
 		return Complement.complement(this);

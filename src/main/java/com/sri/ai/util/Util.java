@@ -3694,6 +3694,10 @@ public class Util {
 	public static <E> List<E> subtract(Collection<? extends E> c1, E element) {
 		return setDifference(c1, list(element));
 	}
+	
+	public static <E> List<? extends E> subtract(Collection<? extends E> c, Predicate<? super E> predicate) {
+		return collectToList(c, e -> ! predicate.apply(e));
+	}
 
 	public static String camelCaseToSpacedString(String camel) {
 		StringBuilder result = new StringBuilder();
@@ -4156,7 +4160,7 @@ public class Util {
 	 * @param <E>
 	 *            the type of the elements.
 	 */
-	public static <E> boolean contains(Iterator<E> iterator, E element) {
+	public static <E> boolean contains(Iterator<? extends E> iterator, E element) {
 		while (iterator.hasNext()) {
 			if (iterator.next().equals(element)) {
 				return true;
@@ -5914,6 +5918,13 @@ public class Util {
 	public static void println() {
 		System.out.println();
 	}
+	
+	/**
+	 * Same as <code>println(join(" ", objects))</code>.
+	 */
+	public static void println(Object... objects) {
+		println(join(" ", objects));
+	}
 
 	/**
 	 * Get class object for given class name or throws an IllegalArgumentException.
@@ -6983,5 +6994,14 @@ public class Util {
 	 */
 	public static <T> boolean unorderedEquals(Collection<? extends T> c1, Collection<? extends T> c2) {
 		return setFrom(c1).equals(setFrom(c2));
+	}
+
+	/**
+	 * Makes a list copy of a collection and sort it by the result of {@link Object#toString()} of its elements.
+	 */
+	public static <T> List<T> sortByString(Collection<? extends T> c) {
+		List<T> result = listFrom(c);
+		result.sort((t1, t2) -> t1.toString().compareTo(t2.toString()));
+		return result;
 	}
 }

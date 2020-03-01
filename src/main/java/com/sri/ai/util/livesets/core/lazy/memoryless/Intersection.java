@@ -40,7 +40,7 @@ package com.sri.ai.util.livesets.core.lazy.memoryless;
 import static com.sri.ai.util.Util.forAll;
 import static com.sri.ai.util.Util.list;
 
-import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import com.google.common.base.Predicate;
@@ -76,7 +76,7 @@ public class Intersection<T> implements LiveSet<T> {
 	}
 
 	@Override
-	public Collection<? extends T> getCurrentElements() {
-		return Util.intersection(liveSets, LiveSet::getCurrentElements);
+	public Iterator<? extends T> iterator() {
+		return Util.intersection(liveSets, LiveSet::getCurrentElements).iterator();
 	}
 }

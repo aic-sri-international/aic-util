@@ -42,7 +42,7 @@ import static com.sri.ai.util.Util.listWithoutElementAt;
 import static com.sri.ai.util.Util.thereExists;
 import static com.sri.ai.util.collect.FunctionIterator.functionIterator;
 
-import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import com.google.common.base.Predicate;
@@ -85,7 +85,7 @@ public class Union<T> implements LiveSet<T> {
 	}
 
 	@Override
-	public Collection<? extends T> getCurrentElements() {
-		return Util.union(functionIterator(liveSets, LiveSet::getCurrentElements));
+	public Iterator<? extends T> iterator() {
+		return Util.union(functionIterator(liveSets, LiveSet::getCurrentElements)).iterator();
 	}
 }
