@@ -2104,7 +2104,7 @@ public class Util {
 	 *            the type of the elements to collect.
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> List<T> collectToList(Collection<? extends T> collection, Predicate<T> predicate) {
+	public static <T> List<T> collectToList(Collection<? extends T> collection, Predicate<? super T> predicate) {
 		return (List<T>) collect(collection, predicate, new LinkedList<T>());
 	}
 
