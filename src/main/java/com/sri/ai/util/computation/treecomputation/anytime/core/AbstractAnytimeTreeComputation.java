@@ -59,6 +59,9 @@ import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
  * to the final root value.
  * <p>
  * Initially, the value of the anytime root computation is one provided at construction.
+ * This value is meant to represent total ignorance since it is provided before any computation
+ * is done. For example, if the result is a variable with a certain range,
+ * then the initial value should be the variable's entire range.
  * <p>
  * Then, in order to create the next approximation,
  * this class creates sub-anytime approximations
@@ -230,7 +233,10 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 		// in order to avoid unnecessary rounds of this notification.
 	}
 
-	private Approximation<T> computeApproximationBasedOnSubsCurrentCollectiveApproximation() {
+	/**
+	 * Computes an approximation based on current approximations on sub-computations, according to {@link #function(List)}.
+	 */
+	protected Approximation<T> computeApproximationBasedOnSubsCurrentCollectiveApproximation() {
 		Approximation<T> result = eval(getSubs());
 		return result;
 	}
@@ -261,4 +267,5 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 	public void setCurrentApproximation(Approximation<T> newCurrentApproximation) {
 		currentApproximation = newCurrentApproximation;
 	}
+
 }

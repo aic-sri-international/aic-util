@@ -75,10 +75,17 @@ public interface Anytime<T> extends Iterator<Approximation<T>>, NullaryFunction<
 		return getCurrentApproximation();
 	}
 
+	default void updateCurrentApproximationGivenThatExternalContextHasChangedButWithoutIteratingItself() {
+		Approximation<T> updatedCurrentApproximation =
+				computeUpdatedCurrentApproximationGivenThatExternalContextHasChangedWithoutIteratingItself();
+		
+		setCurrentApproximation(updatedCurrentApproximation);
+	}
+
 	/**
-	 * Notifies this {@link Anytime} that it is external context/input (which is assumed to be accessible to it somehow)
-	 * has changed, prompting it to update its current approximation <i>without</i> further advancing its own computation.
-	 * By updating its current approximation, we mean determining it <i>as if</i> it had been computed
+	 * Must compute an updated current approximation given that the external context/input (which is assumed to be accessible to it somehow)
+	 * has changed, <i>without</i> further advancing its own computation.
+	 * By computing its updated current approximation, we mean determining it <i>as if</i> it had been computed
 	 * based on the current external context in the first place.
 	 * Naturally, a possible implementation is to just recompute its current approximation from scratch
 	 * using the new external context, but hopefully there will be a more efficient incremental way of doing this.
@@ -99,5 +106,5 @@ public interface Anytime<T> extends Iterator<Approximation<T>>, NullaryFunction<
 	 * In our particular case, the approximation contains all the information for this operation to be performed
 	 * incrementally and cheaply, without having to re-compute the branch.
 	 */
-	void updateCurrentApproximationGivenThatExternalContextHasChangedButWithoutIteratingItself();
+	Approximation<T> computeUpdatedCurrentApproximationGivenThatExternalContextHasChangedWithoutIteratingItself();
 }

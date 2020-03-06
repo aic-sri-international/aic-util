@@ -1228,6 +1228,19 @@ public class Util {
 		return result;
 	}
 	
+	/**
+	 * Makes a list of Integers out of an array of ints.
+	 * 
+	 * @param array
+	 *            the array of ints from which to construct a list of Integers.
+	 * @return a List containing the elements of the given array.
+	 * @param <T>
+	 *            the type of the array's elements.
+	 */
+	public static List<Integer> listFrom(int[] array) {
+		return listFrom(ArrayUtils.toObject(array));
+	}
+	
 	public static <T> LinkedHashSet<T> setFrom(Iterator<? extends T> iterator) {
 		LinkedHashSet<T> result = set();
 		while (iterator.hasNext()) {
@@ -7003,5 +7016,11 @@ public class Util {
 		List<T> result = listFrom(c);
 		result.sort((t1, t2) -> t1.toString().compareTo(t2.toString()));
 		return result;
+	}
+	
+	public static <T> void forEach(Iterable<? extends T> iterable, Procedure<? super T> procedure) {
+		for (T e : iterable) {
+			procedure.apply(e);
+		}
 	}
 }
