@@ -1114,8 +1114,8 @@ public class Util {
 	 * @param <T>
 	 *            the type of the elements in the collection.
 	 */
-	public static <T> Pair<T, List<T>> findSatisfyingElementAndListCopyWithoutItOrNull(
-			Collection<T> c, Predicate<T> p) {
+	public static <
+			T> Pair<T, List<T>> findSatisfyingElementAndListCopyWithoutItOrNull(Collection<T> c, Predicate<T> p) {
 		Pair<T, List<T>> result = null;
 		final AtomicInteger elementIndex = new AtomicInteger(-1);
 		Optional<T> first = c.stream().filter(e -> {
@@ -1125,8 +1125,7 @@ public class Util {
 		if (first.isPresent()) {
 			// we create another list and add all elements, but found one, to
 			// it.
-			List<T> copy = makeCopyButForElementAtGivenIndex(c,
-					elementIndex.intValue());
+			List<T> copy = makeCopyButForElementAtGivenIndex(c, elementIndex.intValue());
 			result = Pair.make(first.get(), copy);
 		}
 
@@ -6959,7 +6958,7 @@ public class Util {
 
 	/**
 	 * Returns a {@link ListIterator} that has just provided the first element satisfying a given predicate,
-	 * or <code>null</code> if there are any elements satisfying the predicate.
+	 * or <code>null</code> if there aren't any elements satisfying the predicate.
 	 * @param list
 	 * @param predicate
 	 * @return
