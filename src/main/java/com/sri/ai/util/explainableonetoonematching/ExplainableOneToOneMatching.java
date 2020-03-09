@@ -1,11 +1,12 @@
 package com.sri.ai.util.explainableonetoonematching;
 
 import static com.sri.ai.util.Util.getFirstNonNullResultOrNull;
-import static com.sri.ai.util.Util.list;
+import static com.sri.ai.util.Util.set;
+import static com.sri.ai.util.Util.setFrom;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A generic class computing whether two collections have a one-to-one matching according to a {@link Matcher}.
@@ -22,19 +23,20 @@ public class ExplainableOneToOneMatching<T, E> {
 			List<T1> c1,
 			List<T1> c2,
 			Matcher<? super T1, ? extends E1> matcher,
-			UnmatchedElementMerger<? super T1, Collection<E1>, ? extends E1> unmatchedElementMerger,
-			LeftOverMerger<Collection<T1>, ? extends E1> leftOverMerger,
-			Matcher<List<T1>, ? extends E1> correctMatchMaker) {
+			UnmatchedElementMerger<? super T1, Set<E1>, ? extends E1> unmatchedElementMerger,
+			LeftOverMerger<Set<T1>, ? extends E1> leftOverMerger,
+			E1 correctMatchExplanation) {
 		
-		return new ExplainableOneToOneMatching<T1, E1>(c1, c2, matcher, unmatchedElementMerger, leftOverMerger, correctMatchMaker).computeMatchingExplanation();
+		return new ExplainableOneToOneMatching<T1, E1>(c1, c2, matcher, unmatchedElementMerger, leftOverMerger, correctMatchExplanation).computeMatchingExplanation();
 	}
 
 	private List<T> c1;
+	@SuppressWarnings("unused")
 	private List<T> c2;
 	private Matcher<? super T, ? extends E> matcher;
-	private UnmatchedElementMerger<? super T, Collection<E>, ? extends E> unmatchedElementMerger;
-	private LeftOverMerger<Collection<T>, ? extends E> leftOverMerger;
-	private Matcher<List<T>, ? extends E> correctMatchMaker;
+	private UnmatchedElementMerger<? super T, Set<E>, ? extends E> unmatchedElementMerger;
+	private LeftOverMerger<Set<T>, ? extends E> leftOverMerger;
+	private E correctMatchExplanation;
 
 	/** Intermediary data member keeping track of which elements in second collection have not yet been matched. */
 	private LinkedList<T> remainingC2;
@@ -43,9 +45,9 @@ public class ExplainableOneToOneMatching<T, E> {
 			List<T> c1,
 			List<T> c2,
 			Matcher<? super T, ? extends E> matcher,
-			UnmatchedElementMerger<? super T, Collection<E>, ? extends E> unmatchedElementMerger,
-			LeftOverMerger<Collection<T>, ? extends E> leftOverMerger,
-			Matcher<List<T>, ? extends E> correctMatchMaker) {
+			UnmatchedElementMerger<? super T, Set<E>, ? extends E> unmatchedElementMerger,
+			LeftOverMerger<Set<T>, ? extends E> leftOverMerger,
+			E correctMatchExplanation) {
 		
 		this.c1 = c1;
 		this.c2 = c2;
@@ -53,7 +55,7 @@ public class ExplainableOneToOneMatching<T, E> {
 		this.matcher = matcher;
 		this.unmatchedElementMerger = unmatchedElementMerger;
 		this.leftOverMerger = leftOverMerger;
-		this.correctMatchMaker = correctMatchMaker;
+		this.correctMatchExplanation = correctMatchExplanation;
 	}
 
 	/**
@@ -69,10 +71,10 @@ public class ExplainableOneToOneMatching<T, E> {
 		}
 		
 		if (remainingC2.isEmpty()) {
-			return correctMatchMaker.apply(c1, c2);
+			return correctMatchExplanation;
 		}
 		
-		var explanationOfLeftOverElements = leftOverMerger.apply(remainingC2);
+		var explanationOfLeftOverElements = leftOverMerger.apply(setFrom(remainingC2));
 		
 		return explanationOfLeftOverElements;
 	}
@@ -83,8 +85,8 @@ public class ExplainableOneToOneMatching<T, E> {
 		return explanation;
 	}
 
-	private List<E> getExplanationsForUnmatchingOrNull(T element) {
-		List<E> explanationsForUnmatching = list();
+	private Set<E> getExplanationsForUnmatchingOrNull(T element) {
+		Set<E> explanationsForUnmatching = set();
 		var remainingC2ListIterator = remainingC2.listIterator();
 		while (remainingC2ListIterator.hasNext()) {
 			T elementInRemainingC2 = remainingC2ListIterator.next();
@@ -101,7 +103,7 @@ public class ExplainableOneToOneMatching<T, E> {
 		return explanationsForUnmatching;
 	}
 
-	public E mergeExplanationsIfAny(T element, Collection<E> explanationsList) {
+	public E mergeExplanationsIfAny(T element, Set<E> explanationsList) {
 		return explanationsList == null? null : unmatchedElementMerger.apply(element, explanationsList);
 	}
 
