@@ -1,6 +1,7 @@
 package com.sri.ai.util.computation.treecomputation.anytime.core;
 
 import static com.sri.ai.util.Util.forAll;
+import static com.sri.ai.util.Util.forEach;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -110,51 +111,95 @@ public abstract class AbstractAnytimeTreeComputationWithLossySimplification<T> e
 	
 	@Override
 	public Approximation<T> function(List<Approximation<T>> subsApproximations) {
+
+//		println();
+//		println("AbstractAnytimeTreeComputationWithLossySimplification");
+//		println("Entering function for " + this);
+//		if (!forAll(getSubs(), currentApproximationIsUpdateableByItself)) {
+//			var sub = Util.findFirst(getSubs(), s -> ! s.currentApproximationIsUpdateableByItself());
+//			println("Sub not updateable by itself: " + sub);
+//			println("Sub's current approximation:", sub.getCurrentApproximation());
+//			println("Sub's          unsimplified:", sub.unsimplified);
+//			System.exit(-1);
+//		}
+		
 		unsimplified = functionWithoutSimplification(subsApproximations);
 		unsimplifiedIsUpdateableByItself = forAll(getSubs(), currentApproximationIsUpdateableByItself);
 		var simplified = simplify(unsimplified);
+		
+//		println();
+//		println("AbstractAnytimeTreeComputationWithLossySimplification");
+//		println("unsimplified:", unsimplified);
+//		println("simplified  :", simplified);
+//		println("unsimplifiedIsUpdateableByItself:", unsimplifiedIsUpdateableByItself);
+		
 		return simplified;
 		// Note: we do not invoke setCurrentApproximation here because the super class takes care of doing that with the result of function.
 	}
 
-	private boolean currentApproximationIsUpdateableByItself() {
+	public boolean currentApproximationIsUpdateableByItself() {
 		// The current approximation is only updateable by itself if
 		// there has been no simplification (which is assumed to always removes that property)
 		// and the unsimplified approximation has been computed from subs that are updateable by themselves.
-		return 
+		return  subsHaveNotYetBeenMade() 
+				||
+				(
 				getCurrentApproximation() == unsimplified
 				&&
-				unsimplifiedIsUpdateableByItself;
+				unsimplifiedIsUpdateableByItself);
 	}
 	
 	@Override
 	public Approximation<T> computeUpdatedCurrentApproximationGivenThatExternalContextHasChangedWithoutIteratingItself() {
-		var canonical = computeUpdatedApproximationGivenThatExternalContextHasChangedByItself(getCurrentApproximation());
-		return canonical;
+//		var canonical = computeUpdatedApproximationGivenThatExternalContextHasChangedByItself(getCurrentApproximation());
+//		return canonical;
 		
-//		Approximation<T> newVersion;
-//		
-//		if (unsimplifiedIsUpdateableByItself) {
-//			var previousUnsimplified = unsimplified; // this is needed because the line below ultimately invokes 'function' which sets unsimplified as a side effect!
-//			var newUnsimplified = computeUpdatedApproximationGivenThatExternalContextHasChangedByItself(unsimplified);
-//			if (newUnsimplified != previousUnsimplified) {
-//				var newSimplified = simplify(newUnsimplified);
-//				newVersion = newSimplified;
-//			}
-//			else {
-//				// No changes, which means there was no need for updates
-//				newVersion = getCurrentApproximation();
-//			}
-//		}
-//		else {
-//			forEach(getSubs(), updateCurrentApproximationGivenThatExternalContextHasChangedButWithoutIteratingItself);
-//			var newSimplified = computeApproximationBasedOnSubsCurrentCollectiveApproximation();
-//			// Note that the above line also updates unsimplified and unsimplifiedIsUpdateableByItself as side effects
-//			newVersion = newSimplified;
-//		}
-//		
-//		return newVersion;
+		// This function assumes 'function' has already been executed. This will only have happened if subs have been made yet.
+		// If they have not, just return the current approximation without change (since it is a simplex).
+		if (subsHaveNotYetBeenMade()) {
+			return getCurrentApproximation();
+		}
 		
+		checkInvariant("Checking invariant at the beginning of updating");
+
+		Approximation<T> newVersion;
+		
+		if (currentApproximationIsUpdateableByItself()) {
+			var newUnsimplified = computeUpdatedApproximationGivenThatExternalContextHasChangedByItself(unsimplified);
+			if (newUnsimplified != unsimplified) {
+				unsimplified = newUnsimplified;
+				var newSimplified = simplify(newUnsimplified);
+				newVersion = newSimplified;
+			}
+			else {
+				// No changes, which means there was no need for updates
+				newVersion = getCurrentApproximation();
+			}
+		}
+		else {
+			forEach(getSubs(), updateCurrentApproximationGivenThatExternalContextHasChangedButWithoutIteratingItself);
+			var newSimplified = computeApproximationBasedOnSubsCurrentCollectiveApproximation();
+			// Note that the above line updates unsimplified and unsimplifiedIsUpdateableByItself as side effects
+			newVersion = newSimplified;
+		}
+		
+		return newVersion;
+		
+	}
+	
+	@Override
+	public void setCurrentApproximation(Approximation<T> newCurrentApproximation) {
+		super.setCurrentApproximation(newCurrentApproximation);
+		checkInvariant("Checking invariant right at the end of setCurrentApproximation at Lossy level");
+	}
+	
+	private void checkInvariant(String message) {
+//		if (!currentApproximationIsUpdateableByItself()) {
+//			println("AbstractAnytimeTreeComputationWithLossySimplification");
+//			println(message);
+//			println("Current approximation not updateable by itself at node", this);
+//			System.exit(-1);
+//		}
 	}
 
 	////////////////// CONVENIENCE

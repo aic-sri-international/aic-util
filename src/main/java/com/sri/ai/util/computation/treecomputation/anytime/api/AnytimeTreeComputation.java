@@ -59,4 +59,6 @@ public interface AnytimeTreeComputation<T> extends Anytime<T>, EagerTreeComputat
 		// The latter is more efficient since all we want is the final result.
 		return EagerTreeComputation.super.apply();
 	}
+	
+	boolean subsHaveNotYetBeenMade();
 }

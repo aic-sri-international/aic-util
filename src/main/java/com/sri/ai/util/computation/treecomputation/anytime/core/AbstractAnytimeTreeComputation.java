@@ -203,7 +203,8 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 		}
 	}
 
-	private boolean subsHaveNotYetBeenMade() {
+	@Override
+	public boolean subsHaveNotYetBeenMade() {
 		return subs == null;
 	}
 
