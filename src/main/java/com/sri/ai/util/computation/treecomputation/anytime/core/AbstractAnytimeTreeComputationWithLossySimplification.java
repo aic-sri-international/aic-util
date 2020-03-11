@@ -10,11 +10,11 @@ import com.google.common.base.Predicate;
 import com.sri.ai.util.base.NullaryFunction;
 import com.sri.ai.util.base.Procedure;
 import com.sri.ai.util.computation.anytime.api.Approximation;
-import com.sri.ai.util.computation.treecomputation.anytime.api.AnytimeTreeComputation;
+import com.sri.ai.util.computation.treecomputation.anytime.api.AnytimeEagerTreeComputation;
 import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
 
 /**
- * A specialization of {@link AbstractAnytimeTreeComputation}
+ * A specialization of {@link AbstractAnytimeTreeComputationBasedOnTreeComputation}
  * providing mechanisms for dealing with the situation in which simplifications are possible but "taint"
  * approximations so that they are no longer updateable to new external contexts.
  * If such updating is needed, it requires recomputing them from their untainted sub-computations,
@@ -28,7 +28,7 @@ import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
  * cannot be <i>updated by themselves</i>.
  * <p>
  * We define an approximation to be <i>updateable by itself</i> if it can be modified to the correct approximation
- * given the new external context (as per {@link #updateCurrentApproximationGivenThatExternalContextHasChangedButWithoutIteratingItself()})
+ * given the new external context (as per {@link #refreshFromWithout()})
  * without any modification to or information from their sub-computations.
  * Because "total ignorance" approximations are not computed from sub-computations, they are always considered updateable-by-themselves.
  * <p>
@@ -45,7 +45,7 @@ import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
  * 
  * @author braz
  */
-public abstract class AbstractAnytimeTreeComputationWithLossySimplification<T> extends AbstractAnytimeTreeComputation<T> {
+public abstract class AbstractAnytimeTreeComputationWithLossySimplification<T> extends AbstractAnytimeTreeComputationBasedOnTreeComputation<T> {
 
 	////////////////////// ABSTRACT METHODS
 	
@@ -59,16 +59,11 @@ public abstract class AbstractAnytimeTreeComputationWithLossySimplification<T> e
 	abstract protected boolean evenOneSubWithTotalIgnoranceRendersApproximationEqualToTotalIgnorance();
 
 	/**
-	 * Implements the computation of the unsimplified approximation given sub approximations.
-	 */
-	abstract protected Approximation<T> functionWithoutSimplification(List<Approximation<T>> subsApproximations);
-
-	/**
 	 * Simplifies an approximation to a new one and assumes it is updateable by itself.
 	 * Note that if we know simplified approximations are always updateable by themselves,
-	 * then this class should not be used at all and {@link AbstractAnytimeTreeComputation} should be used instead. 
+	 * then this class should not be used at all and {@link AbstractAnytimeTreeComputationBasedOnTreeComputation} should be used instead. 
 	 * (For clarity and further elaboration, assuming this class were to be used
-	 * then the simplification should simply be made part of {@link #functionWithoutSimplification(List)},
+	 * then the simplification should simply be made part of {@link #function(List)},
 	 * leaving this method as the identity function, in order to avoid an unnecessary recomputation penalty.)
 	 */
 	abstract protected Approximation<T> simplify(Approximation<T> approximation);
@@ -92,13 +87,15 @@ public abstract class AbstractAnytimeTreeComputationWithLossySimplification<T> e
 
 	////////////////////// SIMPLIFICATION MECHANISM
 	
-	// The strategy for this class is to implement the method 'function' so that it keeps track of
-	// both unsimplified and simplified approximations, as well as whether the unsimplified approximation
-	// is updateable by itself.
+	// The strategy for this class is to "intercept" the setting of the current approximation
+	// and make it the simplified version instead.
+	// The unsimplified approximation is also kept if the need to update to a new external context arises.
 	// When it is time to update, we check if the unsimplified approximation is updateable by itself.
 	// If it is, we simply use the abstract method implementing that to obtain a new unsimplified approximation and simplify it again.
 	// Otherwise, we update its subs, recompute it from them, and simplify it.
 
+	////////////// SIMPLIFIED AND UNSIMPLIFIED APPROXIMATIONS ACCESS
+	
 	/**
 	 * The unsimplified approximation computed based on sub-approximations.
 	 * The current approximation for this anytime computation is possibly a simplification of this.
@@ -107,109 +104,65 @@ public abstract class AbstractAnytimeTreeComputationWithLossySimplification<T> e
 	
 	/**
 	 * Indicates whether the unsimplified approximation computed from the sub approximations
-	 * is updateable by itself,
-	 * which depends on whether the subs themselves are updateable by themselves.
+	 * is updateable by itself, which depends on whether the subs themselves are updateable by themselves.
+	 * This is cached and a value of null indicates it needs to be re-assessed.
 	 */
-	private boolean unsimplifiedIsUpdateableByItself;
-	
-	@Override
-	public Approximation<T> function(List<Approximation<T>> subsApproximations) {
-
-//		println();
-//		println("AbstractAnytimeTreeComputationWithLossySimplification");
-//		println("Entering function for " + this);
-//		if (!forAll(getSubs(), currentApproximationIsUpdateableByItself)) {
-//			var sub = Util.findFirst(getSubs(), s -> ! s.currentApproximationIsUpdateableByItself());
-//			println("Sub not updateable by itself: " + sub);
-//			println("Sub's current approximation:", sub.getCurrentApproximation());
-//			println("Sub's          unsimplified:", sub.unsimplified);
-//			System.exit(-1);
-//		}
-		
-		unsimplified = functionWithoutSimplification(subsApproximations);
-		unsimplifiedIsUpdateableByItself = forAll(getSubs(), currentApproximationIsUpdateableByItself);
-		var simplified = simplify(unsimplified);
-		
-//		println();
-//		println("AbstractAnytimeTreeComputationWithLossySimplification");
-//		println("unsimplified:", unsimplified);
-//		println("simplified  :", simplified);
-//		println("unsimplifiedIsUpdateableByItself:", unsimplifiedIsUpdateableByItself);
-		
-		return simplified;
-		// Note: we do not invoke setCurrentApproximation here because the super class takes care of doing that with the result of function.
+	private Boolean currentUnsimplifiedIsUpdateableByItself = null;
+	private boolean getCurrentUnsimplifiedApproximationIsUpdateableByItself() {
+		if (currentUnsimplifiedIsUpdateableByItself == null) {
+			currentUnsimplifiedIsUpdateableByItself = forAll(getSubs(), currentApproximationIsUpdateableByItself);
+		}
+		return currentUnsimplifiedIsUpdateableByItself;
 	}
-
-	public boolean currentApproximationIsUpdateableByItself() {
+	
+	////////////// KEEPING TRACK OF WHETHER SIMPLIFIED AND UNSIMPLIFIED CURRENT APPROXIMATIONS ARE UPDATEABLE BY THEMSELVES
+	
+	private boolean currentApproximationIsUpdateableByItself() {
 		// The current approximation is only updateable by itself if
-		// it is total ignorance (assumed to be updateable by itself since it is not computed from sub-computations)
-		// or if there has been no simplification (which is assumed to always remove that property)
-		// and the unsimplified approximation has been computed from subs that are updateable by themselves.
-		return  subsHaveNotYetBeenMade() 
-				||
-				(
-				getCurrentApproximation() == unsimplified
-				&&
-				unsimplifiedIsUpdateableByItself);
+		// the current unsimplified approximation is updateable by itself and there has been no simplification.
+		// (simplified is the same as unsimplified).
+		return  currentUnsimplifiedApproximationIsUpdateableByItself() && getCurrentApproximation() == unsimplified;
 	}
 	
-	@Override
-	public Approximation<T> computeUpdatedCurrentApproximationGivenThatExternalContextHasChangedWithoutIteratingItself() {
-//		var canonical = computeUpdatedApproximationGivenThatExternalContextHasChangedByItself(getCurrentApproximation());
-//		return canonical;
-		
-		// This function assumes 'function' has already been executed. This will only have happened if subs have been made yet.
-		// If they have not, just return the current approximation without change (since it is a simplex).
-		if (subsHaveNotYetBeenMade()) {
-			return getCurrentApproximation();
-		}
-		
-		Approximation<T> newCurrentApproximation;
-		
-		if (currentApproximationIsUpdateableByItself()) {
-			newCurrentApproximation =
-					computeUpdatedCurrentApproximationGivenThatExternalContextHasChangedWithoutIteratingItselfGivenThatCurrentApproximationIsUpdateableByItself();
-		}
-		else {
-			newCurrentApproximation =
-					computeUpdatedCurrentApproximationGivenThatExternalContextHasChangedWithoutIteratingItselfGivenThatCurrentApproximationIsNotUpdateableByItself();
-		}
-		
-		return newCurrentApproximation;
-		
+	private boolean currentUnsimplifiedApproximationIsUpdateableByItself() {
+		// The current unsimplified approximation is only updateable by itself if
+		// it is total ignorance (assumed to be updateable by itself since it is not computed from sub-computations)
+		// or the unsimplified approximation has been computed from subs that are updateable by themselves.
+		return  subsHaveNotYetBeenMade() || getCurrentUnsimplifiedApproximationIsUpdateableByItself();
 	}
 
-	private
-	Approximation<T>
-	computeUpdatedCurrentApproximationGivenThatExternalContextHasChangedWithoutIteratingItselfGivenThatCurrentApproximationIsUpdateableByItself() {
-		Approximation<T> newCurrentApproximation;
-		var newUnsimplified = computeUpdatedApproximationGivenThatExternalContextHasChangedByItself(unsimplified);
-		if (newUnsimplified != unsimplified) {
-			unsimplified = newUnsimplified;
-			var newSimplified = simplify(newUnsimplified);
-			newCurrentApproximation = newSimplified;
-		}
-		else {
-			// No changes, which means there was no need for updates
-			newCurrentApproximation = getCurrentApproximation();
-		}
-		return newCurrentApproximation;
-	}
-
-	private 
-	Approximation<T>
-	computeUpdatedCurrentApproximationGivenThatExternalContextHasChangedWithoutIteratingItselfGivenThatCurrentApproximationIsNotUpdateableByItself() {
-		forEach(getSubs(), updateCurrentApproximationGivenThatExternalContextHasChangedButWithoutIteratingItself);
-		Approximation<T> newCurrentApproximation = computeApproximationBasedOnSubsCurrentCollectiveApproximation();
-		// Note that the above line updates unsimplified and unsimplifiedIsUpdateableByItself as side effects
-		// We must use the above method (as opposed to invoking the methods performing the computations themselves)
-		// in order to make sure that methods overridden by extensions are properly invoked.
-		return newCurrentApproximation;
-	}
+	////////////// INTERSECTION OF setCurrentApproximation
 	
 	@Override
 	public void setCurrentApproximation(Approximation<T> newCurrentApproximation) {
-		super.setCurrentApproximation(newCurrentApproximation);
+		unsimplified = newCurrentApproximation;
+		var simplifiedCurrentApproximation = simplify(unsimplified);
+		super.setCurrentApproximation(simplifiedCurrentApproximation);
+	}
+
+	////////////// UPDATING
+	
+	@Override
+	public void refreshFromWithout() {
+		
+		Approximation<T> newCurrentApproximation;
+		
+		if (currentUnsimplifiedApproximationIsUpdateableByItself()) {
+			newCurrentApproximation = 
+					computeUpdatedApproximationGivenThatExternalContextHasChangedByItself(getCurrentApproximation());
+			setCurrentApproximation(newCurrentApproximation);
+		}
+		else {
+			computeUpdatedCurrentApproximationGivenThatExternalContextHasChangedWithoutIteratingItselfGivenThatCurrentApproximationIsNotUpdateableByItself();
+		}
+		
+	}
+
+	private 
+	void
+	computeUpdatedCurrentApproximationGivenThatExternalContextHasChangedWithoutIteratingItselfGivenThatCurrentApproximationIsNotUpdateableByItself() {
+		forEach(getSubs(), updateCurrentApproximationGivenThatExternalContextHasChangedButWithoutIteratingItself);
+		refreshFromWithin();
 	}
 	
 	////////////////// CONVENIENCE
@@ -223,6 +176,6 @@ public abstract class AbstractAnytimeTreeComputationWithLossySimplification<T> e
 
 	private final Predicate<? super AbstractAnytimeTreeComputationWithLossySimplification<T>> currentApproximationIsUpdateableByItself = AbstractAnytimeTreeComputationWithLossySimplification::currentApproximationIsUpdateableByItself;
 
-	private final Procedure<AnytimeTreeComputation<T>> updateCurrentApproximationGivenThatExternalContextHasChangedButWithoutIteratingItself = AnytimeTreeComputation<T>::updateCurrentApproximationGivenThatExternalContextHasChangedButWithoutIteratingItself;
+	private final Procedure<AnytimeEagerTreeComputation<T>> updateCurrentApproximationGivenThatExternalContextHasChangedButWithoutIteratingItself = AnytimeEagerTreeComputation<T>::refreshFromWithout;
 
 }

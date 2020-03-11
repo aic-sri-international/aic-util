@@ -38,25 +38,21 @@
 package com.sri.ai.util.computation.treecomputation.anytime.core;
 
 import static com.sri.ai.util.Util.mapIntoArrayList;
+import static com.sri.ai.util.Util.myAssert;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sri.ai.util.base.NullaryFunction;
 import com.sri.ai.util.collect.EZIterator;
 import com.sri.ai.util.computation.anytime.api.Anytime;
 import com.sri.ai.util.computation.anytime.api.Approximation;
-import com.sri.ai.util.computation.treecomputation.anytime.api.AnytimeTreeComputation;
-import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
+import com.sri.ai.util.computation.treecomputation.anytime.api.AnytimeEagerTreeComputation;
 
 /**
- * An abstract implementation of {@link AnytimeTreeComputation}
- * that borrows most functionality based on a given base {@link TreeComputation}.
+ * An abstract implementation of {@link AnytimeEagerTreeComputation}.
  * <p>
  * Essentially, this creates an anytime tree computation by
- * lazily expanding, node by node, the base tree computation, and creating
- * anytime versions of them that are used to compute the next approximation
- * to the final root value.
+ * lazily expanding, node by node, a tree computation as specified by the implementation of method {@link #makeSubs()}.
  * <p>
  * Initially, the value of the anytime root computation is one provided at construction.
  * This value is meant to represent total ignorance since it is provided before any computation
@@ -64,11 +60,7 @@ import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
  * then the initial value should be the variable's entire range.
  * <p>
  * Then, in order to create the next approximation,
- * this class creates sub-anytime approximations
- * by requesting the base tree computation's children
- * and computing their anytime versions with
- * {@link #makeAnytimeVersion(NullaryFunction)}
- * (which must be implemented by extending classes).
+ * this class creates sub-anytime approximations with method {@link #makeSubs()}.
  * The sub-anytime tree computations's approximations
  * are then used by {@link #function(List)} to compute the current approximation.
  * <p>
@@ -81,20 +73,23 @@ import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
  * obtaining a new approximation to the corresponding argument,
  * and delegates again to {@link #function(List)}.
  * <p>
- * Extending classes must override {@link #makeAnytimeVersion(NullaryFunction sub)}
- * to indicate how to make the corresponding anytime version of a sub-tree computation,
+ * Extending classes must override {@link #makeSubs()},
  * {@link #pickNextSubToIterate()} to indicate how the next sub-tree computation
  * to be iterated is computed,
+ * {@link #evenOneSubWithTotalIgnoranceRendersApproximationEqualToTotalIgnorance()}
+ * to indicate whether a single sub-approximation with total ignorance nullifies other arguments,
  * and {@link #function(List)} to specify how new approximations are computed.
  *
  * @author braz
  *
  * @param <T> the type of the values being approximated
  */
-public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Approximation<T>> implements AnytimeTreeComputation<T> {
+public abstract class AbstractAnytimeEagerTreeComputation<T> extends EZIterator<Approximation<T>> implements AnytimeEagerTreeComputation<T> {
 	
-	protected abstract Anytime<T> makeAnytimeVersion(NullaryFunction<T> baseSub);
-
+	////////////// ABSTRACT METHODS
+	
+	protected abstract ArrayList<? extends Anytime<T>> makeSubs();
+	
 	protected abstract Anytime<T> pickNextSubToIterate();
 
 	protected abstract boolean evenOneSubWithTotalIgnoranceRendersApproximationEqualToTotalIgnorance();
@@ -102,81 +97,110 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 	@Override
 	public abstract Approximation<T> function(List<Approximation<T>> subsApproximations);
 
+	////////////// DATA MEMBERS
+	
 	private Approximation<T> totalIgnorance;
-	private TreeComputation<T> base;
 	private ArrayList<? extends Anytime<T>> subs;
 	private Approximation<T> currentApproximation;
 	
-	public AbstractAnytimeTreeComputation(TreeComputation<T> base, Approximation<T> totalIgnorance) {
+	////////////// CONSTRUCTOR
+	
+	public AbstractAnytimeEagerTreeComputation(Approximation<T> totalIgnorance) {
+		super(totalIgnorance);
 		this.totalIgnorance = totalIgnorance;
-		this.base = base;
 		this.subs = null;
-		this.currentApproximation = null; // initial approximation is first of iterator's elements, and since it has not been iterated yet, there is no current approximation.
+		this.currentApproximation = totalIgnorance;
+	}
+
+	////////////// GETTERS AND SETTERS
+	
+	/**
+	 * Hook for when sub computes its current approximation, with a default <code>return sub.getCurrentApproximation();</code>.
+	 */
+	protected Approximation<T> getCurrentApproximationForSub(Anytime<T> sub) {
+		return sub.getCurrentApproximation();
 	}
 
 	@Override
 	public ArrayList<? extends Anytime<T>> getSubs() {
-		if (subsHaveNotYetBeenMade()) {
-			makeSubsAndIterateThemToTheirFirstApproximation();
-		}
+		myAssert(!subsHaveNotYetBeenMade(), () -> getClass() + ": trying to get subs but they have not been made yet.");
 		return subs;
 	}
 
-	protected void makeSubsAndIterateThemToTheirFirstApproximation() {
-		makeSubs();
-		iterateSubsToFirstApproximation();
+	@Override
+	public Approximation<T> getCurrentApproximation() {
+		return currentApproximation;
 	}
 
-	private void makeSubs() {
-		subs = mapIntoArrayList(base.getSubs(), this::makeAnytimeVersion);
+	@Override
+	public void setCurrentApproximation(Approximation<T> newCurrentApproximation) {
+		currentApproximation = newCurrentApproximation;
+	}
+
+	///////////// MAKING AND GETTING SUBS
+	
+	@Override
+	public boolean subsHaveNotYetBeenMade() {
+		return subs == null;
+	}
+
+	protected void makeSubsAndIterateThemToTheirFirstApproximation() {
+		subs = makeSubs();
+		iterateSubsToFirstApproximation();
 	}
 
 	private void iterateSubsToFirstApproximation() {
 		iterateAllSubs();
 	}
 
-	private void iterateAllSubs() {
-		for (Anytime<T> sub : subs) {
-			sub.next();
+	private void iterateSubsSoTheirApproximationIsUseful() {
+		if (evenOneSubWithTotalIgnoranceRendersApproximationEqualToTotalIgnorance()) {
+			iterateAllSubs();
 		}
 	}
 
+	////////////// (RE-)COMPUTING CURRENT APPROXIMATION
+	
 	@Override
-	public Approximation<T> calculateNext() {
+	public void refreshFromWithin() {
 		Approximation<T> result;
-		
-		if (firstIteration()) {
+		if (subsHaveNotYetBeenMade()) {
 			result = totalIgnorance;
 		}
 		else {
-			result = computeNextBasedOnSubs();
+			result = eval(getSubs());
 		}
-		
-		setCurrentApproximationIfThereWasANextValue(result);
-		
+		setCurrentApproximation(result);
+	}
+
+	private Approximation<T> eval(ArrayList<? extends Anytime<T>> subs) {
+		List<Approximation<T>> subsApproximations = mapIntoArrayList(subs, s -> getCurrentApproximationForSub(s)); 
+		Approximation<T> result = function(subsApproximations);
 		return result;
 	}
 
-	private boolean firstIteration() {
-		return currentApproximation == null;
-	}
-
-	private void setCurrentApproximationIfThereWasANextValue(Approximation<T> result) {
-		if (result != null) {
-			setCurrentApproximation(result);
-		}
-	}
-
-	private Approximation<T> computeNextBasedOnSubs() {
-		Approximation<T> result;
-		boolean subsIteratedToTheirNextApproximation = iterateSubsToTheirNextCollectiveApproximationIfAny();
-		if (subsIteratedToTheirNextApproximation) {
-			result = computeApproximationBasedOnSubsCurrentCollectiveApproximation();
+	////////////// ITERATION
+	
+	@Override
+	public Approximation<T> calculateNext() {
+		boolean thereWasANextValue = computeApproximationBasedOnSubsNextCollectiveApproximationOrNullIfThereIsntOne();
+		if (thereWasANextValue) {
+			return getCurrentApproximation();
 		}
 		else {
-			result = null;
+			return null;
 		}
-		return result;
+	}
+
+	private boolean computeApproximationBasedOnSubsNextCollectiveApproximationOrNullIfThereIsntOne() {
+		boolean subsIteratedToTheirNextApproximation = iterateSubsToTheirNextCollectiveApproximationIfAny();
+		if (subsIteratedToTheirNextApproximation) {
+			refreshFromWithin();
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 	private boolean iterateSubsToTheirNextCollectiveApproximationIfAny() {
@@ -185,7 +209,7 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 			subsIteratedToTheirNextApproximation = createSubsAndIterateThemToTheirFirstUsefulApproximationIfAny();
 		}
 		else {
-			subsIteratedToTheirNextApproximation = iterateAlreadCreatedSubsToTheirNextCollectiveApproximationIfAny();
+			subsIteratedToTheirNextApproximation = iterateAlreadyCreatedSubsToTheirNextCollectiveApproximationIfAny();
 		}
 		return subsIteratedToTheirNextApproximation;
 	}
@@ -197,18 +221,13 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 		return subsIteratedToTheirNextApproximation;
 	}
 
-	private void iterateSubsSoTheirApproximationIsUseful() {
-		if (evenOneSubWithTotalIgnoranceRendersApproximationEqualToTotalIgnorance()) {
-			iterateAllSubs();
+	private void iterateAllSubs() {
+		for (Anytime<T> sub : subs) {
+			sub.next();
 		}
 	}
 
-	@Override
-	public boolean subsHaveNotYetBeenMade() {
-		return subs == null;
-	}
-
-	private boolean iterateAlreadCreatedSubsToTheirNextCollectiveApproximationIfAny() {
+	private boolean iterateAlreadyCreatedSubsToTheirNextCollectiveApproximationIfAny() {
 		boolean subsIteratedToTheirNextCollectiveApproximation;
 		Anytime<T> nextSub = pickNextSubToIterate();
 		boolean foundSubWithNext = (nextSub != null);
@@ -226,47 +245,12 @@ public abstract class AbstractAnytimeTreeComputation<T> extends EZIterator<Appro
 	private void tellAllOtherSubsThatExternalContextHasChanged(Anytime<T> someSub) {
 		for (var sub : getSubs()) {
 			if (sub != someSub) {
-				sub.updateCurrentApproximationGivenThatExternalContextHasChangedButWithoutIteratingItself();
+				sub.refreshFromWithout();
 			}
 		}
 		// we might want to expand {@link Anytime} to indicate whether its evaluation
 		// has actually changed the external context for the remaining subs
 		// in order to avoid unnecessary rounds of this notification.
-	}
-
-	/**
-	 * Computes an approximation based on current approximations on sub-computations, according to {@link #function(List)}.
-	 */
-	protected Approximation<T> computeApproximationBasedOnSubsCurrentCollectiveApproximation() {
-		Approximation<T> result = eval(getSubs());
-		return result;
-	}
-
-	private Approximation<T> eval(ArrayList<? extends Anytime<T>> subs) {
-		List<Approximation<T>> subsApproximations = mapIntoArrayList(subs, s -> getCurrentApproximationForSub(s)); 
-		Approximation<T> result = function(subsApproximations);
-		return result;
-	}
-
-	/**
-	 * Hook for when sub computes its current approximation, with a default <code>return sub.getCurrentApproximation();</code>.
-	 */
-	protected Approximation<T> getCurrentApproximationForSub(Anytime<T> sub) {
-		return sub.getCurrentApproximation();
-	}
-
-	public TreeComputation<T> getBase() {
-		return base;
-	}
-
-	@Override
-	public Approximation<T> getCurrentApproximation() {
-		return currentApproximation;
-	}
-
-	@Override
-	public void setCurrentApproximation(Approximation<T> newCurrentApproximation) {
-		currentApproximation = newCurrentApproximation;
 	}
 
 }

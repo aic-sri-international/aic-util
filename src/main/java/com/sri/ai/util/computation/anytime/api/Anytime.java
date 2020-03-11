@@ -65,7 +65,7 @@ public interface Anytime<T> extends Iterator<Approximation<T>>, NullaryFunction<
 	
 	Approximation<T> getCurrentApproximation();
 
-	void setCurrentApproximation(Approximation<T> newCurrentApproximation);
+	void setCurrentApproximation(Approximation<T> newCurrentApproximation); // TODO: remove from interface level
 
 	@Override
 	default Approximation<T> apply() {
@@ -75,12 +75,6 @@ public interface Anytime<T> extends Iterator<Approximation<T>>, NullaryFunction<
 		return getCurrentApproximation();
 	}
 
-	default void updateCurrentApproximationGivenThatExternalContextHasChangedButWithoutIteratingItself() {
-		Approximation<T> updatedCurrentApproximation =
-				computeUpdatedCurrentApproximationGivenThatExternalContextHasChangedWithoutIteratingItself();
-		
-		setCurrentApproximation(updatedCurrentApproximation);
-	}
 
 	/**
 	 * Must compute an updated current approximation given that the external context/input (which is assumed to be accessible to it somehow)
@@ -106,5 +100,12 @@ public interface Anytime<T> extends Iterator<Approximation<T>>, NullaryFunction<
 	 * In our particular case, the approximation contains all the information for this operation to be performed
 	 * incrementally and cheaply, without having to re-compute the branch.
 	 */
-	Approximation<T> computeUpdatedCurrentApproximationGivenThatExternalContextHasChangedWithoutIteratingItself();
+	void refreshFromWithout();
+	
+	
+	/**
+	 * Computes (or re-computes) the current approximation based on subsidiary computations' current approximations (or lack thereof).
+	 */
+	void refreshFromWithin();
+
 }

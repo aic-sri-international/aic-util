@@ -39,25 +39,22 @@ package com.sri.ai.util.computation.treecomputation.anytime.api;
 
 import com.sri.ai.util.computation.anytime.api.Anytime;
 import com.sri.ai.util.computation.anytime.api.Approximation;
-import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
+import com.sri.ai.util.computation.treecomputation.api.EagerTreeComputation;
 
 
 /**
- * An {@link Anytime} version of a {@link TreeComputation}.
+ * An {@link Anytime} version of a {@link EagerTreeComputation}.
+ * <p>
+ * The combination of "anytime" and "eager" may seem like a contradiction, but they apply to different levels of abstraction.
+ * The computation is anytime in the sense that the computation tree is gradually expanded and a current approximation is maintained.
+ * However, it is eager in the sense that a node's approximation is computed from the current approximations of all sub-computations at once
+ * (that is, we evaluate <i>all</i> sub current approximations and only then compute this node's current approximation,
+ * as opposed to a lazy evaluation in which each sub current approximation would be considered at a time and update this node's current approximation. 
  * 
  * @author braz
  *
  * @param <T> the type of the values being approximated
  */
-public interface AnytimeTreeComputation<T> extends Anytime<T>, TreeComputation<Approximation<T>> {
+public interface AnytimeEagerTreeComputation<T> extends AnytimeTreeComputation<T>, EagerTreeComputation<Approximation<T>> {
 
-	@Override
-	default Approximation<T> apply() {
-		// We can perform apply in the {@link Anytime} way, or the {@link TreeComputation} way,
-		// so we have to define it here in order to eliminate the ambiguity, or the compiler will complain.
-		// The latter is more efficient since all we want is the final result.
-		return TreeComputation.super.apply();
-	}
-	
-	boolean subsHaveNotYetBeenMade();
 }

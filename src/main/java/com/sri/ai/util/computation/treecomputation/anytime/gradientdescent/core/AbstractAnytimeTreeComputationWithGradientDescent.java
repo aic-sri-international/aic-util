@@ -7,7 +7,7 @@ import java.util.List;
 import com.sri.ai.util.computation.anytime.api.Anytime;
 import com.sri.ai.util.computation.anytime.api.Approximation;
 import com.sri.ai.util.computation.anytime.gradientdescent.api.GradientDescentAnytime;
-import com.sri.ai.util.computation.treecomputation.anytime.core.AbstractAnytimeTreeComputation;
+import com.sri.ai.util.computation.treecomputation.anytime.core.AbstractAnytimeTreeComputationBasedOnTreeComputation;
 import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
 
 /**
@@ -23,7 +23,7 @@ import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
  * @param <T>
  */
 
-public abstract class AbstractAnytimeTreeComputationWithGradientDescent<T> extends AbstractAnytimeTreeComputation<T> implements GradientDescentAnytime<T> {
+public abstract class AbstractAnytimeTreeComputationWithGradientDescent<T> extends AbstractAnytimeTreeComputationBasedOnTreeComputation<T> implements GradientDescentAnytime<T> {
 
 	public AbstractAnytimeTreeComputationWithGradientDescent(TreeComputation<T> base, Approximation<T> totalIgnorance) {
 		super(base, totalIgnorance);
