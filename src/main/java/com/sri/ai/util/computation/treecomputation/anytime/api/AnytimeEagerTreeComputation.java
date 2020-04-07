@@ -56,5 +56,7 @@ import com.sri.ai.util.computation.treecomputation.api.EagerTreeComputation;
  * @param <T> the type of the values being approximated
  */
 public interface AnytimeEagerTreeComputation<T> extends AnytimeTreeComputation<T>, EagerTreeComputation<Approximation<T>> {
+	
+	boolean evenOneSubWithTotalIgnoranceRendersApproximationEqualToTotalIgnorance();
 
 }

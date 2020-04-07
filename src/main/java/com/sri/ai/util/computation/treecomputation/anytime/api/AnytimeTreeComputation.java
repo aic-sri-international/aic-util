@@ -60,4 +60,6 @@ public interface AnytimeTreeComputation<T> extends Anytime<T>, TreeComputation<A
 	}
 	
 	boolean subsHaveNotYetBeenMade();
+
+	Anytime<T> pickNextSubToIterate();
 }

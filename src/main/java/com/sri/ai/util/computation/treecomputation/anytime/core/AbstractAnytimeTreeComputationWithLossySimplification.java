@@ -53,10 +53,12 @@ public abstract class AbstractAnytimeTreeComputationWithLossySimplification<T> e
 	abstract protected AbstractAnytimeTreeComputationWithLossySimplification<T> makeAnytimeVersion(NullaryFunction<T> baseSub);
 
 	@Override
-	abstract protected AbstractAnytimeTreeComputationWithLossySimplification<T> pickNextSubToIterate();
+	public
+	abstract AbstractAnytimeTreeComputationWithLossySimplification<T> pickNextSubToIterate();
 
 	@Override
-	abstract protected boolean evenOneSubWithTotalIgnoranceRendersApproximationEqualToTotalIgnorance();
+	public
+	abstract boolean evenOneSubWithTotalIgnoranceRendersApproximationEqualToTotalIgnorance();
 
 	/**
 	 * Simplifies an approximation to a new one and assumes it is updateable by itself.
@@ -131,7 +133,7 @@ public abstract class AbstractAnytimeTreeComputationWithLossySimplification<T> e
 		return  subsHaveNotYetBeenMade() || getCurrentUnsimplifiedApproximationIsUpdateableByItself();
 	}
 
-	////////////// INTERSECTION OF setCurrentApproximation
+	////////////// INTERCEPTION OF setCurrentApproximation
 	
 	@Override
 	public void setCurrentApproximation(Approximation<T> newCurrentApproximation) {

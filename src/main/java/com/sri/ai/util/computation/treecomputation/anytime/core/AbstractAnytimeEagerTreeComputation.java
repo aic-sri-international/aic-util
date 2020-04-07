@@ -38,7 +38,6 @@
 package com.sri.ai.util.computation.treecomputation.anytime.core;
 
 import static com.sri.ai.util.Util.mapIntoArrayList;
-import static com.sri.ai.util.Util.myAssert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,9 +89,11 @@ public abstract class AbstractAnytimeEagerTreeComputation<T> extends EZIterator<
 	
 	protected abstract ArrayList<? extends Anytime<T>> makeSubs();
 	
-	protected abstract Anytime<T> pickNextSubToIterate();
+	@Override
+	public abstract Anytime<T> pickNextSubToIterate();
 
-	protected abstract boolean evenOneSubWithTotalIgnoranceRendersApproximationEqualToTotalIgnorance();
+	@Override
+	public abstract boolean evenOneSubWithTotalIgnoranceRendersApproximationEqualToTotalIgnorance();
 
 	@Override
 	public abstract Approximation<T> function(List<Approximation<T>> subsApproximations);
@@ -123,7 +124,9 @@ public abstract class AbstractAnytimeEagerTreeComputation<T> extends EZIterator<
 
 	@Override
 	public ArrayList<? extends Anytime<T>> getSubs() {
-		myAssert(!subsHaveNotYetBeenMade(), () -> getClass() + ": trying to get subs but they have not been made yet.");
+		if (subs == null) {
+			subs = makeSubs();
+		}
 		return subs;
 	}
 
@@ -135,6 +138,11 @@ public abstract class AbstractAnytimeEagerTreeComputation<T> extends EZIterator<
 	@Override
 	public void setCurrentApproximation(Approximation<T> newCurrentApproximation) {
 		currentApproximation = newCurrentApproximation;
+	}
+	
+	@Override
+	public Approximation<T> getTotalIgnorance() {
+		return totalIgnorance;
 	}
 
 	///////////// MAKING AND GETTING SUBS
@@ -165,7 +173,7 @@ public abstract class AbstractAnytimeEagerTreeComputation<T> extends EZIterator<
 	public void refreshFromWithin() {
 		Approximation<T> result;
 		if (subsHaveNotYetBeenMade()) {
-			result = totalIgnorance;
+			result = getTotalIgnorance();
 		}
 		else {
 			result = eval(getSubs());
@@ -174,8 +182,8 @@ public abstract class AbstractAnytimeEagerTreeComputation<T> extends EZIterator<
 	}
 
 	private Approximation<T> eval(ArrayList<? extends Anytime<T>> subs) {
-		List<Approximation<T>> subsApproximations = mapIntoArrayList(subs, s -> getCurrentApproximationForSub(s)); 
-		Approximation<T> result = function(subsApproximations);
+		var subsApproximations = mapIntoArrayList(subs, s -> getCurrentApproximationForSub(s)); 
+		var result = function(subsApproximations);
 		return result;
 	}
 

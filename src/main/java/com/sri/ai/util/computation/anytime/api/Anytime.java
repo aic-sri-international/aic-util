@@ -63,6 +63,8 @@ import com.sri.ai.util.base.NullaryFunction;
  */
 public interface Anytime<T> extends Iterator<Approximation<T>>, NullaryFunction<Approximation<T>> {
 	
+	Approximation<T> getTotalIgnorance();
+
 	Approximation<T> getCurrentApproximation();
 
 	void setCurrentApproximation(Approximation<T> newCurrentApproximation); // TODO: remove from interface level

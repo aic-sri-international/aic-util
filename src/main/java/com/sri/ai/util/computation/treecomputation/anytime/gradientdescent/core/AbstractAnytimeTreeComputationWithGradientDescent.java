@@ -30,7 +30,7 @@ public abstract class AbstractAnytimeTreeComputationWithGradientDescent<T> exten
 	}
 
 	@Override
-	protected Anytime<T> pickNextSubToIterate() {
+	public Anytime<T> pickNextSubToIterate() {
 		Anytime<T> nextSub = null;
 		nextSub = getLargestAbsolutePartialDerivativeSub();
 		return nextSub;

@@ -93,10 +93,12 @@ public abstract class AbstractAnytimeTreeComputationBasedOnTreeComputation<T> ex
 	protected abstract Anytime<T> makeAnytimeVersion(NullaryFunction<T> baseSub);
 
 	@Override
-	protected abstract Anytime<T> pickNextSubToIterate();
+	public
+	abstract Anytime<T> pickNextSubToIterate();
 
 	@Override
-	protected abstract boolean evenOneSubWithTotalIgnoranceRendersApproximationEqualToTotalIgnorance();
+	public
+	abstract boolean evenOneSubWithTotalIgnoranceRendersApproximationEqualToTotalIgnorance();
 
 	@Override
 	public abstract Approximation<T> function(List<Approximation<T>> subsApproximations);
@@ -121,7 +123,7 @@ public abstract class AbstractAnytimeTreeComputationBasedOnTreeComputation<T> ex
 	///////////// MAKING AND GETTING SUBS
 	
 	@Override
-	protected ArrayList<? extends Anytime<T>> makeSubs() {
+	public ArrayList<? extends Anytime<T>> makeSubs() {
 		return mapIntoArrayList(base.getSubs(), this::makeAnytimeVersion);
 	}
 
