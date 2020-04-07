@@ -38,7 +38,6 @@
 package com.sri.ai.util.collect;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
@@ -132,8 +131,8 @@ public class NestedIterator<E> extends EZIteratorWithNull<E> {
 
 	@SuppressWarnings("unchecked")
 	public Iterator<E> determineSubIterator(Object element) {
-		if (element instanceof Collection) {
-			return new NestedIterator(((Collection<E>)element).iterator());
+		if (element instanceof Iterable) {
+			return new NestedIterator(((Iterable<E>)element).iterator());
 		}
 		else if (element instanceof Iterator) {
 			return new NestedIterator((Iterator<E>) element);
