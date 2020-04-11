@@ -32,7 +32,7 @@ import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
  * without any modification to or information from their sub-computations.
  * Because "total ignorance" approximations are not computed from sub-computations, they are always considered updateable-by-themselves.
  * <p>
- * When there is need to update, this class uses {@link #computeUpdatedApproximationGivenThatExternalContextHasChangedByItself(Approximation)}
+ * When there is need to update, this class uses {@link #computeUpdatedByItselfApproximationGivenThatExternalContextHasChanged(Approximation)}
  * for updateable-by-themselves approximations. For the non-updateable-by-themselves approximations,
  * it updates its sub-computations and recomputes them, again keeping track of those that are updateable-by-themselves or not.
  * <p>
@@ -79,7 +79,7 @@ public abstract class AbstractAnytimeTreeComputationWithLossySimplification<T> e
 	 * @param approximation
 	 * @return
 	 */
-	abstract protected Approximation<T> computeUpdatedApproximationGivenThatExternalContextHasChangedByItself(Approximation<T> approximation);
+	abstract protected Approximation<T> computeUpdatedByItselfApproximationGivenThatExternalContextHasChanged(Approximation<T> approximation);
 	
 	////////////////////// CONSTRUCTOR
 	
@@ -151,7 +151,7 @@ public abstract class AbstractAnytimeTreeComputationWithLossySimplification<T> e
 		
 		if (currentUnsimplifiedApproximationIsUpdateableByItself()) {
 			newCurrentApproximation = 
-					computeUpdatedApproximationGivenThatExternalContextHasChangedByItself(getCurrentApproximation());
+					computeUpdatedByItselfApproximationGivenThatExternalContextHasChanged(getCurrentApproximation());
 			setCurrentApproximation(newCurrentApproximation);
 		}
 		else {

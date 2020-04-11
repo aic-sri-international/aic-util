@@ -35,32 +35,70 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.sri.ai.util.computation.treecomputation.anytime.api;
+package com.sri.ai.util.collect;
 
-import com.sri.ai.util.computation.anytime.api.Anytime;
-import com.sri.ai.util.computation.anytime.api.Approximation;
-import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
+import java.util.Collection;
+import java.util.Iterator;
 
+import com.google.common.base.Predicate;
 
 /**
- * An {@link Anytime} version of a {@link TreeComputation}.
+ * An iterator that provides the next eligible element (according to a give predicate) in round-robin over a collection
+ * until there are not eligible elements left.
  * 
  * @author braz
  *
- * @param <T> the type of the values being approximated
  */
-public interface AnytimeTreeComputation<T> extends Anytime<T>, TreeComputation<Approximation<T>> {
-
-	@Override
-	default Approximation<T> apply() {
-		// We can perform apply in the {@link Anytime} way, or the {@link TreeComputation} way,
-		// so we have to define it here in order to eliminate the ambiguity, or the compiler will complain.
-		// The latter is more efficient since all we want is the final result.
-		return TreeComputation.super.apply();
-	}
+public class RoundRobinIterator<T> extends EZIterator<T> {
 	
-	/**
-	 * Provides the next sub-computation to iterate before updating this approximation.
-	 */
-	Anytime<T> pickNextSubToIterate();
+	///////////////// DATA MEMBERS
+	
+	private Collection<? extends T> elements;
+	private Iterator<? extends T> roundRobinIterator;
+	private Predicate<? super T> isEligible;
+	
+	///////////////// CONSTRUCTOR
+	
+	public RoundRobinIterator(Collection<? extends T> elements, Predicate<? super T> isEligible) {
+		this.elements = elements;
+		this.isEligible = isEligible;
+		this.roundRobinIterator = elements.iterator();
+	}
+
+	///////////////// IMPLEMENTATIONS
+	
+	@Override
+	public T calculateNext() {
+		
+		if (elements.isEmpty()) {
+			return null;
+		}
+		
+		T elementWeStartedWith = getNextElementInRoundRobin();
+		
+		T nextEligibleElement = null; 
+		T currentElement = elementWeStartedWith; 
+		boolean cameBackToTheOneWeStartedWith = false;
+		do {
+			if (isEligible.apply(currentElement)) {
+				nextEligibleElement = currentElement;
+			}
+			else {
+				currentElement = getNextElementInRoundRobin();
+				if (currentElement == elementWeStartedWith) {
+					cameBackToTheOneWeStartedWith = true;
+				}
+			}
+		} while (nextEligibleElement == null && !cameBackToTheOneWeStartedWith);
+		
+		return nextEligibleElement;
+	}
+
+	private T getNextElementInRoundRobin() {
+		if (!roundRobinIterator.hasNext()) {
+			roundRobinIterator = elements.iterator();
+		}
+		return roundRobinIterator.next();
+	}
+
 }

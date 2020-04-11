@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sri.ai.util.collect.EZIterator;
+import com.sri.ai.util.collect.RoundRobinIterator;
 import com.sri.ai.util.computation.anytime.api.Anytime;
 import com.sri.ai.util.computation.anytime.api.Approximation;
 import com.sri.ai.util.computation.treecomputation.anytime.api.AnytimeEagerTreeComputation;
@@ -89,6 +90,12 @@ public abstract class AbstractAnytimeEagerTreeComputation<T> extends EZIterator<
 	
 	protected abstract ArrayList<? extends Anytime<T>> makeSubs();
 	
+	/**
+	 * A suggestion for a default strategy for implementing this method is to use a {@link RoundRobinIterator} field,
+	 * initializing it when subs are made.
+	 * A convenient way to do that by overriding {@link #makeSubsAndIterateThemToTheirFirstApproximation()},
+	 * invoking its super implementation, and creating the round robin iterator.
+	 */
 	@Override
 	public abstract Anytime<T> pickNextSubToIterate();
 
@@ -147,7 +154,6 @@ public abstract class AbstractAnytimeEagerTreeComputation<T> extends EZIterator<
 
 	///////////// MAKING AND GETTING SUBS
 	
-	@Override
 	public boolean subsHaveNotYetBeenMade() {
 		return subs == null;
 	}
