@@ -2030,8 +2030,10 @@ public class Util {
 	 * @param <E>
 	 *            the type of the elements being collected.
 	 */
-	public static <E> int collect(Iterable<? extends E> iterable,
-			Predicate<? super E> condition, Collection<? super E> elementsSatisfyingCondition,
+	public static <E> int collect(
+			Iterable<? extends E> iterable,
+			Predicate<? super E> condition, 
+			Collection<? super E> elementsSatisfyingCondition,
 			Collection<? super E> remainingElements) {
 		final AtomicInteger i = new AtomicInteger(0);
 		final AtomicInteger result = new AtomicInteger(-1);
