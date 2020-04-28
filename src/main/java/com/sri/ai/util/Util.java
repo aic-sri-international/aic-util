@@ -40,6 +40,7 @@ package com.sri.ai.util;
 import static com.sri.ai.util.base.PairOf.makePairOf;
 import static com.sri.ai.util.collect.FunctionIterator.functionIterator;
 import static com.sri.ai.util.collect.PredicateIterator.predicateIterator;
+import static java.lang.Math.pow;
 import static java.lang.reflect.Proxy.newProxyInstance;
 import static org.apache.commons.lang3.ArrayUtils.toPrimitive;
 
@@ -7023,5 +7024,18 @@ public class Util {
 		for (T e : iterable) {
 			procedure.apply(e);
 		}
+	}
+
+	private static double[] bases = {1.0, 10.0, 100.0, 1000.0, 10000.0, 100000.0, 1000000.0, 10000000.0, 100000000.0, 1000000000.0};
+
+	public static double round(double d, int decimalPlaces) {
+		double base;
+		if (decimalPlaces < bases.length) {
+			base = bases[decimalPlaces];
+		}
+		else {
+			base = pow(10.0, decimalPlaces);
+		}
+		return Math.round(d*base)/base;
 	}
 }
