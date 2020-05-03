@@ -28,8 +28,8 @@ public class DefaultProjectionSingleInputFunction extends AbstractProjectionSing
 		this.projectedFunction = projectedFunction;
 		this.variable = variable;
 		this.assignmentToRemainingVariables = assignmentToRemainingVariables;
-		myAssert(assignmentToRemainingVariables.get(variable) == null, () -> (new Enclosing() {}).methodName() + " got request to create a projection on " + variable + " but assignment on \"other\" variables includes this variable: " + assignmentToRemainingVariables);
-		myAssert(assignmentToRemainingVariables.size() == projectedFunction.getSetOfInputVariables().size() - 1, () -> (new Enclosing() {}).methodName() + " must receive an assignment on all input variables " + projectedFunction.getSetOfInputVariables() + " excluuding " + variable + ", but got an assignment on " + assignmentToRemainingVariables.getSetOfVariables() + " instead");
+		myAssert(assignmentToRemainingVariables.get(variable) == null, () -> (new Enclosing(){}).methodName() + " got request to create a projection on " + variable + " but assignment on \"other\" variables includes this variable: " + assignmentToRemainingVariables);
+		myAssert(assignmentToRemainingVariables.size() == projectedFunction.getSetOfInputVariables().size() - 1, () -> (new Enclosing(){}).methodName() + " must receive an assignment on all input variables " + projectedFunction.getSetOfInputVariables() + " excluuding " + variable + ", but got an assignment on " + assignmentToRemainingVariables.getSetOfVariables() + " instead");
 
 	}
 	

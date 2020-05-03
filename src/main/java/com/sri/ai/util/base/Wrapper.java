@@ -54,4 +54,8 @@ public class Wrapper<T> {
 	public Wrapper(T value) {
 		this.value = value;
 	}
+	
+	public static <T> Wrapper<T> wrapper(T object) {
+		return new Wrapper<>(object);
+	}
 }

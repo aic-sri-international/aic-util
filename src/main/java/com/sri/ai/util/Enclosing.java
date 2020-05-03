@@ -17,7 +17,9 @@ public class Enclosing {
 	 * @return
 	 */
 	public String methodName() {
-		return getClass().getEnclosingMethod().getName();
+		Method enclosingMethod = getClass().getEnclosingMethod();
+		checkProperUsage(enclosingMethod);
+		return enclosingMethod.getName();
 	}
 	
 	/**
@@ -25,7 +27,9 @@ public class Enclosing {
 	 * @return
 	 */
 	public Class clazz() {
-		return getClass().getEnclosingClass();
+		Class<?> enclosingClass = getClass().getEnclosingClass();
+		checkProperUsage(enclosingClass);
+		return enclosingClass;
 	}
 
 	/**
@@ -33,7 +37,9 @@ public class Enclosing {
 	 * @return
 	 */
 	public Method method() {
-		return getClass().getEnclosingMethod();
+		Method enclosingMethod = getClass().getEnclosingMethod();
+		checkProperUsage(enclosingMethod);
+		return enclosingMethod;
 	}
 	
 	/**
@@ -41,6 +47,14 @@ public class Enclosing {
 	 * @return
 	 */
 	public String className() {
-		return getClass().getEnclosingClass().getSimpleName();
+		Class<?> enclosingClass = getClass().getEnclosingClass();
+		checkProperUsage(enclosingClass);
+		return enclosingClass.getSimpleName();
+	}
+
+	private void checkProperUsage(Object enclosingElement) {
+		if (enclosingElement == null) {
+			throw new Error("Incorrect usage of " + getClass() + ". Correct usage is (new Enclosing(){}).<...> (that is, creating an anonymous extension of Encoding), but it seems like new Enclosing() has been used instead. Please check Encoding's Javadoc documentation.");
+		}
 	}
 }
