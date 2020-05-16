@@ -38,7 +38,6 @@
 package com.sri.ai.util.collect;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -85,8 +84,8 @@ public class DefaultManyToManyRelation<A,B> implements ManyToManyRelation<A, B> 
 
 	@Override
 	public void add(A a, B b) {
-		Util.addToCollectionValuePossiblyCreatingIt(fromAToItsBs, a, b, HashSet.class);
-		Util.addToCollectionValuePossiblyCreatingIt(fromBToItsAs, b, a, HashSet.class);
+		Util.addToCollectionValuePossiblyCreatingIt(fromAToItsBs, a, b, LinkedHashSet.class);
+		Util.addToCollectionValuePossiblyCreatingIt(fromBToItsAs, b, a, LinkedHashSet.class);
 	}
 	
 	@Override

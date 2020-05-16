@@ -6537,6 +6537,20 @@ public class Util {
 		}
 	}
 
+	/**
+	 * Returns a new double array which is a repetition of a given array n times.
+	 */
+	public static double[] repeat(int n, double[] array) {
+		var result = new double[array.length * n];
+		int index = 0;
+		for (int i = 0; i != n; i++) {
+			for (int j = 0; j != array.length; j++) {
+				result[index++] = array[j];
+			}
+		}
+		return result;
+	}
+	
 	public static boolean containsAllCaseInsensitive(String string, String... subStrings) {
 		return containsAllCaseInsensitive(string, Arrays.asList(subStrings));
 	}

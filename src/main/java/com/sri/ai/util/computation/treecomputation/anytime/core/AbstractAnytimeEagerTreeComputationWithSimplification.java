@@ -54,6 +54,7 @@ import com.sri.ai.util.computation.treecomputation.anytime.api.AnytimeEagerTreeC
  * 
  * @author braz
  */
+@Deprecated
 public abstract class AbstractAnytimeEagerTreeComputationWithSimplification<T> extends AbstractAnytimeEagerTreeComputation<T> {
 	
 	/////////// ABSTRACT METHODS

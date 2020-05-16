@@ -85,6 +85,7 @@ public abstract class AbstractAnytimeTreeComputationWithLossySimplification<T> e
 	
 	public AbstractAnytimeTreeComputationWithLossySimplification(TreeComputation<T> base, Approximation<T> totalIgnorance) {
 		super(base, totalIgnorance);
+		this.unsimplified = totalIgnorance;
 	}
 
 	////////////////////// SIMPLIFICATION MECHANISM
@@ -104,35 +105,35 @@ public abstract class AbstractAnytimeTreeComputationWithLossySimplification<T> e
 	 */
 	private Approximation<T> unsimplified;
 	
-	/**
-	 * Indicates whether the unsimplified approximation computed from the sub approximations
-	 * is updateable by itself, which depends on whether the subs themselves are updateable by themselves.
-	 * This is cached and a value of null indicates it needs to be re-assessed.
-	 */
-	private Boolean currentUnsimplifiedIsUpdateableByItself = null;
-	private boolean getCurrentUnsimplifiedApproximationIsUpdateableByItself() {
-		if (currentUnsimplifiedIsUpdateableByItself == null) {
-			currentUnsimplifiedIsUpdateableByItself = forAll(getSubs(), currentApproximationIsUpdateableByItself);
-		}
-		return currentUnsimplifiedIsUpdateableByItself;
-	}
-	
 	////////////// KEEPING TRACK OF WHETHER SIMPLIFIED AND UNSIMPLIFIED CURRENT APPROXIMATIONS ARE UPDATEABLE BY THEMSELVES
 	
 	private boolean currentApproximationIsUpdateableByItself() {
 		// The current approximation is only updateable by itself if
 		// the current unsimplified approximation is updateable by itself and there has been no simplification.
 		// (simplified is the same as unsimplified).
-		return  currentUnsimplifiedApproximationIsUpdateableByItself() && getCurrentApproximation() == unsimplified;
+		return 
+				getCurrentUnsimplifiedApproximationIsUpdateableByItself() 
+				&& 
+				getCurrentApproximation().equals(unsimplified);
+				// if equal, they will be the same object, with exception to total ignorance, which might have been recomputed.
 	}
 	
-	private boolean currentUnsimplifiedApproximationIsUpdateableByItself() {
-		// The current unsimplified approximation is only updateable by itself if
-		// it is total ignorance (assumed to be updateable by itself since it is not computed from sub-computations)
-		// or the unsimplified approximation has been computed from subs that are updateable by themselves.
-		return  subsHaveNotYetBeenMade() || getCurrentUnsimplifiedApproximationIsUpdateableByItself();
+	/**
+	 * Indicates whether the unsimplified approximation computed from the sub approximations
+	 * is updateable by itself, which depends on whether the subs themselves are updateable by themselves.
+	 * This is cached and a value of null indicates it needs to be assessed.
+	 */
+	private Boolean currentUnsimplifiedIsUpdateableByItself = null;
+	private boolean getCurrentUnsimplifiedApproximationIsUpdateableByItself() {
+		if (currentUnsimplifiedIsUpdateableByItself == null) {
+			currentUnsimplifiedIsUpdateableByItself = 
+					subsHaveNotYetBeenMade() 
+					|| 
+					forAll(getSubs(), currentApproximationIsUpdateableByItself);
+		}
+		return currentUnsimplifiedIsUpdateableByItself;
 	}
-
+	
 	////////////// INTERCEPTION OF setCurrentApproximation
 	
 	@Override
@@ -149,7 +150,7 @@ public abstract class AbstractAnytimeTreeComputationWithLossySimplification<T> e
 		
 		Approximation<T> newCurrentApproximation;
 		
-		if (currentUnsimplifiedApproximationIsUpdateableByItself()) {
+		if (getCurrentUnsimplifiedApproximationIsUpdateableByItself()) {
 			newCurrentApproximation = 
 					computeUpdatedByItselfApproximationGivenThatExternalContextHasChanged(getCurrentApproximation());
 			setCurrentApproximation(newCurrentApproximation);
