@@ -247,7 +247,7 @@ public abstract class AbstractAnytimeEagerTreeComputation<T> extends EZIterator<
 		boolean foundSubWithNext = (nextSub != null);
 		if (foundSubWithNext) {
 			nextSub.next();
-			refreshAllSubsFromWithoutIfNeeded(nextSub);
+			refreshFromWithoutSiblingSubsGivenChangeInExternalContext(nextSub);
 			subsIteratedToTheirNextCollectiveApproximation = true;
 		}
 		else {
@@ -256,15 +256,12 @@ public abstract class AbstractAnytimeEagerTreeComputation<T> extends EZIterator<
 		return subsIteratedToTheirNextCollectiveApproximation;
 	}
 
-	private void refreshAllSubsFromWithoutIfNeeded(Anytime<T> someSub) {
-		// We assume that if the sub has no siblings, then it has all
-		// the information about the external context at this level and
-		// does not need to update.
-		// In other words, the external context is changed from an update
-		// to a sub only as a result of interactions of that update to that a sibling
+	private void refreshFromWithoutSiblingSubsGivenChangeInExternalContext(Anytime<T> someSub) {
 		if (getSubs().size() > 1) {
 			for (var sub : getSubs()) {
-				sub.refreshFromWithout();
+				if (sub != someSub) {
+					sub.refreshFromWithout();
+				}
 			}
 		}
 		// we might want to expand {@link Anytime} to indicate whether its evaluation
