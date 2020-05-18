@@ -41,7 +41,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Uses reflection to access a constructor in a given class only if and when it is required.
+ * Uses reflection to access a constructor in a given class only if and when it is required,
+ * also wrapping all possible exceptions into {@link Error}.
 
  * @author braz
  */
@@ -49,15 +50,19 @@ public class ConstructorReflectionManager<T> {
 	
 	///////////////// DATA MEMBERS
 	
-	private Class<T> clazz;
+	private Class<? extends T> clazz;
 	private Class<?>[] parameterClasses;
 	private Constructor<? extends T> constructor;
 
 	///////////////// CONSTRUCTOR
 	
-	public ConstructorReflectionManager(Class<T> clazz, Class<?>... parameterClasses) {
+	private ConstructorReflectionManager(Class<? extends T> clazz, Class<?>... parameterClasses) {
 		this.clazz = clazz;
 		this.parameterClasses = parameterClasses;
+	}
+	
+	public static <T> ConstructorReflectionManager<T> constructorReflectionManager(Class<? extends T> clazz, Class<?>... parameterClasses) {
+		return new ConstructorReflectionManager<T>(clazz, parameterClasses);
 	}
 
 	///////////////// IMPLEMENTATIONS
