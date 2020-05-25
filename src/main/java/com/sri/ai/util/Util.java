@@ -3029,6 +3029,18 @@ public class Util {
 	}
 	
 	/**
+	 * Collects all elements in the iterables in a sequence (iterable's range) to a set (eliminating duplicates)
+	 * and returns an array list with them.
+	 * @param iterable
+	 * @return
+	 */
+	public static <E> ArrayList<E> unionArrayList(Iterable<? extends Iterable<? extends E>> iterable) {
+		Set<E> set = union(iterable);
+		ArrayList<E> arrayList = new ArrayList<>(set);
+		return arrayList;
+	}
+	
+	/**
 	 * Returns a fresh LinkedHashSet with all elements from iterables in an iterator's range.
 	 * @param iteratorOfIterables
 	 * @return
@@ -3046,7 +3058,7 @@ public class Util {
 	 * @param collectionOfIterables
 	 * @return
 	 */
-	public static <E> LinkedHashSet<E> union(Collection<Iterable<? extends E>> collectionOfIterables) {
+	public static <E> LinkedHashSet<E> union(Iterable<? extends Iterable<? extends E>> collectionOfIterables) {
 		return union(collectionOfIterables.iterator());
 	}
 	
@@ -3704,6 +3716,10 @@ public class Util {
 	 */
 	public static <E> List<E> subtract(Collection<? extends E> c1, Collection<? extends E> c2) {
 		return setDifference(c1, c2, new LinkedList<E>());
+	}
+
+	public static <E, C extends Collection<E>> C subtract(Collection<? extends E> c1, Collection<? extends E> c2, C result) {
+		return setDifference(c1, c2, result);
 	}
 
 	public static <E> List<E> subtract(Collection<? extends E> c1, E element) {
