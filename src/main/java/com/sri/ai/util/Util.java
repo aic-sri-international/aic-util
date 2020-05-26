@@ -4899,7 +4899,7 @@ public class Util {
 	 * and if that does not succeed, throws an error with a message generated from a template
 	 * following the format conventions of {@link String#format(String, Object...)},
 	 * with formatting arguments being the object being cast, and the expected and actual received classes' simple names,
-	 * in this order.
+	 * in this order (for example, <code>"Could not cast %s to %s; it is an instance of %s"</code>).
 	 * @param clazz the class to be cast to
 	 * @param object the object to be cast
 	 * @param messageTemplate the message template from which an error message is generated
