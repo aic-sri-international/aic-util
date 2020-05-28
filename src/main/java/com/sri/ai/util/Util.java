@@ -1572,6 +1572,46 @@ public class Util {
 	}
 
 	/**
+	 * Similar to {@link #mapIntoList(Collection, Function)} but applying a function to 
+	 * the elements of a list that are instances of a given class only.
+	 * @param iterable
+	 * @param selectedClass
+	 * @param function
+	 * @return the {@link LinkedList<T2>} of results of applying the function to the instances of selectedClass in iterable.
+	 */
+	public static <T1, T2 extends T1, R> LinkedList<R> mapInstancesOfClassIntoList(
+			Iterable<? extends T1> iterable, 
+			Class<T2> selectedClass, 
+			Function<? super T2, ? extends R> function) {
+		
+		return mapInstancesOfClassIntoList(iterable, selectedClass, function, list());
+	}
+
+	/**
+	 * Similar to {@link #mapIntoList(Collection, Function, List)} but applying a function to 
+	 * the elements of a list that are instances of a given class only.
+	 * @param iterable
+	 * @param selectedClass
+	 * @param function
+	 * @return the {@link LinkedList<T2>} of results of applying the function to the instances of selectedClass in iterable.
+	 */
+	public static <T2 extends T1, R, T1, L extends List<R>> L mapInstancesOfClassIntoList(
+			Iterable<? extends T1> iterable,
+			Class<T2> selectedClass,
+			Function<? super T2, ? extends R> function,
+			L result) {
+		
+		for (T1 t1 : iterable) {
+			if (selectedClass.isInstance(t1)) {
+				T2 t2 = selectedClass.cast(t1);
+				R resultForT2 = function.apply(t2);
+				result.add(resultForT2);
+			}
+		}
+		return result;
+	}
+
+	/**
 	 * Similar to {@link #mapIntoList(Collection, Function)} but indicating if results are the same as original elements (using {@link Object#equals(Object)}.
 	 * @param iterable
 	 * @param function
@@ -3082,6 +3122,30 @@ public class Util {
 		return union(functionIterator(iterable, function));
 	}
 	
+	/**
+	 * Returns the union of the results of the application of a function to the elements of an iterable.
+	 */
+	public static <T, R> LinkedHashSet<R> unionOfResults(
+			Iterable<? extends T> iterable, 
+			Function<? super T, ? extends Iterable<? extends R>> function) {
+		
+		return unionOfResults(iterable, function, set());
+	}
+
+	/**
+	 * Adds all elements in the (Iterable) results of the application of a function to the elements of an iterable to a given Collection.
+	 */
+	public static <T, R, C extends Collection<R>> C unionOfResults(
+			Iterable<? extends T> iterable,
+			Function<? super T, ? extends Iterable<? extends R>> function,
+			C result) {
+		
+		for (T t : iterable) {
+			addAll(result, function.apply(t));
+		}
+		return result;
+	}
+
 	/**
 	 * Adds all elements in a given iterable to a given collection (generalizes {@link Collection#addAll(Collection)} to {@link Iterable}.
 	 * @param collection
