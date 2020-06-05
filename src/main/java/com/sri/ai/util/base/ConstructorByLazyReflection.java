@@ -46,7 +46,7 @@ import java.lang.reflect.InvocationTargetException;
 
  * @author braz
  */
-public class ConstructorReflectionManager<T> {
+public class ConstructorByLazyReflection<T> {
 	
 	///////////////// DATA MEMBERS
 	
@@ -56,13 +56,13 @@ public class ConstructorReflectionManager<T> {
 
 	///////////////// CONSTRUCTOR
 	
-	private ConstructorReflectionManager(Class<? extends T> clazz, Class<?>... parameterClasses) {
+	private ConstructorByLazyReflection(Class<? extends T> clazz, Class<?>... parameterClasses) {
 		this.clazz = clazz;
 		this.parameterClasses = parameterClasses;
 	}
 	
-	public static <T> ConstructorReflectionManager<T> constructorReflectionManager(Class<? extends T> clazz, Class<?>... parameterClasses) {
-		return new ConstructorReflectionManager<T>(clazz, parameterClasses);
+	public static <T> ConstructorByLazyReflection<T> constructorByLazyReflectionOfClassAndParameters(Class<? extends T> clazz, Class<?>... parameterClasses) {
+		return new ConstructorByLazyReflection<T>(clazz, parameterClasses);
 	}
 
 	///////////////// IMPLEMENTATIONS

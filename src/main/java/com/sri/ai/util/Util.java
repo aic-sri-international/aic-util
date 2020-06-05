@@ -1452,7 +1452,7 @@ public class Util {
 	 *            elements.
 	 */
 	public static <F, T> ArrayList<T> mapIntoArrayList(
-			Collection<? extends F> collection, Function<F, T> function) {
+			Collection<? extends F> collection, Function<? super F, ? extends T> function) {
 
 		ArrayList<T> result = new ArrayList<T>(collection.size());
 		for (F element : collection) {
