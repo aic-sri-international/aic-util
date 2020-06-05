@@ -25,10 +25,12 @@ public class JGraphTUtil {
 	 * @param haveEdge
 	 * @return
 	 */
-	public static <V> Graph<V, DefaultEdge> makeGraph(Iterable<? extends V> vertices, BiPredicate<V, V> edge) {
+	public static <V> Graph<V, DefaultEdge> makeGraph(Iterable<? extends V> vertices, BiPredicate<? super V, ? super V> edge) {
 		Graph<V, DefaultEdge> graph = new DefaultUndirectedGraph<>(DefaultEdge.class);
 		for (V v1 : vertices) {
+			graph.addVertex(v1);
 			for (V v2 : vertices) {
+				graph.addVertex(v2);
 				if (edge.test(v1, v2)) {
 					graph.addEdge(v1, v2);
 				}
@@ -48,7 +50,7 @@ public class JGraphTUtil {
 	 * @param haveEdge
 	 * @return
 	 */
-	public static <V> List<? extends Set<? extends V>> getConnectedSets(Iterable<? extends V> vertices, BiPredicate<V, V> haveEdge) {
+	public static <V> List<? extends Set<? extends V>> getConnectedSets(Iterable<? extends V> vertices, BiPredicate<? super V, ? super V> haveEdge) {
 		return getConnectedSets(makeGraph(vertices, haveEdge));	
 	}
 
