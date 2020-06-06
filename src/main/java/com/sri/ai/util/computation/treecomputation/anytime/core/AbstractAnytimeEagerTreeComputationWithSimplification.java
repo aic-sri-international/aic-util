@@ -183,7 +183,13 @@ public abstract class AbstractAnytimeEagerTreeComputationWithSimplification<T> e
 	/////////////// TOTAL IGNORANCE EFFECT
 	
 	@Override
-	public boolean evenOneSubWithTotalIgnoranceRendersApproximationEqualToTotalIgnorance() {
-		return getBase().evenOneSubWithTotalIgnoranceRendersApproximationEqualToTotalIgnorance();
+	public boolean informativeApproximationRequiresAllSubsToBeInformative() {
+		return getBase().informativeApproximationRequiresAllSubsToBeInformative();
 	}
+
+	@Override
+	public boolean informativeApproximationRequiresThatNotAllSubsAreNonInformative() {
+		return getBase().informativeApproximationRequiresThatNotAllSubsAreNonInformative();
+	}
+	
 }

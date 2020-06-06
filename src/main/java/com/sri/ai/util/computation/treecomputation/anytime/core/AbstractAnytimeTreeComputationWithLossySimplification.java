@@ -58,7 +58,11 @@ public abstract class AbstractAnytimeTreeComputationWithLossySimplification<T> e
 
 	@Override
 	public
-	abstract boolean evenOneSubWithTotalIgnoranceRendersApproximationEqualToTotalIgnorance();
+	abstract boolean informativeApproximationRequiresAllSubsToBeInformative();
+
+	@Override
+	public 
+	abstract boolean informativeApproximationRequiresThatNotAllSubsAreNonInformative();
 
 	/**
 	 * Simplifies an approximation to a new one and assumes it is updateable by itself.

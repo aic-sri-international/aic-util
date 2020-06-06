@@ -38,6 +38,7 @@
 package com.sri.ai.util.computation.treecomputation.anytime.core;
 
 import static com.sri.ai.util.Util.mapIntoArrayList;
+import static com.sri.ai.util.Util.myAssert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +77,7 @@ import com.sri.ai.util.computation.treecomputation.anytime.api.AnytimeEagerTreeC
  * Extending classes must override {@link #makeSubs()},
  * {@link #pickNextSubToIterate()} to indicate how the next sub-tree computation
  * to be iterated is computed,
- * {@link #evenOneSubWithTotalIgnoranceRendersApproximationEqualToTotalIgnorance()}
+ * {@link #informativeApproximationRequiresAllSubsToBeInformative()}
  * to indicate whether a single sub-approximation with total ignorance nullifies other arguments,
  * and {@link #function(List)} to specify how new approximations are computed.
  *
@@ -91,16 +92,16 @@ public abstract class AbstractAnytimeEagerTreeComputation<T> extends EZIterator<
 	protected abstract ArrayList<? extends Anytime<T>> makeSubs();
 	
 	/**
-	 * A suggestion for a default strategy for implementing this method is to use a {@link RoundRobinIterator} field,
-	 * initializing it when subs are made.
-	 * A convenient way to do that by overriding {@link #makeSubsAndIterateThemToTheirFirstApproximation()},
-	 * invoking its super implementation, and creating the round robin iterator.
+	 * A suggestion for a default strategy for implementing this method is to use a {@link RoundRobinIterator} field.
 	 */
 	@Override
 	public abstract Anytime<T> pickNextSubToIterate();
 
 	@Override
-	public abstract boolean evenOneSubWithTotalIgnoranceRendersApproximationEqualToTotalIgnorance();
+	public abstract boolean informativeApproximationRequiresAllSubsToBeInformative();
+
+	@Override
+	public abstract boolean informativeApproximationRequiresThatNotAllSubsAreNonInformative();
 
 	@Override
 	public abstract Approximation<T> function(List<Approximation<T>> subsApproximations);
@@ -158,18 +159,9 @@ public abstract class AbstractAnytimeEagerTreeComputation<T> extends EZIterator<
 		return subs == null;
 	}
 
-	protected void makeSubsAndIterateThemToTheirFirstApproximation() {
-		subs = makeSubs();
-		iterateSubsToFirstApproximation();
-	}
-
-	private void iterateSubsToFirstApproximation() {
-		iterateAllSubs();
-	}
-
-	private void iterateSubsSoTheirApproximationIsUseful() {
-		if (evenOneSubWithTotalIgnoranceRendersApproximationEqualToTotalIgnorance()) {
-			iterateAllSubs();
+	private void iterateAllSubs() {
+		for (Anytime<T> sub : getSubs()) {
+			sub.next();
 		}
 	}
 
@@ -197,8 +189,8 @@ public abstract class AbstractAnytimeEagerTreeComputation<T> extends EZIterator<
 	
 	@Override
 	public Approximation<T> calculateNext() {
-		boolean thereWasANextValue = computeApproximationBasedOnSubsNextCollectiveApproximationOrNullIfThereIsntOne();
-		if (thereWasANextValue) {
+		boolean thereWasANextApproximation = computeApproximationBasedOnSubsNextCollectiveApproximationIfAny();
+		if (thereWasANextApproximation) {
 			return getCurrentApproximation();
 		}
 		else {
@@ -206,42 +198,52 @@ public abstract class AbstractAnytimeEagerTreeComputation<T> extends EZIterator<
 		}
 	}
 
-	private boolean computeApproximationBasedOnSubsNextCollectiveApproximationOrNullIfThereIsntOne() {
+	private boolean computeApproximationBasedOnSubsNextCollectiveApproximationIfAny() {
 		boolean subsIteratedToTheirNextApproximation = iterateSubsToTheirNextCollectiveApproximationIfAny();
 		if (subsIteratedToTheirNextApproximation) {
 			refreshFromWithin();
-			return true;
 		}
-		else {
-			return false;
-		}
+		return subsIteratedToTheirNextApproximation;
 	}
 
 	private boolean iterateSubsToTheirNextCollectiveApproximationIfAny() {
 		boolean subsIteratedToTheirNextApproximation;
 		if (subsHaveNotYetBeenMade()) {
-			subsIteratedToTheirNextApproximation = createSubsAndIterateThemToTheirFirstUsefulApproximationIfAny();
+			subsIteratedToTheirNextApproximation = iterateYetToBeMadeSubsToTheirFirstUsefulCollectiveApproximationIfAny();
 		}
 		else {
-			subsIteratedToTheirNextApproximation = iterateAlreadyCreatedSubsToTheirNextCollectiveApproximationIfAny();
+			subsIteratedToTheirNextApproximation = iterateAlreadyMadeSubsToTheirNextUsefulCollectiveApproximationIfAny();
 		}
 		return subsIteratedToTheirNextApproximation;
 	}
 
-	private boolean createSubsAndIterateThemToTheirFirstUsefulApproximationIfAny() {
-		makeSubsAndIterateThemToTheirFirstApproximation();
-		iterateSubsSoTheirApproximationIsUseful();
-		boolean subsIteratedToTheirNextApproximation = true;
-		return subsIteratedToTheirNextApproximation;
+	private boolean iterateYetToBeMadeSubsToTheirFirstUsefulCollectiveApproximationIfAny() {
+		iterateYetToBeMadeSubsToTheirFirstUsefulCollectiveApproximation();
+		boolean subsIteratedToTheirFirstUsefulApproximation = true;
+		return subsIteratedToTheirFirstUsefulApproximation;
 	}
 
-	private void iterateAllSubs() {
-		for (Anytime<T> sub : subs) {
-			sub.next();
+	private void iterateYetToBeMadeSubsToTheirFirstUsefulCollectiveApproximation() {
+		iterateAllSubs(); // this will make and bring subs to their first values, which is totalIgnorance and therefore not useful
+		iterateAlreadyMadeSubsToTheirNextUsefulCollectiveApproximationIfAnyAssumingTheyAreAllAtTotalIgnorance();
+	}
+
+	private
+	void
+	iterateAlreadyMadeSubsToTheirNextUsefulCollectiveApproximationIfAnyAssumingTheyAreAllAtTotalIgnorance() {
+		if (informativeApproximationRequiresAllSubsToBeInformative()) {
+			iterateAllSubs();
+		}
+		else if (!getSubs().isEmpty() && informativeApproximationRequiresThatNotAllSubsAreNonInformative()) {
+			boolean hadNextUsefulCollectiveApproximation = iterateAlreadyMadeSubsToTheirNextUsefulCollectiveApproximationIfAny();
+			myAssert(hadNextUsefulCollectiveApproximation, () -> "Anytime subs should have had next useful collective approximation since they were just made and were at total ignorance (no computation performed yet), but did not.");
+		}
+		else {
+			// we are not required to have informative subs to obtain a useful approximation, so we refrain from expansion for now.
 		}
 	}
 
-	private boolean iterateAlreadyCreatedSubsToTheirNextCollectiveApproximationIfAny() {
+	private boolean iterateAlreadyMadeSubsToTheirNextUsefulCollectiveApproximationIfAny() {
 		boolean subsIteratedToTheirNextCollectiveApproximation;
 		Anytime<T> nextSub = pickNextSubToIterate();
 		boolean foundSubWithNext = (nextSub != null);

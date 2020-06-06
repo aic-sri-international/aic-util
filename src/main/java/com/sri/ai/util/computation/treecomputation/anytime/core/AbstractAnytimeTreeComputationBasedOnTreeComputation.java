@@ -78,7 +78,7 @@ import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
  * to indicate how to make the corresponding anytime version of a sub-tree computation,
  * {@link #pickNextSubToIterate()} to indicate how the next sub-tree computation
  * to be iterated is computed,
- * {@link #evenOneSubWithTotalIgnoranceRendersApproximationEqualToTotalIgnorance()}
+ * {@link #informativeApproximationRequiresAllSubsToBeInformative()}
  * to indicate whether a single sub-approximation with total ignorance nullifies other arguments,
  * and {@link #function(List)} to specify how new approximations are computed.
  *
@@ -98,8 +98,12 @@ public abstract class AbstractAnytimeTreeComputationBasedOnTreeComputation<T> ex
 
 	@Override
 	public
-	abstract boolean evenOneSubWithTotalIgnoranceRendersApproximationEqualToTotalIgnorance();
+	abstract boolean informativeApproximationRequiresAllSubsToBeInformative();
 
+	@Override
+	public 
+	abstract boolean informativeApproximationRequiresThatNotAllSubsAreNonInformative();
+	
 	@Override
 	public abstract Approximation<T> function(List<Approximation<T>> subsApproximations);
 
