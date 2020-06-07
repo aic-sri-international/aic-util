@@ -86,7 +86,7 @@ import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
  *
  * @param <T> the type of the values being approximated
  */
-public abstract class AbstractAnytimeTreeComputationBasedOnTreeComputation<T> extends AbstractAnytimeEagerTreeComputation<T> {
+public abstract class AbstractAnytimeEagerTreeComputationBasedOnTreeComputation<T> extends AbstractAnytimeEagerTreeComputation<T> {
 	
 	/////////////// ABSTRACT METHODS
 	
@@ -113,7 +113,7 @@ public abstract class AbstractAnytimeTreeComputationBasedOnTreeComputation<T> ex
 	
 	/////////////// CONSTRUCTOR
 	
-	public AbstractAnytimeTreeComputationBasedOnTreeComputation(TreeComputation<T> base, Approximation<T> totalIgnorance) {
+	public AbstractAnytimeEagerTreeComputationBasedOnTreeComputation(TreeComputation<T> base, Approximation<T> totalIgnorance) {
 		super(totalIgnorance);
 		this.base = base;
 	}

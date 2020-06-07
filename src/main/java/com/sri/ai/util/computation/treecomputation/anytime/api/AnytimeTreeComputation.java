@@ -63,4 +63,16 @@ public interface AnytimeTreeComputation<T> extends Anytime<T>, TreeComputation<A
 	 * Provides the next sub-computation to iterate before updating this approximation.
 	 */
 	Anytime<T> pickNextSubToIterate();
+
+	/** 
+	 * Indicates whether approximation computation is informative (that is, not a trivial non-informative approximation)
+	 * only if all subs provide informative approximations.
+	 */
+	boolean informativeApproximationRequiresAllSubsToBeInformative();
+	
+	/** 
+	 * Indicates whether approximation computation is informative (that is, not a trivial non-informative approximation)
+	 * only if it is the case that not all subs are non-informative (that is, either there are no subs or at least one is informative).
+	 */
+	boolean informativeApproximationRequiresThatNotAllSubsAreNonInformative();
 }

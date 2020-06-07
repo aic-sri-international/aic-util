@@ -56,17 +56,5 @@ import com.sri.ai.util.computation.treecomputation.api.EagerTreeComputation;
  * @param <T> the type of the values being approximated
  */
 public interface AnytimeEagerTreeComputation<T> extends AnytimeTreeComputation<T>, EagerTreeComputation<Approximation<T>> {
-	
-	/** 
-	 * Indicates whether approximation computation is informative (that is, not a trivial non-informative approximation)
-	 * only if all subs provide informative approximations.
-	 */
-	boolean informativeApproximationRequiresAllSubsToBeInformative();
-	
-	/** 
-	 * Indicates whether approximation computation is informative (that is, not a trivial non-informative approximation)
-	 * only if it is the case that not all subs are non-informative (that is, either there are no subs or at least one is informative).
-	 */
-	boolean informativeApproximationRequiresThatNotAllSubsAreNonInformative();
 
 }
