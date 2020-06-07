@@ -72,7 +72,7 @@ public abstract class AbstractAnytimeTreeComputationWithLossySimplification<T> e
 	 * then the simplification should simply be made part of {@link #function(List)},
 	 * leaving this method as the identity function, in order to avoid an unnecessary recomputation penalty.)
 	 */
-	abstract protected Approximation<T> simplify(Approximation<T> approximation);
+	abstract public Approximation<T> simplify(Approximation<T> approximation);
 	
 	/**
 	 * Updates an approximation given that the external context has changed, without resorting
@@ -83,7 +83,7 @@ public abstract class AbstractAnytimeTreeComputationWithLossySimplification<T> e
 	 * @param approximation
 	 * @return
 	 */
-	abstract protected Approximation<T> computeUpdatedByItselfApproximationGivenThatExternalContextHasChanged(Approximation<T> approximation);
+	abstract public Approximation<T> computeUpdatedByItselfApproximationGivenThatExternalContextHasChanged(Approximation<T> approximation);
 	
 	////////////////////// CONSTRUCTOR
 	
