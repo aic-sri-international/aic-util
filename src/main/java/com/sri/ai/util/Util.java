@@ -6988,11 +6988,11 @@ public class Util {
 	 * @param c1
 	 * @param c2
 	 */
-	public static void compareNumbersComponentWise(Iterable<? extends Number> c1, Iterable<? extends Number> c2, double maximumRatioDistanceFromOne) {
+	public static void assertEqualsComponentWise(Iterable<? extends Number> c1, Iterable<? extends Number> c2, double maximumRatioDistanceFromOne) {
 		Iterator<? extends Number> iterator1 = c1.iterator();
 		Iterator<? extends Number> iterator2 = c2.iterator();
 		while (iterator1.hasNext() && iterator2.hasNext()) {
-			compareNumbers(iterator1.next(), iterator2.next(), maximumRatioDistanceFromOne);
+			assertEquals(iterator1.next(), iterator2.next(), maximumRatioDistanceFromOne);
 		}
 		if (iterator1.hasNext() || iterator2.hasNext()) {
 			throw new AssertionError("Compared iterables do not have the same size.");
@@ -7005,10 +7005,15 @@ public class Util {
 	 * @param number2
 	 * @param maximumRatioDistanceFromOne
 	 */
-	public static void compareNumbers(Number number1, Number number2, double maximumRatioDistanceFromOne) {
+	public static void assertEquals(Number number1, Number number2, double maximumRatioDistanceFromOne) {
+		var result = equals(number1, number2, maximumRatioDistanceFromOne);
+		myAssert(result, () -> "Ratio of " + number1 + " and " + number2 + " is greater than " + maximumRatioDistanceFromOne);
+		// TODO: we do not want to use myAssert here if this is being used for testing, since deactivating myAssert may render tests that are not passing silent.
+	}
+
+	public static boolean equals(Number number1, Number number2, double maximumRatioDistanceFromOne) {
 		double ratio = Math.abs(number1.doubleValue() / number2.doubleValue() - 1.0);
-		myAssert(ratio <= maximumRatioDistanceFromOne, () -> "Ratio of " + number1 + " and " + number2 + " is greater than " + maximumRatioDistanceFromOne);
-		// TODO: we do not want to use myAssert here if this is being used for testing, since deactiving myAssert may render tests that are not passing silent.
+		return ratio <= maximumRatioDistanceFromOne;
 	}
 
 	/**
