@@ -60,6 +60,11 @@ public interface AnytimeTreeComputation<T> extends Anytime<T>, TreeComputation<A
 	}
 	
 	/**
+	 * Indicates whether subs have already been made.
+	 */
+	boolean subsHaveNotYetBeenMade();
+
+	/**
 	 * Provides the next sub-computation to iterate before updating this approximation.
 	 */
 	Anytime<T> pickNextSubToIterate();

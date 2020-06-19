@@ -155,6 +155,7 @@ public abstract class AbstractAnytimeEagerTreeComputation<T> extends EZIterator<
 
 	///////////// MAKING AND GETTING SUBS
 	
+	@Override
 	public boolean subsHaveNotYetBeenMade() {
 		return subs == null;
 	}

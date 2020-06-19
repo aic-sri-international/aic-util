@@ -60,6 +60,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -3217,9 +3218,12 @@ public class Util {
 		return result;
 	}
 
-	public static String times(int level, String string) {
+	/**
+	 * Return the given string concatenated with itself n times.
+	 */
+	public static String times(int n, String string) {
 		StringBuilder result = new StringBuilder();
-		while (level-- > 0) {
+		while (n-- > 0) {
 			result.append(string);
 		}
 		return result.toString();
@@ -7136,5 +7140,43 @@ public class Util {
 			base = pow(10.0, decimalPlaces);
 		}
 		return Math.round(d*base)/base;
+	}
+
+	/**
+	 * Returns a string representing given value in terms of the smallest magnitude kilo, mega, giga, or tera,
+	 * with a chosen number of decimal places. 
+	 * For example, arguments <code>1234</code> and <code>2</code> produce <code>"1.23K"</code>.
+	 * Values less than <code>1000</code> or greater than or equal to <code>1e15</code> produce the regular
+	 * string representation.
+	 * @param value
+	 * @param decimalPlaces
+	 * @return
+	 */
+	public static String humanReadableByMagnitude(int value, int decimalPlaces) {
+		var decimalFormat = new DecimalFormat("#." + Util.times(decimalPlaces, "#"));
+		if (value < 1000) {
+			return Integer.toString(value);
+		} else if (value < 1e6) {
+			return decimalFormat.format(value/1e3) + "K";
+		}			
+		else if (value < 1e9) {
+			return decimalFormat.format(value/1e6) + "M";
+		}			
+		else if (value < 1e12) {
+			return decimalFormat.format(value/1e9) + "G";
+		}			
+		else if (value < 1e15) {
+			return decimalFormat.format(value/1e12) + "T";
+		}			
+		else {
+			return Integer.toString(value);
+		}
+	}			
+	
+	/**
+	 * Same as {@link #humanReadableByMagnitude(int, int)} with default 2 for decimal places.
+	 */
+	public static String humanReadableByMagnitude(int value) {
+		return humanReadableByMagnitude(value, 2);
 	}
 }

@@ -45,7 +45,8 @@ import com.sri.ai.util.computation.treecomputation.api.TreeComputation;
  * 
  * @author braz
  */
-public abstract class AbstractAnytimeEagerTreeComputationWithSimplification<T> extends AbstractAnytimeEagerTreeComputationBasedOnTreeComputation<T> {
+public abstract class AbstractAnytimeEagerTreeComputationWithSimplification<T> 
+extends AbstractAnytimeEagerTreeComputationBasedOnTreeComputation<T> {
 
 	////////////////////// ABSTRACT METHODS
 	
@@ -109,6 +110,10 @@ public abstract class AbstractAnytimeEagerTreeComputationWithSimplification<T> e
 	 */
 	private Approximation<T> unsimplified;
 	
+	public Approximation<T> getUnsimplifiedApproximationOrNull() {
+		return unsimplified;
+	}
+	
 	////////////// KEEPING TRACK OF WHETHER SIMPLIFIED AND UNSIMPLIFIED CURRENT APPROXIMATIONS ARE UPDATEABLE BY THEMSELVES
 	
 	private boolean currentApproximationIsUpdateableByItself() {
@@ -119,7 +124,6 @@ public abstract class AbstractAnytimeEagerTreeComputationWithSimplification<T> e
 				getCurrentUnsimplifiedApproximationIsUpdateableByItself() 
 				&& 
 				getCurrentApproximation().equals(unsimplified);
-				// if equal, they will be the same object, with exception to total ignorance, which might have been recomputed.
 	}
 	
 	/**
@@ -127,15 +131,15 @@ public abstract class AbstractAnytimeEagerTreeComputationWithSimplification<T> e
 	 * is updateable by itself, which depends on whether the subs themselves are updateable by themselves.
 	 * This is cached and a value of null indicates it needs to be assessed.
 	 */
-	private Boolean currentUnsimplifiedIsUpdateableByItself = null;
+	private Boolean currentUnsimplifiedApproximationIsUpdateableByItself = null;
 	private boolean getCurrentUnsimplifiedApproximationIsUpdateableByItself() {
-		if (currentUnsimplifiedIsUpdateableByItself == null) {
-			currentUnsimplifiedIsUpdateableByItself = 
+		if (currentUnsimplifiedApproximationIsUpdateableByItself == null) {
+			currentUnsimplifiedApproximationIsUpdateableByItself = 
 					subsHaveNotYetBeenMade() 
 					|| 
 					forAll(getSubs(), currentApproximationIsUpdateableByItself);
 		}
-		return currentUnsimplifiedIsUpdateableByItself;
+		return currentUnsimplifiedApproximationIsUpdateableByItself;
 	}
 	
 	////////////// INTERCEPTION OF setCurrentApproximation
@@ -143,7 +147,14 @@ public abstract class AbstractAnytimeEagerTreeComputationWithSimplification<T> e
 	@Override
 	public void setCurrentApproximation(Approximation<T> newCurrentApproximation) {
 		unsimplified = newCurrentApproximation;
+		// It seems next line should necessary, but we can get away without it. Investigating why
+		// currentUnsimplifiedApproximationIsUpdateableByItself = null;
 		var simplifiedCurrentApproximation = simplify(unsimplified);
+		if ( ! simplifiedCurrentApproximation.equals(unsimplified)) {
+			// Free up memory since it will not be used anymore.
+			// This actually makes a huge difference (50x in initial tests)
+			unsimplified = null;
+		}
 		super.setCurrentApproximation(simplifiedCurrentApproximation);
 	}
 
