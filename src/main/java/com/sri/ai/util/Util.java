@@ -7179,4 +7179,11 @@ public class Util {
 	public static String humanReadableByMagnitude(int value) {
 		return humanReadableByMagnitude(value, 2);
 	}
+
+	public static boolean isNonNullAndNonEmptyString(String string) {
+		return 
+				string != null 
+				&& 
+				string.equals("");
+	}
 }
