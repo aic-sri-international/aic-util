@@ -1305,7 +1305,10 @@ public class Util {
 	public static <F, T> void mapIntoList(Collection<? extends F> collection, Function<F, T> function, List<T> result) {
 		mapIntoList(collection.iterator(), function, result);
 	}
-
+	
+	public static <F, FE extends F, T> void mapIntoList(FE[] array, Function<F, T> function, List<T> result) {
+		mapIntoList(Arrays.asList(array), function, result);
+	}
 	
 	/**
 	 * Stores results of applying a function to an iterator's range in a new,
