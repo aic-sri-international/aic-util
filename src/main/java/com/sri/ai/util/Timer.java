@@ -1,5 +1,7 @@
 package com.sri.ai.util;
 
+import static com.sri.ai.util.Util.round;
+
 import com.sri.ai.util.base.NullaryFunction;
 import com.sri.ai.util.base.Pair;
 
@@ -19,5 +21,9 @@ public class Timer {
 		long finalTime = System.currentTimeMillis();
 		long time = finalTime - initialTime;
 		return new Pair<T,Long>(result,time);
+	}
+	
+	public static <T> String timeStringInSeconds(Pair<T,Long> resultAndTime, int decimalPlaces) {
+		return round(resultAndTime.second/1000., decimalPlaces) + " seconds";
 	}
 }
