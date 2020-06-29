@@ -864,11 +864,9 @@ public class Util {
 	/**
 	 * Adds all elements of iterator's range to a new linked list.
 	 * 
-	 * @param i
-	 *            the iterator whose range is to be added to the list.
+	 * @param collection the collection whose elements are to be added to the list.
 	 * @return the list.
-	 * @param <T>
-	 *            the type of the elements given.
+	 * @param <T> the type of the elements given.
 	 */
 	public static <T> LinkedList<T> addAllToList(Collection<T> collection) {
 		return addAllToList(collection.iterator());
@@ -1235,8 +1233,6 @@ public class Util {
 	 * @param array
 	 *            the array of ints from which to construct a list of Integers.
 	 * @return a List containing the elements of the given array.
-	 * @param <T>
-	 *            the type of the array's elements.
 	 */
 	public static List<Integer> listFrom(int[] array) {
 		return listFrom(ArrayUtils.toObject(array));
@@ -5205,7 +5201,7 @@ public class Util {
 	 * It throws an {@link AssertionError} with the given message.
 	 * @param test
 	 *        result of the test
-	 * @param the object whose class is requiring the condition; the class name is added to the beginning of the message, separated by a space
+	 * @param requirer the object whose class is requiring the condition; the class name is added to the beginning of the message, separated by a space
 	 * @param message
 	 *        message to display if test failed.
 	 */
@@ -6394,7 +6390,7 @@ public class Util {
 	  }
 
 	/**
-	 * Same as {@link #flattenOneLevel(ArrayList, Function, ArrayList)} with an empty array list as the last argument.
+	 * Same as {@link #flattenOneLevel(ArrayList, java.util.function.Function, ArrayList)} with an empty array list as the last argument.
 	 * @param list
 	 * @param expand
 	 * @return
@@ -6681,7 +6677,7 @@ public class Util {
 
 	/**
 	 * While a condition applies to elements in collection, applies an action to them.
-	 * @param iterator
+	 * @param collection
 	 * @param condition
 	 * @param action
 	 */
@@ -6707,8 +6703,8 @@ public class Util {
 
 	/**
 	 * While a nullary condition applies to elements in collection, applies an action to them.
-	 * @param iterator
-	 * @param whileCondition
+	 * @param collection
+	 * @param condition
 	 * @param action
 	 */
 	public static <T> void whileDo(Collection<? extends T> collection, NullaryPredicate condition, Procedure<T> action) {
@@ -7014,8 +7010,9 @@ public class Util {
 	 */
 	public static void assertEquals(Number number1, Number number2, double maximumRatioDistanceFromOne) {
 		var result = equals(number1, number2, maximumRatioDistanceFromOne);
-		myAssert(result, () -> "Ratio of " + number1 + " and " + number2 + " is greater than " + maximumRatioDistanceFromOne);
-		// TODO: we do not want to use myAssert here if this is being used for testing, since deactivating myAssert may render tests that are not passing silent.
+		if (!result) {
+			throw new Error("Ratio of " + number1 + " and " + number2 + " is greater than " + maximumRatioDistanceFromOne);
+		}
 	}
 
 	public static boolean equals(Number number1, Number number2, double maximumRatioDistanceFromOne) {
