@@ -39,6 +39,8 @@ package com.sri.ai.util.base;
 
 import com.google.common.annotations.Beta;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * An interface for functions receiving two arguments.
  * 
