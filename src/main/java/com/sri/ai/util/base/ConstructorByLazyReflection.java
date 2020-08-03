@@ -37,8 +37,14 @@
  */
 package com.sri.ai.util.base;
 
+import com.sri.ai.util.Util;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+
+import static com.sri.ai.util.Util.join;
+import static com.sri.ai.util.Util.mapIntoArray;
 
 /**
  * Uses reflection to access a constructor in a given class only if and when it is required,
@@ -47,7 +53,7 @@ import java.lang.reflect.InvocationTargetException;
  * @author braz
  */
 public class ConstructorByLazyReflection<T> {
-	
+
 	///////////////// DATA MEMBERS
 	
 	private Class<? extends T> clazz;
@@ -61,27 +67,29 @@ public class ConstructorByLazyReflection<T> {
 		this.parameterClasses = parameterClasses;
 	}
 	
-	public static <T> ConstructorByLazyReflection<T> constructorByLazyReflectionOfClassAndParameters(Class<? extends T> clazz, Class<?>... parameterClasses) {
-		return new ConstructorByLazyReflection<T>(clazz, parameterClasses);
+	public static <T> ConstructorByLazyReflection<T> constructorByLazyReflectionOfClassAndParameters(Class<? extends T> clazz, Class... parameterClasses) {
+		return new ConstructorByLazyReflection<>(clazz, parameterClasses);
 	}
 
 	///////////////// IMPLEMENTATIONS
 	
 	public T newInstance(Object... arguments) {
 		try {
-			return getConstructorFromExactBPNode().newInstance(arguments);
+			return getConstructor().newInstance(arguments);
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e) {
 			throw new Error("Could not create a new instance of " + clazz, e);
 		}
 	}
 	
-	private Constructor<? extends T> getConstructorFromExactBPNode() {
+	private Constructor<? extends T> getConstructor() {
 		if (constructor == null) {
 			try {
 				constructor = clazz.getConstructor(parameterClasses);
 			} catch (NoSuchMethodException | SecurityException e) {
-				throw new Error("Implementations of " + clazz + " must implement a constructor taking arguments of classes " + parameterClasses, e);
+				throw new Error(
+						"Implementations of " + clazz + " must implement a constructor taking " +
+						"arguments of classes " + join(parameterClasses), e);
 			}
 		}
 		return constructor;

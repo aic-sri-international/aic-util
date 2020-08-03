@@ -37,6 +37,7 @@
  */
 package com.sri.ai.util;
 
+import static com.sri.ai.util.base.ConstructorByLazyReflection.constructorByLazyReflectionOfClassAndParameters;
 import static com.sri.ai.util.base.PairOf.makePairOf;
 import static com.sri.ai.util.collect.FunctionIterator.functionIterator;
 import static com.sri.ai.util.collect.PredicateIterator.predicateIterator;
@@ -86,24 +87,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import com.sri.ai.util.base.*;
 import org.apache.commons.lang3.ArrayUtils;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
-import com.sri.ai.util.base.BinaryFunction;
-import com.sri.ai.util.base.BinaryPredicate;
-import com.sri.ai.util.base.BinaryProcedure;
-import com.sri.ai.util.base.Equals;
-import com.sri.ai.util.base.IndexingFunction;
-import com.sri.ai.util.base.NullaryFunction;
-import com.sri.ai.util.base.NullaryPredicate;
-import com.sri.ai.util.base.NullaryProcedure;
-import com.sri.ai.util.base.Pair;
-import com.sri.ai.util.base.PairOf;
-import com.sri.ai.util.base.Procedure;
-import com.sri.ai.util.base.TernaryFunction;
 import com.sri.ai.util.collect.EZIterator;
 import com.sri.ai.util.collect.IntegerIterator;
 import com.sri.ai.util.collect.NestedIterator;
@@ -3490,6 +3480,19 @@ public class Util {
 	 */
 	public static <E, T> Set<T> intersection(Iterable<? extends E> iterable, Function<? super E, Iterable<? extends T>> function) {
 		return intersection(functionIterator(iterable, function));
+	}
+
+	/**
+	 * Creates a new instance of given class using constructor that exactly matches the type of its arguments.
+	 * @param clazz
+	 * @param arguments
+	 * @param <T>
+	 * @return
+	 */
+	public static <T> T newInstance(Class<T> clazz, Object... arguments) {
+		var parameterClasses = mapIntoArray(Class.class, Arrays.asList(arguments), Object::getClass);
+		var constructorByLazyReflection = constructorByLazyReflectionOfClassAndParameters(clazz, parameterClasses);
+		return constructorByLazyReflection.newInstance(arguments);
 	}
 
 	/**

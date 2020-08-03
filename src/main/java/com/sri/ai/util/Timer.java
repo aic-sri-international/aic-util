@@ -16,7 +16,7 @@ public class Timer {
 		return result;
 	}
 
-	public static <T> Pair<T,Long> getResultAndTime(NullaryFunction<T> procedure) {
+	public static <T> Pair<T,Long> timed(NullaryFunction<T> procedure) {
 		long initialTime = System.currentTimeMillis();
 		T result = procedure.apply();
 		long finalTime = System.currentTimeMillis();
@@ -29,7 +29,7 @@ public class Timer {
 	}
 
 	public static <T> T printTime(String description, NullaryFunction<T> procedure, int decimalPlaces) {
-		var resultAndTime = getResultAndTime(procedure);
+		var resultAndTime = timed(procedure);
 		println(description + timeStringInSeconds(resultAndTime, decimalPlaces) + " seconds");
 		return resultAndTime.first;
 	}
