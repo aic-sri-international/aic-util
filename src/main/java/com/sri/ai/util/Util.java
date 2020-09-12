@@ -2773,6 +2773,27 @@ public class Util {
 		return booleans.stream().filter(b -> b).findFirst().isPresent();
 	}
 
+	public static Boolean equivalence(Collection<Boolean> booleans) {
+		if (booleans.isEmpty()) {
+			return true;
+		}
+		Iterator<Boolean> iterator = booleans.iterator();
+		boolean first = iterator.next();
+		return forAll(iterator, b -> b == first);
+	}
+
+	public static Boolean not(Collection<Boolean> booleans) {
+		return forAll(booleans, b -> !b);
+	}
+
+	public static Boolean implication(Collection<Boolean> booleans) {
+		if (booleans.size() != 2) {
+			throw new Error("Util.implication requires collection with exactly two arguments.");
+		}
+		var pair = Pair.pair(booleans);
+		return !pair.first || pair.second;
+	}
+
 	/**
 	 * Returns a list composed of all elements of given list but the first one.
 	 * Throws an exception if list is empty.
@@ -7189,4 +7210,19 @@ public class Util {
 				&& 
 				string.equals("");
 	}
+
+	public static <T> LinkedList<T> copyAndAdd(List<? extends T> list, T element) {
+		LinkedList<T> result = new LinkedList<T>();
+		result.addAll(list);
+		result.add(element);
+		return result;
+	}
+
+	public static <K, V> HashMap<K, V> copyAndPut(Map<? extends K, ? extends V> map, K key, V value) {
+		HashMap<K, V> result = new HashMap<K, V>(map);
+		result.putAll(map);
+		result.put(key, value);
+		return result;
+	}
+
 }

@@ -65,6 +65,11 @@ public class Pair<T1, T2> {
 		return new Pair<T1, T2>(first, second);
 	}
 
+	public static <T> Pair<T, T> pair(Iterable<? extends T> iterable) {
+		var iterator = iterable.iterator();
+		return pair(iterator.next(), iterator.next());
+	}
+
 	@Override
 	public int hashCode() {
 		// Subtract different primes to ensure re-orderings do not generate the same hash codes.

@@ -64,6 +64,11 @@ public class Triple<T1, T2, T3> {
 		return new Triple<T1, T2, T3>(first, second, third);
 	}
 
+	public static <T> Triple<T, T, T> triple(Iterable<? extends T> iterable) {
+		var iterator = iterable.iterator();
+		return triple(iterator.next(), iterator.next(), iterator.next());
+	}
+
 	@Override
 	public int hashCode() {
 		// Subtract different primes to ensure re-orderings do not generate the same hash codes.
