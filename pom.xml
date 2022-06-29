@@ -68,7 +68,7 @@
 	<properties>
 		<target.jdk.version>1.8</target.jdk.version>
 		<targetJdk>1.8</targetJdk>
-		<slf4j.version>1.7.6</slf4j.version>
+		<slf4j.version>1.7.26</slf4j.version>
 		<logback.version>1.1.1</logback.version>
 		<guava.version>16.0.1</guava.version>
 		<commons.lang.version>3.4</commons.lang.version>
